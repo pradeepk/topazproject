@@ -66,7 +66,7 @@ public class FilterResolverFactory implements ResolverFactory {
   private static final Logger logger = Logger.getLogger(FilterResolverFactory.class);
 
   private final URI             dbURI;
-  private final long            sysModelType;
+  private final long            sysGraphType;
   private final FilterHandler[] handlers;
 
   /** 
@@ -90,14 +90,14 @@ public class FilterResolverFactory implements ResolverFactory {
     if (resolverFactoryInitializer == null)
       throw new IllegalArgumentException("Null \"resolverFactoryInitializer\" parameter");
 
-    // Claim the filter model type
-    resolverFactoryInitializer.addModelType(FilterResolver.MODEL_TYPE, this);
+    // Claim the filter graph type
+    resolverFactoryInitializer.addModelType(FilterResolver.GRAPH_TYPE, this);
 
     // remember the database uri
     dbURI = resolverFactoryInitializer.getDatabaseURI();
 
-    // remember the system-model type
-    sysModelType = resolverFactoryInitializer.getSystemModelType();
+    // remember the system-graph type
+    sysGraphType = resolverFactoryInitializer.getSystemModelType();
 
     // load the configuration
     Configuration config = null;
@@ -199,7 +199,7 @@ public class FilterResolverFactory implements ResolverFactory {
   public Resolver newResolver(boolean canWrite, ResolverSession resolverSession,
                               Resolver systemResolver)
                               throws ResolverFactoryException {
-    return new FilterResolver(dbURI, sysModelType, systemResolver, resolverSession, this, handlers);
+    return new FilterResolver(dbURI, sysGraphType, systemResolver, resolverSession, this, handlers);
   }
 }
 

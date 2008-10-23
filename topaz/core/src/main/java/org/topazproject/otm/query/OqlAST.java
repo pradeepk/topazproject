@@ -32,7 +32,7 @@ import antlr.collections.AST;
  */
 public class OqlAST extends CommonAST {
   private ExprType               type;
-  private String                 model;
+  private String                 graph;
   private boolean                isVar;
   private boolean                isInv;
   private QueryFunction          func;
@@ -44,7 +44,7 @@ public class OqlAST extends CommonAST {
     if (t instanceof OqlAST) {
       OqlAST o  = (OqlAST) t;
       type      = o.type;
-      model     = o.model;
+      graph     = o.graph;
       isVar     = o.isVar;
       isInv     = o.isInv;
       func      = o.func;
@@ -71,23 +71,23 @@ public class OqlAST extends CommonAST {
   }
 
   /**
-   * Get model.
+   * Get graph.
    *
-   * @return model as String.
+   * @return graph as String.
    */
-  public String getModel()
+  public String getGraph()
   {
-      return model;
+      return graph;
   }
 
   /**
-   * Set model.
+   * Set graph.
    *
-   * @param model the value to set.
+   * @param graph the value to set.
    */
-  public void setModel(String model)
+  public void setGraph(String graph)
   {
-      this.model = model;
+      this.graph = graph;
   }
 
   /**

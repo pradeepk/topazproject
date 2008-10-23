@@ -33,7 +33,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Jeff Suttor, Alex Worden
  */
-@Entity(types = {"plos:Volume"}, model = "ri")
+@Entity(types = {"plos:Volume"}, graph = "ri")
 public class Volume extends Aggregation {
   private static final long serialVersionUID = -8134172321127413292L;
   private String displayName;

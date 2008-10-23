@@ -68,10 +68,10 @@ public abstract class AbstractOtmTest {
   private static final Log log = LogFactory.getLog(AbstractOtmTest.class);
 
   /**
-   * Used to ensure that all test classes get different models so as to avoid
+   * Used to ensure that all test classes get different graphs so as to avoid
    * conflicts when tests from different classes are interleaved by testng.
    */
-  private static int modelCnt = 1;
+  private static int graphCnt = 1;
 
   /**
    * Shared session factory
@@ -80,14 +80,14 @@ public abstract class AbstractOtmTest {
 
   protected void initFactory() throws OtmException {
     log.info("initializing otm session factory ...");
-    ModelConfig[] models = new ModelConfig[] {
-      new ModelConfig("ri", URI.create("local:///topazproject#otmtest" + modelCnt++), null),
-      new ModelConfig("grants", URI.create("local:///topazproject#otmtest" + modelCnt++), null),
-      new ModelConfig("revokes", URI.create("local:///topazproject#otmtest" + modelCnt++), null),
-      new ModelConfig("criteria", URI.create("local:///topazproject#otmtest" + modelCnt++), null),
-      new ModelConfig("str", URI.create("local:///topazproject#str"),
-                                      URI.create("http://topazproject.org/models#StringCompare")),
-      new ModelConfig("prefix", URI.create("local:///topazproject#prefix"),
+    GraphConfig[] graphs = new GraphConfig[] {
+      new GraphConfig("ri", URI.create("local:///topazproject#otmtest" + graphCnt++), null),
+      new GraphConfig("grants", URI.create("local:///topazproject#otmtest" + graphCnt++), null),
+      new GraphConfig("revokes", URI.create("local:///topazproject#otmtest" + graphCnt++), null),
+      new GraphConfig("criteria", URI.create("local:///topazproject#otmtest" + graphCnt++), null),
+      new GraphConfig("str", URI.create("local:///topazproject#str"),
+                                      URI.create("http://topazproject.org/graphs#StringCompare")),
+      new GraphConfig("prefix", URI.create("local:///topazproject#prefix"),
                                       URI.create("http://mulgara.org/mulgara#PrefixGraph")),
     };
     URI storeUri = URI.create("local:///topazproject");
@@ -97,11 +97,11 @@ public abstract class AbstractOtmTest {
     factory.setTripleStore(tripleStore);
     factory.setBlobStore(new SimpleBlobStore("target/blob-store"));
 
-    for (ModelConfig model : models)
-      factory.addModel(model);
+    for (GraphConfig graph : graphs)
+      factory.addGraph(graph);
 
-    tripleStore.createModel(factory.getModel("str"));
-    tripleStore.createModel(factory.getModel("prefix"));
+    tripleStore.createGraph(factory.getGraph("str"));
+    tripleStore.createGraph(factory.getGraph("prefix"));
 
     Class classes [] = new Class[] {Article.class, PublicAnnotation.class, PrivateAnnotation.class,
                                     ReplyThread.class, Grants.class, Revokes.class,
@@ -122,19 +122,19 @@ public abstract class AbstractOtmTest {
     factory.validate();
   }
 
-  protected void initModels() throws OtmException {
-    log.info("initializing mulgara test models ...");
+  protected void initGraphs() throws OtmException {
+    log.info("initializing mulgara test graphs ...");
     String names[] = new String[] {"ri", "grants", "revokes", "criteria"};
 
     for (String name : names) {
-      ModelConfig model = factory.getModel(name);
+      GraphConfig graph = factory.getGraph(name);
       try {
-        factory.getTripleStore().dropModel(model);
+        factory.getTripleStore().dropGraph(graph);
       } catch (Throwable t) {
         if (log.isDebugEnabled())
-          log.debug("Failed to drop model '" + name + "'", t);
+          log.debug("Failed to drop graph '" + name + "'", t);
       }
-      factory.getTripleStore().createModel(model);
+      factory.getTripleStore().createGraph(graph);
     }
   }
 

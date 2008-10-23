@@ -39,10 +39,10 @@ public class ItqlClientTest extends GroovyTestCase {
 
     // Create one client and run a couple commands
     ItqlClient itql = icf.createClient(URI.create("local:///test1"));
-    String model = "<local:///test1#m1>";
-    doCommands(itql, model) { checker ->
-      itql.doUpdate("insert <foo:one> <bar:one> '42' into ${model};");
-      List ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o;")
+    String graph = "<local:///test1#m1>";
+    doCommands(itql, graph) { checker ->
+      itql.doUpdate("insert <foo:one> <bar:one> '42' into ${graph};");
+      List ans = itql.doQuery("select \$s \$p \$o from ${graph} where \$s \$p \$o;")
       checker.verify(ans, variables:['s', 'p', 'o']) {
         row { uri ('foo:one'); uri('bar:one'); literal ('42') }
       }
@@ -51,8 +51,8 @@ public class ItqlClientTest extends GroovyTestCase {
 
     // Create a second client and test it sees the same db
     itql = icf.createClient(URI.create("local:///test1"));
-    doCommands(itql, model, false) { checker ->
-      List ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o;")
+    doCommands(itql, graph, false) { checker ->
+      List ans = itql.doQuery("select \$s \$p \$o from ${graph} where \$s \$p \$o;")
       checker.verify(ans, variables:['s', 'p', 'o']) {
         row { uri ('foo:one'); uri('bar:one'); literal ('42') }
       }
@@ -63,17 +63,17 @@ public class ItqlClientTest extends GroovyTestCase {
     /* Doesn't work: XANodePoolFactory uses a singleton and hence will always mess us up
     itql = icf.createClient(URI.create("local:///test1"));
     ItqlClient itql2 = icf.createClient(URI.create("local:///test2"));
-    String model2 = "<local:///test2#m1>";
+    String graph2 = "<local:///test2#m1>";
 
-    doCommands(itql2, model2) { checker ->
-      itql.doUpdate("insert <foo:one> <bar:one> '42' into ${model2};");
-      List ans = itql.doQuery("select \$s \$p \$o from ${model2} where \$s \$p \$o;")
+    doCommands(itql2, graph2) { checker ->
+      itql.doUpdate("insert <foo:one> <bar:one> '42' into ${graph2};");
+      List ans = itql.doQuery("select \$s \$p \$o from ${graph2} where \$s \$p \$o;")
       checker.verify(ans, variables:['s', 'p', 'o']) {
         row { uri ('foo:one'); uri('bar:one'); literal ('42') }
       }
     }
-    doCommands(itql, model, false) { checker ->
-      List ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o;")
+    doCommands(itql, graph, false) { checker ->
+      List ans = itql.doQuery("select \$s \$p \$o from ${graph} where \$s \$p \$o;")
       checker.verify(ans, variables:['s', 'p', 'o']) {
         row { uri ('foo:one'); uri('bar:one'); literal ('42') }
       }
@@ -88,21 +88,21 @@ public class ItqlClientTest extends GroovyTestCase {
     itql.setAliases([foo:'well:/blow/me/down#'])
     assertEquals([foo:'well:/blow/me/down#'], itql.getAliases())
 
-    model = "<local:///test1#m1>";
-    doCommands(itql, model) { checker ->
-      itql.doUpdate("insert <foo:one> <bar:one> '45' into ${model};");
-      List ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o;")
+    graph = "<local:///test1#m1>";
+    doCommands(itql, graph) { checker ->
+      itql.doUpdate("insert <foo:one> <bar:one> '45' into ${graph};");
+      List ans = itql.doQuery("select \$s \$p \$o from ${graph} where \$s \$p \$o;")
       checker.verify(ans, variables:['s', 'p', 'o']) {
         row { uri ('well:/blow/me/down#one'); uri('bar:one'); literal ('45') }
       }
     }
 
     // test literal datatypes
-    model = "<local:///test1#m1>";
-    doCommands(itql, model) { checker ->
+    graph = "<local:///test1#m1>";
+    doCommands(itql, graph) { checker ->
       itql.doUpdate(
-          "insert <foo:one> <bar:one> '45'^^<http://www.w3.org/2001/XMLSchema#int> into ${model};");
-      List ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o;")
+          "insert <foo:one> <bar:one> '45'^^<http://www.w3.org/2001/XMLSchema#int> into ${graph};");
+      List ans = itql.doQuery("select \$s \$p \$o from ${graph} where \$s \$p \$o;")
       checker.verify(ans, variables:['s', 'p', 'o']) {
         row { uri ('well:/blow/me/down#one'); uri('bar:one');
               literal ('45', dt:'http://www.w3.org/2001/XMLSchema#int') }
@@ -110,10 +110,10 @@ public class ItqlClientTest extends GroovyTestCase {
     }
 
     // test literal language-tags
-    model = "<local:///test1#m1>";
-    doCommands(itql, model) { checker ->
-      itql.doUpdate("insert <foo:one> <bar:one> '45'@fr into ${model};");
-      List ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o;")
+    graph = "<local:///test1#m1>";
+    doCommands(itql, graph) { checker ->
+      itql.doUpdate("insert <foo:one> <bar:one> '45'@fr into ${graph};");
+      List ans = itql.doQuery("select \$s \$p \$o from ${graph} where \$s \$p \$o;")
       checker.verify(ans, variables:['s', 'p', 'o']) {
         row { uri ('well:/blow/me/down#one'); uri('bar:one'); literal ('45', lang:'fr') }
       }
@@ -123,26 +123,26 @@ public class ItqlClientTest extends GroovyTestCase {
     // test transactions
     itql = icf.createClient(URI.create("local:///test1"));
 
-    model = "<local:///test1#m1>";
-    doCommands(itql, model) { checker ->
-      itql.doUpdate("insert <foo:one> <bar:one> '45' into ${model};");
-      List ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o;")
+    graph = "<local:///test1#m1>";
+    doCommands(itql, graph) { checker ->
+      itql.doUpdate("insert <foo:one> <bar:one> '45' into ${graph};");
+      List ans = itql.doQuery("select \$s \$p \$o from ${graph} where \$s \$p \$o;")
       checker.verify(ans, variables:['s', 'p', 'o']) {
         row { uri ('foo:one'); uri('bar:one'); literal ('45') }
       }
     }
 
-    List ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o;")
+    List ans = itql.doQuery("select \$s \$p \$o from ${graph} where \$s \$p \$o;")
     def checker = new AnswerChecker(test:this)
     checker.verify(ans, variables:['s', 'p', 'o']) {
       row { uri ('foo:one'); uri('bar:one'); literal ('45') }
     }
 
-    itql.doUpdate("insert <foo:two> <bar:two> '46' into ${model};");
+    itql.doUpdate("insert <foo:two> <bar:two> '46' into ${graph};");
 
     itql.beginTxn("tx-rb")
-    itql.doUpdate("insert <foo:thr> <bar:thr> '47' into ${model};");
-    ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o order by \$o;")
+    itql.doUpdate("insert <foo:thr> <bar:thr> '47' into ${graph};");
+    ans = itql.doQuery("select \$s \$p \$o from ${graph} where \$s \$p \$o order by \$o;")
     checker.verify(ans, variables:['s', 'p', 'o']) {
       row { uri ('foo:one'); uri('bar:one'); literal ('45') }
       row { uri ('foo:two'); uri('bar:two'); literal ('46') }
@@ -150,24 +150,24 @@ public class ItqlClientTest extends GroovyTestCase {
     }
     itql.rollbackTxn("tx-rb")
 
-    ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o order by \$o;")
+    ans = itql.doQuery("select \$s \$p \$o from ${graph} where \$s \$p \$o order by \$o;")
     checker.verify(ans, variables:['s', 'p', 'o']) {
       row { uri ('foo:one'); uri('bar:one'); literal ('45') }
       row { uri ('foo:two'); uri('bar:two'); literal ('46') }
     }
   }
 
-  private void doCommands(ItqlClient itql, String model, Closure c) {
-    doCommands(itql, model, true, c)
+  private void doCommands(ItqlClient itql, String graph, Closure c) {
+    doCommands(itql, graph, true, c)
   }
 
-  private void doCommands(ItqlClient itql, String model, boolean clean, Closure c) {
+  private void doCommands(ItqlClient itql, String graph, boolean clean, Closure c) {
     if (clean) {
       try {
-        itql.doUpdate("drop ${model};");
+        itql.doUpdate("drop ${graph};");
       } catch (Exception e) {
       }
-      itql.doUpdate("create ${model};");
+      itql.doUpdate("create ${graph};");
     }
 
     doInTx(itql) {

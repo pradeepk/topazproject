@@ -28,7 +28,7 @@ import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Filter;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.Order;
@@ -64,13 +64,13 @@ public class ItqlCriteria {
   String buildUserQuery() throws OtmException {
     StringBuilder qry   = new StringBuilder(500);
     ClassMetadata cm    = criteria.getClassMetadata();
-    String        model = getModelUri(criteria, cm.getModel());
+    String        graph = getGraphUri(criteria, cm.getGraph());
 
     qry.append("select $s");
 
     boolean hasOrderBy = buildProjections(criteria, qry, "$s", true);
 
-    qry.append(" from <").append(model).append("> where ");
+    qry.append(" from <").append(graph).append("> where ");
 
     int len = qry.length();
     buildWhereClause(criteria, qry, "$s", "$s", true, false);
@@ -129,11 +129,11 @@ public class ItqlCriteria {
                                        String pfx, boolean needType, boolean isFilter)
                          throws OtmException {
     ClassMetadata cm    = criteria.getClassMetadata();
-    String        model = getModelUri(criteria, cm.getModel());
+    String        graph = getGraphUri(criteria, cm.getGraph());
 
     if (needType) {
       for (String type : cm.getTypes())
-        qry.append(subject).append(" <rdf:type> <").append(type).append("> in <").append(model)
+        qry.append(subject).append(" <rdf:type> <").append(type).append("> in <").append(graph)
             .append("> and ");
     }
 
@@ -147,7 +147,7 @@ public class ItqlCriteria {
       for (Order o : criteria.getOrderList())
         if (!id.equals(o.getName()))
           buildPredicateWhere(criteria.isReferrer() ? criteria.getClassMetadata() : cm, criteria,
-                              o.getName(), subject, object + i++, qry, model);
+                              o.getName(), subject, object + i++, qry, graph);
     }
 
     i = 0;
@@ -171,7 +171,7 @@ public class ItqlCriteria {
     for (Criteria cr : criteria.getChildren()) {
       String child = pfx + "c" + i++;
       buildPredicateWhere(cr.isReferrer() ? cr.getClassMetadata() : cm, cr,
-                          cr.getMapping().getName(), subject, child, qry, model);
+                          cr.getMapping().getName(), subject, child, qry, graph);
       buildWhereClause(cr, qry, child, child, true, isFilter);
     }
   }
@@ -210,14 +210,14 @@ public class ItqlCriteria {
   }
 
   private static void buildPredicateWhere(ClassMetadata cm, Criteria c, String name, String subject,
-                                          String object, StringBuilder qry, String model)
+                                          String object, StringBuilder qry, String graph)
                             throws OtmException {
     RdfMapper m = (RdfMapper)cm.getMapperByName(name);
 
     if (m == null)
       throw new OtmException("No field with the name '" + name + "' in " + cm);
 
-    String mUri = (m.getModel() != null) ? getModelUri(c, m.getModel()) : model;
+    String mUri = (m.getGraph() != null) ? getGraphUri(c, m.getGraph()) : graph;
 
     if (m.hasInverseUri() ^ c.isReferrer()) {
       String tmp = object;
@@ -250,11 +250,11 @@ public class ItqlCriteria {
       buildOrderBy(cr, orders, subject + "c" + i++);
   }
 
-  private static String getModelUri(Criteria criteria, String modelId) throws OtmException {
-    ModelConfig mc = criteria.getSession().getSessionFactory().getModel(modelId);
+  private static String getGraphUri(Criteria criteria, String graphId) throws OtmException {
+    GraphConfig mc = criteria.getSession().getSessionFactory().getGraph(graphId);
 
-    if (mc == null) // Happens if using a Class but the model was not added
-      throw new OtmException("Unable to find model '" + modelId + "'");
+    if (mc == null) // Happens if using a Class but the graph was not added
+      throw new OtmException("Unable to find graph '" + graphId + "'");
 
     return mc.getUri().toString();
   }

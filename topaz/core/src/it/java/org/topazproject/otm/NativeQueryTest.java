@@ -52,7 +52,7 @@ public class NativeQueryTest extends AbstractOtmTest {
   public void setUp() throws OtmException {
     try {
       initFactory();
-      initModels();
+      initGraphs();
     } catch (OtmException e) {
       log.error("OtmException in setup", e);
       throw e;
@@ -73,11 +73,11 @@ public class NativeQueryTest extends AbstractOtmTest {
     log.info("Testing native query ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
-          String model = factory.getClassMetadata(PublicAnnotation.class).getModel();
-          model = factory.getModel(model).getUri().toString();
+          String graph = factory.getClassMetadata(PublicAnnotation.class).getGraph();
+          graph = factory.getGraph(graph).getUri().toString();
 
-          session.doNativeUpdate("delete select $s $p $o from <" + model +
-                                 "> where $s $p $o from <" + model + ">;");
+          session.doNativeUpdate("delete select $s $p $o from <" + graph +
+                                 "> where $s $p $o from <" + graph + ">;");
 
           URI        id1 = URI.create("http://localhost/annotation/1");
           URI        id2 = URI.create("http://localhost/annotation/2");
@@ -98,7 +98,7 @@ public class NativeQueryTest extends AbstractOtmTest {
           session.saveOrUpdate(a1);
           session.saveOrUpdate(a2);
 
-          Results r  = session.doNativeQuery("select $s $p $o from <" + model + "> where $s $p $o;");
+          Results r  = session.doNativeQuery("select $s $p $o from <" + graph + "> where $s $p $o;");
           Map     m1 = new HashMap();
           Map     m2 = new HashMap();
 
@@ -133,18 +133,18 @@ public class NativeQueryTest extends AbstractOtmTest {
 
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
-          String model = factory.getModel("ri").getUri().toString();
+          String graph = factory.getGraph("ri").getUri().toString();
 
-          session.doNativeUpdate("delete select $s $p $o from <" + model +
-                                 "> where $s $p $o from <" + model + ">;");
+          session.doNativeUpdate("delete select $s $p $o from <" + graph +
+                                 "> where $s $p $o from <" + graph + ">;");
 
           session.doNativeUpdate("insert <s:1> <p:1> '1' " +
             "<s:2> <p:2> $bn1 $bn1 <p:3> '3'^^<xsd:int> " +
             "<s:4> <p:4> <l:4> " +
-            "into <" + model + ">;");
+            "into <" + graph + ">;");
 
           Results r = session.doNativeQuery(
-                              "select $s $p $o from <" + model + "> where $s $p $o order by $p;");
+                              "select $s $p $o from <" + graph + "> where $s $p $o order by $p;");
 
           assertEquals(3, r.getVariables().length);
           assertEquals("s", r.getVariables()[0]);

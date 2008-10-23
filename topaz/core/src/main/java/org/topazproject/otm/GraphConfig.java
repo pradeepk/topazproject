@@ -21,23 +21,23 @@ package org.topazproject.otm;
 import java.net.URI;
 
 /**
- * Configuration for a Model/Graph in the triple-store
+ * Configuration for a Graph in the triple-store
  *
  * @author Pradeep Krishnan
  */
-public class ModelConfig {
+public class GraphConfig {
   private String id;
   private URI    uri;
   private URI    type;
 
   /**
-   * Creates a new Model object.
+   * Creates a new Graph object.
    *
-   * @param id the id of this model
-   * @param uri the model uri
-   * @param type the model type
+   * @param id the id of this graph
+   * @param uri the graph uri
+   * @param type the graph type
    */
-  public ModelConfig(String id, URI uri, URI type) {
+  public GraphConfig(String id, URI uri, URI type) {
     this.id     = id;
     this.uri    = uri;
     this.type   = type;

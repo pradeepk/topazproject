@@ -67,7 +67,7 @@ public class BasicOtmTest extends AbstractOtmTest {
   public void setUp() throws OtmException {
     try {
       initFactory();
-      initModels();
+      initGraphs();
     } catch (OtmException e) {
       log.error("OtmException in setup", e);
       throw e;

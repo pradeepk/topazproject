@@ -92,8 +92,8 @@ public class RdfMapperImpl extends AbstractMapper implements RdfMapper {
   /*
    * inherited javadoc
    */
-  public String getModel() {
-    return getDefinition().getModel();
+  public String getGraph() {
+    return getDefinition().getGraph();
   }
 
   /*

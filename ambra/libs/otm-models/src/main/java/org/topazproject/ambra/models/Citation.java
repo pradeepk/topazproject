@@ -39,7 +39,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  * @author Eric Brown
  * @author Amit Kapoor
  */
-@Entity(types = {"bibtex:Entry"}, model = "ri")
+@Entity(types = {"bibtex:Entry"}, graph = "ri")
 @UriPrefix("topaz:")
 public class Citation implements Serializable {
   private static final long serialVersionUID = 6405781304940950306L;

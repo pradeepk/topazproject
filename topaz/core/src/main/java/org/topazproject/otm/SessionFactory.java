@@ -36,7 +36,7 @@ import org.topazproject.otm.serializer.SerializerFactory;
 
 /**
  * A factory for otm sessions. It should be preloaded with the classes that would be persisted.
- * Also it holds the triple store and model/graph configurations. This class is multi-thread safe,
+ * Also it holds the triple store and graph configurations. This class is multi-thread safe,
  * so long as the preload and configuration  operations are done at boot-strap time.
  *
  * @author Pradeep Krishnan
@@ -218,36 +218,36 @@ public interface SessionFactory {
   public Collection<ClassMetadata> listClassMetadata();
 
   /**
-   * Gets the model configuration.
+   * Gets the graph configuration.
    *
-   * @param modelId the model id
+   * @param graphId the graph id
    *
    * @return the configuration
    */
-  public ModelConfig getModel(String modelId);
+  public GraphConfig getGraph(String graphId);
 
   /**
-   * Get the models of the given type.
+   * Get the graphs of the given type.
    *
-   * @param modelType the model type
+   * @param graphType the graph type
    *
-   * @return the list of models with the given type, or null if there are none
+   * @return the list of graphs with the given type, or null if there are none
    */
-  public List<ModelConfig> getModels(URI modelType);
+  public List<GraphConfig> getGraphs(URI graphType);
 
   /**
-   * Adds a model configuration.
+   * Adds a graph configuration.
    *
-   * @param model the model configuration
+   * @param graph the graph configuration
    */
-  public void addModel(ModelConfig model);
+  public void addGraph(GraphConfig graph);
 
   /**
-   * Removes a model configuration.
+   * Removes a graph configuration.
    *
-   * @param model the model configuration
+   * @param graph the graph configuration
    */
-  public void removeModel(ModelConfig model);
+  public void removeGraph(GraphConfig graph);
 
   /**
    * Gets the triple store used.

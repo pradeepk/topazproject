@@ -33,7 +33,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Ronald Tschalär
  */
-@Entity(model = "users")
+@Entity(graph = "users")
 public class AuthenticationId implements Serializable {
   private static final long serialVersionUID = -8238246091436588024L;
 

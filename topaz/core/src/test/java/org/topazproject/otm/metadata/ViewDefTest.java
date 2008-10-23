@@ -46,7 +46,7 @@ public class ViewDefTest extends TestCase {
     assertNotNull(sf.getClassMetadata(B.class.getName()));
   }
 
-  @Entity(model="test", name="Base")
+  @Entity(graph="test", name="Base")
   @UriPrefix("a:")
   public static class Base {
     public String getId() {return null;}
@@ -57,13 +57,13 @@ public class ViewDefTest extends TestCase {
   @Entity(name="A")
   public static class A extends Base {
     public String getP1() {return null;}
-    @Predicate(model="test", dataType=Predicate.UNTYPED)
+    @Predicate(graph="test", dataType=Predicate.UNTYPED)
     public void setP1(String s) {}
     public URI getP2() {return null;}
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setP2(URI u) {}
     public Assoc1 getP3() {return null;}
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setP3(Assoc1 a) {}
   }
 

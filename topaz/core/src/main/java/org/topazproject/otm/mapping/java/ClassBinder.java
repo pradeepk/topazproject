@@ -46,7 +46,7 @@ import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
@@ -326,12 +326,12 @@ public class ClassBinder<T> implements EntityBinder {
                                throws OtmException {
     SessionFactory sf    = session.getSessionFactory();
     String         p     = m.getUri();
-    String         model = m.getModel();
+    String         graph = m.getGraph();
 
-    if (model == null)
-      model = cm.getModel();
+    if (graph == null)
+      graph = cm.getGraph();
 
-    String       mUri  = getModelUri(model, sf);
+    String       mUri  = getGraphUri(graph, sf);
     List<String> vals;
 
     TripleStore  store = sf.getTripleStore();
@@ -349,12 +349,12 @@ public class ClassBinder<T> implements EntityBinder {
     return vals;
   }
 
-  private String getModelUri(String modelId, SessionFactory sf)
+  private String getGraphUri(String graphId, SessionFactory sf)
                       throws OtmException {
-    ModelConfig mc = sf.getModel(modelId);
+    GraphConfig mc = sf.getGraph(graphId);
 
-    if (mc == null) // Happens if using a Class but the model was not added
-      throw new OtmException("Unable to find model '" + modelId + "'");
+    if (mc == null) // Happens if using a Class but the graph was not added
+      throw new OtmException("Unable to find graph '" + graphId + "'");
 
     return mc.getUri().toString();
   }

@@ -23,9 +23,9 @@ import org.mulgara.server.driver.SessionFactoryFinder;
 
 class StringResolverTest extends GroovyTestCase {
   static final String MULGARA    = 'local:///topazproject'
-  static final String TEST_MODEL = '<local:///topazproject#EqualIgnoreCaseTests>'
-  static final String RSLV_MODEL = '<local:///topazproject#str>'
-  static final String RSLV_TYPE  = '<http://topazproject.org/models#StringCompare>'
+  static final String TEST_GRAPH = '<local:///topazproject#EqualIgnoreCaseTests>'
+  static final String RSLV_GRAPH = '<local:///topazproject#str>'
+  static final String RSLV_TYPE  = '<http://topazproject.org/graphs#StringCompare>'
   static final SessionFactory sf = SessionFactoryFinder.newSessionFactory(MULGARA.toURI());
 
   ItqlInterpreterBean itql
@@ -39,11 +39,11 @@ class StringResolverTest extends GroovyTestCase {
   void setUp() {
     itql = new ItqlInterpreterBean(sf.newSession(), sf.getSecurityDomain());
     itql.setAliasMap([topaz:'http://rdf.topazproject.org/RDF/'.toURI()])
-    itql.executeUpdate("create ${RSLV_MODEL} ${RSLV_TYPE};")
-    itql.executeUpdate("create ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:1> <bar:is> 'a' into ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:2> <bar:is> 'b' into ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:X> <bar:is> 'c' into ${TEST_MODEL};")
+    itql.executeUpdate("create ${RSLV_GRAPH} ${RSLV_TYPE};")
+    itql.executeUpdate("create ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:1> <bar:is> 'a' into ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:2> <bar:is> 'b' into ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:X> <bar:is> 'c' into ${TEST_GRAPH};")
   }
 
   void tearDown() {
@@ -81,9 +81,9 @@ class StringResolverTest extends GroovyTestCase {
   }
 
   void runQuery(String subj, String pred, String obj, def expected) {
-    def query = """select \$s from ${TEST_MODEL}
+    def query = """select \$s from ${TEST_GRAPH}
                     where \$s <bar:is> \$o
-                      and ${subj} ${pred} ${obj} in ${RSLV_MODEL};"""
+                      and ${subj} ${pred} ${obj} in ${RSLV_GRAPH};"""
     def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
     assert ans.query[0].solution*.s.'@resource'.list() == expected
   }

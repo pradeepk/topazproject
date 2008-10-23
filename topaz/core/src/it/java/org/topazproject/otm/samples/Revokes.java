@@ -26,6 +26,6 @@ import org.topazproject.otm.annotations.Entity;
  * @author $author$
  * @version $Revision$
   */
-@Entity(model = "revokes")
+@Entity(graph = "revokes")
 public class Revokes extends Permissions {
 }

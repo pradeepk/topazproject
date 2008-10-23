@@ -59,7 +59,7 @@
       <value>http://mulgara.org/mulgara#</value>
     </entry>
     <entry>
-      <alias>model</alias>
+      <alias>graph</alias>
       <value>local:///topazproject#</value>
     </entry>
   </aliasMap>
@@ -68,29 +68,29 @@
   <rule>
     <match>
       <p>topaz:articleState</p>
-      <m>model:ri</m>
+      <m>graph:ri</m>
     </match>
     <object>
       <cache>article-state</cache>
       <query>
-        select $s $state from &lt;model:ri&gt;
+        select $s $state from &lt;graph:ri&gt;
             where (&lt;${s}&gt; &lt;topaz:articleState&gt; $state)
             and ($s &lt;mulgara:is&gt; &lt;${s}&gt; or
-                 &lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $s in &lt;model:pp&gt;);
+                 &lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $s in &lt;graph:pp&gt;);
       </query>
     </object>
   </rule>
   <rule>
     <match>
       <p>topaz:propagate-permissions-to</p>
-      <m>model:pp</m>
+      <m>graph:pp</m>
     </match>
     <object>
       <cache>article-state</cache>
       <query>
-        select $s $state from &lt;model:ri&gt;
+        select $s $state from &lt;graph:ri&gt;
             where (&lt;${s}&gt; &lt;topaz:articleState&gt; $state)
-            and (&lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $s in &lt;model:pp&gt;);
+            and (&lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $s in &lt;graph:pp&gt;);
       </query>
     </object>
   </rule>
@@ -99,7 +99,7 @@
   <rule>
     <match>
       <p>topaz:hasRoles</p>
-      <m>model:users</m>
+      <m>graph:users</m>
     </match>
     <object>
       <cache>permit-admin</cache>
@@ -112,7 +112,7 @@
     <match>
       <p>topaz:role</p>
       <o>admin</o>
-      <m>model:users</m>
+      <m>graph:users</m>
     </match>
     <object>
       <cache>permit-bootstrap</cache>
@@ -124,44 +124,44 @@
   <rule>
     <match>
       <p>dc:creator</p>
-      <m>model:ri</m>
+      <m>graph:ri</m>
     </match>
     <object>
       <cache>permit-creator</cache>
       <query>
-        select $r $s from &lt;model:ri&gt;
+        select $r $s from &lt;graph:ri&gt;
         where ($r &lt;dc:creator&gt; $s or $r &lt;topaz:anonymousCreator&gt; $s)
         and ($r &lt;mulgara:is&gt; &lt;${s}&gt; or
-             &lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $r in &lt;model:pp&gt;);
+             &lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $r in &lt;graph:pp&gt;);
       </query>
     </object>
   </rule>
   <rule>
     <match>
       <p>topaz:anonymousCreator</p>
-      <m>model:ri</m>
+      <m>graph:ri</m>
     </match>
     <object>
       <cache>permit-creator</cache>
       <query>
-        select $r $s from &lt;model:ri&gt;
+        select $r $s from &lt;graph:ri&gt;
         where ($r &lt;dc:creator&gt; $s or $r &lt;topaz:anonymousCreator&gt; $s)
         and ($r &lt;mulgara:is&gt; &lt;${s}&gt; or
-             &lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $r in &lt;model:pp&gt;);
+             &lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $r in &lt;graph:pp&gt;);
       </query>
     </object>
   </rule>
   <rule>
     <match>
       <p>topaz:propagate-permissions-to</p>
-      <m>model:pp</m>
+      <m>graph:pp</m>
     </match>
     <object>
       <cache>permit-creator</cache>
       <query>
-        select $r $s from &lt;model:ri&gt;
+        select $r $s from &lt;graph:ri&gt;
         where ($r &lt;dc:creator&gt; $s or $r &lt;topaz:anonymousCreator&gt; $s)
-        and (&lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $r in &lt;model:pp&gt;);
+        and (&lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $r in &lt;graph:pp&gt;);
       </query>
     </object>
   </rule>

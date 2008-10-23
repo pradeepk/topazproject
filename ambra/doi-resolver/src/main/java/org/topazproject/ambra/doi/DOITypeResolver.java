@@ -28,7 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.FetchType;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
@@ -54,7 +54,7 @@ public class DOITypeResolver {
   /**
    * The default GRAPH  that will be searched.
    */
-  public static final String GRAPH = "local:///topazproject#filter:model=ri";
+  public static final String GRAPH = "local:///topazproject#filter:graph=ri";
   private static final Log log = LogFactory.getLog(DOITypeResolver.class);
 
   //
@@ -85,12 +85,12 @@ public class DOITypeResolver {
   public void setGraph(String graph) {
     this.graph = graph;
 
-    ModelConfig mc = sf.getModel("ri");
+    GraphConfig mc = sf.getGraph("ri");
 
     if (mc != null)
-      sf.removeModel(mc);
+      sf.removeGraph(mc);
 
-    sf.addModel(new ModelConfig("ri", URI.create(graph), null));
+    sf.addGraph(new GraphConfig("ri", URI.create(graph), null));
   }
 
   /**
@@ -211,7 +211,7 @@ public class DOITypeResolver {
     T run(Session session) throws OtmException;
   }
 
-  @Entity(model = "ri")
+  @Entity(graph = "ri")
   public static class Resource {
     private String                                        id;
     private Set<String>                                   types;
@@ -254,7 +254,7 @@ public class DOITypeResolver {
     }
   }
 
-  @Entity(model = "ri")
+  @Entity(graph = "ri")
   public static class Annotation {
     private String                                                         id;
     private Annotation                                                     ann;

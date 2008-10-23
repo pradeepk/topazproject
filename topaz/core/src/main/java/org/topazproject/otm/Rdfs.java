@@ -56,7 +56,7 @@ public interface Rdfs {
 
   /**
    * rdfs:Datatype is the class of datatypes. All instances of rdfs:Datatype
-   * correspond to the RDF model of a datatype described in the RDF Concepts
+   * correspond to the RDF graph of a datatype described in the RDF Concepts
    * specification [RDF-CONCEPTS]. rdfs:Datatype is both an instance of and a
    * subclass of rdfs:Class. Each instance of rdfs:Datatype is a subclass of
    * rdfs:Literal.

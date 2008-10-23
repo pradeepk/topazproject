@@ -32,13 +32,13 @@ import org.mulgara.resolver.spi.Statements;
  * @author Ronald Tschalär
  */
 public abstract class AbstractFilterHandler implements FilterHandler {
-  public void modelCreated(URI filterModel, URI realModel) throws ResolverException {
+  public void graphCreated(URI filterGraph, URI realGraph) throws ResolverException {
   }
 
-  public void modelRemoved(URI filterModel, URI realModel) throws ResolverException {
+  public void graphRemoved(URI filterGraph, URI realGraph) throws ResolverException {
   }
 
-  public void modelModified(URI filterModel, URI realModel, Statements stmts, boolean occurs,
+  public void graphModified(URI filterGraph, URI realGraph, Statements stmts, boolean occurs,
                             ResolverSession resolverSession) throws ResolverException {
   }
 

@@ -92,11 +92,11 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
     else
       val = serializeValue(getValue(), criteria, getFieldName());
 
-    String model = m.getModel();
-    if ((model != null) && !cm.getModel().equals(model))
-      model = " in <" + getModelUri(criteria, model) + ">";
+    String graph = m.getGraph();
+    if ((graph != null) && !cm.getGraph().equals(graph))
+      graph = " in <" + getGraphUri(criteria, graph) + ">";
     else
-      model = "";
+      graph = "";
 
     if (m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
           throw new OtmException("Can't query across a " + m.getColType() 
@@ -107,26 +107,26 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
       case PREDICATE:
          query = m.hasInverseUri() ? (val + " <" + m.getUri() + "> " + subjectVar)
                                    : (subjectVar + " <" + m.getUri() + "> " + val);
-         query += model;
+         query += graph;
          break;
       case RDFSEQ:
       case RDFBAG:
       case RDFALT:
         String seq = varPrefix + "seqS";
         String seqPred = varPrefix + "seqP";
-        query = "(" + subjectVar + " <" + m.getUri() + "> " + seq + model
-           + " and " + seq +  " " + seqPred + " " + val + model
+        query = "(" + subjectVar + " <" + m.getUri() + "> " + seq + graph
+           + " and " + seq +  " " + seqPred + " " + val + graph
            + " and " + seqPred + " <mulgara:prefix> <rdf:_> in <"
-           + getPrefixModel(criteria) + ">)";
+           + getPrefixGraph(criteria) + ">)";
         break;
       case RDFLIST:
         String list = varPrefix + "list";
         String rest = varPrefix + "rest";
-        query = "(" + subjectVar + " <" + m.getUri() + "> " + list + model
-           + " and (" + list + " <rdf:first> " + val +  model
-           + " or ((trans(" + list + " <rdf:rest> " + rest + ")" + model
-           + " or " + list + " <rdf:rest> " + rest + model
-           + ") and " + rest +  " <rdf:first> " + val + model + ")))";
+        query = "(" + subjectVar + " <" + m.getUri() + "> " + list + graph
+           + " and (" + list + " <rdf:first> " + val +  graph
+           + " or ((trans(" + list + " <rdf:rest> " + rest + ")" + graph
+           + " or " + list + " <rdf:rest> " + rest + graph
+           + ") and " + rest +  " <rdf:first> " + val + graph + ")))";
         break;
       default:
          throw new OtmException(m.getColType() + " not supported; field = " 

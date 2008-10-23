@@ -59,7 +59,7 @@
       <value>http://mulgara.org/mulgara#</value>
     </entry>
     <entry>
-      <alias>model</alias>
+      <alias>graph</alias>
       <value>${dbUri}#</value>
     </entry>
   </aliasMap>
@@ -68,12 +68,12 @@
   <rule>
     <match>
       <p>topaz:articleState</p>
-      <m>model:test</m>
+      <m>graph:test</m>
     </match>
     <object>
       <cache>article-state</cache>
       <query>
-        select $s $state from &lt;model:test&gt;
+        select $s $state from &lt;graph:test&gt;
             where (&lt;${s}&gt; &lt;topaz:articleState&gt; $state)
             and ($s &lt;mulgara:is&gt; &lt;${s}&gt; or
                  &lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $s);
@@ -88,7 +88,7 @@
     <object>
       <cache>article-state</cache>
       <query>
-        select $s $o from &lt;model:test&gt; where $s &lt;topaz:foo&gt; $o;
+        select $s $o from &lt;graph:test&gt; where $s &lt;topaz:foo&gt; $o;
       </query>
     </object>
   </rule>
@@ -97,7 +97,7 @@
   <rule>
     <match>
       <p>topaz:pred</p>
-      <m>model:test</m>
+      <m>graph:test</m>
     </match>
     <object>
       <cache>article-state</cache>
@@ -108,7 +108,7 @@
   <rule>
     <match>
       <s>topaz:subj</s>
-      <m>model:test</m>
+      <m>graph:test</m>
     </match>
     <object>
       <cache>article-state</cache>

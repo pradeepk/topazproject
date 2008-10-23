@@ -32,7 +32,7 @@ import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.mapping.RdfMapper;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 
@@ -152,7 +152,7 @@ public class OwlGenerator {
   }
 
   /**
-   * Create the generator class with the SessionFactory and model
+   * Create the generator class with the SessionFactory and graph
    * configuration.
    *
    * @param logicalURI the logical URI for the generated ontology
@@ -188,9 +188,9 @@ public class OwlGenerator {
    *
    * @param graph the named graph where the OWL metadata is to be stored
    */
-  public void save(ModelConfig graph) throws OtmException {
-    otmFactory.addModel(graph);
-    otmFactory.getTripleStore().createModel(graph);
+  public void save(GraphConfig graph) throws OtmException {
+    otmFactory.addGraph(graph);
+    otmFactory.getTripleStore().createGraph(graph);
   }
 
   /**

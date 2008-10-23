@@ -109,10 +109,10 @@ public @interface Predicate {
   String UNTYPED = RdfDefinition.UNTYPED;
 
   /**
-   * The graph/model where this predicate is stored. Defaults to value defined in the containing 
+   * The graph where this predicate is stored. Defaults to value defined in the containing 
    * Entity.
    */
-  String model() default "";
+  String graph() default "";
 
   /**
    * Marks an inverse association. Instead of s p o, load/save as o p s where 

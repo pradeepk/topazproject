@@ -79,7 +79,7 @@ public class SessionTest extends AbstractOtmTest {
       initFactory();
       factory.preload(Serial.class);
       factory.validate();
-      initModels();
+      initGraphs();
       setUpData();
     } catch (OtmException e) {
       log.error("OtmException in setup", e);
@@ -330,7 +330,7 @@ public class SessionTest extends AbstractOtmTest {
   }
 
   @UriPrefix("foo:")
-  @Entity(model="ri")
+  @Entity(graph="ri")
   public static class Serial implements Serializable {
     public String id;
     public String s1;

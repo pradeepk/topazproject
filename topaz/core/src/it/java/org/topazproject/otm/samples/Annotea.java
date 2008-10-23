@@ -34,7 +34,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  *
  * @author Pradeep Krishnan
  */
-@Entity(model = "ri")
+@Entity(graph = "ri")
 @UriPrefix(Annotea.NS)
 public class Annotea {
   /**

@@ -36,7 +36,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  * @author Jeff Suttor
  */
 @UriPrefix("topaz:TrackbackContent/")
-@Entity(model = "ri", types = {"topaz:TrackbackContent"})
+@Entity(graph = "ri", types = {"topaz:TrackbackContent"})
 public class TrackbackContent implements Serializable {
   static final long serialVersionUID = -4310540950708482559L;
 

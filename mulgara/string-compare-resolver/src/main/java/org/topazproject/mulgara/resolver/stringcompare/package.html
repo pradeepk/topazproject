@@ -26,10 +26,10 @@
     <title>org.topazproject.mulgara.resolver.stringcompare</title>
   </head>
   <body>
-    <p>Mulgara resolver to implement string-comparisons models.</p>
+    <p>Mulgara resolver to implement string-comparisons graphs.</p>
     <p>Example:
       <pre>
-      create &lt;local:///topazproject#str&gt; &lt;http://topazproject.org/models#StringCompare&gt;;
+      create &lt;local:///topazproject#str&gt; &lt;http://topazproject.org/graphs#StringCompare&gt;;
       select $s $p $o from &lt;local:///topazproject#foo&gt;
         where $s $p $o
         and $o &lt;topaz:equalsIgnoreCase&gt; 'Jane Bar' in &lt;local:///topazproject#str&gt;;

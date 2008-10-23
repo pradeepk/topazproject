@@ -34,7 +34,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.TripleStore;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.stores.ItqlStore;
 
@@ -80,15 +80,15 @@ public class DOITypeResolverTest {
     TripleStore    tripleStore = new ItqlStore(storeUri);
     factory.setTripleStore(tripleStore);
 
-    ModelConfig mc = new ModelConfig("ri", URI.create(graph), null);
-    factory.addModel(mc);
+    GraphConfig mc = new GraphConfig("ri", URI.create(graph), null);
+    factory.addGraph(mc);
 
     try {
-      tripleStore.dropModel(mc);
+      tripleStore.dropGraph(mc);
     } catch (OtmException e) {
     }
 
-    tripleStore.createModel(mc);
+    tripleStore.createGraph(mc);
 
     Session session = factory.openSession();
 

@@ -35,7 +35,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Ronald Tschalär
  */
-@Entity(types = {"foaf:OnlineAccount"}, model = "users")
+@Entity(types = {"foaf:OnlineAccount"}, graph = "users")
 public class UserAccount implements Serializable {
   private static final long serialVersionUID = 5552880968060090198L;
   /** the state indicating the user account is active: {@value} */
@@ -136,7 +136,7 @@ public class UserAccount implements Serializable {
    *
    * @param preferences the preferences.
    */
-  @Predicate(uri = "topaz:hasPreferences", model="preferences", 
+  @Predicate(uri = "topaz:hasPreferences", graph="preferences", 
              cascade = {CascadeType.child})
   public void setPreferences(Set<UserPreferences> preferences) {
     this.preferences = preferences;
@@ -170,7 +170,7 @@ public class UserAccount implements Serializable {
    *
    * @param profile the profile.
    */
-  @Predicate(uri = "foaf:holdsAccount", inverse = Predicate.BT.TRUE, model="profiles",
+  @Predicate(uri = "foaf:holdsAccount", inverse = Predicate.BT.TRUE, graph="profiles",
              cascade = {CascadeType.child})
   public void setProfile(UserProfile profile) {
     this.profile = profile;

@@ -30,12 +30,12 @@
 
     <p>
     The purpose of the {@link org.topazproject.mulgara.resolver.FilterResolver FilterResolver}
-    is to get notifications whenever updates to a model are made. The FilterResolver is
+    is to get notifications whenever updates to a graph are made. The FilterResolver is
     configured with a list of {@link org.topazproject.mulgara.resolver.FilterHandler
     FilterHandler}'s which get notified on updates. The two main handlers currently are the 
     {@link org.topazproject.mulgara.resolver.TransactionLogger TransactionLogger} and the
     {@link org.topazproject.mulgara.resolver.CacheInvalidator CacheInvalidator}. The
-    TransactionLogger will log all inserts, deletes, model creates, and model drops to a log
+    TransactionLogger will log all inserts, deletes, graph creates, and graph drops to a log
     file which can be replayed to re-generate the db in case of a catastrophic failure. The
     CacheInvalidator is used to send out cache-invalidations when certain data are modified.
     </p>

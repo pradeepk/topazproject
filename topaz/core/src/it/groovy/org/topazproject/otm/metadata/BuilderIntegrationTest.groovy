@@ -19,7 +19,7 @@
 
 package org.topazproject.otm.metadata;
 
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.stores.ItqlStore;
@@ -35,24 +35,24 @@ public class BuilderIntegrationTest extends GroovyTestCase {
   void setUp() {
     store = new ItqlStore("local:///topazproject".toURI())
     rdf = new RdfBuilder(
-        sessFactory:new SessionFactoryImpl(tripleStore:store), defModel:'ri', defUriPrefix:'topaz:')
+        sessFactory:new SessionFactoryImpl(tripleStore:store), defGraph:'ri', defUriPrefix:'topaz:')
 
-    def ri = new ModelConfig("ri", "local:///topazproject#otmtest1".toURI(), null)
-    rdf.sessFactory.addModel(ri);
+    def ri = new GraphConfig("ri", "local:///topazproject#otmtest1".toURI(), null)
+    rdf.sessFactory.addGraph(ri);
 
-    def m2 = new ModelConfig("m2", "local:///topazproject#otmtest2".toURI(), null)
-    rdf.sessFactory.addModel(m2);
+    def m2 = new GraphConfig("m2", "local:///topazproject#otmtest2".toURI(), null)
+    rdf.sessFactory.addGraph(m2);
 
     try {
-      store.dropModel(ri)
+      store.dropGraph(ri)
     } catch (Throwable t) {
     }
     try {
-      store.dropModel(m2)
+      store.dropGraph(m2)
     } catch (Throwable t) {
     }
-    store.createModel(ri)
-    store.createModel(m2)
+    store.createGraph(ri)
+    store.createGraph(m2)
   }
 
   void testSimple() {
@@ -196,22 +196,22 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     shouldFail(OtmException, { doInTx { s -> s.saveOrUpdate(obj) } })
   }
 
-  void testModels() {
-    // set up models
+  void testGraphs() {
+    // set up graphs
     for (num in 1..3) {
-      def m = new ModelConfig("m${num}", "local:///topazproject#otmtest_m${num}".toURI(), null)
-      rdf.sessFactory.addModel(m);
+      def m = new GraphConfig("m${num}", "local:///topazproject#otmtest_m${num}".toURI(), null)
+      rdf.sessFactory.addGraph(m);
 
-      try { store.dropModel(m); } catch (OtmException oe) { }
-      store.createModel(m)
+      try { store.dropGraph(m); } catch (OtmException oe) { }
+      store.createGraph(m)
     }
 
-    // predicate stored with child model
-    Class cls = rdf.class('Test1', model:'m1') {
+    // predicate stored with child graph
+    Class cls = rdf.class('Test1', graph:'m1') {
       foo1 ()
-      bar1 (className:'Bar11', model:'m2', inverse:true, fetch:'eager') {
+      bar1 (className:'Bar11', graph:'m2', inverse:true, fetch:'eager') {
         foo2 ()
-        bar2 (className:'Bar21', model:'m3', fetch:'eager') {
+        bar2 (className:'Bar21', graph:'m3', fetch:'eager') {
           foo3 ()
         }
       }
@@ -252,15 +252,15 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     doInTx { s -> s.delete(obj) }
     doInTx { s -> assertNull(s.get(cls, obj.id.toString())) }
 
-    // predicate stored with parent model
-    Class bcl2 = rdf.class('Bar22', model:'m3') {
+    // predicate stored with parent graph
+    Class bcl2 = rdf.class('Bar22', graph:'m3') {
       foo3 ()
     }
-    Class bcl1 = rdf.class('Bar12', model:'m2') {
+    Class bcl1 = rdf.class('Bar12', graph:'m2') {
       foo2 ()
       bar2 (type:'Bar22', inverse:true)
     }
-    Class cls1 = rdf.class('Test2', model:'m1') {
+    Class cls1 = rdf.class('Test2', graph:'m1') {
       foo1 ()
       bar1 (type:'Bar12')
     }
@@ -303,9 +303,9 @@ public class BuilderIntegrationTest extends GroovyTestCase {
 
   void testCollTypeLookAhead() {
    def mc = 0
-   for (model in ['ri', 'm2']) {
+   for (graph in ['ri', 'm2']) {
      def type = 'foo:Assoc' + mc
-     Class ass = rdf.class('Assoc' + mc, type:type, model:model) {
+     Class ass = rdf.class('Assoc' + mc, type:type, graph:graph) {
        label()
       }
      def cnt = mc * 10

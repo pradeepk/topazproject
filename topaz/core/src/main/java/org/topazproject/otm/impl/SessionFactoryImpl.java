@@ -70,7 +70,7 @@ import org.topazproject.otm.serializer.SerializerFactory;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Rdfs;
@@ -82,7 +82,7 @@ import org.topazproject.otm.Interceptor;
 
 /**
  * A factory for otm sessions. It should be preloaded with the classes that would be persisted.
- * Also it holds the triple store and model/graph configurations. This class is multi-thread safe,
+ * Also it holds the triple store and graph configurations. This class is multi-thread safe,
  * so long as the preload and configuration  operations are done at boot-strap time.
  *
  * <p>Instances are preloaded with the following aliases by default: <var>rdf</var>,
@@ -125,14 +125,14 @@ public class SessionFactoryImpl implements SessionFactory {
   private final Map<String, Set<ClassMetadata>> subClasses = new HashMap<String, Set<ClassMetadata>>();
 
   /**
-   * Model to config mapping (uris, types etc.)
+   * Graph to config mapping (uris, types etc.)
    */
-  private final Map<String, ModelConfig> modelsByName = new HashMap<String, ModelConfig>();
+  private final Map<String, GraphConfig> graphsByName = new HashMap<String, GraphConfig>();
 
   /**
-   * Model-type to config mapping (uris, types etc.)
+   * Graph-type to config mapping (uris, types etc.)
    */
-  private final Map<URI, List<ModelConfig>> modelsByType = new HashMap<URI, List<ModelConfig>>();
+  private final Map<URI, List<GraphConfig>> graphsByType = new HashMap<URI, List<GraphConfig>>();
 
   /**
    * Filter definitions by name.
@@ -485,40 +485,40 @@ public class SessionFactoryImpl implements SessionFactory {
   /*
    * inherited javadoc
    */
-  public ModelConfig getModel(String modelId) {
-    return modelsByName.get(modelId);
+  public GraphConfig getGraph(String graphId) {
+    return graphsByName.get(graphId);
   }
 
   /*
    * inherited javadoc
    */
-  public List<ModelConfig> getModels(URI modelType) {
-    return modelsByType.get(modelType);
+  public List<GraphConfig> getGraphs(URI graphType) {
+    return graphsByType.get(graphType);
   }
 
   /*
    * inherited javadoc
    */
-  public void addModel(ModelConfig model) {
-    modelsByName.put(model.getId(), model);
+  public void addGraph(GraphConfig graph) {
+    graphsByName.put(graph.getId(), graph);
 
-    List<ModelConfig> models = modelsByType.get(model.getType());
-    if (models == null)
-      modelsByType.put(model.getType(), models = new ArrayList<ModelConfig>());
-    models.add(model);
+    List<GraphConfig> graphs = graphsByType.get(graph.getType());
+    if (graphs == null)
+      graphsByType.put(graph.getType(), graphs = new ArrayList<GraphConfig>());
+    graphs.add(graph);
   }
 
   /*
    * inherited javadoc
    */
-  public void removeModel(ModelConfig model) {
-    modelsByName.remove(model.getId());
+  public void removeGraph(GraphConfig graph) {
+    graphsByName.remove(graph.getId());
 
-    List<ModelConfig> models = modelsByType.get(model.getType());
-    if (models != null) {
-      models.remove(model);
-      if (models.size() == 0)
-        modelsByType.remove(model.getType());
+    List<GraphConfig> graphs = graphsByType.get(graph.getType());
+    if (graphs != null) {
+      graphs.remove(graph);
+      if (graphs.size() == 0)
+        graphsByType.remove(graph.getType());
     }
   }
 

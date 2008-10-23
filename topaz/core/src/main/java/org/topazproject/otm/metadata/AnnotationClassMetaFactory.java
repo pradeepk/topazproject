@@ -1,5 +1,5 @@
-/* $HeadURL:: http://gandalf.topazproject.org/svn/head/topaz/core/src/main/java/org/topa#$
- * $Id: AnnotationClassMetaFactory.java 6329 2008-08-14 17:46:24Z pradeep $
+/* $HeadURL::                                                                            $
+ * $Id$
  *
  * Copyright (c) 2007-2008 by Topaz, Inc.
  * http://topazproject.org
@@ -116,7 +116,7 @@ public class AnnotationClassMetaFactory {
   private void createEntity(Class<?> clazz) throws OtmException {
     Set<String> types = new HashSet<String>();
     Set<String> sup  = new HashSet<String>();
-    String model     = null;
+    String graph     = null;
     String uriPrefix = null;
 
     if (log.isDebugEnabled())
@@ -125,8 +125,8 @@ public class AnnotationClassMetaFactory {
     Entity entity = clazz.getAnnotation(Entity.class);
 
     if (entity != null) {
-      if (!"".equals(entity.model()))
-        model = entity.model();
+      if (!"".equals(entity.graph()))
+        graph = entity.graph();
 
        for (String t : entity.types())
          types.add(sf.expandAlias(t));
@@ -145,7 +145,7 @@ public class AnnotationClassMetaFactory {
       for (Class<?> c : s.getInterfaces())
         sup.remove(getEntityName(c));
 
-    EntityDefinition ed           = new EntityDefinition(name, types, model, sup);
+    EntityDefinition ed           = new EntityDefinition(name, types, graph, sup);
     UriPrefix        uriPrefixAnn = clazz.getAnnotation(UriPrefix.class);
 
     if (uriPrefixAnn != null)
@@ -299,16 +299,16 @@ public class AnnotationClassMetaFactory {
     return name;
   }
 
-  private static String getModel(Class<?> clazz) {
+  private static String getGraph(Class<?> clazz) {
     if (clazz == null)
       return null;
 
     Entity entity = clazz.getAnnotation(Entity.class);
 
-    if ((entity != null) && !"".equals(entity.model()))
-      return entity.model();
+    if ((entity != null) && !"".equals(entity.graph()))
+      return entity.graph();
 
-    return getModel(clazz.getSuperclass());
+    return getGraph(clazz.getSuperclass());
   }
 
   /**
@@ -530,10 +530,10 @@ public class AnnotationClassMetaFactory {
         inverse          = Boolean.FALSE;
       }
 
-      String model = ((rdf != null) && !"".equals(rdf.model())) ? rdf.model() : null;
+      String graph = ((rdf != null) && !"".equals(rdf.graph())) ? rdf.graph() : null;
 
-      if ((inverse != null) && inverse && (model == null) && (assoc != null))
-        model = getModel(type);
+      if ((inverse != null) && inverse && (graph == null) && (assoc != null))
+        graph = getGraph(type);
 
       CollectionType mt = (rdf == null) ? CollectionType.UNDEFINED : rdf.collectionType();
 
@@ -551,7 +551,7 @@ public class AnnotationClassMetaFactory {
       if (ft == FetchType.undefined)
         ft = (ref == null) ? FetchType.lazy : null;
 
-      return new RdfDefinition(getName(), ref, supersedes, uri, dt, inverse, model, mt, owned,
+      return new RdfDefinition(getName(), ref, supersedes, uri, dt, inverse, graph, mt, owned,
                                generator, ct, ft, assoc, objectProperty);
     }
 
@@ -603,7 +603,7 @@ public class AnnotationClassMetaFactory {
 
     public RdfDefinition getPredicateMapDefinition(SessionFactory sf, PredicateMap pmap)
                                             throws OtmException {
-      String model = null; // TODO: allow predicate maps from other models
+      String graph = null; // TODO: allow predicate maps from other graphs
       Type   type  = property.getGenericType();
 
       if (Map.class.isAssignableFrom(property.getPropertyType())
@@ -622,7 +622,7 @@ public class AnnotationClassMetaFactory {
 
             if ((targs.length == 1) && (targs[0] instanceof Class)
                  && String.class.isAssignableFrom((Class) targs[0]))
-              return new RdfDefinition(getName(), model);
+              return new RdfDefinition(getName(), graph);
           }
         }
       }

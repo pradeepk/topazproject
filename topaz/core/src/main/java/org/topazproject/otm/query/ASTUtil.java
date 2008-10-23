@@ -26,7 +26,7 @@ import antlr.ASTFactory;
 import antlr.RecognitionException;
 import antlr.collections.AST;
 
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.SessionFactory;
 
 /** 
@@ -48,7 +48,7 @@ public class ASTUtil implements ConstraintsTokenTypes {
   }
 
   public static OqlAST makeTriple(Object s, Object p, Object o, ASTFactory af) {
-    return makeTriple(s, p, o, (p instanceof OqlAST) ? ((OqlAST) p).getModel() : null, af);
+    return makeTriple(s, p, o, (p instanceof OqlAST) ? ((OqlAST) p).getGraph() : null, af);
   }
 
   public static OqlAST makeTriple(Object s, Object p, Object o, Object m, ASTFactory af) {
@@ -64,18 +64,18 @@ public class ASTUtil implements ConstraintsTokenTypes {
       return (OqlAST) af.make(new AST[] { tr, sa, pa, oa, ma });
   }
 
-  public static String getModelUri(String modelId, SessionFactory sf) throws RecognitionException {
-    ModelConfig mc = sf.getModel(modelId);
+  public static String getGraphUri(String graphId, SessionFactory sf) throws RecognitionException {
+    GraphConfig mc = sf.getGraph(graphId);
     if (mc == null)
-      throw new RecognitionException("Unable to find model '" + modelId + "'");
+      throw new RecognitionException("Unable to find graph '" + graphId + "'");
     return mc.getUri().toString();
   }
 
-  public static String getModelUri(URI modelType, SessionFactory sf) throws RecognitionException {
-    List<ModelConfig> mc = sf.getModels(modelType);
+  public static String getGraphUri(URI graphType, SessionFactory sf) throws RecognitionException {
+    List<GraphConfig> mc = sf.getGraphs(graphType);
     if (mc == null)
-      throw new RecognitionException("Unable to find a model of type '" + modelType +
-                                     "' - please make sure you've created and configured a model" +
+      throw new RecognitionException("Unable to find a graph of type '" + graphType +
+                                     "' - please make sure you've created and configured a graph" +
                                      " for this type");
     return mc.get(0).getUri().toString();
   }

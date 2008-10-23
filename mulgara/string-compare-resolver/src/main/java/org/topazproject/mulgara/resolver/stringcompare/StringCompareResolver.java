@@ -62,8 +62,8 @@ public class StringCompareResolver implements Resolver {
   /** The session that this resolver is associated with. */
   private final ResolverSession resolverSession;
 
-  /** The URI of the type describing string compare models. */
-  private URI modelTypeURI;
+  /** The URI of the type describing string compare graphs. */
+  private URI graphTypeURI;
 
   private StringCompareImpl[] impls;
 
@@ -72,29 +72,29 @@ public class StringCompareResolver implements Resolver {
    *
    * @param resolverSession      the session this resolver is associated with
    * @param impls                the StringCompareImpl-s we support
-   * @param modelTypeURI         the URI of the model type we're handling
+   * @param graphTypeURI         the URI of the graph type we're handling
    * @throws IllegalArgumentException  if <var>resolverSession</var> is <code>null</code>
    */
   StringCompareResolver(ResolverSession resolverSession, StringCompareImpl[] impls,
-                        URI modelTypeURI)
+                        URI graphTypeURI)
       throws IllegalArgumentException {
     if (resolverSession == null)
       throw new IllegalArgumentException("Null 'resolverSession' parameter");
 
     this.resolverSession      = resolverSession;
-    this.modelTypeURI         = modelTypeURI;
+    this.graphTypeURI         = graphTypeURI;
     this.impls                = impls;
   }
 
   /**
-   * Create a model for string comparisons.
+   * Create a graph for string comparisons.
    */
-  public void createModel(long model, URI modelType) throws ResolverException {
-    if (!modelType.equals(modelTypeURI))
-      throw new ResolverException("Wrong model type provided as a String Compare model");
+  public void createModel(long graph, URI graphType) throws ResolverException {
+    if (!graphType.equals(graphTypeURI))
+      throw new ResolverException("Wrong graph type provided as a String Compare graph");
 
     if (logger.isDebugEnabled())
-      logger.debug("Creating type model " + model);
+      logger.debug("Creating type graph " + graph);
   }
 
   /**
@@ -110,18 +110,18 @@ public class StringCompareResolver implements Resolver {
   /**
    * We don't support modifications.
    */
-  public void modifyModel(long model, Statements statements, boolean occurs)
+  public void modifyModel(long graph, Statements statements, boolean occurs)
       throws ResolverException {
-    throw new ResolverException("String Compare models are read only");
+    throw new ResolverException("String Compare graphs are read only");
   }
 
 
   /**
-   * Remove the cached model containing the contents of a URL.
+   * Remove the cached graph containing the contents of a URL.
    */
-  public void removeModel(long model) throws ResolverException {
+  public void removeModel(long graph) throws ResolverException {
     if (logger.isDebugEnabled())
-      logger.debug("Removing String Compare model " + model);
+      logger.debug("Removing String Compare graph " + graph);
   }
 
   /**
@@ -136,7 +136,7 @@ public class StringCompareResolver implements Resolver {
       throw new IllegalArgumentException("Null 'constraint' parameter");
 
     if (!(constraint.getModel() instanceof LocalNode)) {
-      logger.warn("Ignoring solutions for non-local model " + constraint);
+      logger.warn("Ignoring solutions for non-local graph " + constraint);
       return new EmptyResolution(constraint, false);
     }
 

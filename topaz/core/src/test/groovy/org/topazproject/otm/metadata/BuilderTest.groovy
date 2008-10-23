@@ -34,7 +34,7 @@ public class BuilderTest extends GroovyTestCase {
   def rdf
 
   void setUp() {
-    rdf = new RdfBuilder(defModel:'ri', defUriPrefix:'topaz:')
+    rdf = new RdfBuilder(defGraph:'ri', defUriPrefix:'topaz:')
   }
 
   void testBasic() {
@@ -77,7 +77,7 @@ public class BuilderTest extends GroovyTestCase {
     ClassMetadata cm = rdf.sessFactory.getClassMetadata(cls)
 
     assertEquals(['http://rdf.topazproject.org/RDF/Test1'] as Set, cm.types)
-    assertEquals('ri', cm.model)
+    assertEquals('ri', cm.graph)
     assertEquals(1, cm.rdfMappers.size())
 
     def m = cm.rdfMappers.iterator().next()
@@ -87,16 +87,16 @@ public class BuilderTest extends GroovyTestCase {
     assertNull(m.dataType)
     assertEquals('http://rdf.topazproject.org/RDF/state', m.uri)
     assertFalse(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
 
     // relative-uri overrides, typed literal
-    cls = rdf.class('Test2', type:'Test2', model:'m2') {
+    cls = rdf.class('Test2', type:'Test2', graph:'m2') {
       state (pred:'p2', type:'xsd:int')
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
     assertEquals(['http://rdf.topazproject.org/RDF/Test2'] as Set, cm.types)
-    assertEquals('m2', cm.model)
+    assertEquals('m2', cm.graph)
     assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.iterator().next()
@@ -106,17 +106,17 @@ public class BuilderTest extends GroovyTestCase {
     assertEquals('http://www.w3.org/2001/XMLSchema#int', m.dataType)
     assertEquals('http://rdf.topazproject.org/RDF/p2', m.uri)
     assertFalse(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
 
     // absolute-uri overrides, class type
     Class cls2 = cls
-    cls = rdf.class('Test3', type:'foo:Test3', model:'m3') {
+    cls = rdf.class('Test3', type:'foo:Test3', graph:'m3') {
       state (pred:'foo:p3', type:'Test2')
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
     assertEquals(['foo:Test3'] as Set, cm.types)
-    assertEquals('m3', cm.model)
+    assertEquals('m3', cm.graph)
     assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.iterator().next()
@@ -126,12 +126,12 @@ public class BuilderTest extends GroovyTestCase {
     assertEquals(null, m.dataType)
     assertEquals('foo:p3', m.uri)
     assertFalse(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
 
     // nested class type
-    cls = rdf.class('Test4', type:'foo:Test4', model:'m4') {
-      state (pred:'foo:p4', model:'m41', uriPrefix:'bar4:') {
-        value (model:'m42')
+    cls = rdf.class('Test4', type:'foo:Test4', graph:'m4') {
+      state (pred:'foo:p4', graph:'m41', uriPrefix:'bar4:') {
+        value (graph:'m42')
         history (maxCard:-1) {
           value ()
         }
@@ -140,7 +140,7 @@ public class BuilderTest extends GroovyTestCase {
     cm = rdf.sessFactory.getClassMetadata(cls)
 
     assertEquals(['foo:Test4'] as Set, cm.types)
-    assertEquals('m4', cm.model)
+    assertEquals('m4', cm.graph)
     assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.iterator().next()
@@ -151,12 +151,12 @@ public class BuilderTest extends GroovyTestCase {
     assertNull(m.dataType)
     assertEquals('foo:p4', m.uri)
     assertFalse(m.hasInverseUri())
-    assertEquals('m41', m.model)
+    assertEquals('m41', m.graph)
 
     cm = rdf.sessFactory.getClassMetadata('State')
 
     assertEquals(['bar4:State'] as Set, cm.types)
-    assertEquals('m41', cm.model)
+    assertEquals('m41', cm.graph)
     assertEquals(2, cm.rdfMappers.size())
 
     m = cm.rdfMappers.asList()[0]
@@ -166,7 +166,7 @@ public class BuilderTest extends GroovyTestCase {
     assertNull(m.dataType)
     assertEquals('bar4:value', m.uri)
     assertFalse(m.hasInverseUri())
-    assertEquals('m42', m.model)
+    assertEquals('m42', m.graph)
 
     m = cm.rdfMappers.asList()[1]
     l = m.getBinder(EntityMode.POJO)
@@ -177,12 +177,12 @@ public class BuilderTest extends GroovyTestCase {
     assertNull(m.dataType)
     assertEquals('bar4:history', m.uri)
     assertFalse(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
 
     cm = rdf.sessFactory.getClassMetadata('History')
 
     assertEquals(['bar4:History'] as Set, cm.types)
-    assertEquals('m41', cm.model)
+    assertEquals('m41', cm.graph)
     assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.asList()[0]
@@ -192,16 +192,16 @@ public class BuilderTest extends GroovyTestCase {
     assertNull(m.dataType)
     assertEquals('bar4:value', m.uri)
     assertFalse(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
 
     // uri type
-    cls = rdf.class('Test5', type:'foo:Test5', model:'m5') {
+    cls = rdf.class('Test5', type:'foo:Test5', graph:'m5') {
       state (pred:'foo:p5', type:'xsd:anyURI', inverse:true)
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
     assertEquals(['foo:Test5'] as Set, cm.types)
-    assertEquals('m5', cm.model)
+    assertEquals('m5', cm.graph)
     assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.iterator().next()
@@ -211,7 +211,7 @@ public class BuilderTest extends GroovyTestCase {
     assertTrue(m.typeIsUri())
     assertEquals('foo:p5', m.uri)
     assertTrue(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
 
     // no default prefix defined
     rdf.defUriPrefix = null
@@ -221,7 +221,7 @@ public class BuilderTest extends GroovyTestCase {
     cm = rdf.sessFactory.getClassMetadata(cls)
 
     assertEquals(['p6:Test6'] as Set, cm.types)
-    assertEquals('ri', cm.model)
+    assertEquals('ri', cm.graph)
     assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.iterator().next()
@@ -231,7 +231,7 @@ public class BuilderTest extends GroovyTestCase {
     assertEquals(Rdf.xsd + 'anyURI', m.dataType)
     assertEquals('p6:state', m.uri)
     assertFalse(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
 
     // no prefix defined, default type
     assert shouldFail(OtmException, {
@@ -253,24 +253,24 @@ public class BuilderTest extends GroovyTestCase {
       }
     }).contains('no uri-prefix has been configured')
 
-    // no model defined
-    rdf.defModel = null
+    // no graph defined
+    rdf.defGraph = null
     assert shouldFail(OtmException, {
       rdf.class('foo:Test10', uriPrefix:'p6:') {
         state ()
       }
-    }).contains('No model has been set')
+    }).contains('No graph has been set')
 
     // explicit null type
     rdf.defUriPrefix = 'topaz:'
-    rdf.defModel     = 'ri'
+    rdf.defGraph     = 'ri'
     cls = rdf.class('Test11', type:null) {
       state ()
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
     assertEquals(0, cm.types.size())
-    assertEquals('ri', cm.model)
+    assertEquals('ri', cm.graph)
     assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.iterator().next()
@@ -280,7 +280,7 @@ public class BuilderTest extends GroovyTestCase {
     assertNull(m.dataType)
     assertEquals('http://rdf.topazproject.org/RDF/state', m.uri)
     assertFalse(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
 
     Class sup = rdf.class('Test12') {
       state ()
@@ -291,7 +291,7 @@ public class BuilderTest extends GroovyTestCase {
     cm = rdf.sessFactory.getClassMetadata(cls)
 
     assertEquals(0, cm.types.size())
-    assertEquals('ri', cm.model)
+    assertEquals('ri', cm.graph)
     assertEquals(2, cm.rdfMappers.size())
 
     m = cm.rdfMappers.asList()[0]
@@ -301,7 +301,7 @@ public class BuilderTest extends GroovyTestCase {
     assertNull(m.dataType)
     assertEquals('http://rdf.topazproject.org/RDF/blah', m.uri)
     assertFalse(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
 
     m = cm.rdfMappers.asList()[1]
     l = m.getBinder(EntityMode.POJO)
@@ -310,7 +310,7 @@ public class BuilderTest extends GroovyTestCase {
     assertNull(m.dataType)
     assertEquals('http://rdf.topazproject.org/RDF/state', m.uri)
     assertFalse(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
   }
 
   void testDatatypes() {
@@ -544,15 +544,15 @@ public class BuilderTest extends GroovyTestCase {
       }
     }).contains('colType')
 
-    // unsupported(see #840) model mapping
+    // unsupported(see #840) graph mapping
     assert shouldFail(OtmException.class, {
       cls = rdf.class('Test6') {
         f1 (maxCard:-1, colType:'Array', type:'Test1',
                         colMapping:'Predicate', pred:'test:f')
-        f2 (maxCard:-1, colType:'Array', type:'Test2', model:'foo',
+        f2 (maxCard:-1, colType:'Array', type:'Test2', graph:'foo',
                         colMapping:'Predicate', pred:'test:f')
       }
-    }).contains('model')
+    }).contains('graph')
   }
 
   void testIdField() {
@@ -902,7 +902,7 @@ public class BuilderTest extends GroovyTestCase {
   }
 
   void testCascadeType() {
-    Class cls = rdf.class('Test1', type:'foo:Test1', model:'m1') {
+    Class cls = rdf.class('Test1', type:'foo:Test1', graph:'m1') {
       sel  (pred:'foo:p1', type:'foo:Test1', cascade:['delete','saveOrUpdate'])
       all  (pred:'foo:p2', type:'foo:Test1')
       none (pred:'foo:p3', type:'foo:Test1', cascade:[])
@@ -910,7 +910,7 @@ public class BuilderTest extends GroovyTestCase {
     ClassMetadata cm = rdf.sessFactory.getClassMetadata(cls)
 
     assertEquals(['foo:Test1'] as Set, cm.types)
-    assertEquals('m1', cm.model)
+    assertEquals('m1', cm.graph)
     assertEquals(3, cm.rdfMappers.size())
 
     Mapper m = cm.rdfMappers.asList()[0]
@@ -920,7 +920,7 @@ public class BuilderTest extends GroovyTestCase {
     assertNull(m.dataType)
     assertEquals('foo:p1', m.uri)
     assertFalse(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
     assertTrue(m.isCascadable(CascadeType.delete))
     assertTrue(m.isCascadable(CascadeType.saveOrUpdate))
     assertFalse(m.isCascadable(CascadeType.merge))
@@ -933,7 +933,7 @@ public class BuilderTest extends GroovyTestCase {
     assertNull(m.dataType)
     assertEquals('foo:p2', m.uri)
     assertFalse(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
     assertTrue(m.isCascadable(CascadeType.evict))
     assertTrue(m.isCascadable(CascadeType.saveOrUpdate))
     assertTrue(m.isCascadable(CascadeType.merge))
@@ -950,7 +950,7 @@ public class BuilderTest extends GroovyTestCase {
     assertNull(m.dataType)
     assertEquals('foo:p3', m.uri)
     assertFalse(m.hasInverseUri())
-    assertNull(m.model)
+    assertNull(m.graph)
     assertFalse(m.isCascadable(CascadeType.delete))
     assertFalse(m.isCascadable(CascadeType.saveOrUpdate))
     assertFalse(m.isCascadable(CascadeType.merge))

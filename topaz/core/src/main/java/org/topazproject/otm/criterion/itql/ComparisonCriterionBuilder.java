@@ -24,7 +24,7 @@ import java.util.List;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Criteria;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Criterion;
@@ -39,24 +39,24 @@ import org.topazproject.otm.mapping.RdfMapper;
  * @author Pradeep Krishnan
  */
 public class ComparisonCriterionBuilder implements CriterionBuilder {
-  private static final URI RSLV_MODEL_TYPE =
-                                      URI.create("http://topazproject.org/models#StringCompare");
-  private URI              resolverModelType;
+  private static final URI RSLV_GRAPH_TYPE =
+                                      URI.create("http://topazproject.org/graphs#StringCompare");
+  private URI              resolverGraphType;
 
   /**
    * Creates a new ComparisonCriterionBuilder object.
    *
-   * @param resolverModelType the model type uri for the resolver that implements comparison
+   * @param resolverGraphType the graph type uri for the resolver that implements comparison
    */
-  public ComparisonCriterionBuilder(URI resolverModelType) {
-    this.resolverModelType = resolverModelType;
+  public ComparisonCriterionBuilder(URI resolverGraphType) {
+    this.resolverGraphType = resolverGraphType;
   }
 
   /**
-   * Creates a new ComparisonCriterionBuilder object using a default resolver model.
+   * Creates a new ComparisonCriterionBuilder object using a default resolver graph.
    */
   public ComparisonCriterionBuilder() {
-    this(RSLV_MODEL_TYPE);
+    this(RSLV_GRAPH_TYPE);
   }
 
   /*
@@ -74,7 +74,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
       throw new NullPointerException(func + ": argument 2 can not be null");
 
     return new ComparisonCriterion((String) args[0], args[1], "<topaz:" + func + ">",
-                                   resolverModelType);
+                                   resolverGraphType);
   }
 
   /**
@@ -84,7 +84,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
    * @author Pradeep Krishnan
    */
   public static class ComparisonCriterion extends Criterion {
-    private URI    resolverModelType;
+    private URI    resolverGraphType;
     private String name;
     private Object value;
     private String operator;
@@ -95,13 +95,13 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
      * @param name field/predicate name
      * @param value field/predicate value
      * @param operator the comparison operator
-     * @param resolverModelType the model type uri for the resolver that implements comparison
+     * @param resolverGraphType the graph type uri for the resolver that implements comparison
      */
-    public ComparisonCriterion(String name, Object value, String operator, URI resolverModelType) {
+    public ComparisonCriterion(String name, Object value, String operator, URI resolverGraphType) {
       this.name              = name;
       this.value             = value;
       this.operator          = operator;
-      this.resolverModelType = resolverModelType;
+      this.resolverGraphType = resolverGraphType;
     }
 
     /*
@@ -112,18 +112,18 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
       ClassMetadata cm = criteria.getClassMetadata();
       RdfMapper m  = getMapper(cm, name);
       String val   = serializeValue(value, criteria, name);
-      String model = m.getModel();
-      if ((model != null) && !cm.getModel().equals(model))
-        model = " in <" + getModelUri(criteria, model) + ">";
+      String graph = m.getGraph();
+      if ((graph != null) && !cm.getGraph().equals(graph))
+        graph = " in <" + getGraphUri(criteria, graph) + ">";
       else
-        model = "";
+        graph = "";
 
-      List<ModelConfig> resolverModels =
-          criteria.getSession().getSessionFactory().getModels(resolverModelType);
-      if (resolverModels == null)
-        throw new OtmException("No model for type '" + resolverModelType + "' has been configured" +
+      List<GraphConfig> resolverGraphs =
+          criteria.getSession().getSessionFactory().getGraphs(resolverGraphType);
+      if (resolverGraphs == null)
+        throw new OtmException("No graph for type '" + resolverGraphType + "' has been configured" +
                                " in SessionFactory");
-      String resolverModel = "<" + resolverModels.get(0).getUri() + ">";
+      String resolverGraph = "<" + resolverGraphs.get(0).getUri() + ">";
 
       if (m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
             throw new OtmException("Can't query across a " + m.getColType() 
@@ -133,28 +133,28 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
       switch(m.getColType()) {
         case PREDICATE:
            if ( m.hasInverseUri())
-             query = varPrefix + " < " + m.getUri() + "> " + subjectVar + model;
+             query = varPrefix + " < " + m.getUri() + "> " + subjectVar + graph;
            else
-             query = subjectVar + " <" + m.getUri() + "> " + varPrefix + model;
+             query = subjectVar + " <" + m.getUri() + "> " + varPrefix + graph;
          break;
         case RDFSEQ:
         case RDFBAG:
         case RDFALT:
           String seq = varPrefix + "seqS";
           String seqPred = varPrefix + "seqP";
-          query = subjectVar + " <" + m.getUri() + "> " + seq + model
-             + " and " + seq +  " " + seqPred + " " + varPrefix + model
+          query = subjectVar + " <" + m.getUri() + "> " + seq + graph
+             + " and " + seq +  " " + seqPred + " " + varPrefix + graph
              + " and " + seqPred + " <mulgara:prefix> <rdf:_> in <"
-             + getPrefixModel(criteria) + ">";
+             + getPrefixGraph(criteria) + ">";
           break;
         case RDFLIST:
           String list = varPrefix + "list";
           String rest = varPrefix + "rest";
-          query = subjectVar + " <" + m.getUri() + "> " + list + model
-             + " and (" + list + " <rdf:first> " + varPrefix +  model
-             + " or ((trans(" + list + " <rdf:rest> " + rest + ")" + model
-             + " or " + list + " <rdf:rest> " + rest + model
-             + ") and " + rest +  " <rdf:first> " + varPrefix + model + "))";
+          query = subjectVar + " <" + m.getUri() + "> " + list + graph
+             + " and (" + list + " <rdf:first> " + varPrefix +  graph
+             + " or ((trans(" + list + " <rdf:rest> " + rest + ")" + graph
+             + " or " + list + " <rdf:rest> " + rest + graph
+             + ") and " + rest +  " <rdf:first> " + varPrefix + graph + "))";
           break;
         default:
           throw new OtmException(m.getColType() + " not supported; field = " 
@@ -162,7 +162,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
       }
 
       return "(" + query + " and "
-               + varPrefix + " " + operator + " " + val + " in " + resolverModel + ")";
+               + varPrefix + " " + operator + " " + val + " in " + resolverGraph + ")";
     }
 
     /*

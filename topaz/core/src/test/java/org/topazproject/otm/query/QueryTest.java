@@ -30,7 +30,7 @@ import antlr.collections.AST;
 
 import junit.framework.TestCase;
 
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
@@ -173,8 +173,8 @@ public class QueryTest extends TestCase {
       factory.preload(Reply.class);
       factory.validate();
 
-      ModelConfig mc = new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null);
-      factory.addModel(mc);
+      GraphConfig mc = new GraphConfig("ri", URI.create("local:///topazproject#otmtest1"), null);
+      factory.addGraph(mc);
 
       session = factory.openSession();
     }
@@ -373,7 +373,7 @@ public class QueryTest extends TestCase {
     assertTrue(errs.length() == 0);
   }
 
-  @Entity(types = {Rdf.topaz + "Article"}, name = "Article", model = "ri")
+  @Entity(types = {Rdf.topaz + "Article"}, name = "Article", graph = "ri")
   private static class Article {
     private URI uri;
     private String      title;
@@ -457,7 +457,7 @@ public class QueryTest extends TestCase {
     }
   }
 
-  @Entity(types = {Rdf.topaz + "Reply"}, name = "Reply", model = "ri")
+  @Entity(types = {Rdf.topaz + "Reply"}, name = "Reply", graph = "ri")
   private static class Reply {
     private URI id;
     private String type;

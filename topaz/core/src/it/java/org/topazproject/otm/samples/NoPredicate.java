@@ -22,7 +22,7 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 
-@Entity(types = {Rdf.topaz + "NoPredicate"}, model = "ri")
+@Entity(types = {Rdf.topaz + "NoPredicate"}, graph = "ri")
 public class NoPredicate {
   private String id;
 

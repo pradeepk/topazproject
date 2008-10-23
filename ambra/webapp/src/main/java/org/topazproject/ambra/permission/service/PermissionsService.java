@@ -35,7 +35,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.configuration.ConfigurationStore;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
@@ -52,7 +52,7 @@ import net.sf.ehcache.Element;
 
 /**
  * This provides the implementation of the permissions service.<p>Grants and Revokes are stored
- * in a seperate models with 1 triple per permission like this:<pre>
+ * in a seperate graphs with 1 triple per permission like this:<pre>
  * &lt;${resource}&gt; &lt;${permission}&gt; &lt;${principal}&gt;</pre></p>
  *
  * @author Pradeep Krishnan
@@ -64,16 +64,16 @@ public class PermissionsService implements Permissions {
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
   //
-  private static final String GRANTS_MODEL       =
+  private static final String GRANTS_GRAPH       =
     "<" + CONF.getString("ambra.models.grants") + ">";
-  private static final String REVOKES_MODEL      =
+  private static final String REVOKES_GRAPH      =
     "<" + CONF.getString("ambra.models.revokes") + ">";
-  private static final String PP_MODEL           = "<" + CONF.getString("ambra.models.pp") + ">";
-  private static final String GRANTS_MODEL_TYPE  =
+  private static final String PP_GRAPH           = "<" + CONF.getString("ambra.models.pp") + ">";
+  private static final String GRANTS_GRAPH_TYPE  =
     "<" + CONF.getString("ambra.models.grants[@type]", "mulgara:Model") + ">";
-  private static final String REVOKES_MODEL_TYPE =
+  private static final String REVOKES_GRAPH_TYPE =
     "<" + CONF.getString("ambra.models.revokes[@type]", "mulgara:Model") + ">";
-  private static final String PP_MODEL_TYPE      =
+  private static final String PP_GRAPH_TYPE      =
     "<" + CONF.getString("ambra.models.pp[@type]", "mulgara:Model") + ">";
 
   //
@@ -82,14 +82,14 @@ public class PermissionsService implements Permissions {
 
   //
   private static final String ITQL_LIST                 =
-    "select $p from ${MODEL} where <${resource}> $p <${principal}>;";
+    "select $p from ${GRAPH} where <${resource}> $p <${principal}>;";
   private static final String ITQL_LIST_PP              =
-    "select $o from ${MODEL} where <${s}> <${p}> $o;".replaceAll("\\Q${MODEL}", PP_MODEL);
+    "select $o from ${GRAPH} where <${s}> <${p}> $o;".replaceAll("\\Q${GRAPH}", PP_GRAPH);
   private static final String ITQL_LIST_PP_TRANS        =
-    ("select $o from ${MODEL} where <${s}> <${p}> $o "
-    + " or trans(<${s}> <${p}> $o and $s <${p}> $o);").replaceAll("\\Q${MODEL}", PP_MODEL);
+    ("select $o from ${GRAPH} where <${s}> <${p}> $o "
+    + " or trans(<${s}> <${p}> $o and $s <${p}> $o);").replaceAll("\\Q${GRAPH}", PP_GRAPH);
   private static final String ITQL_INFER_PERMISSION     =
-    ("select $s from ${PP_MODEL} where $s $p $o in ${MODEL} "
+    ("select $s from ${PP_GRAPH} where $s $p $o in ${GRAPH} "
     + "and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
     + "      or $s <${PP}> <${resource}> "
     + "      or trans($s <${PP}> <${resource}> and $s <${PP}> $res))"
@@ -97,20 +97,20 @@ public class PermissionsService implements Permissions {
     + "      or $p <${IMPLIES}> <${permission}> "
     + "      or trans($p <${IMPLIES}> <${permission}> and $p <${IMPLIES}> $perm)) "
     + "and ($o <mulgara:is> <${principal}> or $o <mulgara:is> <${ALL}>);" //
-    ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
+    ).replaceAll("\\Q${PP_GRAPH}", PP_GRAPH).replaceAll("\\Q${PP}", PROPAGATES)
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
   private static final String ITQL_RESOURCE_PERMISSIONS =
-    ("select $p $o from ${PP_MODEL} where ($s $p $o in ${MODEL} " //
+    ("select $p $o from ${PP_GRAPH} where ($s $p $o in ${GRAPH} " //
     + "   and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
     + "      or $s <${PP}> <${resource}> "
     + "      or trans($s <${PP}> <${resource}> and $s <${PP}> $res))"
-    + ") or ($s $impliedBy $o in ${MODEL} " //
+    + ") or ($s $impliedBy $o in ${GRAPH} " //
     + "   and ($impliedBy <${IMPLIES}> $p " //
     + "      or trans($impliedBy <${IMPLIES}> $p)) " //
     + "   and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
     + "      or $s <${PP}> <${resource}> "
     + "      or trans($s <${PP}> <${resource}> and $s <${PP}> $res))" + ");" //
-    ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
+    ).replaceAll("\\Q${PP_GRAPH}", PP_GRAPH).replaceAll("\\Q${PP}", PROPAGATES)
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
 
   //
@@ -137,21 +137,21 @@ public class PermissionsService implements Permissions {
   }
 
   /**
-   * Initialize the permissions ITQL model.
+   * Initialize the permissions ITQL graph.
    *
    * @param s the session to use
    *
    * @throws OtmException on a failure
    */
-  public static void initializeModel(Session s) throws OtmException {
+  public static void initializeGraph(Session s) throws OtmException {
     if (((grantsCache != null) && (grantsCache.getSize() != 0))
          || ((revokesCache != null) && (revokesCache.getSize() != 0)))
       return; // xxx: cache has entries perhaps from peers. so initialized is a good guess
 
     TripleStore ts = s.getSessionFactory().getTripleStore();
-    ts.createModel(new ModelConfig("grants",  toURI(GRANTS_MODEL),  toURI(GRANTS_MODEL_TYPE)));
-    ts.createModel(new ModelConfig("revokes", toURI(REVOKES_MODEL), toURI(REVOKES_MODEL_TYPE)));
-    ts.createModel(new ModelConfig("pp",      toURI(PP_MODEL),      toURI(PP_MODEL_TYPE)));
+    ts.createGraph(new GraphConfig("grants",  toURI(GRANTS_GRAPH),  toURI(GRANTS_GRAPH_TYPE)));
+    ts.createGraph(new GraphConfig("revokes", toURI(REVOKES_GRAPH), toURI(REVOKES_GRAPH_TYPE)));
+    ts.createGraph(new GraphConfig("pp",      toURI(PP_GRAPH),      toURI(PP_GRAPH_TYPE)));
 
     Configuration conf        = CONF.subset("ambra.permissions.impliedPermissions");
 
@@ -171,7 +171,7 @@ public class PermissionsService implements Permissions {
     }
 
     String triples   = sb.toString();
-    final String cmd = "insert " + triples + " into " + PP_MODEL + ";";
+    final String cmd = "insert " + triples + " into " + PP_GRAPH + ";";
 
     if (permissions.size() > 0)
       s.doNativeUpdate(cmd);
@@ -214,7 +214,7 @@ public class PermissionsService implements Permissions {
   @Transactional(rollbackFor = { Throwable.class })
   public void grant(String resource, String[] permissions, String[] principals)
              throws OtmException {
-    updateModel(pep.GRANT, GRANTS_MODEL, grantsCache, resource, permissions, principals, true);
+    updateGraph(pep.GRANT, GRANTS_GRAPH, grantsCache, resource, permissions, principals, true);
   }
 
   /*
@@ -223,7 +223,7 @@ public class PermissionsService implements Permissions {
   @Transactional(rollbackFor = { Throwable.class })
   public void revoke(String resource, String[] permissions, String[] principals)
               throws OtmException {
-    updateModel(pep.REVOKE, REVOKES_MODEL, revokesCache, resource, permissions, principals, true);
+    updateGraph(pep.REVOKE, REVOKES_GRAPH, revokesCache, resource, permissions, principals, true);
   }
 
   /*
@@ -232,7 +232,7 @@ public class PermissionsService implements Permissions {
   @Transactional(rollbackFor = { Throwable.class })
   public void cancelGrants(String resource, String[] permissions, String[] principals)
                     throws OtmException {
-    updateModel(pep.CANCEL_GRANTS, GRANTS_MODEL, grantsCache, resource, permissions, principals,
+    updateGraph(pep.CANCEL_GRANTS, GRANTS_GRAPH, grantsCache, resource, permissions, principals,
                 false);
   }
 
@@ -242,7 +242,7 @@ public class PermissionsService implements Permissions {
   @Transactional(rollbackFor = { Throwable.class })
   public void cancelRevokes(String resource, String[] permissions, String[] principals)
                      throws OtmException {
-    updateModel(pep.CANCEL_REVOKES, REVOKES_MODEL, revokesCache, resource, permissions, principals,
+    updateGraph(pep.CANCEL_REVOKES, REVOKES_GRAPH, revokesCache, resource, permissions, principals,
                 false);
   }
 
@@ -252,7 +252,7 @@ public class PermissionsService implements Permissions {
   @Transactional(readOnly = true)
   public String[] listGrants(String resource, String principal)
                       throws OtmException {
-    return listPermissions(pep.LIST_GRANTS, GRANTS_MODEL, resource, principal);
+    return listPermissions(pep.LIST_GRANTS, GRANTS_GRAPH, resource, principal);
   }
 
   /*
@@ -261,7 +261,7 @@ public class PermissionsService implements Permissions {
   @Transactional(readOnly = true)
   public String[] listRevokes(String resource, String principal)
                        throws OtmException {
-    return listPermissions(pep.LIST_REVOKES, REVOKES_MODEL, resource, principal);
+    return listPermissions(pep.LIST_REVOKES, REVOKES_GRAPH, resource, principal);
   }
 
   /*
@@ -328,7 +328,7 @@ public class PermissionsService implements Permissions {
       throw new NullPointerException("principal");
 
     if (grantsCache == null)
-      return isInferred(GRANTS_MODEL, resource, permission, principal);
+      return isInferred(GRANTS_GRAPH, resource, permission, principal);
 
     Map<String, List<String>> map;
     Element element = grantsCache.get(resource);
@@ -339,7 +339,7 @@ public class PermissionsService implements Permissions {
       if (log.isDebugEnabled())
         log.debug("grants-cache: cache hit for " + resource);
     } else {
-      map = createPermissionMap(resource, GRANTS_MODEL);
+      map = createPermissionMap(resource, GRANTS_GRAPH);
       grantsCache.put(new Element(resource, map));
 
       if (log.isDebugEnabled())
@@ -361,7 +361,7 @@ public class PermissionsService implements Permissions {
       throw new NullPointerException("principal");
 
     if (revokesCache == null)
-      return isInferred(REVOKES_MODEL, resource, permission, principal);
+      return isInferred(REVOKES_GRAPH, resource, permission, principal);
 
     Map<String, List<String>> map;
     Element element = revokesCache.get(resource);
@@ -372,7 +372,7 @@ public class PermissionsService implements Permissions {
       if (log.isDebugEnabled())
         log.debug("revokes-cache: cache hit for " + resource);
     } else {
-      map = createPermissionMap(resource, REVOKES_MODEL);
+      map = createPermissionMap(resource, REVOKES_GRAPH);
       revokesCache.put(new Element(resource, map));
 
       if (log.isDebugEnabled())
@@ -384,7 +384,7 @@ public class PermissionsService implements Permissions {
     return (list != null) && (list.contains(principal) || list.contains(ALL));
   }
 
-  private void updateModel(String action, String model, Ehcache cache, String resource,
+  private void updateGraph(String action, String graph, Ehcache cache, String resource,
                            String[] permissions, String[] principals, boolean insert)
                     throws OtmException {
     permissions = validateUriList(permissions, "permissions", false);
@@ -415,9 +415,9 @@ public class PermissionsService implements Permissions {
     String cmd;
 
     if (insert)
-      cmd = "insert " + triples + " into " + model + ";";
+      cmd = "insert " + triples + " into " + graph + ";";
     else
-      cmd = "delete " + triples + " from " + model + ";";
+      cmd = "delete " + triples + " from " + graph + ";";
 
     getCurrentSession().doNativeUpdate(cmd);
 
@@ -466,9 +466,9 @@ public class PermissionsService implements Permissions {
     final String cmd;
 
     if (insert)
-      cmd = "insert " + triples + " into " + PP_MODEL + ";";
+      cmd = "insert " + triples + " into " + PP_GRAPH + ";";
     else
-      cmd = "delete " + triples + " from " + PP_MODEL + ";";
+      cmd = "delete " + triples + " from " + PP_GRAPH + ";";
 
     getCurrentSession().doNativeUpdate(cmd);
 
@@ -497,7 +497,7 @@ public class PermissionsService implements Permissions {
     }
   }
 
-  private String[] listPermissions(String action, String model, String resource, String principal)
+  private String[] listPermissions(String action, String graph, String resource, String principal)
                             throws OtmException {
     if (principal == null)
       throw new NullPointerException("principal");
@@ -509,7 +509,7 @@ public class PermissionsService implements Permissions {
     Map map = new HashMap(3);
     map.put("resource", resource);
     map.put("principal", principal);
-    map.put("MODEL", model);
+    map.put("GRAPH", graph);
 
     String  query = RdfUtil.bindValues(ITQL_LIST, map);
     Results ans   = getCurrentSession().doNativeQuery(query);
@@ -551,7 +551,7 @@ public class PermissionsService implements Permissions {
     return result.toArray(new String[result.size()]);
   }
 
-  private boolean isInferred(String model, String resource, String permission, String principal)
+  private boolean isInferred(String graph, String resource, String permission, String principal)
                       throws OtmException {
     if (principal == null)
       throw new NullPointerException("principal");
@@ -564,7 +564,7 @@ public class PermissionsService implements Permissions {
     values.put("resource", resource);
     values.put("permission", permission);
     values.put("principal", principal);
-    values.put("MODEL", model);
+    values.put("GRAPH", graph);
 
     String  query = RdfUtil.bindValues(ITQL_INFER_PERMISSION, values);
     Results ans   = getCurrentSession().doNativeQuery(query);
@@ -595,10 +595,10 @@ public class PermissionsService implements Permissions {
     return list;
   }
 
-  private Map<String, List<String>> createPermissionMap(String resource, String model)
+  private Map<String, List<String>> createPermissionMap(String resource, String graph)
         throws OtmException {
     String query =
-      RdfUtil.bindValues(ITQL_RESOURCE_PERMISSIONS, "resource", resource, "MODEL", model);
+      RdfUtil.bindValues(ITQL_RESOURCE_PERMISSIONS, "resource", resource, "GRAPH", graph);
 
     Results                   ans = getCurrentSession().doNativeQuery(query);
     Map<String, List<String>> map = new HashMap<String, List<String>>();

@@ -35,8 +35,8 @@ import org.mulgara.resolver.spi.ResolverSession;
  * @author Ronald Tschalär
  */
 public class StringCompareResolverFactory implements ResolverFactory {
-  /** the model type we handle */
-  public static final URI MODEL_TYPE = URI.create("http://topazproject.org/models#StringCompare");
+  /** the graph type we handle */
+  public static final URI GRAPH_TYPE = URI.create("http://topazproject.org/graphs#StringCompare");
 
   private StringCompareImpl impls[] = new StringCompareImpl[] {
     new EqualsIgnoreCaseImpl(),
@@ -66,8 +66,8 @@ public class StringCompareResolverFactory implements ResolverFactory {
     if (initializer == null)
       throw new IllegalArgumentException("Null 'resolverFactoryInitializer' parameter");
 
-    // Claim the filter model type
-    initializer.addModelType(MODEL_TYPE, this);
+    // Claim the filter graph type
+    initializer.addModelType(GRAPH_TYPE, this);
 
     // set up our data
     for (StringCompareImpl impl: impls) {
@@ -99,6 +99,6 @@ public class StringCompareResolverFactory implements ResolverFactory {
   public Resolver newResolver(boolean canWrite, ResolverSession resolverSession,
                               Resolver systemResolver)
       throws ResolverFactoryException {
-    return new StringCompareResolver(resolverSession, impls, MODEL_TYPE);
+    return new StringCompareResolver(resolverSession, impls, GRAPH_TYPE);
   }
 }

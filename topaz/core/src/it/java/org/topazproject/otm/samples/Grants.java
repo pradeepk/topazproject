@@ -27,6 +27,6 @@ import org.topazproject.otm.annotations.Entity;
  * @author $author$
  * @version $Revision$
   */
-@Entity(model="grants")
+@Entity(graph="grants")
 public class Grants extends Permissions {
 }

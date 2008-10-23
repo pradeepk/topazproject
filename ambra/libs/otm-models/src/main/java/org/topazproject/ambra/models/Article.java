@@ -35,7 +35,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Eric Brown
  * @author Amit Kapoor
  */
-@Entity(types = {"topaz:Article"}, model = "ri")
+@Entity(types = {"topaz:Article"}, graph = "ri")
 public class Article extends ObjectInfo {
   private static final long serialVersionUID = 7195650215022649188L;
 

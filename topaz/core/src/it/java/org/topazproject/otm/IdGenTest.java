@@ -45,7 +45,7 @@ public class IdGenTest {
   private Session session = null;
   private Transaction tx = null;
 
-  @Entity(types = {Rdf.topaz + "A"}, model = "idtest")
+  @Entity(types = {Rdf.topaz + "A"}, graph = "idtest")
   public static class A {
     private String id;
     private String name;
@@ -118,7 +118,7 @@ public class IdGenTest {
   public static class C extends B {
   }
 
-  @Entity(types = {Rdf.topaz + "D"}, model = "idtest")
+  @Entity(types = {Rdf.topaz + "D"}, graph = "idtest")
   public static class D {
     private URI uri;
     private String data;
@@ -162,7 +162,7 @@ public class IdGenTest {
     }
   }
 
-  @Entity(types = {Rdf.topaz + "E"}, model = "idtest")
+  @Entity(types = {Rdf.topaz + "E"}, graph = "idtest")
   public static class E {
     private String id;
 
@@ -186,7 +186,7 @@ public class IdGenTest {
     }
   }
 
-  @Entity(types = {Rdf.topaz + "Kontrol"}, model = "idtest")
+  @Entity(types = {Rdf.topaz + "Kontrol"}, graph = "idtest")
   public static class Kontrol {
     private String id;
     private String data;
@@ -235,25 +235,25 @@ public class IdGenTest {
     factory.setTripleStore(
       new ItqlStore(URI.create("local:///topazproject")));
 
-    ModelConfig idtest = new ModelConfig("idtest", URI.create("local:///topazproject#idtest"), null);
-    ModelConfig ri = new ModelConfig("ri", URI.create("local:///topazproject#idgentest-ri"), null);
-    factory.addModel(idtest);
-    factory.addModel(ri);
+    GraphConfig idtest = new GraphConfig("idtest", URI.create("local:///topazproject#idtest"), null);
+    GraphConfig ri = new GraphConfig("ri", URI.create("local:///topazproject#idgentest-ri"), null);
+    factory.addGraph(idtest);
+    factory.addGraph(ri);
 
     try {
-      factory.getTripleStore().dropModel(idtest);
+      factory.getTripleStore().dropGraph(idtest);
     } catch (Throwable t) {
-      log.debug("Failed to drop model 'idtest'", t);
+      log.debug("Failed to drop graph 'idtest'", t);
     }
 
     try {
-      factory.getTripleStore().dropModel(ri);
+      factory.getTripleStore().dropGraph(ri);
     } catch (Throwable t) {
-      log.debug("Failed to drop model 'ri'", t);
+      log.debug("Failed to drop graph 'ri'", t);
     }
 
-    factory.getTripleStore().createModel(idtest);
-    factory.getTripleStore().createModel(ri);
+    factory.getTripleStore().createGraph(idtest);
+    factory.getTripleStore().createGraph(ri);
   }
 
   @BeforeClass(groups = { "tx" }, dependsOnMethods = { "setUpFactory" })

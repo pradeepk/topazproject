@@ -36,7 +36,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Filter;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
@@ -76,7 +76,7 @@ public class MemStore extends AbstractTripleStore {
     MemStoreConnection msc     = (MemStoreConnection) con;
     Storage            storage = msc.getStorage();
 
-    storage.insert(cm.getModel(), id, Rdf.rdf + "type", cm.getAllTypes().toArray(new String[0]));
+    storage.insert(cm.getGraph(), id, Rdf.rdf + "type", cm.getAllTypes().toArray(new String[0]));
 
     for (RdfMapper m : fields) {
       if (m.hasInverseUri())
@@ -84,9 +84,9 @@ public class MemStore extends AbstractTripleStore {
 
       Binder b = m.getBinder(msc.getSession());
       if (!m.isAssociation())
-        storage.insert(cm.getModel(), id, m.getUri(), (String[]) b.get(o).toArray(new String[0]));
+        storage.insert(cm.getGraph(), id, m.getUri(), (String[]) b.get(o).toArray(new String[0]));
       else
-        storage.insert(cm.getModel(), id, m.getUri(),
+        storage.insert(cm.getGraph(), id, m.getUri(),
                        msc.getSession().getIds(b.get(o)).toArray(new String[0]));
     }
   }
@@ -98,10 +98,10 @@ public class MemStore extends AbstractTripleStore {
                          Connection con) throws OtmException {
     MemStoreConnection msc     = (MemStoreConnection) con;
     Storage            storage = msc.getStorage();
-    String             model   = cm.getModel();
+    String             graph   = cm.getGraph();
 
     for (RdfMapper m : fields)
-      storage.remove(model, id, m.getUri());
+      storage.remove(graph, id, m.getUri());
   }
 
   /*
@@ -114,26 +114,26 @@ public class MemStore extends AbstractTripleStore {
 
     final MemStoreConnection        msc     = (MemStoreConnection) con;
     Storage                   storage = msc.getStorage();
-    String                    model   = cm.getModel();
+    String                    graph   = cm.getGraph();
 
     final Map<String, List<String>> value   = new HashMap<String, List<String>>();
     final Map<String, List<String>> rvalue  = new HashMap<String, List<String>>();
 
     value.put(Rdf.rdf + "type",
-              new ArrayList<String>(storage.getProperty(model, id, Rdf.rdf + "type")));
+              new ArrayList<String>(storage.getProperty(graph, id, Rdf.rdf + "type")));
 
     for (RdfMapper p : cm.getRdfMappers()) {
       String uri = p.getUri();
 
       if (!p.hasInverseUri())
-        value.put(uri, new ArrayList<String>(storage.getProperty(model, id, uri)));
+        value.put(uri, new ArrayList<String>(storage.getProperty(graph, id, uri)));
       else {
-        String inverseModel = p.getModel();
+        String inverseGraph = p.getGraph();
 
-        if (inverseModel == null)
-          inverseModel = model;
+        if (inverseGraph == null)
+          inverseGraph = graph;
 
-        Set<String> invProps = storage.getInverseProperty(inverseModel, id, uri);
+        Set<String> invProps = storage.getInverseProperty(inverseGraph, id, uri);
         rvalue.put(uri, new ArrayList<String>(invProps));
       }
     }
@@ -195,13 +195,13 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public void createModel(ModelConfig conf) throws OtmException {
+  public void createGraph(GraphConfig conf) throws OtmException {
   }
 
   /*
    * inherited javadoc
    */
-  public void dropModel(ModelConfig conf) throws OtmException {
+  public void dropGraph(GraphConfig conf) throws OtmException {
   }
 
   /*
@@ -267,7 +267,7 @@ public class MemStore extends AbstractTripleStore {
   private Set<String> evaluate(Criterion c, Criteria criteria, Storage storage)
                         throws OtmException {
     ClassMetadata cm    = criteria.getClassMetadata();
-    String           model = cm.getModel();
+    String           graph = cm.getGraph();
     Set<String>      ids;
 
     if (c instanceof PredicateCriterion) {
@@ -283,12 +283,12 @@ public class MemStore extends AbstractTripleStore {
       }
 
       String uri = m.getUri();
-      ids = storage.getIds(model, uri, value);
+      ids = storage.getIds(graph, uri, value);
     } else if (c instanceof SubjectCriterion) {
       String  id     = ((SubjectCriterion) c).getId();
       boolean exists =
-        (!cm.getTypes().isEmpty()) ? (storage.getProperty(model, id, Rdf.rdf + "type").size() != 0)
-        : storage.exists(model, id);
+        (!cm.getTypes().isEmpty()) ? (storage.getProperty(graph, id, Rdf.rdf + "type").size() != 0)
+        : storage.exists(graph, id);
 
       if (!exists)
         ids = Collections.emptySet();
@@ -307,18 +307,18 @@ public class MemStore extends AbstractTripleStore {
 
 
   private static class PropertyId {
-    private String model;
+    private String graph;
     private String id;
     private String uri;
 
-    public PropertyId(String model, String id, String uri) {
-      this.model   = model;
+    public PropertyId(String graph, String id, String uri) {
+      this.graph   = graph;
       this.id      = id;
       this.uri     = uri;
     }
 
-    public String getModel() {
-      return model;
+    public String getGraph() {
+      return graph;
     }
 
     public String getId() {
@@ -335,11 +335,11 @@ public class MemStore extends AbstractTripleStore {
 
       PropertyId o = (PropertyId) other;
 
-      return model.equals(o.model) && id.equals(o.id) && uri.equals(o.uri);
+      return graph.equals(o.graph) && id.equals(o.id) && uri.equals(o.uri);
     }
 
     public int hashCode() {
-      return model.hashCode() + id.hashCode() + uri.hashCode();
+      return graph.hashCode() + id.hashCode() + uri.hashCode();
     }
   }
 
@@ -362,32 +362,32 @@ public class MemStore extends AbstractTripleStore {
       }
     }
 
-    public void insert(String model, String id, String uri, String[] val) {
-      Set<String> data = getProperty(model, id, uri);
+    public void insert(String graph, String id, String uri, String[] val) {
+      Set<String> data = getProperty(graph, id, uri);
 
       for (String v : val)
         data.add(v);
 
       if (backingStore != null) {
-        PropertyId p = new PropertyId(model, id, uri);
+        PropertyId p = new PropertyId(graph, id, uri);
         pendingInserts.add(p);
       }
     }
 
-    public void remove(String model, String id, String uri) {
-      Set<String> data = getProperty(model, id, uri);
+    public void remove(String graph, String id, String uri) {
+      Set<String> data = getProperty(graph, id, uri);
       data.clear();
 
       if (backingStore != null)
-        pendingDeletes.add(new PropertyId(model, id, uri));
+        pendingDeletes.add(new PropertyId(graph, id, uri));
     }
 
     public Set<String> getProperty(PropertyId prop) {
-      return getProperty(prop.getModel(), prop.getId(), prop.getUri());
+      return getProperty(prop.getGraph(), prop.getId(), prop.getUri());
     }
 
-    public Set<String> getProperty(String model, String id, String uri) {
-      Map<String, Set<String>> subjectData = getSubjectData(model, id);
+    public Set<String> getProperty(String graph, String id, String uri) {
+      Map<String, Set<String>> subjectData = getSubjectData(graph, id);
       Set<String>              val         = subjectData.get(uri);
 
       if (val == null) {
@@ -395,22 +395,22 @@ public class MemStore extends AbstractTripleStore {
         subjectData.put(uri, val);
       }
 
-      if ((backingStore != null) && (!pendingDeletes.contains(new PropertyId(model, id, uri)))) {
+      if ((backingStore != null) && (!pendingDeletes.contains(new PropertyId(graph, id, uri)))) {
         synchronized (backingStore) {
-          val.addAll(backingStore.getProperty(model, id, uri));
+          val.addAll(backingStore.getProperty(graph, id, uri));
         }
       }
 
       return val;
     }
 
-    public Set<String> getInverseProperty(String model, String id, String uri) {
+    public Set<String> getInverseProperty(String graph, String id, String uri) {
       Set<String>                           results   = new HashSet<String>();
-      Map<String, Map<String, Set<String>>> modelData = data.get(model);
+      Map<String, Map<String, Set<String>>> graphData = data.get(graph);
 
-      if (modelData != null) {
-        for (String subject : modelData.keySet()) {
-          Set<String> objs = modelData.get(subject).get(uri);
+      if (graphData != null) {
+        for (String subject : graphData.keySet()) {
+          Set<String> objs = graphData.get(subject).get(uri);
 
           if ((objs != null) && objs.contains(id))
             results.add(subject);
@@ -419,11 +419,11 @@ public class MemStore extends AbstractTripleStore {
 
       if (backingStore != null) {
         synchronized (backingStore) {
-          results.addAll(backingStore.getInverseProperty(model, id, uri));
+          results.addAll(backingStore.getInverseProperty(graph, id, uri));
         }
 
         for (Iterator<String> it = results.iterator(); it.hasNext();) {
-          if (pendingDeletes.contains(new PropertyId(model, it.next(), uri)))
+          if (pendingDeletes.contains(new PropertyId(graph, it.next(), uri)))
             it.remove();
         }
       }
@@ -431,12 +431,12 @@ public class MemStore extends AbstractTripleStore {
       return results;
     }
 
-    public Set<String> getIds(String model, String uri, String val) {
+    public Set<String> getIds(String graph, String uri, String val) {
       Set<String>                           results   = new HashSet<String>();
-      Map<String, Map<String, Set<String>>> modelData = data.get(model);
+      Map<String, Map<String, Set<String>>> graphData = data.get(graph);
 
-      if (modelData != null) {
-        for (Map.Entry<String, Map<String, Set<String>>> e : modelData.entrySet()) {
+      if (graphData != null) {
+        for (Map.Entry<String, Map<String, Set<String>>> e : graphData.entrySet()) {
           Set<String> objs = e.getValue().get(uri);
 
           if ((objs != null) && objs.contains(val))
@@ -446,11 +446,11 @@ public class MemStore extends AbstractTripleStore {
 
       if (backingStore != null) {
         synchronized (backingStore) {
-          results.addAll(backingStore.getIds(model, uri, val));
+          results.addAll(backingStore.getIds(graph, uri, val));
         }
 
         for (Iterator<String> it = results.iterator(); it.hasNext();) {
-          if (pendingDeletes.contains(new PropertyId(model, it.next(), uri)))
+          if (pendingDeletes.contains(new PropertyId(graph, it.next(), uri)))
             it.remove();
         }
       }
@@ -458,16 +458,16 @@ public class MemStore extends AbstractTripleStore {
       return results;
     }
 
-    public boolean exists(String model, String id) {
+    public boolean exists(String graph, String id) {
       boolean                               found     = false;
-      Map<String, Map<String, Set<String>>> modelData = data.get(model);
+      Map<String, Map<String, Set<String>>> graphData = data.get(graph);
 
-      if (modelData != null)
-        found = (modelData.get(id) != null);
+      if (graphData != null)
+        found = (graphData.get(id) != null);
 
       if (!found && (backingStore != null)) {
         synchronized (backingStore) {
-          found = backingStore.exists(model, id);
+          found = backingStore.exists(graph, id);
         }
       }
 
@@ -480,10 +480,10 @@ public class MemStore extends AbstractTripleStore {
 
       synchronized (backingStore) {
         for (PropertyId pd : pendingDeletes)
-          backingStore.remove(pd.getModel(), pd.getId(), pd.getUri());
+          backingStore.remove(pd.getGraph(), pd.getId(), pd.getUri());
 
         for (PropertyId pd : pendingInserts)
-          backingStore.insert(pd.getModel(), pd.getId(), pd.getUri(),
+          backingStore.insert(pd.getGraph(), pd.getId(), pd.getUri(),
                               getProperty(pd).toArray(new String[0]));
 
         backingStore.commit();
@@ -503,27 +503,27 @@ public class MemStore extends AbstractTripleStore {
       data.clear();
     }
 
-    private Map<String, Set<String>> getSubjectData(String model, String id) {
-      Map<String, Map<String, Set<String>>> modelData   = getModelData(model);
-      Map<String, Set<String>>              subjectData = modelData.get(id);
+    private Map<String, Set<String>> getSubjectData(String graph, String id) {
+      Map<String, Map<String, Set<String>>> graphData   = getGraphData(graph);
+      Map<String, Set<String>>              subjectData = graphData.get(id);
 
       if (subjectData == null) {
         subjectData = new HashMap<String, Set<String>>();
-        modelData.put(id, subjectData);
+        graphData.put(id, subjectData);
       }
 
       return subjectData;
     }
 
-    private Map<String, Map<String, Set<String>>> getModelData(String model) {
-      Map<String, Map<String, Set<String>>> modelData = data.get(model);
+    private Map<String, Map<String, Set<String>>> getGraphData(String graph) {
+      Map<String, Map<String, Set<String>>> graphData = data.get(graph);
 
-      if (modelData == null) {
-        modelData = new HashMap<String, Map<String, Set<String>>>();
-        data.put(model, modelData);
+      if (graphData == null) {
+        graphData = new HashMap<String, Map<String, Set<String>>>();
+        data.put(graph, graphData);
       }
 
-      return modelData;
+      return graphData;
     }
   }
 

@@ -46,7 +46,7 @@ public class GenericsTest extends TestCase {
     String message = "Testing '" + def.getName() + "': ";
     assertEquals(message, vals[0], def.getUri());
     assertEquals(message, vals[1], def.isEntityOwned());
-    assertEquals(message, vals[2], def.getModel());
+    assertEquals(message, vals[2], def.getGraph());
     assertEquals(message, vals[3], def.hasInverseUri());
     assertEquals(message, vals[4], def.typeIsUri());
     assertEquals(message, vals[5], def.getDataType());
@@ -188,7 +188,7 @@ public class GenericsTest extends TestCase {
     test("AA", "AB");
   }
 
-  @Entity(model="test", name="Base")
+  @Entity(graph="test", name="Base")
   public static class Base {
     public String getId() {return null;}
     @Id
@@ -199,7 +199,7 @@ public class GenericsTest extends TestCase {
   @Entity(name="U")
   public static interface UProvider<U> {
     public U getU();
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setU(U a);
   }
 
@@ -207,7 +207,7 @@ public class GenericsTest extends TestCase {
   @Entity(name="W")
   public static interface WProvider<W> {
     public W getW();
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setW(W a);
   }
 
@@ -215,13 +215,13 @@ public class GenericsTest extends TestCase {
   @Entity(name="A")
   public static abstract class A<T extends Assoc, U, V> extends Base implements UProvider<U> {
     public T getAssoc() {return null;}
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setAssoc(T a) {}
     public U getU() { return null; }
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setU(U a) {}
     public V getV() { return null; }
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setV(U a) {}
   }
 
@@ -239,10 +239,10 @@ public class GenericsTest extends TestCase {
   @Entity(name="LA")
   public static class LA<T extends Assoc, U> extends Base {
     public List<T> getAssoc() {return null;}
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setAssoc(List<T> a) {}
     public List<U> getU() { return null; }
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setU(List<U> a) {}
   }
 
@@ -255,10 +255,10 @@ public class GenericsTest extends TestCase {
   @Entity(name="AA")
   public static class AA<T extends Assoc, U> extends Base {
     public T[] getAssoc() {return null;}
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setAssoc(T[] a) {}
     public U[] getU() { return null; }
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setU(U[] a) {}
   }
 

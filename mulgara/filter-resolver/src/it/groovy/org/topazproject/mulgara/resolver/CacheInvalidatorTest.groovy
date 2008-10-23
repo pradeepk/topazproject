@@ -37,9 +37,9 @@ import net.sf.ehcache.event.CacheEventListener;
  */
 class CacheInvalidatorTest extends GroovyTestCase {
   static final String MULGARA     = 'local:///topazproject'
-  static final String TEST_MODEL  = "<${MULGARA}#filter:model=test>"
-  static final String REAL_MODEL  = "<${MULGARA}#test>"
-  static final String RSLV_TYPE   = "<${FilterResolver.MODEL_TYPE}>"
+  static final String TEST_GRAPH  = "<${MULGARA}#filter:graph=test>"
+  static final String REAL_GRAPH  = "<${MULGARA}#test>"
+  static final String RSLV_TYPE   = "<${FilterResolver.GRAPH_TYPE}>"
   static final SessionFactory sf  = SessionFactoryFinder.newSessionFactory(MULGARA.toURI())
   static final TestListener   cel = new TestListener()
 
@@ -80,57 +80,57 @@ class CacheInvalidatorTest extends GroovyTestCase {
 
   private void resetDb() {
     try {
-      itql.executeUpdate("drop ${TEST_MODEL};")
+      itql.executeUpdate("drop ${TEST_GRAPH};")
     } catch (Exception e) {
-      log.log(Level.FINE, "Error dropping ${TEST_MODEL} (probably because it doesn't exist)", e)
+      log.log(Level.FINE, "Error dropping ${TEST_GRAPH} (probably because it doesn't exist)", e)
     }
     try {
-      itql.executeUpdate("drop ${REAL_MODEL};")
+      itql.executeUpdate("drop ${REAL_GRAPH};")
     } catch (Exception e) {
-      log.log(Level.FINE, "Error dropping ${REAL_MODEL} (probably because it doesn't exist)", e)
+      log.log(Level.FINE, "Error dropping ${REAL_GRAPH} (probably because it doesn't exist)", e)
     }
 
-    itql.executeUpdate("create ${TEST_MODEL} ${RSLV_TYPE};")
+    itql.executeUpdate("create ${TEST_GRAPH} ${RSLV_TYPE};")
   }
 
   void testDirectKeys() {
     resetDb()
     cel.keys.clear()
 
-    itql.executeUpdate("insert <foo:1> <bar:is> 'a' into ${TEST_MODEL};")
+    itql.executeUpdate("insert <foo:1> <bar:is> 'a' into ${TEST_GRAPH};")
     Thread.sleep(100)
     assertEquals([] as Set, cel.keys)
 
-    itql.executeUpdate("insert <foo:1> <topaz:pred> 'a' into ${TEST_MODEL};")
+    itql.executeUpdate("insert <foo:1> <topaz:pred> 'a' into ${TEST_GRAPH};")
     Thread.sleep(100)
     assertEquals(['foo:1'] as Set, cel.keys)
     cel.keys.clear()
 
-    itql.executeUpdate("insert <topaz:subj> <bar:has> 'a' into ${TEST_MODEL};")
+    itql.executeUpdate("insert <topaz:subj> <bar:has> 'a' into ${TEST_GRAPH};")
     Thread.sleep(100)
     assertEquals(['a'] as Set, cel.keys)
     cel.keys.clear()
 
-    itql.executeUpdate("insert <foo:1> <bar:has> <topaz:obj> into ${TEST_MODEL};")
+    itql.executeUpdate("insert <foo:1> <bar:has> <topaz:obj> into ${TEST_GRAPH};")
     Thread.sleep(100)
     assertEquals(['bar:has'] as Set, cel.keys)
     cel.keys.clear()
 
-    itql.executeUpdate("delete <foo:1> <bar:is> 'a' from ${TEST_MODEL};")
+    itql.executeUpdate("delete <foo:1> <bar:is> 'a' from ${TEST_GRAPH};")
     Thread.sleep(100)
     assertEquals([] as Set, cel.keys)
 
-    itql.executeUpdate("delete <foo:1> <topaz:pred> 'a' from ${TEST_MODEL};")
+    itql.executeUpdate("delete <foo:1> <topaz:pred> 'a' from ${TEST_GRAPH};")
     Thread.sleep(100)
     assertEquals(['foo:1'] as Set, cel.keys)
     cel.keys.clear()
 
-    itql.executeUpdate("delete <topaz:subj> <bar:has> 'a' from ${TEST_MODEL};")
+    itql.executeUpdate("delete <topaz:subj> <bar:has> 'a' from ${TEST_GRAPH};")
     Thread.sleep(100)
     assertEquals(['a'] as Set, cel.keys)
     cel.keys.clear()
 
-    itql.executeUpdate("delete <foo:1> <bar:has> <topaz:obj> from ${TEST_MODEL};")
+    itql.executeUpdate("delete <foo:1> <bar:has> <topaz:obj> from ${TEST_GRAPH};")
     Thread.sleep(100)
     assertEquals(['bar:has'] as Set, cel.keys)
     cel.keys.clear()
@@ -140,12 +140,12 @@ class CacheInvalidatorTest extends GroovyTestCase {
     /* <rule>
      *   <match>
      *     <p>topaz:articleState</p>
-     *     <m>model:test</m>
+     *     <m>graph:test</m>
      *   </match>
      *   <object>
      *     <cache>article-state</cache>
      *     <query>
-     *       select $s $state from &lt;model:test&gt;
+     *       select $s $state from &lt;graph:test&gt;
      *           where (&lt;${s}&gt; &lt;topaz:articleState&gt; $state)
      *           and ($s &lt;mulgara:is&gt; &lt;${s}&gt; or
      *                &lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $s);
@@ -157,79 +157,79 @@ class CacheInvalidatorTest extends GroovyTestCase {
     cel.keys.clear()
 
     itql.beginTransaction('qdk1')
-    itql.executeUpdate("insert <foo:1> <topaz:articleState> '1' into ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:1> <topaz:propagate-permissions-to> <bar:1> into ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:1> <topaz:propagate-permissions-to> <baz:1> into ${TEST_MODEL};")
+    itql.executeUpdate("insert <foo:1> <topaz:articleState> '1' into ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:1> <topaz:propagate-permissions-to> <bar:1> into ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:1> <topaz:propagate-permissions-to> <baz:1> into ${TEST_GRAPH};")
     itql.commit('qdk1')
     Thread.sleep(500)
     assertEquals(['foo:1', 'bar:1', 'baz:1'] as Set, cel.keys)
     cel.keys.clear()
 
     itql.beginTransaction('qdk2')
-    itql.executeUpdate("insert <foo:2> <topaz:articleState> '1' into ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:2> <topaz:propagate-permissions-to> <bar:2> into ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:2> <topaz:propagate-permissions-to> <baz:2> into ${TEST_MODEL};")
+    itql.executeUpdate("insert <foo:2> <topaz:articleState> '1' into ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:2> <topaz:propagate-permissions-to> <bar:2> into ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:2> <topaz:propagate-permissions-to> <baz:2> into ${TEST_GRAPH};")
     itql.commit('qdk2')
     Thread.sleep(100)
     assertEquals(['foo:2', 'bar:2', 'baz:2'] as Set, cel.keys)
     cel.keys.clear()
 
     itql.beginTransaction('qdk3')
-    itql.executeUpdate("delete <foo:1> <topaz:articleState> '1' from ${TEST_MODEL};")
+    itql.executeUpdate("delete <foo:1> <topaz:articleState> '1' from ${TEST_GRAPH};")
     itql.commit('qdk3')
     Thread.sleep(100)
     assertEquals(['foo:1', 'bar:1', 'baz:1'] as Set, cel.keys)
     cel.keys.clear()
 
     itql.beginTransaction('qdk4')
-    itql.executeUpdate("insert <foo:1> <topaz:articleState> '0' into ${TEST_MODEL};")
+    itql.executeUpdate("insert <foo:1> <topaz:articleState> '0' into ${TEST_GRAPH};")
     itql.commit('qdk4')
     Thread.sleep(100)
     assertEquals(['foo:1', 'bar:1', 'baz:1'] as Set, cel.keys)
     cel.keys.clear()
 
     itql.beginTransaction('qdk5')
-    itql.executeUpdate("delete <foo:2> <topaz:articleState> '1' from ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:2> <topaz:articleState> '0' into ${TEST_MODEL};")
+    itql.executeUpdate("delete <foo:2> <topaz:articleState> '1' from ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:2> <topaz:articleState> '0' into ${TEST_GRAPH};")
     itql.commit('qdk5')
     Thread.sleep(100)
     assertEquals(['foo:2', 'bar:2', 'baz:2'] as Set, cel.keys)
     cel.keys.clear()
 
     itql.beginTransaction('qdk6')
-    itql.executeUpdate("delete <foo:2> <topaz:articleState> '0' from ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:2> <topaz:articleState> '0' into ${TEST_MODEL};")
+    itql.executeUpdate("delete <foo:2> <topaz:articleState> '0' from ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:2> <topaz:articleState> '0' into ${TEST_GRAPH};")
     itql.commit('qdk6')
     Thread.sleep(100)
     assertEquals([] as Set, cel.keys)
     cel.keys.clear()
 
     itql.beginTransaction('qdk7')
-    itql.executeUpdate("insert <foo:2> <bar:2> '1' into ${TEST_MODEL};")
+    itql.executeUpdate("insert <foo:2> <bar:2> '1' into ${TEST_GRAPH};")
     itql.commit('qdk7')
     Thread.sleep(100)
     assertEquals([] as Set, cel.keys)
     cel.keys.clear()
 
     itql.beginTransaction('qdk8')
-    itql.executeUpdate("delete <foo:1> <topaz:articleState> '0' from ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:3> <topaz:foo> '1' into ${TEST_MODEL};")
+    itql.executeUpdate("delete <foo:1> <topaz:articleState> '0' from ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:3> <topaz:foo> '1' into ${TEST_GRAPH};")
     itql.commit('qdk8')
     Thread.sleep(100)
     assertEquals(['foo:1', 'bar:1', 'baz:1', 'foo:3'] as Set, cel.keys)
     cel.keys.clear()
 
     itql.beginTransaction('qdk9')
-    itql.executeUpdate("delete <foo:3> <topaz:foo> '1' from ${TEST_MODEL};")
+    itql.executeUpdate("delete <foo:3> <topaz:foo> '1' from ${TEST_GRAPH};")
     itql.commit('qdk9')
     Thread.sleep(100)
     assertEquals(['foo:3'] as Set, cel.keys)
     cel.keys.clear()
 
     itql.beginTransaction('qdk10')
-    itql.executeUpdate("delete <foo:2> <topaz:articleState> '0' from ${TEST_MODEL};")
-    itql.executeUpdate("delete <foo:2> <topaz:propagate-permissions-to> <bar:2> from ${TEST_MODEL};")
-    itql.executeUpdate("delete <foo:2> <topaz:propagate-permissions-to> <baz:2> from ${TEST_MODEL};")
+    itql.executeUpdate("delete <foo:2> <topaz:articleState> '0' from ${TEST_GRAPH};")
+    itql.executeUpdate("delete <foo:2> <topaz:propagate-permissions-to> <bar:2> from ${TEST_GRAPH};")
+    itql.executeUpdate("delete <foo:2> <topaz:propagate-permissions-to> <baz:2> from ${TEST_GRAPH};")
     itql.commit('qdk10')
     Thread.sleep(100)
     assertEquals(['foo:2', 'bar:2', 'baz:2'] as Set, cel.keys)
@@ -239,9 +239,9 @@ class CacheInvalidatorTest extends GroovyTestCase {
     resetDb()
 
     itql.beginTransaction('qdk11')
-    itql.executeUpdate("insert <foo:1> <topaz:articleState> '1' into ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:1> <topaz:propagate-permissions-to> <bar:1> into ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:1> <topaz:propagate-permissions-to> <baz:1> into ${TEST_MODEL};")
+    itql.executeUpdate("insert <foo:1> <topaz:articleState> '1' into ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:1> <topaz:propagate-permissions-to> <bar:1> into ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:1> <topaz:propagate-permissions-to> <baz:1> into ${TEST_GRAPH};")
     itql.commit('qdk11')
     Thread.sleep(100)
     assertEquals(['foo:1', 'bar:1', 'baz:1'] as Set, cel.keys)
@@ -253,18 +253,18 @@ class CacheInvalidatorTest extends GroovyTestCase {
     openDbCon()
 
     itql.beginTransaction('qdk12')
-    itql.executeUpdate("insert <foo:1> <topaz:articleState> '1' into ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:1> <topaz:propagate-permissions-to> <bar:1> into ${TEST_MODEL};")
-    itql.executeUpdate("insert <foo:1> <topaz:propagate-permissions-to> <baz:1> into ${TEST_MODEL};")
+    itql.executeUpdate("insert <foo:1> <topaz:articleState> '1' into ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:1> <topaz:propagate-permissions-to> <bar:1> into ${TEST_GRAPH};")
+    itql.executeUpdate("insert <foo:1> <topaz:propagate-permissions-to> <baz:1> into ${TEST_GRAPH};")
     itql.commit('qdk12')
     Thread.sleep(100)
     assertEquals([] as Set, cel.keys)
     cel.keys.clear()
 
     itql.beginTransaction('qdk13')
-    itql.executeUpdate("delete <foo:1> <topaz:articleState> '1' from ${TEST_MODEL};")
-    itql.executeUpdate("delete <foo:1> <topaz:propagate-permissions-to> <bar:1> from ${TEST_MODEL};")
-    itql.executeUpdate("delete <foo:1> <topaz:propagate-permissions-to> <baz:1> from ${TEST_MODEL};")
+    itql.executeUpdate("delete <foo:1> <topaz:articleState> '1' from ${TEST_GRAPH};")
+    itql.executeUpdate("delete <foo:1> <topaz:propagate-permissions-to> <bar:1> from ${TEST_GRAPH};")
+    itql.executeUpdate("delete <foo:1> <topaz:propagate-permissions-to> <baz:1> from ${TEST_GRAPH};")
     itql.commit('qdk13')
     Thread.sleep(100)
     assertEquals(['foo:1', 'bar:1', 'baz:1'] as Set, cel.keys)

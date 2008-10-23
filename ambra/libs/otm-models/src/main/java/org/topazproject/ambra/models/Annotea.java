@@ -41,7 +41,7 @@ import org.topazproject.otm.annotations.Predicate.PropType;
  * 
  * @author Pradeep Krishnan
  */
-@Entity(model = "ri")
+@Entity(graph = "ri")
 @UriPrefix("annotea:")
 public abstract class Annotea<T> implements Serializable {
   private static final long serialVersionUID = 3367287552290220606L;

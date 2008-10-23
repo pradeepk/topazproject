@@ -37,14 +37,14 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.PredicateMap;
 
 /**
- * Model for the objects that are stored mostly in mulgara and partially in the blob-store
+ * Graph for the objects that are stored mostly in mulgara and partially in the blob-store
  * (fedora).<p>
  *
  * Much of the structure here mirrors how things were originally stored in fedora.
  *
  * @author Eric Brown
  */
-@Entity(model = "ri")
+@Entity(graph = "ri")
 @Aliases({@Alias(alias = "bazAlias", value = "http://www.baz.com"),
           @Alias(alias = "barAlias", value = "http://www.bar.org/")})
 public class ObjectInfo {

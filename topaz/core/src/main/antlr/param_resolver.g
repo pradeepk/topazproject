@@ -74,7 +74,7 @@ options {
     /** 
      * Create a new parameter-resolver instance.
      *
-     * @param sessionFactory the session-factory to use to look up class-metatdata, models, etc
+     * @param sessionFactory the session-factory to use to look up class-metatdata, graphs, etc
      */
     public ParameterResolver(SessionFactory sessionFactory) {
       this();

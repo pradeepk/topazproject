@@ -35,7 +35,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  * @version $Revision$
   */
 @UriPrefix(Rdf.topaz)
-@Entity(model = "ri", types = {Rdf.topaz + "SpecialMappers"})
+@Entity(graph = "ri", types = {Rdf.topaz + "SpecialMappers"})
 public class SpecialMappers {
   private String               id;
   private List<String>         list      = new ArrayList<String>();

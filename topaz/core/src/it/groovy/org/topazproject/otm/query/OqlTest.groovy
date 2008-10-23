@@ -24,7 +24,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.annotations.Predicate;
@@ -57,10 +57,10 @@ public class OqlTest extends AbstractTest {
   private static final Log log = LogFactory.getLog(OqlTest.class);
 
   void setUp() {
-    models = [['ri',     'otmtest1', null],
+    graphs = [['ri',     'otmtest1', null],
               ['prefix', 'prefix',   'http://mulgara.org/mulgara#PrefixGraph'.toURI()],
               ['xsd',    'xsd',      'http://mulgara.org/mulgara#XMLSchemaModel'.toURI()],
-              ['str',    'str',      'http://topazproject.org/models#StringCompare'.toURI()]];
+              ['str',    'str',      'http://topazproject.org/graphs#StringCompare'.toURI()]];
     super.setUp();
 
     rdf.sessFactory.preload(Annotation.class);
@@ -1009,24 +1009,24 @@ public class OqlTest extends AbstractTest {
     }
   }
 
-  void testModels() {
+  void testGraphs() {
     def checker = new ResultChecker(test:this)
 
-    // set up models
+    // set up graphs
     for (num in 1..3) {
-      def m = new ModelConfig("m${num}", "local:///topazproject#otmtest_m${num}".toURI(), null)
-      rdf.sessFactory.addModel(m);
+      def m = new GraphConfig("m${num}", "local:///topazproject#otmtest_m${num}".toURI(), null)
+      rdf.sessFactory.addGraph(m);
 
-      try { store.dropModel(m); } catch (OtmException oe) { }
-      store.createModel(m)
+      try { store.dropGraph(m); } catch (OtmException oe) { }
+      store.createGraph(m)
     }
 
-    // predicate stored with child model
-    Class cls = rdf.class('Test1', model:'m1') {
+    // predicate stored with child graph
+    Class cls = rdf.class('Test1', graph:'m1') {
       foo1 ()
-      bar1 (className:'Bar11', model:'m2', inverse:true) {
+      bar1 (className:'Bar11', graph:'m2', inverse:true) {
         foo2 ()
-        bar2 (className:'Bar21', model:'m3') {
+        bar2 (className:'Bar21', graph:'m3') {
           foo3 ()
         }
       }
@@ -1050,15 +1050,15 @@ public class OqlTest extends AbstractTest {
       s.delete(o2);
     }
 
-    // predicate stored with parent model
-    Class bcl2 = rdf.class('Bar22', model:'m3') {
+    // predicate stored with parent graph
+    Class bcl2 = rdf.class('Bar22', graph:'m3') {
       foo3 ()
     }
-    Class bcl1 = rdf.class('Bar12', model:'m2') {
+    Class bcl1 = rdf.class('Bar12', graph:'m2') {
       foo2 ()
       bar2 (type:'Bar22', inverse:true)
     }
-    Class cls1 = rdf.class('Test2', model:'m1') {
+    Class cls1 = rdf.class('Test2', graph:'m1') {
       foo1 ()
       bar1 (type:'Bar12')
     }
@@ -1081,7 +1081,7 @@ public class OqlTest extends AbstractTest {
       s.delete(o2);
     }
 
-    // non-entity class with no model, but model on predicate
+    // non-entity class with no graph, but graph on predicate
     o1 = cls1.newInstance(foo1:'f1', bar1:[foo2:'f2', bar2:[foo3:'f3']])
     rdf.sessFactory.preload(NonEntity.class);
     rdf.sessFactory.validate()
@@ -2124,7 +2124,7 @@ class ResultChecker extends BuilderSupport {
 private class NonEntity {
   URI bar1;
 
-  @Predicate(uri = "topaz:bar1", model = "m1")
+  @Predicate(uri = "topaz:bar1", graph = "m1")
   void setBar1(URI bar1) {
     this.bar1 = bar1;
   }

@@ -71,7 +71,7 @@ public class WebAppListenerInitPermissionsModel implements ServletContextListene
       sess = factory.openSession();
       TransactionHelper.doInTx(sess, new TransactionHelper.Action<Void>() {
         public Void run(Transaction tx) {
-          PermissionsService.initializeModel(tx.getSession());
+          PermissionsService.initializeGraph(tx.getSession());
           return null;
         }
       });

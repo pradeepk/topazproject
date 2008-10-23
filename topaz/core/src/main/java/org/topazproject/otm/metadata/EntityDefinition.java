@@ -107,7 +107,7 @@ public class EntityDefinition extends ClassDefinition {
     for (String s : sups) {
       ClassMetadata superMeta = sf.getClassMetadata(s);
 
-      superGraphs.add(superMeta.getModel());
+      superGraphs.add(superMeta.getGraph());
       superIds.add(superMeta.getIdField());
       superBlobs.add(superMeta.getBlobField());
 
@@ -134,8 +134,8 @@ public class EntityDefinition extends ClassDefinition {
     if (this.graph != null)
       graph = this.graph;
     else if (superGraphs.size() > 1)
-      throw new OtmException(superGraphs + " are all possible candidates for model/graph for '" 
-          + getName() + "'. Need an explicit model/graph definition to disambiguate");
+      throw new OtmException(superGraphs + " are all possible candidates for graph for '" 
+          + getName() + "'. Need an explicit graph definition to disambiguate");
     else if (superGraphs.size() == 1)
       graph = superGraphs.iterator().next();
 

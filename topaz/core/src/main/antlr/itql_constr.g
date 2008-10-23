@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.Session;
 
 import antlr.RecognitionException;
@@ -100,7 +100,7 @@ tokens {
 }
 
 {
-    private static final URI PREFIX_MODEL_TYPE =
+    private static final URI PREFIX_GRAPH_TYPE =
                                             URI.create("http://mulgara.org/mulgara#PrefixGraph");
 
     private Session          sess;
@@ -165,11 +165,11 @@ tokens {
           curVar         = addTriple(list, curVar, curPred);
 
           OqlAST listPred = nextVar();
-          listPred.setModel(curPred.getModel());
+          listPred.setGraph(curPred.getGraph());
           listPred.setExprType(curPred.getExprType());
 
           list.addChild(makeTriple(listPred, "<mulgara:prefix>", "<rdf:_>",
-                                   getModelUri(PREFIX_MODEL_TYPE)));
+                                   getGraphUri(PREFIX_GRAPH_TYPE)));
 
           notifyDeref(curPred, new OqlAST[] { prevVar, curPred, curVar, listPred });
           return new OqlAST[] { curVar, listPred };
@@ -181,8 +181,8 @@ tokens {
           OqlAST s = nextVar();
           OqlAST n = nextVar();
           /* FIXME: doesn't work! Need to "fix" mulgara
-          AST walk = #([WALK,"walk"], makeTriple(curVar, "<rdf:rest>", n, curPred.getModel()),
-                                      makeTriple(s, "<rdf:rest>", n, curPred.getModel()));
+          AST walk = #([WALK,"walk"], makeTriple(curVar, "<rdf:rest>", n, curPred.getGraph()),
+                                      makeTriple(s, "<rdf:rest>", n, curPred.getGraph()));
           list.addChild(walk);
 
            * instead we use a less efficient method for now (taken from ItqlStore):
@@ -192,14 +192,14 @@ tokens {
            * FIXME: can't specify an 'in' clause in trans()
            */
           AST trans = #([TRANS,"trans"], makeTriple(curVar, "<rdf:rest>", s));
-          AST exist = makeTriple(curVar, "<rdf:rest>", s, curPred.getModel());
-          AST first = makeTriple(prevVar, curPred, s, curPred.getModel());
+          AST exist = makeTriple(curVar, "<rdf:rest>", s, curPred.getGraph());
+          AST first = makeTriple(prevVar, curPred, s, curPred.getGraph());
           list.addChild(#([OR,"or"], trans, exist, first));
-          list.addChild(makeTriple(s, "<rdf:rest>", n, curPred.getModel()));
+          list.addChild(makeTriple(s, "<rdf:rest>", n, curPred.getGraph()));
           /* end trans version */
 
           listPred = ASTUtil.makeID("<rdf:first>", astFactory);
-          listPred.setModel(curPred.getModel());
+          listPred.setGraph(curPred.getGraph());
           listPred.setExprType(curPred.getExprType());
           s.setExprType(curPred.getExprType());
           n.setExprType(ExprType.uriType(null));
@@ -221,12 +221,12 @@ tokens {
         tl.deref(reg, nodes);
     }
 
-    private String getModelUri(String modelId) throws RecognitionException {
-      return ASTUtil.getModelUri(modelId, sess.getSessionFactory());
+    private String getGraphUri(String graphId) throws RecognitionException {
+      return ASTUtil.getGraphUri(graphId, sess.getSessionFactory());
     }
 
-    private String getModelUri(URI modelType) throws RecognitionException {
-      return ASTUtil.getModelUri(modelType, sess.getSessionFactory());
+    private String getGraphUri(URI graphType) throws RecognitionException {
+      return ASTUtil.getGraphUri(graphType, sess.getSessionFactory());
     }
 
     private AST makeTriple(Object s, Object p, Object o) {
@@ -256,7 +256,7 @@ fclause[OqlAST tc]
           if (addTypeConstr)
             for (String type : cm.getTypes())
               tc.addChild(
-                    makeTriple(#var, "<rdf:type>", "<" + type + ">", getModelUri(cm.getModel())));
+                    makeTriple(#var, "<rdf:type>", "<" + type + ">", getGraphUri(cm.getGraph())));
         }
     ;
 

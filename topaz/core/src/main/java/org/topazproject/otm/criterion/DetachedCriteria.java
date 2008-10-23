@@ -50,13 +50,13 @@ import org.topazproject.otm.mapping.RdfMapper;
  * makes it ideal for persistance. DetachedCriteria can be converted to an executable Criteria by
  * calling the {@link #getExecutableCriteria} method. DetachedCriteria is built the same way as
  * Criteria, ie. by {@link #add}ing {@link org.topazproject.otm.criterion.Criterion} objects.<p>For
- * persistence, make sure that {@link org.topazproject.otm.criterion.Criterion#MODEL} is
+ * persistence, make sure that {@link org.topazproject.otm.criterion.Criterion#GRAPH} is
  * configured in the SessionFactory. Also note that not all of the setter methods are for use by
  * application code. They are there to support a load from a triple-store.</p>
  *
  * @author Pradeep Krishnan
  */
-@Entity(types = {Criterion.NS + "Criteria"}, model = Criterion.MODEL)
+@Entity(types = {Criterion.NS + "Criteria"}, graph = Criterion.GRAPH)
 @UriPrefix(Criterion.NS)
 public class DetachedCriteria implements PreInsertEventListener, PostLoadEventListener {
   private static final Log       log               = LogFactory.getLog(DetachedCriteria.class);

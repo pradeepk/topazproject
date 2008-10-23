@@ -35,7 +35,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Eric Brown
  */
-@Entity(model = "ri")
+@Entity(graph = "ri")
 public class Category implements Serializable {
   private static final long serialVersionUID = -1910044609722349497L;
 

@@ -47,7 +47,7 @@ import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.mapping.EmbeddedMapper;
 import org.topazproject.otm.mapping.Binder;
@@ -63,7 +63,7 @@ import antlr.collections.AST;
  * This is an AST transformer for OQL that replaces field references by their predicate URI's. It
  * also resolves away casts, does some checks the variables (duplicate declarations, order-by not
  * referencing projections, etc), and creates dummy variables for projections where no variable was
- * specified. And finally it associates types and models with the various nodes.
+ * specified. And finally it associates types and graphs with the various nodes.
  *
  * @author Ronald Tschalär 
  */
@@ -89,7 +89,7 @@ options {
     /** 
      * Create a new translator instance.
      *
-     * @param sessionFactory the session-factory to use to look up class-metatdata, models, etc
+     * @param sessionFactory the session-factory to use to look up class-metatdata, graphs, etc
      */
     public FieldTranslator(SessionFactory sessionFactory) {
       this();
@@ -230,34 +230,34 @@ options {
         a.setExprType(chldType);
 
       if (prntType != null && prntType.getType() == ExprType.Type.CLASS)
-        a.setModel(getModelUri(prntType.getMeta().getModel()));
+        a.setGraph(getGraphUri(prntType.getMeta().getGraph()));
       else if (prntType != null && prntType.getType() == ExprType.Type.EMB_CLASS)
-        a.setModel(getModelUri(findEmbModel(prntType)));
+        a.setGraph(getGraphUri(findEmbGraph(prntType)));
 
       if (m instanceof RdfMapper) {
         RdfMapper r = (RdfMapper)m;
         a.setIsInverse(r.hasInverseUri());
-        if (r.getModel() != null)
-          a.setModel(getModelUri(r.getModel()));
+        if (r.getGraph() != null)
+          a.setGraph(getGraphUri(r.getGraph()));
       }
 
       a.setIsVar(isVar);
     }
 
-    private String getModelUri(String modelId) throws RecognitionException {
-      if (modelId == null)
+    private String getGraphUri(String graphId) throws RecognitionException {
+      if (graphId == null)
         return null;
 
-      ModelConfig mc = sessFactory.getModel(modelId);
+      GraphConfig mc = sessFactory.getGraph(graphId);
       if (mc == null)
-        throw new RecognitionException("Unable to find model '" + modelId + "'");
+        throw new RecognitionException("Unable to find graph '" + graphId + "'");
       return mc.getUri().toString();
     }
 
-    private String findEmbModel(ExprType type) {
+    private String findEmbGraph(ExprType type) {
       // it is the same as the enclosing class for the same reason super-class
-      // models are ignored (ie. embedding is a way of sub-classing)
-      return type.getMeta().getModel();
+      // graphs are ignored (ie. embedding is a way of sub-classing)
+      return type.getMeta().getGraph();
     }
 
     private void addVar(AST var, AST clazz) throws RecognitionException {

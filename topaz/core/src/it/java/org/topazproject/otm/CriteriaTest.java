@@ -73,7 +73,7 @@ public class CriteriaTest extends AbstractOtmTest {
   public void setUp() throws OtmException {
     try {
       initFactory();
-      initModels();
+      initGraphs();
       setUpData();
     } catch (OtmException e) {
       log.error("OtmException in setup", e);
@@ -846,7 +846,7 @@ public class CriteriaTest extends AbstractOtmTest {
       });
   }
 
-  @Entity(name = "AnnotationLink", model = "ri")
+  @Entity(name = "AnnotationLink", graph = "ri")
   @UriPrefix(Rdf.topaz)
   public static class AnnotationLink {
     public URI        id;

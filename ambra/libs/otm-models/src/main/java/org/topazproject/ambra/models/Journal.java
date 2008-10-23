@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Pradeep Krishnan
  */
-@Entity(types = {"plos:Journal"}, model = "ri")
+@Entity(types = {"plos:Journal"}, graph = "ri")
 public class Journal extends Aggregation {
   private static final long serialVersionUID = -934335511929534393L;
   private String  key;

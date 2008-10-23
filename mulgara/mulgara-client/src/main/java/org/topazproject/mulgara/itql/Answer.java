@@ -22,7 +22,7 @@ package org.topazproject.mulgara.itql;
 import java.net.URI;
 
 /**
- * This represents the answer to an itql command as a result-set (modeled after JDBC's
+ * This represents the answer to an itql command as a result-set (graphed after JDBC's
  * ResultSet). It is either the answer to a non-query, in which case {@link #getMessage
  * getMessage()} will return a message describing the command completion, or it is the
  * answer to a query, in which case all other methods should be used.

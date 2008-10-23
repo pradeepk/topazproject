@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
@@ -50,15 +50,15 @@ import org.topazproject.otm.serializer.Serializer;
  *
  * @see Restrictions
  */
-@Entity(types = {Criterion.RDF_TYPE}, model = Criterion.MODEL)
+@Entity(types = {Criterion.RDF_TYPE}, graph = Criterion.GRAPH)
 @UriPrefix(Criterion.NS)
 public abstract class Criterion {
-  private static final URI PFX_MODEL = URI.create("http://mulgara.org/mulgara#PrefixGraph");
+  private static final URI PFX_GRAPH = URI.create("http://mulgara.org/mulgara#PrefixGraph");
 
   /**
-   * The graph/model alias for persistence. Unused otherwise.
+   * The graph alias for persistence. Unused otherwise.
    */
-  public static final String MODEL = "criteria";
+  public static final String GRAPH = "criteria";
 
   /**
    * Namespace for all URIs for persistence. Unused otherwise.
@@ -217,19 +217,19 @@ public abstract class Criterion {
   public abstract void onPostLoad(Session ses, DetachedCriteria dc, ClassMetadata cm);
 
   /**
-   * Gets the URI for the mulgara prefix model used in rdf collection queries.
+   * Gets the URI for the mulgara prefix graph used in rdf collection queries.
    *
    * @param criteria the criteria context to use
    *
-   * @return the prefix model URI
+   * @return the prefix graph URI
    *
-   * @throws OtmException when the model is not configured in the SessionFactory
+   * @throws OtmException when the graph is not configured in the SessionFactory
    */
-  protected URI getPrefixModel(Criteria criteria) throws OtmException {
-    List<ModelConfig> l = criteria.getSession().getSessionFactory().getModels(PFX_MODEL);
+  protected URI getPrefixGraph(Criteria criteria) throws OtmException {
+    List<GraphConfig> l = criteria.getSession().getSessionFactory().getGraphs(PFX_GRAPH);
 
     if ((l == null) || (l.size() == 0))
-      throw new OtmException("A model of type " + PFX_MODEL
+      throw new OtmException("A graph of type " + PFX_GRAPH
                              + " must be configured in SessionFactory to execute queries on"
                              + " rdf collections");
 
@@ -237,21 +237,21 @@ public abstract class Criterion {
   }
 
   /**
-   * Gets the URI for the given model name.
+   * Gets the URI for the given graph name.
    *
    * @param criteria the criteria context to use
-   * @param model the name of the model
+   * @param graph the name of the graph
    *
-   * @return the model URI
+   * @return the graph URI
    *
-   * @throws OtmException when the model is not configured in the SessionFactory
+   * @throws OtmException when the graph is not configured in the SessionFactory
    */
-  protected URI getModelUri(Criteria criteria, String model)
+  protected URI getGraphUri(Criteria criteria, String graph)
                      throws OtmException {
-    ModelConfig conf = criteria.getSession().getSessionFactory().getModel(model);
+    GraphConfig conf = criteria.getSession().getSessionFactory().getGraph(graph);
 
     if (conf == null)
-      throw new OtmException("Model/Graph '" + model + "' is not configured in SessionFactory");
+      throw new OtmException("Graph '" + graph + "' is not configured in SessionFactory");
 
     return conf.getUri();
   }

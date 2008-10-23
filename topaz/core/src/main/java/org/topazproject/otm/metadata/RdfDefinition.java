@@ -43,7 +43,7 @@ public class RdfDefinition extends PropertyDefinition {
   private String              uri;
   private Boolean             inverse;
   private Boolean             objectProperty;
-  private String              model;
+  private String              graph;
   private String              dataType;
   private CollectionType      colType;
   private Boolean             entityOwned;
@@ -62,7 +62,7 @@ public class RdfDefinition extends PropertyDefinition {
    * @param uri the rdf predicate. Null to resolve from reference
    * @param dataType of literals or null for un-typed or to resolve from reference
    * @param inverse if this field is persisted with an inverse predicate. Null to resolve from reference
-   * @param model  the model where this field is persisted or null to resolve from reference
+   * @param graph  the graph where this field is persisted or null to resolve from reference
    * @param colType the collection type of this field or null to resolve from reference
    * @param entityOwned if the triples for this field is owned by the containing entity. 
    *                    Null to resolve from reference.
@@ -73,7 +73,7 @@ public class RdfDefinition extends PropertyDefinition {
    * @param objectProperty if this is an object property. Null to resolve from reference.
    */
   public RdfDefinition(String name, String reference, String supersedes, String uri, 
-                       String dataType, Boolean inverse, String model, CollectionType colType,
+                       String dataType, Boolean inverse, String graph, CollectionType colType,
                        Boolean entityOwned, IdentifierGenerator generator, CascadeType[] cascade,
                        FetchType fetchType, String associatedEntity, Boolean objectProperty) {
     super(name, reference, supersedes);
@@ -91,7 +91,7 @@ public class RdfDefinition extends PropertyDefinition {
     this.uri                = uri;
     this.dataType           = dataType;
     this.inverse            = inverse;
-    this.model              = model;
+    this.graph              = graph;
     this.colType            = colType;
     this.entityOwned        = entityOwned;
     this.generator          = generator;
@@ -107,14 +107,14 @@ public class RdfDefinition extends PropertyDefinition {
    * Creates a new RdfDefinition object for a predicate-map.
    *
    * @param name   The name of this definition.
-   * @param model  the model where this field is persisted
+   * @param graph  the graph where this field is persisted
    */
-  public RdfDefinition(String name, String model) {
+  public RdfDefinition(String name, String graph) {
     super(name);
     this.uri                = null;
     this.dataType           = null;
     this.inverse            = false;
-    this.model              = model;
+    this.graph              = graph;
     this.colType            = null;
     this.entityOwned        = true;
     this.generator          = null;
@@ -145,7 +145,7 @@ public class RdfDefinition extends PropertyDefinition {
 
       uri                = (uri == null) ? ref.uri : uri;
       inverse            = (inverse == null) ? ref.inverse : inverse;
-      model              = (model == null) ? ref.model : model;
+      graph              = (graph == null) ? ref.graph : graph;
       dataType           = (dataType == null) ? ref.dataType : dataType;
       colType            = (colType == null) ? ref.colType : colType;
       associatedEntity   = (associatedEntity == null) ? ref.associatedEntity : associatedEntity;
@@ -184,7 +184,7 @@ public class RdfDefinition extends PropertyDefinition {
    * @return true if the predicate-uri, the graph and the inverse mapping is the same.
    */
   public boolean refersSameGraphNodes(RdfDefinition o) {
-    return same(uri, o.uri) && same(model, o.model) && same(inverse, o.inverse);
+    return same(uri, o.uri) && same(graph, o.graph) && same(inverse, o.inverse);
   }
 
   /**
@@ -250,8 +250,8 @@ public class RdfDefinition extends PropertyDefinition {
   /*
    * inherited javadoc
    */
-  public String getModel() {
-    return model;
+  public String getGraph() {
+    return graph;
   }
 
   /*
@@ -315,6 +315,6 @@ public class RdfDefinition extends PropertyDefinition {
            + colType + ", inverse=" + inverse + ", fetchType=" + fetchType + ", cascade=" + cascade
            + ", generator=" + ((generator != null) ? generator.getClass() : "-null-")
            + ", association=" + associatedEntity + ", objectProperty=" + objectProperty
-           + ", model=" + model + ",entityOwned=" + entityOwned + "]";
+           + ", graph=" + graph + ",entityOwned=" + entityOwned + "]";
   }
 }

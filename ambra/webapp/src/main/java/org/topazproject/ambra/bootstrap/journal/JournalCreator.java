@@ -39,7 +39,7 @@ import org.topazproject.ambra.models.EditorialBoard;
 import org.topazproject.ambra.models.Issue;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.models.Volume;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
@@ -95,12 +95,12 @@ public class JournalCreator implements ServletContextListener {
 
       SessionFactory factory = new SessionFactoryImpl();
       factory.setTripleStore(new ItqlStore(service, WebappItqlClientFactory.getInstance()));
-      factory.addModel(new ModelConfig("ri", URI.create(conf.getString("ambra.models.articles")),
+      factory.addGraph(new GraphConfig("ri", URI.create(conf.getString("ambra.graphs.articles")),
                                        null));
-      factory.addModel(new ModelConfig("profiles",
-                                       URI.create(conf.getString("ambra.models.profiles")), null));
-      factory.addModel(new ModelConfig("criteria",
-                                       URI.create(conf.getString("ambra.models.criteria")), null));
+      factory.addGraph(new GraphConfig("profiles",
+                                       URI.create(conf.getString("ambra.graphs.profiles")), null));
+      factory.addGraph(new GraphConfig("criteria",
+                                       URI.create(conf.getString("ambra.graphs.criteria")), null));
 
       Configuration aliases = conf.subset("ambra.aliases");
       Iterator it           = aliases.getKeys();

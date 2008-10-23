@@ -45,7 +45,7 @@ public class SupersedesTest extends TestCase {
     String message = "Testing '" + def.getName() + "': ";
     assertEquals(message, vals[0], def.getUri());
     assertEquals(message, vals[1], def.isEntityOwned());
-    assertEquals(message, vals[2], def.getModel());
+    assertEquals(message, vals[2], def.getGraph());
     assertEquals(message, vals[3], def.hasInverseUri());
     assertEquals(message, vals[4], def.typeIsUri());
     assertEquals(message, vals[5], def.getDataType());
@@ -188,7 +188,7 @@ public class SupersedesTest extends TestCase {
     assertFalse(def.refersSameRange(base));
   }
 
-  @Entity(model="test", name="Base")
+  @Entity(graph="test", name="Base")
   @UriPrefix("a:")
   public static abstract class Base {
     public String getId() {return null;}
@@ -198,7 +198,7 @@ public class SupersedesTest extends TestCase {
 
   @Entity(name="O")
   public static abstract class O extends Base {
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public Object getObject() {return null;}
     public void setObject(Object a) {}
     public void setObject(Collection a) {}
@@ -207,7 +207,7 @@ public class SupersedesTest extends TestCase {
 
   @Entity(name="A")
   public static class A extends O {
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public Assoc getObject() {return null;}
   }
 
@@ -221,31 +221,31 @@ public class SupersedesTest extends TestCase {
 
   @Entity(name="S")
   public static class S extends O {
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public String getObject() {return null;}
   }
 
   @Entity(name="I")
   public static class I extends O {
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public Integer getObject() {return null;}
   }
 
   @Entity(name="II")
   public static class II extends O {
-    @Predicate(model="test", dataType="xsd:int")
+    @Predicate(graph="test", dataType="xsd:int")
     public Integer getObject() {return null;}
   }
 
   @Entity(name="AS")
   public static class AS extends O {
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public String[] getObject() {return null;}
   }
 
   @Entity(name="SII")
   public static class SII extends O {
-    @Predicate(model="test", dataType="xsd:int", collectionType=CollectionType.RDFSEQ)
+    @Predicate(graph="test", dataType="xsd:int", collectionType=CollectionType.RDFSEQ)
     public List<Integer> getObject() {return null;}
   }
 

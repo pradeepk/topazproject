@@ -45,7 +45,7 @@ public class PermissionsPropagator {
    *
    * @param propPermsTo the value to set.
    */
-  @Predicate(uri = "topaz:propagate-permissions-to", model = "pp")
+  @Predicate(uri = "topaz:propagate-permissions-to", graph = "pp")
   public void setPropPermsTo(URI propPermsTo) {
     this.propPermsTo = propPermsTo;
   }

@@ -45,7 +45,7 @@ import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Filter;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
@@ -110,20 +110,20 @@ public class ItqlStore extends AbstractTripleStore {
                          Connection con) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
-    Map<String, List<RdfMapper>> mappersByModel = groupMappersByModel(cm, fields);
+    Map<String, List<RdfMapper>> mappersByGraph = groupMappersByGraph(cm, fields);
 
-    // for every model create an insert statement
-    for (String m : mappersByModel.keySet()) {
+    // for every graph create an insert statement
+    for (String m : mappersByGraph.keySet()) {
       StringBuilder insert = isc.getInserts().get(m);
       if (insert == null)
         isc.getInserts().put(m, insert = new StringBuilder(500));
 
-      if (m.equals(cm.getModel())) {
+      if (m.equals(cm.getGraph())) {
         for (String type : cm.getAllTypes())
           addStmt(insert, id, Rdf.rdf + "type", type, null, true);
       }
 
-      buildInsert(insert, mappersByModel.get(m), id, o, isc.getSession());
+      buildInsert(insert, mappersByGraph.get(m), id, o, isc.getSession());
     }
   }
 
@@ -137,7 +137,7 @@ public class ItqlStore extends AbstractTripleStore {
         continue;
 
       insert.append("insert ").append(stmts).
-             append("into <").append(getModelUri(m, isc)).append(">;");
+             append("into <").append(getGraphUri(m, isc)).append(">;");
     }
 
     isc.getInserts().clear();
@@ -155,22 +155,22 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private static Map<String, List<RdfMapper>> groupMappersByModel(ClassMetadata cm, 
+  private static Map<String, List<RdfMapper>> groupMappersByGraph(ClassMetadata cm, 
                                                                Collection<RdfMapper> fields) {
-    Map<String, List<RdfMapper>> mappersByModel = new HashMap<String, List<RdfMapper>>();
+    Map<String, List<RdfMapper>> mappersByGraph = new HashMap<String, List<RdfMapper>>();
 
     if (cm.getAllTypes().size() > 0)
-      mappersByModel.put(cm.getModel(), new ArrayList<RdfMapper>());
+      mappersByGraph.put(cm.getGraph(), new ArrayList<RdfMapper>());
 
     for (RdfMapper p : fields) {
-      String m = (p.getModel() != null) ? p.getModel() : cm.getModel();
-      List<RdfMapper> pList = mappersByModel.get(m);
+      String m = (p.getGraph() != null) ? p.getGraph() : cm.getGraph();
+      List<RdfMapper> pList = mappersByGraph.get(m);
       if (pList == null)
-        mappersByModel.put(m, pList = new ArrayList<RdfMapper>());
+        mappersByGraph.put(m, pList = new ArrayList<RdfMapper>());
       pList.add(p);
     }
 
-    return mappersByModel;
+    return mappersByGraph;
   }
 
 
@@ -261,16 +261,16 @@ public class ItqlStore extends AbstractTripleStore {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
     final boolean partialDelete = (cm.getRdfMappers().size() != fields.size());
-    Map<String, List<RdfMapper>> mappersByModel = groupMappersByModel(cm, fields);
+    Map<String, List<RdfMapper>> mappersByGraph = groupMappersByGraph(cm, fields);
     StringBuilder delete = new StringBuilder(500);
 
-    // for every model create a delete statement
-    for (String m : mappersByModel.keySet()) {
+    // for every graph create a delete statement
+    for (String m : mappersByGraph.keySet()) {
       int len = delete.length();
       delete.append("delete ");
-      if (buildDeleteSelect(delete, getModelUri(m, isc), mappersByModel.get(m),
-                        !partialDelete && m.equals(cm.getModel()) && cm.getAllTypes().size() > 0, id))
-        delete.append("from <").append(getModelUri(m, isc)).append(">;");
+      if (buildDeleteSelect(delete, getGraphUri(m, isc), mappersByGraph.get(m),
+                        !partialDelete && m.equals(cm.getGraph()) && cm.getAllTypes().size() > 0, id))
+        delete.append("from <").append(getGraphUri(m, isc)).append(">;");
       else
         delete.setLength(len);
     }
@@ -288,10 +288,10 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private boolean buildDeleteSelect(StringBuilder qry, String model, List<RdfMapper> rdfMappers,
+  private boolean buildDeleteSelect(StringBuilder qry, String graph, List<RdfMapper> rdfMappers,
                                  boolean delTypes, String id)
       throws OtmException {
-    qry.append("select $s $p $o from <").append(model).append("> where ");
+    qry.append("select $s $p $o from <").append(graph).append("> where ");
     int len = qry.length();
 
     // build forward statements
@@ -455,20 +455,20 @@ public class ItqlStore extends AbstractTripleStore {
                                 List<Filter> filters, boolean filterObj) throws OtmException {
     SessionFactory        sf     = isc.getSession().getSessionFactory();
     Set<ClassMetadata> fCls   = listFieldClasses(cm, sf);
-    String                models = getModelsExpr(Collections.singleton(cm), isc);
-    String                tmdls  = fCls.size() > 0 ? getModelsExpr(fCls, isc) : models;
+    String                graphs = getGraphsExpr(Collections.singleton(cm), isc);
+    String                tmdls  = fCls.size() > 0 ? getGraphsExpr(fCls, isc) : graphs;
     List<RdfMapper>          assoc  = listAssociations(cm, sf);
 
     StringBuilder qry = new StringBuilder(500);
 
-    qry.append("select $p $o from ").append(models).append(" where ");
+    qry.append("select $p $o from ").append(graphs).append(" where ");
     qry.append("<").append(id).append("> $p $o");
     if (filterObj) {
       if (applyObjectFilters(qry, cm, "$s", filters, sf))
         qry.append(" and $s <mulgara:is> <").append(id).append(">");
     }
 
-    qry.append("; select $p $s from ").append(models).append(" where ");
+    qry.append("; select $p $s from ").append(graphs).append(" where ");
     qry.append("$s $p <").append(id).append(">");
     if (filterObj) {
       if (applyObjectFilters(qry, cm, "$o", filters, sf))
@@ -513,15 +513,15 @@ public class ItqlStore extends AbstractTripleStore {
     return true;
   }
 
-  private static String getModelsExpr(Set<? extends ClassMetadata> cmList,
+  private static String getGraphsExpr(Set<? extends ClassMetadata> cmList,
                                       ItqlStoreConnection isc)
       throws OtmException {
     Set<String> mList = new HashSet<String>();
     for (ClassMetadata cm : cmList) {
-      mList.add(getModelUri(cm.getModel(), isc));
+      mList.add(getGraphUri(cm.getGraph(), isc));
       for (RdfMapper p : cm.getRdfMappers()) {
-        if (p.getModel() != null)
-          mList.add(getModelUri(p.getModel(), isc));
+        if (p.getGraph() != null)
+          mList.add(getGraphUri(p.getGraph(), isc));
       }
     }
 
@@ -570,11 +570,11 @@ public class ItqlStore extends AbstractTripleStore {
     return classes;
   }
 
-  public List<String> getRdfList(String sub, String pred, String modelUri, Connection con)
+  public List<String> getRdfList(String sub, String pred, String graphUri, Connection con)
         throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
     StringBuilder qry = new StringBuilder(500);
-    qry.append("select $o $s $n from <").append(modelUri).append("> where ")
+    qry.append("select $o $s $n from <").append(graphUri).append("> where ")
        .append("(trans($c <rdf:rest> $s) or $c <rdf:rest> $s or <")
        .append(sub).append("> <").append(pred).append("> $s) and <")
        .append(sub).append("> <").append(pred).append("> $c and $s <rdf:first> $o")
@@ -583,7 +583,7 @@ public class ItqlStore extends AbstractTripleStore {
     return execCollectionsQry(qry.toString(), isc);
   }
 
-  public List<String> getRdfBag(String sub, String pred, String modelUri, Connection con)
+  public List<String> getRdfBag(String sub, String pred, String graphUri, Connection con)
         throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
@@ -594,7 +594,7 @@ public class ItqlStore extends AbstractTripleStore {
      */
     StringBuilder qry = new StringBuilder(500);
     qry.append("select $o $p from <")
-       .append(modelUri).append("> where ")
+       .append(graphUri).append("> where ")
        .append("(($s $p $o and <").append(sub).append("> <").append(pred).append("> $s) minus ")
        .append("($s <rdf:type> $o and <").append(sub).append("> <").append(pred).append("> $s));");
 
@@ -735,10 +735,10 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private static String getModelUri(String modelId, ItqlStoreConnection isc) throws OtmException {
-    ModelConfig mc = isc.getSession().getSessionFactory().getModel(modelId);
-    if (mc == null) // Happens if using a Class but the model was not added
-      throw new OtmException("Unable to find model '" + modelId + "'");
+  private static String getGraphUri(String graphId, ItqlStoreConnection isc) throws OtmException {
+    GraphConfig mc = isc.getSession().getSessionFactory().getGraph(graphId);
+    if (mc == null) // Happens if using a Class but the graph was not added
+      throw new OtmException("Unable to find graph '" + graphId + "'");
     return mc.getUri().toString();
   }
 
@@ -792,20 +792,20 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
   // TODO: move this method into session so it can be part of a tx
-  public void createModel(ModelConfig conf) throws OtmException {
+  public void createGraph(GraphConfig conf) throws OtmException {
     String type = (conf.getType() == null) ? "mulgara:Model" : conf.getType().toString();
     runSingleCmd("create <" + conf.getUri() + "> <" + type + ">;",
-                 "Failed to create model <" + conf.getUri() + ">");
+                 "Failed to create graph <" + conf.getUri() + ">");
   }
 
   // TODO: move this method into session so it can be part of a tx
-  public void dropModel(ModelConfig conf) throws OtmException {
-    runSingleCmd("drop <" + conf.getUri() + ">;", "Failed to drop model <" + conf.getUri() + ">");
+  public void dropGraph(GraphConfig conf) throws OtmException {
+    runSingleCmd("drop <" + conf.getUri() + ">;", "Failed to drop graph <" + conf.getUri() + ">");
   }
 
   private void runSingleCmd(String itql, String errMsg) throws OtmException {
     /* can't use cached clients because mulgara disallows using a session with both internal
-     * (begin/commit) and external (getXAResource) transactions. When we move the model operations
+     * (begin/commit) and external (getXAResource) transactions. When we move the graph operations
      * into session and hence make them part of transaction then we won't have this problem.
      */
     ItqlClient con = getItqlClient(null, false);

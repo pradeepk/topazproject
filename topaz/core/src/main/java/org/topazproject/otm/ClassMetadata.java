@@ -50,7 +50,7 @@ public class ClassMetadata {
   private final Set<String>               types;
   private final String                    name;
   private final Set<String>               superEntities;
-  private final String                    model;
+  private final String                    graph;
   private final IdMapper                  idField;
   private final BlobMapper                blobField;
   private final Map<String, List<RdfMapper>> uriMap;
@@ -69,7 +69,7 @@ public class ClassMetadata {
    * @param name the entity name for use in queries
    * @param types the most specific rdf:type that identify this class
    * @param allTypes set of rdf:type values that identify this class
-   * @param model the graph/model where this class is persisted
+   * @param graph the graph where this class is persisted
    * @param idField the mapper for the id field
    * @param fields mappers for all persistable fields (includes embedded class fields)
    * @param blobField loader for the blob
@@ -77,13 +77,13 @@ public class ClassMetadata {
    * @param embeds fields that are embeds
    */
   public ClassMetadata(Map<EntityMode, EntityBinder> binders, String name, Set<String> types, Set<String> allTypes,
-                       String model, IdMapper idField, Collection<RdfMapper> fields, BlobMapper blobField,
+                       String graph, IdMapper idField, Collection<RdfMapper> fields, BlobMapper blobField,
                        Set<String> superEntities, Collection<EmbeddedMapper> embeds)
                 throws OtmException {
     this.binders                              = binders;
     this.name                                 = name;
     this.query                                = null;
-    this.model                                = model;
+    this.graph                                = graph;
     this.idField                              = idField;
     this.blobField                            = blobField;
 
@@ -109,9 +109,9 @@ public class ClassMetadata {
         throw new OtmException("The colType for " + m.getName() + " in " + name + 
             ", must be " + rdfMappers.get(0).getColType() + " as defined by " 
             + rdfMappers.get(0).getName() + " since they both share the same predicate uri");
-      else if (!sameModel(rdfMappers.get(0), m, model))
-        throw new OtmException("The model for " + m.getName() + " in " + name + 
-            ", must be " + rdfMappers.get(0).getModel() + " as defined by " 
+      else if (!sameGraph(rdfMappers.get(0), m, graph))
+        throw new OtmException("The graph for " + m.getName() + " in " + name + 
+            ", must be " + rdfMappers.get(0).getGraph() + " as defined by " 
             + rdfMappers.get(0).getName() + " since they both share the same predicate uri");
 
       rdfMappers.add(m);
@@ -149,7 +149,7 @@ public class ClassMetadata {
     this.binders       = binders;
     this.name          = name;
     this.query         = query;
-    this.model         = null;
+    this.graph         = null;
     this.idField       = idField;
     this.blobField     = null;
 
@@ -215,12 +215,12 @@ public class ClassMetadata {
   }
 
   /**
-   * Gets the graph/model where this class is persisted.
+   * Gets the graph where this class is persisted.
    *
-   * @return the model identifier
+   * @return the graph identifier
    */
-  public String getModel() {
-    return model;
+  public String getGraph() {
+    return graph;
   }
 
   /**
@@ -423,7 +423,7 @@ public class ClassMetadata {
 
   /**
    * Tests if this metadata is for a persistable class. To be persistable, the class must
-   * have an id field. It must also have a model or if a model is missing then there should not
+   * have an id field. It must also have a graph or if a graph is missing then there should not
    * be any persistable fields or rdf types and must have a blob field.
    *
    * @return true only if this class can be persisted
@@ -431,7 +431,7 @@ public class ClassMetadata {
   public boolean isPersistable() {
     if ((idField == null) || (rdfFields == null))
       return false;
-    if (model != null)
+    if (graph != null)
       return true;
     return ((allTypes.size() + rdfFields.size()) == 0) && (blobField != null);
   }
@@ -460,15 +460,15 @@ public class ClassMetadata {
     return false;
   }
 
-  private static boolean sameModel(RdfMapper m1, RdfMapper m2, String model) {
-    String g1 = m1.getModel();
-    String g2 = m2.getModel();
+  private static boolean sameGraph(RdfMapper m1, RdfMapper m2, String graph) {
+    String g1 = m1.getGraph();
+    String g2 = m2.getGraph();
 
     if ((g1 == null) || "".equals(g1))
-      g1 = model;
+      g1 = graph;
 
     if ((g2 == null) || "".equals(g2))
-      g2 = model;
+      g2 = graph;
 
     return (g1 != null) ? g1.equals(g2) : (g2 == null);
   }

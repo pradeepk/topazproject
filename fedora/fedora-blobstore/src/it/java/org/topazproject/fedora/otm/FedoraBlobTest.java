@@ -27,7 +27,7 @@ import static org.testng.AssertJUnit.*;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
@@ -62,7 +62,7 @@ public class FedoraBlobTest {
   public void setUp() throws OtmException {
     try {
       initFactory();
-      initModels();
+      initGraphs();
     } catch (OtmException e) {
       log.error("OtmException in setup", e);
       throw e;
@@ -127,15 +127,15 @@ public class FedoraBlobTest {
   private void initFactory() throws OtmException {
     log.info("initializing otm session factory ...");
 
-    ModelConfig[] models =
-      new ModelConfig[] { new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null), };
+    GraphConfig[] graphs =
+      new GraphConfig[] { new GraphConfig("ri", URI.create("local:///topazproject#otmtest1"), null), };
     factory.setTripleStore(new MemStore());
     factory.setBlobStore(blobStore);
 
     blobStore.addBlobFactory(new DefaultFedoraBlobFactory());
 
-    for (ModelConfig model : models)
-      factory.addModel(model);
+    for (GraphConfig graph : graphs)
+      factory.addGraph(graph);
 
     Class[] classes = new Class[] { Test1.class, Test2.class };
 
@@ -145,22 +145,22 @@ public class FedoraBlobTest {
     factory.validate();
   }
 
-  private void initModels() throws OtmException {
-    log.info("initializing mulgara test models ...");
+  private void initGraphs() throws OtmException {
+    log.info("initializing mulgara test graphs ...");
 
     String[] names = new String[] { "ri", "grants", "revokes", "criteria" };
 
     for (String name : names) {
-      ModelConfig model = factory.getModel(name);
+      GraphConfig graph = factory.getGraph(name);
 
       try {
-        factory.getTripleStore().dropModel(model);
+        factory.getTripleStore().dropGraph(graph);
       } catch (Throwable t) {
         if (log.isDebugEnabled())
-          log.debug("Failed to drop model '" + name + "'", t);
+          log.debug("Failed to drop graph '" + name + "'", t);
       }
 
-      factory.getTripleStore().createModel(model);
+      factory.getTripleStore().createGraph(graph);
     }
   }
 
@@ -256,7 +256,7 @@ public class FedoraBlobTest {
     }
   }
 
-  @Entity(model = "ri")
+  @Entity(graph = "ri")
   @UriPrefix("test2:test2/")
   public static class Test2 {
     private String    id;

@@ -157,22 +157,22 @@ public interface TripleStore extends Store {
   public void doNativeUpdate(String command, Connection con) throws OtmException;
 
   /**
-   * Creates a new model/graph in the persistence store.
+   * Creates a new graph in the persistence store.
    *
    * @param conf the configuration
    *
    * @throws OtmException on an error
    */
-  public void createModel(ModelConfig conf) throws OtmException;
+  public void createGraph(GraphConfig conf) throws OtmException;
 
   /**
-   * Drops a model/graph in the persistence store, deleting all triples.
+   * Drops a graph in the persistence store, deleting all triples.
    *
    * @param conf the configuration
    *
    * @throws OtmException on an error
    */
-  public void dropModel(ModelConfig conf) throws OtmException;
+  public void dropGraph(GraphConfig conf) throws OtmException;
 
   /**
    * Gets a store specific criterion builder.

@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.BlobStore;
@@ -40,7 +40,7 @@ import org.topazproject.fedora.otm.FedoraBlobFactory;
 public class OtmConfiguration {
   private SessionFactory   factory;
   private String[]         preloadClasses;
-  private ModelConfig[]    models;
+  private GraphConfig[]    graphs;
   private static final Log log = LogFactory.getLog(OtmConfiguration.class);
 
   /**
@@ -103,25 +103,25 @@ public class OtmConfiguration {
   }
 
   /**
-   * Get the list of configured models.
+   * Get the list of configured graphs.
    *
-   * @return Returns the models.
+   * @return Returns the graphs.
    */
-  public ModelConfig[] getModels() {
-    return models;
+  public GraphConfig[] getGraphs() {
+    return graphs;
   }
 
   /**
-   * Configures the factory with models that we use and makes sure they exist.
+   * Configures the factory with graphs that we use and makes sure they exist.
    *
-   * @param models The models to set.
+   * @param graphs The graphs to set.
    */
-  public void setModels(ModelConfig[] models) {
-    this.models = models;
+  public void setGraphs(GraphConfig[] graphs) {
+    this.graphs = graphs;
 
-    for (ModelConfig model : models) {
-      factory.addModel(model);
-      factory.getTripleStore().createModel(model);
+    for (GraphConfig graph : graphs) {
+      factory.addGraph(graph);
+      factory.getTripleStore().createGraph(graph);
     }
   }
 

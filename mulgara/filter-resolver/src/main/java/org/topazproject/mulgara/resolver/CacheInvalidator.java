@@ -114,7 +114,7 @@ import net.sf.ehcache.Ehcache;
  *
  * Each rule consists of match section which determines when the rule is triggered, and an object
  * section which determines which cache entries are invalidated. The match section is one or more
- * elements that an inserted or deleted quad (triple + model) must match; only simple string
+ * elements that an inserted or deleted quad (triple + graph) must match; only simple string
  * matches are supported, and all specified elements must match.
  *
  * <p>The object section specifies the name of the cache to which the invalidation should be sent,
@@ -137,7 +137,7 @@ import net.sf.ehcache.Ehcache;
  *   &lt;rule&gt;
  *     &lt;match&gt;
  *       &lt;p&gt;topaz:hasRoles&lt;/p&gt;
- *       &lt;m&gt;model:users&lt;/m&gt;
+ *       &lt;m&gt;graph:users&lt;/m&gt;
  *     &lt;/match&gt;
  *     &lt;object&gt;
  *       &lt;cache&gt;permit-admin&lt;/cache&gt;
@@ -146,7 +146,7 @@ import net.sf.ehcache.Ehcache;
  *   &lt;/rule&gt;
  * </pre>
  * With this rule, any time a triple, whose predicate is &lt;topaz:hasRoles&gt;, is inserted into
- * or removed from the model &lt;model:users&gt;, the cache-entry having the triple's subject as
+ * or removed from the graph &lt;graph:users&gt;, the cache-entry having the triple's subject as
  * the key is removed from the 'permit-admin' cache.
  *
  * <p>The following example shows the use of a query to determine the key to be invalidated:
@@ -154,14 +154,14 @@ import net.sf.ehcache.Ehcache;
  *   &lt;rule&gt;
  *     &lt;match&gt;
  *       &lt;p&gt;topaz:propagate-permissions-to&lt;/p&gt;
- *       &lt;m&gt;model:pp&lt;/m&gt;
+ *       &lt;m&gt;graph:pp&lt;/m&gt;
  *     &lt;/match&gt;
  *     &lt;object&gt;
  *       &lt;cache&gt;article-state&lt;/cache&gt;
  *       &lt;query&gt;
- *         select $s $state from &lt;model:ri&gt;
+ *         select $s $state from &lt;graph:ri&gt;
  *             where (&lt;${s}&gt; &lt;topaz:articleState&gt; $state)
- *             and (&lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $s in &lt;model:pp&gt;);
+ *             and (&lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $s in &lt;graph:pp&gt;);
  *       &lt;/query&gt;
  *     &lt;/object&gt;
  *   &lt;/rule&gt;
@@ -284,11 +284,11 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
     return xaResource;
   }
 
-  public void modelRemoved(URI filterModel, URI realModel) throws ResolverException {
+  public void graphRemoved(URI filterGraph, URI realGraph) throws ResolverException {
     // FIXME: implement
   }
 
-  public void modelModified(URI filterModel, URI realModel, Statements stmts, boolean occurs,
+  public void graphModified(URI filterGraph, URI realGraph, Statements stmts, boolean occurs,
                             ResolverSession resolverSession) throws ResolverException {
     try {
       stmts.beforeFirst();
@@ -298,11 +298,11 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
           String p = toString(resolverSession, stmts.getPredicate());
           String o = toString(resolverSession, stmts.getObject());
 
-          ModItem mi = getModItem(s, p, o, realModel.toString());
+          ModItem mi = getModItem(s, p, o, realGraph.toString());
           if (mi != null) {
             if (logger.isTraceEnabled())
-              logger.trace("Matched '" + s + "' '" + p + "' '" + o + "' '" + realModel +
-                           "' to rule " + findMatchingRule(s, p, o, realModel.toString()));
+              logger.trace("Matched '" + s + "' '" + p + "' '" + o + "' '" + realGraph +
+                           "' to rule " + findMatchingRule(s, p, o, realGraph.toString()));
 
             queue(mi);
           }
@@ -519,7 +519,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
         case OBJ:
           return "<obj>";
         case MODL:
-          return "<model>";
+          return "<graph>";
         default:
           return "-unknown-" + keySelector + "-";
       }

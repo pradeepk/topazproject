@@ -59,7 +59,7 @@ public class RdfDefTest extends TestCase {
     String message = "Testing '" + def.getName() + "': ";
     assertEquals(message, vals[0], def.getUri());
     assertEquals(message, vals[1], def.isEntityOwned());
-    assertEquals(message, vals[2], def.getModel());
+    assertEquals(message, vals[2], def.getGraph());
     assertEquals(message, vals[3], def.hasInverseUri());
     assertEquals(message, vals[4], def.typeIsUri());
     assertEquals(message, vals[5], def.getDataType());
@@ -135,7 +135,7 @@ public class RdfDefTest extends TestCase {
       assertEquals(sf.getClassMetadata(e), sf.getInstanceMetadata(null, EntityMode.POJO, e.newInstance()));
   }
 
-  @Entity(model="test", name="RdfNode")
+  @Entity(graph="test", name="RdfNode")
   @UriPrefix("a:")
   public static interface RdfNode {
     public String getId();
@@ -143,7 +143,7 @@ public class RdfDefTest extends TestCase {
     public void setId(String s);
   }
 
-  @Entity(model="test", name="Base")
+  @Entity(graph="test", name="Base")
   @UriPrefix("a:")
   public static class Base implements RdfNode {
     public String getId() {return null;}
@@ -153,13 +153,13 @@ public class RdfDefTest extends TestCase {
   @Entity(name="A")
   public static class A extends Base {
     public String getP1() {return null;}
-    @Predicate(model="test", dataType=Predicate.UNTYPED)
+    @Predicate(graph="test", dataType=Predicate.UNTYPED)
     public void setP1(String s) {}
     public URI getP2() {return null;}
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setP2(URI u) {}
     public Assoc1 getP3() {return null;}
-    @Predicate(model="test")
+    @Predicate(graph="test")
     public void setP3(Assoc1 a) {}
   }
 

@@ -42,7 +42,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  * @author Ronald Tschalär
  */
 @UriPrefix("topaz:")
-@Entity(model = "profiles")
+@Entity(graph = "profiles")
 public class UserProfile extends FoafPerson {
   static final long serialVersionUID = -1224761277569005857L;
 

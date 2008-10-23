@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.configuration.WebappItqlClientFactory;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.stores.ItqlStore;
 
 /**
@@ -57,17 +57,17 @@ public class WebAppListenerInitModels implements ServletContextListener {
    */
   public void contextInitialized(ServletContextEvent event) {
     // xxx" may be this can itself be driven by config
-    initModels();
+    initGraphs();
   }
 
-  private void initModels() {
+  private void initGraphs() {
     try {
       Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
       URI           service = new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql.uri"));
 
       ItqlStore     store   = new ItqlStore(service, WebappItqlClientFactory.getInstance());
 
-      conf                  = conf.subset("ambra.models");
+      conf                  = conf.subset("ambra.graphs");
 
       Iterator it           = conf.getKeys();
 
@@ -77,15 +77,15 @@ public class WebAppListenerInitModels implements ServletContextListener {
         if ((key.indexOf("[") >= 0) || (key.indexOf(".") >= 0))
           continue;
 
-        String model  = conf.getString(key);
+        String graph  = conf.getString(key);
         String type   = conf.getString(key + "[@type]", "mulgara:Model");
 
-        store.createModel(new ModelConfig("", new URI(model), new URI(type)));
+        store.createGraph(new GraphConfig("", new URI(graph), new URI(type)));
       }
     } catch (Exception e) {
-      log.warn("bootstrap of models failed", e);
+      log.warn("bootstrap of graphs failed", e);
     }
 
-    log.info("Successfully created all configured ITQL Models.");
+    log.info("Successfully created all configured ITQL Graphs.");
   }
 }

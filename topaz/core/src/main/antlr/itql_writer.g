@@ -75,7 +75,7 @@ options {
       final List<ProjectionFunction> prjFuncs = new ArrayList<ProjectionFunction>();
       final List<String>             prjExprs = new ArrayList<String>();
       final List<String>             ordrVars = new ArrayList<String>();
-      final Set<String>              models   = new HashSet<String>();
+      final Set<String>              graphs   = new HashSet<String>();
       String                         limit    = null;
       String                         offset   = null;
       int                            kVar     = 0;
@@ -87,9 +87,9 @@ options {
         for (String expr : prjExprs)
           q.append(expr).append(" ");
 
-        if (models.size() == 0)
-          throw new RecognitionException("no models found in query");
-        q.append("from <").append(models.iterator().next()).append("> ");
+        if (graphs.size() == 0)
+          throw new RecognitionException("no graphs found in query");
+        q.append("from <").append(graphs.iterator().next()).append("> ");
 
         q.append("where ").append(where);
 
@@ -129,9 +129,9 @@ iquery[QueryBuilder qb]
 fclause[QueryBuilder qb]
     :   #(COMMA fclause[qb] fclause[qb])
     |   cls:ID var:ID {
-          String m = ((OqlAST) #var).getModel();
+          String m = ((OqlAST) #var).getGraph();
           if (m != null)
-            qb.models.add(m);
+            qb.graphs.add(m);
         }
     ;
 
@@ -248,7 +248,7 @@ constr[QueryBuilder qb]
         e.append(toItqlStr(#s)).append(' ').append(toItqlStr(#p)).append(' ').append(toItqlStr(#o));
         if (#m != null) {
           e.append(" in <").append(#m.getText()).append('>');
-          qb.models.add(#m.getText());
+          qb.graphs.add(#m.getText());
         }
         e.append(' ');
       }

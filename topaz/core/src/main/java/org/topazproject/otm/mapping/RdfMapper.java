@@ -75,11 +75,11 @@ public interface RdfMapper extends Mapper {
   public boolean hasInverseUri();
 
   /**
-   * Gets the model where this field is persisted.
+   * Gets the graph where this field is persisted.
    *
-   * @return the model name or null
+   * @return the graph name or null
    */
-  public String getModel();
+  public String getGraph();
 
   /**
    * Gets the Collection type of this mapper.

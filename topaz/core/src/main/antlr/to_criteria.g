@@ -150,7 +150,7 @@ options {
     /** 
      * Create a new translator instance.
      *
-     * @param sessionFactory the session-factory to use to look up entity-metadata, models, etc
+     * @param sessionFactory the session-factory to use to look up entity-metadata, graphs, etc
      */
     public CriteriaGenerator(Session session) {
       this();

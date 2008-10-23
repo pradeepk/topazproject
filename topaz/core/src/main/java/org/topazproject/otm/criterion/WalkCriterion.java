@@ -75,19 +75,19 @@ public class WalkCriterion extends AbstractBinaryCriterion {
                              + m.getName());
 
     String val = serializeValue(getValue(), criteria, getFieldName());
-    String model = m.getModel();
+    String graph = m.getGraph();
 
-    if ((model != null) && !cm.getModel().equals(model))
-      model = " in <" + getModelUri(criteria, model) + ">";
+    if ((graph != null) && !cm.getGraph().equals(graph))
+      graph = " in <" + getGraphUri(criteria, graph) + ">";
     else
-      model = "";
+      graph = "";
 
     String query =
       m.hasInverseUri()
-      ? ("walk(" + val + " <" + m.getUri() + "> " + subjectVar + model + " and " + varPrefix + " <"
-      + m.getUri() + "> " + subjectVar + model + ")")
-      : ("walk(" + subjectVar + " <" + m.getUri() + "> " + val + model + " and " + subjectVar + " <"
-      + m.getUri() + "> " + varPrefix + model + ")");
+      ? ("walk(" + val + " <" + m.getUri() + "> " + subjectVar + graph + " and " + varPrefix + " <"
+      + m.getUri() + "> " + subjectVar + graph + ")")
+      : ("walk(" + subjectVar + " <" + m.getUri() + "> " + val + graph + " and " + subjectVar + " <"
+      + m.getUri() + "> " + varPrefix + graph + ")");
 
     return query;
   }

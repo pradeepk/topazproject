@@ -55,8 +55,8 @@ public class FieldDef {
   String   name
   /** the rdf predicate to store this under; if not specified, defaults to uriPrefix + name  */
   String   pred
-  /** the model to store the statements in; if not specified, use {@link ClassDef#model}. */
-  String   model
+  /** the graph to store the statements in; if not specified, use {@link ClassDef#graph}. */
+  String   graph
   /**
    * the rdf type. If null, this is an untyped literal; if it's an xsd type, this is a typed
    * literal; else this is a class type, and interpreted as uriPrefix + type if not absolute
@@ -208,7 +208,7 @@ public class FieldDef {
       if (isId)
         m = [new IdMapperImpl(new IdDefinition(dn, idGen), [(EntityMode.POJO) : l])];
       else
-        m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, model, mt, owned, idGen,
+        m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, graph, mt, owned, idGen,
 ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [(EntityMode.POJO) : l])]
     } else {
       String     collType = colType ? colType : rdf.defColType
@@ -224,7 +224,7 @@ ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [
       else
         l = new CollectionFieldBinder(property, ser);
 
-      m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, model, mt, owned,
+      m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, graph, mt, owned,
                              idGen, ct, ft, cm?.getName(),
                   (ser == null) || inverse || "OBJECT".equals(propType)), [(EntityMode.POJO) : l])]
     }

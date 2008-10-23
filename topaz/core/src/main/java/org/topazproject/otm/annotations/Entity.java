@@ -43,7 +43,7 @@ public @interface Entity {
   String[] types() default {};
 
   /**
-   * The graph/model where this entity is to be persisted. Defaults to super-class.
+   * The graph where this entity is to be persisted. Defaults to super-class.
    */
-  String model() default "";
+  String graph() default "";
 }

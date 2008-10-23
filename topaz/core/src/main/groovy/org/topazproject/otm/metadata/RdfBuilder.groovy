@@ -48,7 +48,7 @@ import org.apache.commons.logging.LogFactory;
  * for fields defining nested classes is the union of the two.</p>
  *
  * <p>The builder can also be configured with a bunch of defaults to be used when creating
- * classes, such as the collection type, the model, and the uri-prefix.</p>
+ * classes, such as the collection type, the graph, and the uri-prefix.</p>
  */
 public class RdfBuilder extends BuilderSupport {
   private static final Log log = LogFactory.getLog(RdfBuilder.class)
@@ -59,8 +59,8 @@ public class RdfBuilder extends BuilderSupport {
   String         defColType = 'List'
   /** the default collection mapping type; defaults to 'Predicate' */
   String         defColMapping = 'Predicate'
-  /** the default model to use */
-  String         defModel
+  /** the default graph to use */
+  String         defGraph
   /** the default uri-prefix to use */
   String         defUriPrefix
 

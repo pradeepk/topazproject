@@ -36,7 +36,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  * @author Jeff Suttor
  */
 @UriPrefix("topaz:RatingSummaryContent/")
-@Entity(model = "ri", types = {"topaz:RatingSummaryContent"})
+@Entity(graph = "ri", types = {"topaz:RatingSummaryContent"})
 public class RatingSummaryContent implements Serializable {
   private static final long serialVersionUID = -1692051472824346967L;
 

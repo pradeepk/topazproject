@@ -34,35 +34,35 @@ import org.mulgara.resolver.spi.Statements;
  */
 public interface FilterHandler {
   /** 
-   * Signals that a model was created. 
+   * Signals that a graph was created. 
    * 
-   * @param filterModel the filter-resolver model that was created
-   * @param realModel   the underlying "real" model
+   * @param filterGraph the filter-resolver graph that was created
+   * @param realGraph   the underlying "real" graph
    * @throws ResolverException if something's wrong with the URI
    */
-  public void modelCreated(URI filterModel, URI realModel) throws ResolverException;
+  public void graphCreated(URI filterGraph, URI realGraph) throws ResolverException;
 
   /** 
-   * Signals that a model was removed. 
+   * Signals that a graph was removed. 
    * 
-   * @param filterModel the filter-resolver model that was removed
-   * @param realModel   the underlying "real" model
+   * @param filterGraph the filter-resolver graph that was removed
+   * @param realGraph   the underlying "real" graph
    * @throws ResolverException if something's wrong with the URI
    */
-  public void modelRemoved(URI filterModel, URI realModel) throws ResolverException;
+  public void graphRemoved(URI filterGraph, URI realGraph) throws ResolverException;
 
   /** 
-   * Signals that a model was modified. 
+   * Signals that a graph was modified. 
    * 
-   * @param filterModel the filter-resolver model that was modified
-   * @param realModel   the underlying "real" model
+   * @param filterGraph the filter-resolver graph that was modified
+   * @param realGraph   the underlying "real" graph
    * @param stmts       the list of statements being inserted or deleted
    * @param occurs      if true the statements are being inserted; otherwise they're being deleted
    * @param resolverSession the resolver session
    * @throws ResolverException if some error occurred; this should only be thrown for
    *                           non-recoverable, fatal errors
    */
-  public void modelModified(URI filterModel, URI realModel, Statements stmts, boolean occurs,
+  public void graphModified(URI filterGraph, URI realGraph, Statements stmts, boolean occurs,
                             ResolverSession resolverSession) throws ResolverException;
 
   /** 

@@ -42,7 +42,7 @@ import org.topazproject.otm.mapping.RdfMapper;
  *
  * @author Pradeep Krishnan
  */
-@Entity(types = {Criterion.RDF_TYPE + "/Order"}, model = Criterion.MODEL)
+@Entity(types = {Criterion.RDF_TYPE + "/Order"}, graph = Criterion.GRAPH)
 public class Order {
   private static final Log log       = LogFactory.getLog(Order.class);
   private String           name;

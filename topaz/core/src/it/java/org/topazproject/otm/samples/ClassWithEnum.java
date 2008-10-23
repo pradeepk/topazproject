@@ -25,7 +25,7 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 @UriPrefix(Rdf.topaz)
-@Entity(model = "ri")
+@Entity(graph = "ri")
 public class ClassWithEnum {
   private String id;
   public enum Foo {bar1, bar2;

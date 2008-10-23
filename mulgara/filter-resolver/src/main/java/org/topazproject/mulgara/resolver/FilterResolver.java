@@ -60,31 +60,31 @@ import org.mulgara.resolver.spi.Statements;
 
 /** 
  * A Mulgara resolver for filtering operations. This resolver "wraps" around the system resolver,
- * passing all inserts, deletes, and queries through to the underlying model (after changing the
- * model name), and then notifying the list of registered {@link FilterHandler handlers} whenever
- * a model is created, removed, or modified. The name of the underlying model, as well as possibly
- * other parameters, are specified in the model's URI. The syntax of URI's for the models handled
+ * passing all inserts, deletes, and queries through to the underlying graph (after changing the
+ * graph name), and then notifying the list of registered {@link FilterHandler handlers} whenever
+ * a graph is created, removed, or modified. The name of the underlying graph, as well as possibly
+ * other parameters, are specified in the graph's URI. The syntax of URI's for the graphs handled
  * by this resolver is:
  * <pre>
- *   &lt;dbURI&gt;#filter:model=&lt;modelName&gt;(;&lt;pN&gt;=&lt;valueN&gt;)*
+ *   &lt;dbURI&gt;#filter:graph=&lt;graphName&gt;(;&lt;pN&gt;=&lt;valueN&gt;)*
  * </pre>
- * The &lt;modelName&gt; species the name of the (system) model this model is to wrap; the optional
+ * The &lt;graphName&gt; species the name of the (system) graph this graph is to wrap; the optional
  * additional parameters are currently unused and are ignored. For example:
  * <pre>
- *   rmi://localhost/fedora#filter:model=ri
+ *   rmi://localhost/fedora#filter:graph=ri
  * </pre>
  * 
  * @author Ronald Tschalär
  */
 public class FilterResolver implements Resolver {
-  /** the model type we handle */
-  public static final URI MODEL_TYPE = URI.create("http://topazproject.org/models#filter");
+  /** the graph type we handle */
+  public static final URI GRAPH_TYPE = URI.create("http://topazproject.org/graphs#filter");
 
   private static final Logger logger = Logger.getLogger(FilterResolver.class);
-  private static final Map    modelTranslationCache = new HashMap();
+  private static final Map    graphTranslationCache = new HashMap();
 
   private final URI             dbURI;
-  private final long            sysModelType;
+  private final long            sysGraphType;
   private final ResolverSession resolverSession;
   private final Resolver        systemResolver;
   private final FilterHandler[] handlers;
@@ -94,18 +94,18 @@ public class FilterResolver implements Resolver {
    * Create a new FilterResolver instance. 
    * 
    * @param dbURI           the absolute URI of the database; used as the base for creating the
-   *                        absolute URI of a model
-   * @param sysModelType    the system-model type; used when creating a new model
-   * @param systemResolver  the system-resolver; used for creating and modifying models
+   *                        absolute URI of a graph
+   * @param sysGraphType    the system-graph type; used when creating a new graph
+   * @param systemResolver  the system-resolver; used for creating and modifying graphs
    * @param resolverSession our environment; used for globalizing and localizing nodes
    * @param factory         the filter-resolver-factory we belong to
    * @param handlers        the filter handlers to use
    */
-  FilterResolver(URI dbURI, long sysModelType, Resolver systemResolver,
+  FilterResolver(URI dbURI, long sysGraphType, Resolver systemResolver,
                  ResolverSession resolverSession, FilterResolverFactory factory,
                  FilterHandler[] handlers) {
     this.dbURI           = dbURI;
-    this.sysModelType    = sysModelType;
+    this.sysGraphType    = sysGraphType;
     this.systemResolver  = systemResolver;
     this.resolverSession = resolverSession;
     this.handlers        = handlers;
@@ -119,70 +119,70 @@ public class FilterResolver implements Resolver {
     return xaRes;
   }
 
-  public void createModel(long model, URI modelType) throws ResolverException, LocalizeException {
-    // check model type
-    if (!modelType.equals(MODEL_TYPE))
-      throw new ResolverException("Unknown model-type '" + modelType + "'");
+  public void createModel(long graph, URI graphType) throws ResolverException, LocalizeException {
+    // check graph type
+    if (!graphType.equals(GRAPH_TYPE))
+      throw new ResolverException("Unknown graph-type '" + graphType + "'");
 
-    // get system model type URI
+    // get system graph type URI
     try {
-      Node mtURI = resolverSession.globalize(sysModelType);
+      Node mtURI = resolverSession.globalize(sysGraphType);
       if (!(mtURI instanceof URIReference))
-        throw new ResolverException("systemModelType '" + mtURI + "' not a URIRef ");
+        throw new ResolverException("systemGraphType '" + mtURI + "' not a URIRef ");
 
-      modelType = ((URIReference) mtURI).getURI();
+      graphType = ((URIReference) mtURI).getURI();
     } catch (GlobalizeException ge) {
-      throw new ResolverException("Failed to globalize SystemModel Type", ge);
+      throw new ResolverException("Failed to globalize SystemGraph Type", ge);
     }
 
-    // convert filter model uri to real model uri
-    URI filterModelURI = toURI(model);
-    URI realModelURI   = toRealModelURI(filterModelURI);
+    // convert filter graph uri to real graph uri
+    URI filterGraphURI = toURI(graph);
+    URI realGraphURI   = toRealGraphURI(filterGraphURI);
     if (logger.isDebugEnabled())
-      logger.debug("Creating model '" + realModelURI + "' for '" + filterModelURI + "'");
+      logger.debug("Creating graph '" + realGraphURI + "' for '" + filterGraphURI + "'");
 
-    // create the real model (a no-op if it already exists)
+    // create the real graph (a no-op if it already exists)
     try {
-      model = resolverSession.localizePersistent(new URIReferenceImpl(realModelURI, false));
-      systemResolver.createModel(model, modelType);
+      graph = resolverSession.localizePersistent(new URIReferenceImpl(realGraphURI, false));
+      systemResolver.createModel(graph, graphType);
     } catch (LocalizeException le) {
-      throw new ResolverException("Error localizing model uri '" + realModelURI + "'", le);
+      throw new ResolverException("Error localizing graph uri '" + realGraphURI + "'", le);
     }
 
     for (FilterHandler h : handlers)
-      h.modelCreated(filterModelURI, realModelURI);
+      h.graphCreated(filterGraphURI, realGraphURI);
   }
 
-  public void modifyModel(long model, Statements statements, boolean occurs)
+  public void modifyModel(long graph, Statements statements, boolean occurs)
       throws ResolverException {
-    URI filterModelURI = toURI(model);
-    URI realModelURI   = toRealModelURI(filterModelURI);
+    URI filterGraphURI = toURI(graph);
+    URI realGraphURI   = toRealGraphURI(filterGraphURI);
     if (logger.isDebugEnabled())
-      logger.debug("Modifying model '" + realModelURI + "'");
+      logger.debug("Modifying graph '" + realGraphURI + "'");
 
     try {
-      systemResolver.modifyModel(lookupRealNode(model), statements, occurs);
+      systemResolver.modifyModel(lookupRealNode(graph), statements, occurs);
     } catch (QueryException qe) {
-      throw new ResolverException("Failed to look up model", qe);
+      throw new ResolverException("Failed to look up graph", qe);
     }
 
     for (FilterHandler h : handlers)
-      h.modelModified(filterModelURI, realModelURI, statements, occurs, resolverSession);
+      h.graphModified(filterGraphURI, realGraphURI, statements, occurs, resolverSession);
   }
 
-  public void removeModel(long model) throws ResolverException {
-    URI filterModelURI = toURI(model);
-    URI realModelURI   = toRealModelURI(filterModelURI);
+  public void removeModel(long graph) throws ResolverException {
+    URI filterGraphURI = toURI(graph);
+    URI realGraphURI   = toRealGraphURI(filterGraphURI);
 
     if (logger.isDebugEnabled())
-      logger.debug("Removing model '" + filterModelURI + "'");
+      logger.debug("Removing graph '" + filterGraphURI + "'");
 
     for (FilterHandler h : handlers)
-      h.modelRemoved(filterModelURI, realModelURI);
+      h.graphRemoved(filterGraphURI, realGraphURI);
   }
 
   public Resolution resolve(Constraint constraint) throws QueryException {
-    return systemResolver.resolve(translateModel(constraint));
+    return systemResolver.resolve(translateGraph(constraint));
   }
 
   public void abort() {
@@ -191,13 +191,13 @@ public class FilterResolver implements Resolver {
   }
 
   /**
-   * Translate the model (element 4) of the constraint to the underlying model.
+   * Translate the graph (element 4) of the constraint to the underlying graph.
    *
    * According to tests, the only classes we ever see here are ConstraintImpl and
    * ConstraintNegation. However, to be safe, we handle all known implementations of
    * Constraint here.
    */
-  private Constraint translateModel(Constraint constraint) throws QueryException {
+  private Constraint translateGraph(Constraint constraint) throws QueryException {
     if (logger.isDebugEnabled())
       logger.debug("translating constraint class '" + constraint.getClass().getName() + "'");
 
@@ -205,32 +205,32 @@ public class FilterResolver implements Resolver {
 
     if (constraint instanceof WalkConstraint) {
       WalkConstraint wc = (WalkConstraint) constraint;
-      return new WalkConstraint(translateModel(wc.getAnchoredConstraint()),
-                                translateModel(wc.getUnanchoredConstraint()));
+      return new WalkConstraint(translateGraph(wc.getAnchoredConstraint()),
+                                translateGraph(wc.getUnanchoredConstraint()));
     }
 
     if (constraint instanceof TransitiveConstraint) {
       TransitiveConstraint tc = (TransitiveConstraint) constraint;
-      return new TransitiveConstraint(translateModel(tc.getAnchoredConstraint()),
-                                      translateModel(tc.getUnanchoredConstraint()));
+      return new TransitiveConstraint(translateGraph(tc.getAnchoredConstraint()),
+                                      translateGraph(tc.getUnanchoredConstraint()));
     }
 
     if (constraint instanceof SingleTransitiveConstraint) {
       SingleTransitiveConstraint stc = (SingleTransitiveConstraint) constraint;
-      return new SingleTransitiveConstraint(translateModel(stc.getTransConstraint()));
+      return new SingleTransitiveConstraint(translateGraph(stc.getTransConstraint()));
     }
 
-    // is leaf constraint, so get elements and translate model
+    // is leaf constraint, so get elements and translate graph
 
     ConstraintElement subj = constraint.getElement(0);
     ConstraintElement pred = constraint.getElement(1);
     ConstraintElement obj  = constraint.getElement(2);
 
-    LocalNode model = (LocalNode) constraint.getElement(3);
-    model = lookupRealNode(model);
+    LocalNode graph = (LocalNode) constraint.getElement(3);
+    graph = lookupRealNode(graph);
 
     if (logger.isDebugEnabled()) {
-      logger.debug("Resolved model '" + model + "'");
+      logger.debug("Resolved graph '" + graph + "'");
       logger.debug("constraint: subj='" + constraint.getElement(0) + "'");
       logger.debug("constraint: pred='" + constraint.getElement(1) + "'");
       logger.debug("constraint:  obj='" + constraint.getElement(2) + "'");
@@ -239,121 +239,121 @@ public class FilterResolver implements Resolver {
     // handle each constraint type
 
     if (constraint instanceof ConstraintImpl)
-      return new ConstraintImpl(subj, pred, obj, model);
+      return new ConstraintImpl(subj, pred, obj, graph);
 
     if (constraint instanceof ConstraintIs)
-      return new ConstraintIs(subj, obj, model);
+      return new ConstraintIs(subj, obj, graph);
 
     if (constraint instanceof ConstraintNegation) {
       ConstraintNegation cn = (ConstraintNegation) constraint;
       Constraint inner;
       if (cn.isInnerConstraintIs())
-        inner = new ConstraintIs(subj, obj, model);
+        inner = new ConstraintIs(subj, obj, graph);
       else
-        inner = new ConstraintImpl(subj, pred, obj, model);
+        inner = new ConstraintImpl(subj, pred, obj, graph);
       return new ConstraintNegation(inner);
     }
 
     if (constraint instanceof ConstraintOccurs)
-      return new ConstraintOccurs(subj, obj, model);
+      return new ConstraintOccurs(subj, obj, graph);
     if (constraint instanceof ConstraintNotOccurs)
-      return new ConstraintNotOccurs(subj, obj, model);
+      return new ConstraintNotOccurs(subj, obj, graph);
     if (constraint instanceof ConstraintOccursLessThan)
-      return new ConstraintOccursLessThan(subj, obj, model);
+      return new ConstraintOccursLessThan(subj, obj, graph);
     if (constraint instanceof ConstraintOccursMoreThan)
-      return new ConstraintOccursMoreThan(subj, obj, model);
+      return new ConstraintOccursMoreThan(subj, obj, graph);
 
     throw new QueryException("Unknown constraint class '" + constraint.getClass().getName() + "'");
   }
 
 
-  private long lookupRealNode(long model) throws QueryException {
-    return lookupRealNode(new LocalNode(model)).getValue();
+  private long lookupRealNode(long graph) throws QueryException {
+    return lookupRealNode(new LocalNode(graph)).getValue();
   }
 
-  private LocalNode lookupRealNode(LocalNode model) throws QueryException {
+  private LocalNode lookupRealNode(LocalNode graph) throws QueryException {
     // check cache
-    LocalNode res = (LocalNode) modelTranslationCache.get(model);
+    LocalNode res = (LocalNode) graphTranslationCache.get(graph);
     if (res != null)
       return res;
 
     // nope, so convert to URI (globalize), rewrite URI, and convert back (localize)
-    URI modelURI;
+    URI graphURI;
     try {
-      modelURI = toURI(model.getValue());
+      graphURI = toURI(graph.getValue());
     } catch (ResolverException re) {
-      throw new QueryException("Failed to get model URI", re);
+      throw new QueryException("Failed to get graph URI", re);
     }
 
     URI resURI = null;
     try {
-      resURI = toRealModelURI(modelURI);
+      resURI = toRealGraphURI(graphURI);
       long resId = resolverSession.lookup(new URIReferenceImpl(resURI, false));
       res = new LocalNode(resId);
     } catch (ResolverException re) {
-      throw new QueryException("Failed to parse model '" + modelURI + "'", re);
+      throw new QueryException("Failed to parse graph '" + graphURI + "'", re);
     } catch (LocalizeException le) {
-      throw new QueryException("Couldn't localize model '" + resURI + "'", le);
+      throw new QueryException("Couldn't localize graph '" + resURI + "'", le);
     }
 
     // cache and return the result
     if (logger.isDebugEnabled())
-      logger.debug("Adding translation for model '" + modelURI + "' -> '" + resURI + "'");
+      logger.debug("Adding translation for graph '" + graphURI + "' -> '" + resURI + "'");
 
-    modelTranslationCache.put(model, res);
+    graphTranslationCache.put(graph, res);
     return res;
   }
 
   /** 
-   * Get the model name from the uri, checking that the uri is properly formed.
+   * Get the graph name from the uri, checking that the uri is properly formed.
    * 
    * @param uri the filter uri; must be of the form 
-   *            &lt;dbURI&gt;#filter:model=&lt;modelName&gt;;&lt;p2&gt;=&lt;value2&gt;
-   * @return the modelName
+   *            &lt;dbURI&gt;#filter:graph=&lt;graphName&gt;;&lt;p2&gt;=&lt;value2&gt;
+   * @return the graphName
    * @throws ResolverException if the uri is not properly formed
    */
-  static String getModelName(URI uri) throws ResolverException {
-    String modelName = uri.getRawFragment();
-    if (!modelName.startsWith("filter:"))
-      throw new ResolverException("Model-name '" + modelName + "' doesn't start with 'filter:'");
+  static String getGraphName(URI uri) throws ResolverException {
+    String graphName = uri.getRawFragment();
+    if (!graphName.startsWith("filter:"))
+      throw new ResolverException("Graph-name '" + graphName + "' doesn't start with 'filter:'");
 
-    String[] params = modelName.substring(7).split(";");
+    String[] params = graphName.substring(7).split(";");
     for (int idx = 0; idx < params.length; idx++) {
-      if (params[idx].startsWith("model="))
+      if (params[idx].startsWith("graph="))
         return params[idx].substring(6);
     }
 
-    throw new ResolverException("invalid model name encountered: '" + uri + "' - must be of " +
-                                "the form <dbURI>#filter:model=<model>");
+    throw new ResolverException("invalid graph name encountered: '" + uri + "' - must be of " +
+                                "the form <dbURI>#filter:graph=<graph>");
   }
 
-  private URI toURI(long model) throws ResolverException {
-    Node globalModel = null;
+  private URI toURI(long graph) throws ResolverException {
+    Node globalGraph = null;
 
-    // Globalise the model
+    // Globalise the graph
     try {
-      globalModel = resolverSession.globalize(model);
+      globalGraph = resolverSession.globalize(graph);
     } catch (GlobalizeException ge) {
-      throw new ResolverException("Couldn't globalize model", ge);
+      throw new ResolverException("Couldn't globalize graph", ge);
     }
 
     // Check that our node is a URIReference
-    if (!(globalModel instanceof URIReference))
-      throw new ResolverException("Model parameter " + globalModel + " isn't a URI reference");
+    if (!(globalGraph instanceof URIReference))
+      throw new ResolverException("Graph parameter " + globalGraph + " isn't a URI reference");
 
     // Get the URI from the globalised node
-    return ((URIReference) globalModel).getURI();
+    return ((URIReference) globalGraph).getURI();
   }
 
   /**
-   * <code>rmi://localhost/fedora#filter:model=ri;ds=RELS-EXT</code> -&gt; <code>rmi://localhost/fedora#ri</code>
+   * <code>rmi://localhost/fedora#filter:graph=ri;ds=RELS-EXT</code> -&gt; <code>rmi://localhost/fedora#ri</code>
    */
-  private URI toRealModelURI(URI model) throws ResolverException {
+  private URI toRealGraphURI(URI graph) throws ResolverException {
     // Note: URI.resolve() collapses the slashes on local:///foo, so we do this thing by hand
-    String u = model.getScheme() + "://" +
-               (model.getRawAuthority() != null ? model.getRawAuthority() : "") +
-               model.getRawPath() +
-               '#' + getModelName(model);
+    String u = graph.getScheme() + "://" +
+               (graph.getRawAuthority() != null ? graph.getRawAuthority() : "") +
+               graph.getRawPath() +
+               '#' + getGraphName(graph);
     return URI.create(u);
   }
 

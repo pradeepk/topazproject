@@ -65,16 +65,16 @@ public class TransCriterion extends AbstractBinaryCriterion {
       throw new OtmException("Value must be a uri for trans(): field is " + m.getName());
 
     String val   = serializeValue(getValue(), criteria, getFieldName());
-    String model = m.getModel();
+    String graph = m.getGraph();
 
-    if ((model != null) && !cm.getModel().equals(model))
-      model = " in <" + getModelUri(criteria, model) + ">";
+    if ((graph != null) && !cm.getGraph().equals(graph))
+      graph = " in <" + getGraphUri(criteria, graph) + ">";
     else
-      model = "";
+      graph = "";
 
     String subj   = m.hasInverseUri() ? val : subjectVar;
     String obj    = m.hasInverseUri() ? subjectVar : val;
-    String triple = subj + " <" + m.getUri() + "> " + obj + model;
+    String triple = subj + " <" + m.getUri() + "> " + obj + graph;
 
     return "(trans(" + triple + ") or " + triple + ")";
   }

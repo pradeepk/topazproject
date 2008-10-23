@@ -38,20 +38,20 @@ public abstract class AbstractTest extends GroovyTestCase {
   def store;
   def blobStore;
 
-  protected def models = [['ri', 'otmtest1', null]];
+  protected def graphs = [['ri', 'otmtest1', null]];
 
   void setUp() {
     store = new ItqlStore("local:///topazproject".toURI(),
                           new DefaultItqlClientFactory(dbDir: "target/mulgara-db"))
     blobStore = new SimpleBlobStore("target/blob-store");
     rdf = new RdfBuilder(
-        sessFactory:new SessionFactoryImpl(tripleStore:store, blobStore:blobStore), defModel:'ri', defUriPrefix:'topaz:')
+        sessFactory:new SessionFactoryImpl(tripleStore:store, blobStore:blobStore), defGraph:'ri', defUriPrefix:'topaz:')
 
-    for (c in models) {
-      def m = new ModelConfig(c[0], "local:///topazproject#${c[1]}".toURI(), c[2])
-      rdf.sessFactory.addModel(m)
-      try { store.dropModel(m); } catch (Throwable t) { }
-      store.createModel(m)
+    for (c in graphs) {
+      def m = new GraphConfig(c[0], "local:///topazproject#${c[1]}".toURI(), c[2])
+      rdf.sessFactory.addGraph(m)
+      try { store.dropGraph(m); } catch (Throwable t) { }
+      store.createGraph(m)
     }
   }
 

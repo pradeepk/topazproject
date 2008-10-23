@@ -44,10 +44,10 @@ class BinaryCompare implements BooleanConditionFunction, ConstraintsTokenTypes {
       XSD + "nonNegativeInteger", XSD + "unsignedLong", XSD + "unsignedInt",
       XSD + "unsignedShort", XSD + "unsignedByte", XSD + "positiveInteger",
   };
-  private static final URI      XSD_MODEL_TYPE =
+  private static final URI      XSD_GRAPH_TYPE =
                                         URI.create("http://mulgara.org/mulgara#XMLSchemaModel");
-  private static final URI      STR_MODEL_TYPE =
-                                        URI.create("http://topazproject.org/models#StringCompare");
+  private static final URI      STR_GRAPH_TYPE =
+                                        URI.create("http://topazproject.org/graphs#StringCompare");
 
   static {
     Arrays.sort(DATE_TYPES);
@@ -134,51 +134,51 @@ class BinaryCompare implements BooleanConditionFunction, ConstraintsTokenTypes {
       throws RecognitionException {
     // create expression
     String pred, iprd;
-    URI    modelType;
+    URI    graphType;
     if (isDate(lvar)) {
       pred  = (name.charAt(0) == 'l') ? "<mulgara:before>" : "<mulgara:after>";
       iprd  = (name.charAt(0) != 'l') ? "<mulgara:before>" : "<mulgara:after>";
-      modelType = XSD_MODEL_TYPE;
+      graphType = XSD_GRAPH_TYPE;
     } else if (isNum(lvar)) {
       pred  = (name.charAt(0) == 'l') ? "<mulgara:lt>" : "<mulgara:gt>";
       iprd  = (name.charAt(0) != 'l') ? "<mulgara:lt>" : "<mulgara:gt>";
-      modelType = XSD_MODEL_TYPE;
+      graphType = XSD_GRAPH_TYPE;
     } else {
       pred  = (name.charAt(0) == 'l') ? "<topaz:lt>" : "<topaz:gt>";
       iprd  = (name.charAt(0) != 'l') ? "<topaz:lt>" : "<topaz:gt>";
-      modelType = STR_MODEL_TYPE;
+      graphType = STR_GRAPH_TYPE;
     }
 
-    String modelUri = ASTUtil.getModelUri(modelType, sf);
+    String graphUri = ASTUtil.getGraphUri(graphType, sf);
 
     OqlAST res = ASTUtil.makeTree(af, AND, "and", af.dupTree(larg), af.dupTree(rarg));
     if (name.equals("ge") || name.equals("le")) {
       if (isConstant(rarg)) {
         // this relies on itql-redux to eliminate the equals and replace it with <mulgara:is>
         res.addChild(ASTUtil.makeTree(af, OR, "or",
-                                      ASTUtil.makeTriple(lvar, pred, rvar, modelUri, af),
+                                      ASTUtil.makeTriple(lvar, pred, rvar, graphUri, af),
                                       ASTUtil.makeTriple(lvar, "<mulgara:equals>", rvar, af)));
       } else if (isConstant(larg)) {
         // this relies on itql-redux to eliminate the equals and replace it with <mulgara:is>
         res.addChild(ASTUtil.makeTree(af, OR, "or",
-                                      ASTUtil.makeTriple(lvar, pred, rvar, modelUri, af),
+                                      ASTUtil.makeTriple(lvar, pred, rvar, graphUri, af),
                                       ASTUtil.makeTriple(rvar, "<mulgara:equals>", lvar, af)));
       } else {
         /* do this when mulgara supports <mulgara:equals>
         res.addChild(ASTUtil.makeTree(af, OR, "or",
-                                      ASTUtil.makeTriple(lvar, pred, rvar, modelUri, af),
+                                      ASTUtil.makeTriple(lvar, pred, rvar, graphUri, af),
                                       ASTUtil.makeTriple(lvar, "<mulgara:equals>", rvar, af)));
         */
         /* this requires the functions (minus) to support variables on both sides
         res = ASTUtil.makeTree(af, MINUS, "minus", res,
-                               ASTUtil.makeTriple(lvar, iprd, rvar, modelUri, af));
+                               ASTUtil.makeTriple(lvar, iprd, rvar, graphUri, af));
         */
         res = ASTUtil.makeTree(af, MINUS, "minus", af.dupTree(res),
                 ASTUtil.makeTree(af, AND, "and", res,
-                                 ASTUtil.makeTriple(lvar, iprd, rvar, modelUri, af)));
+                                 ASTUtil.makeTriple(lvar, iprd, rvar, graphUri, af)));
       }
     } else {
-      res.addChild(ASTUtil.makeTriple(lvar, pred, rvar, modelUri, af));
+      res.addChild(ASTUtil.makeTriple(lvar, pred, rvar, graphUri, af));
     }
 
     return res;

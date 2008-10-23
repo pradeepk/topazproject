@@ -45,10 +45,10 @@ public class ClassDef {
    */
   String   type = ""
   /**
-   * the default model for properties in this class. If unset, it defaults to {@link
-   * RdfBuilder#defModel}.
+   * the default graph for properties in this class. If unset, it defaults to {@link
+   * RdfBuilder#defGraph}.
    */
-  String   model
+  String   graph
   /**
    * the uri prefix to use to create absolute uri's from names. If unset, it defaults to {@link
    * RdfBuilder#defUriPrefix}.
@@ -108,14 +108,14 @@ public class ClassDef {
       type = uriPrefix + className
     }
 
-    // ensure model is set
-    if (!model)
-      model = inheritField('model', true, null, rdf)
-    if (!model)
-      model = rdf.defModel
-    if (!model)
-      throw new OtmException("No model has been set for class '${className}' and no default " +
-                             "model has been defined either")
+    // ensure graph is set
+    if (!graph)
+      graph = inheritField('graph', true, null, rdf)
+    if (!graph)
+      graph = rdf.defGraph
+    if (!graph)
+      throw new OtmException("No graph has been set for class '${className}' and no default " +
+                             "graph has been defined either")
 
     // inherit id-generator
     if (idGenerator == '')
@@ -249,7 +249,7 @@ public class ClassDef {
     def binders = [(EntityMode.POJO) : new ClassBinder(clazz)]
     def ts = (type == null) ? [] as Set : [type] as Set;
     def sups = (extendsClass == null) ? [] as Set : [extendsClass] as Set;
-    metadata = new ClassMetadata(binders, getShortName(clazz), ts, allTypes, model,
+    metadata = new ClassMetadata(binders, getShortName(clazz), ts, allTypes, graph,
                                  idmapper, rdfs, blobBinder, sups, embeds)
 
     if (log.debugEnabled)
