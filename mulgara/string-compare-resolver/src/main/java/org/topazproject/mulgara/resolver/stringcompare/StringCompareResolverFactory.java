@@ -70,9 +70,11 @@ public class StringCompareResolverFactory implements ResolverFactory {
     initializer.addModelType(GRAPH_TYPE, this);
 
 
-    // Nasty hack to deal with change from "models" to "graphs"
-    // Necessary for WebAppListenerInitModels.dropObsoleteGraphs() to work
-    // TODO: Remove this after 0.9.2
+    /*
+      Nasty hack to deal with change from "models" to "graphs"
+      Necessary for WebAppListenerInitModels.dropObsoleteGraphs() to work
+      TODO: Remove this after 0.9.2
+     */
     initializer.addModelType(URI.create("http://topazproject.org/models#StringCompare"), this);
     // end nasty hack
 
