@@ -13,4 +13,4 @@ LOG4J_CONFIG="/usr/local/topaz/topaz-mulgara/log4j.xml"
 JAVA_OPTS="-Xmx400m -XX:MaxPermSize=256m -Djava.rmi.dgc.leaseValue=30000"
 
 # Arbitrary other parameters to pass to mulgara.
-#OPTIONS="--serverhost 10.0.1.42"
+OPTIONS="--rmiobjectport 8111"
