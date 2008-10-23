@@ -433,6 +433,7 @@ public class AmbraFeedResult extends Feed implements Result {
       // This should only happen for older, unmigrated articles
       log.warn("No bibliographic citation (is article '" + article.getId() + "' migrated?)");
     }
+
     return authorNames;
   }
 

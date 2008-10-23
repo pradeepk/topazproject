@@ -292,9 +292,9 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    * key is also made available to the AmbraFeedResult because it also contains parameters that
    * affect the output.
    *
-   * @see       ArticleFeed
-   * @see       Invalidator
-   * @see       org.topazproject.ambra.struts2.AmbraFeedResult
+   * @see ArticleFeed
+   * @see Invalidator
+   * @see org.topazproject.ambra.struts2.AmbraFeedResult
    */
   public class Key implements Serializable, Comparable {
     private String journal;
@@ -318,7 +318,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     private int hashCode;
 
     /**
-     * Key Constructor - currently does nothing.
+     * Key Constructor
      */
     public Key() {
     }
@@ -366,32 +366,26 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      */
     @Override
     public boolean equals(Object o) {
-      if (o == null || !(o instanceof Key)) return false;
+      if (o == null || !(o instanceof Key))
+        return false;
+
       Key key = (Key) o;
-      return (
-          key.hashCode == this.hashCode
-          &&
-          (key.getJournal() == null && this.journal == null
-           || key.getJournal() != null && key.getJournal().equals(this.journal))
-          &&
-          (key.getSDate() == null && this.sDate == null
-           || key.getSDate() != null && key.getSDate().equals(this.sDate))
-          &&
-          (key.getEDate() == null && this.eDate == null
-           || key.getEDate() != null && key.getEDate().equals(this.eDate))
-          &&
-          (key.getCategory() == null && this.category == null
-           || key.getCategory() != null && key.getCategory().equals(this.category))
-          &&
-          (key.getAuthor() == null && this.author == null
-           || key.getAuthor() != null && key.getAuthor().equals(this.author))
-          &&
-          (key.getMaxResults() ==  this.maxResults)
-          );
+      return (key.hashCode == this.hashCode &&
+              (key.getJournal() == null && this.journal == null ||
+               key.getJournal() != null && key.getJournal().equals(this.journal)) &&
+              (key.getSDate() == null && this.sDate == null ||
+               key.getSDate() != null && key.getSDate().equals(this.sDate)) &&
+              (key.getEDate() == null && this.eDate == null ||
+               key.getEDate() != null && key.getEDate().equals(this.eDate)) &&
+              (key.getCategory() == null && this.category == null ||
+               key.getCategory() != null && key.getCategory().equals(this.category)) &&
+              (key.getAuthor() == null && this.author == null ||
+               key.getAuthor() != null && key.getAuthor().equals(this.author)) &&
+              (key.getMaxResults() ==  this.maxResults));
     }
 
     /**
-     * Builds a string using the data model prarmeters.  Only parameters that affect the search
+     * Builds a string using the data model parameters. Only parameters that affect the search
      * results are used.
      *
      * @return a string representation of all the query parameters.
