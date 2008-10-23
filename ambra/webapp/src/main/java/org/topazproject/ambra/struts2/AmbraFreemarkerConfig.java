@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Map.Entry;
 
 /**
@@ -405,18 +406,28 @@ public class AmbraFreemarkerConfig {
       usingDefault = true;
       jc = journals.get(defaultJournalName);
     }
-    String[] retVal = jc.getCssFiles().get(templateName);
-    if (retVal == null) {
-      retVal = jc.getDefaultCss();
-      if ((retVal == null) && !usingDefault) {
-        jc = journals.get(defaultJournalName);
-        retVal = jc.getCssFiles().get(templateName);
-        if (retVal == null) {
-          retVal = jc.getDefaultCss();
-        }
-      }
+    String defaultTemplateName = "/"+trimJournalFromTemplatePath(templateName);
+    String[] retVal = getCssForJournal(jc, templateName, defaultTemplateName);
+    if (retVal != null)
+      return retVal;
+
+    if (!usingDefault) {
+      JournalConfig defaultJc = journals.get(defaultJournalName);
+      retVal = getCssForJournal(defaultJc, templateName, defaultTemplateName);
     }
     return retVal != null ? retVal : DEFAULT_CSS_FILES;
+  }
+
+  private String[] getCssForJournal(JournalConfig jc, String templateName, String defaultTemplateName) {
+    String[] retVal = jc.getCssFiles().get(templateName);
+    if (retVal != null)
+      return retVal;
+
+    retVal = jc.getCssFiles().get(defaultTemplateName);
+    if (retVal != null)
+      return retVal;
+
+    return jc.getDefaultCss();
   }
 
   /**
@@ -444,18 +455,29 @@ public class AmbraFreemarkerConfig {
       usingDefault = true;
       jc = journals.get(defaultJournalName);
     }
-    String[] retVal = jc.getJavaScriptFiles().get(templateName);
-    if (retVal == null) {
-      retVal = jc.getDefaultJavaScript();
-      if ((retVal == null) && !usingDefault) {
-        jc = journals.get(defaultJournalName);
-        retVal = jc.getJavaScriptFiles().get(templateName);
-        if (retVal == null) {
-          retVal = jc.getDefaultJavaScript();
-        }
-      }
+    String defaultTemplateName = "/"+trimJournalFromTemplatePath(templateName);
+    String[] retVal = getJavascriptsForJournal(jc, templateName, defaultTemplateName);
+    if (retVal != null)
+      return retVal;
+
+    if (!usingDefault) {
+      JournalConfig defaultJc = journals.get(defaultJournalName);
+      retVal = getJavascriptsForJournal(defaultJc, templateName, defaultTemplateName);
     }
     return retVal != null ? retVal : DEFAULT_JS_FILES;
+  }
+
+  private String[] getJavascriptsForJournal(JournalConfig jc, String templateName, String defaultTemplateName) {
+
+    String[] retVal = jc.getJavaScriptFiles().get(templateName);
+    if (retVal != null)
+      return retVal;
+
+    retVal = jc.getJavaScriptFiles().get(defaultTemplateName);
+    if (retVal != null)
+      return retVal;
+
+    return jc.getDefaultJavaScript();
   }
 
   /**
@@ -699,6 +721,32 @@ public class AmbraFreemarkerConfig {
       url = jc.getUrl();
     }
     return url;
+  }
+
+  /**
+   * Utility procedure that takes out journal-specific beggining of template name.
+   * For example templateName /journals/plosone/index.ftl becomes index.ftl
+   * @param templateName Freemarker template name
+   * @return Freemarker template name without leading journal path
+   */
+  public static String trimJournalFromTemplatePath(String templateName) {
+    // Trim the beginning "journals/<journal_name>"
+    StringTokenizer tokenizer = new StringTokenizer(templateName,"/");
+    StringBuilder stringBuilder = new StringBuilder();
+    while(tokenizer.hasMoreTokens()) {
+      String token = tokenizer.nextToken();
+      if (token.equals("journals")) {
+        // skip next
+        tokenizer.nextToken();
+      }
+      else {
+        if (stringBuilder.length() != 0)
+          stringBuilder.append('/');
+        stringBuilder.append(token);
+      }
+    }
+
+    return stringBuilder.toString();
   }
 
 

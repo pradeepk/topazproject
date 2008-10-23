@@ -21,7 +21,6 @@ package org.topazproject.ambra.struts2;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -29,11 +28,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.views.freemarker.FreemarkerManager;
 import org.apache.struts2.views.freemarker.ScopesHashModel;
+import org.topazproject.ambra.util.AuthorNameDirective;
 
 import com.opensymphony.xwork2.util.ValueStack;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.cache.StatefulTemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
 
 /**
  * Custom Freemarker Manager to load up the configuration files for css, javascript, and titles of
@@ -58,12 +60,14 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
    *
    * @see org.apache.struts2.views.freemarker.FreemarkerManager
    */
+  @Override
   protected void populateContext(ScopesHashModel model, ValueStack stack, Object action,
                                  HttpServletRequest request, HttpServletResponse response) {
     super.populateContext(model, stack, action, request, response);
     model.put("freemarker_config", fmConfig);
   }
 
+  @Override
   protected TemplateLoader getTemplateLoader(ServletContext context) {
     final TemplateLoader s = super.getTemplateLoader(context);
 
@@ -81,21 +85,8 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
         if (r != null)
           return r;
 
-        // Trim the beginning "journals/<journal_name>"
-        StringTokenizer tokenizer = new StringTokenizer(name,"/");
-        StringBuilder templateName = new StringBuilder();
-        while(tokenizer.hasMoreTokens()) {
-          String token = tokenizer.nextToken();
-          if (token.equals("journals")) {
-            // skip next
-            tokenizer.nextToken();
-          }
-          else {
-            if (templateName.length() != 0)
-              templateName.append('/');
-            templateName.append(token);
-          }
-        }
+
+        String templateName = AmbraFreemarkerConfig.trimJournalFromTemplatePath(name);
 
         // Second: look in plos default folders
         r = s.findTemplateSource("journals/plosJournals/" + templateName);
@@ -103,7 +94,7 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
           return r;
 
         // Third: look in the ambra default folders
-        r = s.findTemplateSource(templateName.toString());
+        r = s.findTemplateSource(templateName);
         if (r != null)
           return r;
 
@@ -130,5 +121,19 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
           ((StatefulTemplateLoader) s).resetState();
       }
     };
+  }
+
+  /**
+   * Attaches custom Freemarker directives as shared variables.
+   *
+   * @param servletContext Servlet context.
+   * @return Freemarker configuration.
+   * @throws TemplateException
+   */
+  @Override
+  protected Configuration createConfiguration(ServletContext servletContext) throws TemplateException {
+    Configuration configuration =  super.createConfiguration(servletContext);
+    configuration.setSharedVariable("authorName", new AuthorNameDirective());
+    return configuration;
   }
 }
