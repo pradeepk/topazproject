@@ -197,77 +197,77 @@
         </bean>
       </list>
     </property>
-    <property name="models">
+    <property name="graphs">
       <list>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="ri" />
-          <constructor-arg index="1" value="${ambra.models.ri}"/>
-          <constructor-arg index="2" value="${ambra.models.ri[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.ri}"/>
+          <constructor-arg index="2" value="${ambra.graphs.ri[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="annotations" />
-          <constructor-arg index="1" value="${ambra.models.annotations}"/>
-          <constructor-arg index="2" value="${ambra.models.annotations[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.annotations}"/>
+          <constructor-arg index="2" value="${ambra.graphs.annotations[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="users" />
-          <constructor-arg index="1" value="${ambra.models.users}"/>
-          <constructor-arg index="2" value="${ambra.models.users[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.users}"/>
+          <constructor-arg index="2" value="${ambra.graphs.users[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="grants" />
-          <constructor-arg index="1" value="${ambra.models.grants}"/>
-          <constructor-arg index="2" value="${ambra.models.grants[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.grants}"/>
+          <constructor-arg index="2" value="${ambra.graphs.grants[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="revokes" />
-          <constructor-arg index="1" value="${ambra.models.revokes}"/>
-          <constructor-arg index="2" value="${ambra.models.revokes[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.revokes}"/>
+          <constructor-arg index="2" value="${ambra.graphs.revokes[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="pp" />
-          <constructor-arg index="1" value="${ambra.models.pp}"/>
-          <constructor-arg index="2" value="${ambra.models.pp[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.pp}"/>
+          <constructor-arg index="2" value="${ambra.graphs.pp[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="preferences" />
-          <constructor-arg index="1" value="${ambra.models.preferences}"/>
-          <constructor-arg index="2" value="${ambra.models.preferences[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.preferences}"/>
+          <constructor-arg index="2" value="${ambra.graphs.preferences[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="profiles" />
-          <constructor-arg index="1" value="${ambra.models.profiles}"/>
-          <constructor-arg index="2" value="${ambra.models.profiles[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.profiles}"/>
+          <constructor-arg index="2" value="${ambra.graphs.profiles[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="ratings" />
-          <constructor-arg index="1" value="${ambra.models.ratings}"/>
-          <constructor-arg index="2" value="${ambra.models.ratings[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.ratings}"/>
+          <constructor-arg index="2" value="${ambra.graphs.ratings[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="alerts" />
-          <constructor-arg index="1" value="${ambra.models.alerts}"/>
-          <constructor-arg index="2" value="${ambra.models.alerts[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.alerts}"/>
+          <constructor-arg index="2" value="${ambra.graphs.alerts[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="criteria" />
-          <constructor-arg index="1" value="${ambra.models.criteria}"/>
-          <constructor-arg index="2" value="${ambra.models.criteria[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.criteria}"/>
+          <constructor-arg index="2" value="${ambra.graphs.criteria[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="str" />
-          <constructor-arg index="1" value="${ambra.models.str}"/>
-          <constructor-arg index="2" value="${ambra.models.str[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.str}"/>
+          <constructor-arg index="2" value="${ambra.graphs.str[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="xsd" />
-          <constructor-arg index="1" value="${ambra.models.xsd}"/>
-          <constructor-arg index="2" value="${ambra.models.xsd[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.xsd}"/>
+          <constructor-arg index="2" value="${ambra.graphs.xsd[@type]}"/>
         </bean>
-        <bean class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="prefix" />
-          <constructor-arg index="1" value="${ambra.models.prefix}"/>
-          <constructor-arg index="2" value="${ambra.models.prefix[@type]}"/>
+          <constructor-arg index="1" value="${ambra.graphs.prefix}"/>
+          <constructor-arg index="2" value="${ambra.graphs.prefix[@type]}"/>
         </bean>
       </list>
     </property>

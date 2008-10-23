@@ -56,7 +56,7 @@
           </AttributeValue>
           <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
             <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-              AttributeId="ambra.models.ri"/>   
+              AttributeId="ambra.graphs.ri"/>   
           </Apply>
           <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
             <ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
@@ -68,7 +68,7 @@
           </Apply>
           <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
             <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-              AttributeId="ambra.models.pp"/>   
+              AttributeId="ambra.graphs.pp"/>   
           </Apply>
         </Apply>
       </Apply> 

@@ -88,7 +88,7 @@ public class Migrator implements ServletContextListener {
     try {
       Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
       URI           service = new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql.uri"));
-      RI                    = stripFilterResolver(conf.getString("ambra.models.ri"));
+      RI                    = stripFilterResolver(conf.getString("ambra.graphs.ri"));
 
       log.info("Checking and performing data-migrations ...");
       SessionFactory factory = new SessionFactoryImpl();

@@ -65,16 +65,16 @@ public class PermissionsService implements Permissions {
 
   //
   private static final String GRANTS_GRAPH       =
-    "<" + CONF.getString("ambra.models.grants") + ">";
+    "<" + CONF.getString("ambra.graphs.grants") + ">";
   private static final String REVOKES_GRAPH      =
-    "<" + CONF.getString("ambra.models.revokes") + ">";
-  private static final String PP_GRAPH           = "<" + CONF.getString("ambra.models.pp") + ">";
+    "<" + CONF.getString("ambra.graphs.revokes") + ">";
+  private static final String PP_GRAPH           = "<" + CONF.getString("ambra.graphs.pp") + ">";
   private static final String GRANTS_GRAPH_TYPE  =
-    "<" + CONF.getString("ambra.models.grants[@type]", "mulgara:Model") + ">";
+    "<" + CONF.getString("ambra.graphs.grants[@type]", "mulgara:Model") + ">";
   private static final String REVOKES_GRAPH_TYPE =
-    "<" + CONF.getString("ambra.models.revokes[@type]", "mulgara:Model") + ">";
+    "<" + CONF.getString("ambra.graphs.revokes[@type]", "mulgara:Model") + ">";
   private static final String PP_GRAPH_TYPE      =
-    "<" + CONF.getString("ambra.models.pp[@type]", "mulgara:Model") + ">";
+    "<" + CONF.getString("ambra.graphs.pp[@type]", "mulgara:Model") + ">";
 
   //
   private static final String IMPLIES    = Rdf.topaz + "implies";
