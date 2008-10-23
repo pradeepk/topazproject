@@ -28,14 +28,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.views.freemarker.FreemarkerManager;
 import org.apache.struts2.views.freemarker.ScopesHashModel;
-import org.topazproject.ambra.util.AuthorNameDirective;
 
 import com.opensymphony.xwork2.util.ValueStack;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.cache.StatefulTemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
 
 /**
  * Custom Freemarker Manager to load up the configuration files for css, javascript, and titles of
@@ -121,19 +118,5 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
           ((StatefulTemplateLoader) s).resetState();
       }
     };
-  }
-
-  /**
-   * Attaches custom Freemarker directives as shared variables.
-   *
-   * @param servletContext Servlet context.
-   * @return Freemarker configuration.
-   * @throws TemplateException
-   */
-  @Override
-  protected Configuration createConfiguration(ServletContext servletContext) throws TemplateException {
-    Configuration configuration =  super.createConfiguration(servletContext);
-    configuration.setSharedVariable("authorName", new AuthorNameDirective());
-    return configuration;
   }
 }
