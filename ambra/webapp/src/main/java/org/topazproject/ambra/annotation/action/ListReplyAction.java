@@ -92,7 +92,7 @@ public class ListReplyAction extends AnnotationActionSupport {
         log.debug("listing all Replies for root: " + root);
       }
       baseAnnotation = getAnnotationService().getAnnotation(root, true, true);
-      replies = getAnnotationService().listAllReplies(root, inReplyTo, true, true);
+      replies = getAnnotationService().listAllReplies(root, inReplyTo, null, true, true);
       final String articleId = baseAnnotation.getAnnotates();
       article = fetchArticleService.getArticleInfo(articleId);
 

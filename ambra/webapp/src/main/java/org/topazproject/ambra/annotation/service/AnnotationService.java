@@ -312,21 +312,6 @@ public class AnnotationService {
   }
 
   /**
-   * Lists all annotations for the given target DOI.
-   *
-   * @param target target of the annotation
-   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
-   * @param needBody indicates if the annotation body is required
-   * @throws ApplicationException ApplicationException
-   * @return a list of annotations
-   */
-  @Transactional(readOnly = true)
-  public WebAnnotation[] listAnnotations(String target, boolean needCreatorName, boolean needBody)
-          throws ApplicationException {
-    return listAnnotations(target, null, needCreatorName, needBody);
-  }
-
-  /**
    * Lists all correction annotations for the given target DOI.
    *
    * @param target the target article to list correction annotations on
@@ -403,7 +388,7 @@ public class AnnotationService {
   @Transactional(readOnly = true)
   public Flag[] listFlags(final String target, boolean needCreatorName, boolean needBody)
           throws ApplicationException {
-    final WebAnnotation[] annotations = listAnnotations(target, needCreatorName, needBody);
+    final WebAnnotation[] annotations = listAnnotations(target, null, needCreatorName, needBody);
     final Collection<Flag> flagList = new ArrayList<Flag>(annotations.length);
     for (final WebAnnotation annotation : annotations) {
       if (!annotation.isDeleted()) {
@@ -439,23 +424,6 @@ public class AnnotationService {
   }
 
   /**
-   * Get a list of all replies
-   *
-   * @param root the discussion thread this resource is part of
-   * @param inReplyTo the resource whose replies are to be listed
-   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
-   * @param needBody indicates if the annotation body is required
-   * @throws ApplicationException ApplicationException
-   * @return a list of all replies
-   */
-  @Transactional(readOnly = true)
-  public WebReply[] listAllReplies(final String root, final String inReplyTo,
-                                   boolean needCreatorName, boolean needBody)
-                                     throws ApplicationException {
-    return listAllReplies(root, inReplyTo, null, needCreatorName, needBody);
-  }
-
-  /**
    * Get a list of all replies in a flat array
    *
    * @param root the discussion thread this resource is part of
@@ -473,7 +441,7 @@ public class AnnotationService {
   }
 
   /**
-   * Get a list of all replies
+   * Transitively get a reply thread.
    *
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed

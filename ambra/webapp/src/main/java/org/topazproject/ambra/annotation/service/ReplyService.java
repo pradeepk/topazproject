@@ -29,17 +29,14 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.models.ReplyBlob;
 import org.topazproject.ambra.models.ReplyThread;
-import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
 
 /**
@@ -48,9 +45,6 @@ import org.topazproject.otm.criterion.Restrictions;
 public class ReplyService extends BaseAnnotationService {
   private static final Log     log         = LogFactory.getLog(ReplyService.class);
   private final RepliesPEP     pep;
-  private Session              session;
-  private PermissionsService permissionsService;
-
   /**
    * Create a new instance of ReplyService.
    *
@@ -350,25 +344,5 @@ public class ReplyService extends BaseAnnotationService {
     List<Reply> l       = c.list();
 
     return l.toArray(new Reply[l.size()]);
-  }
-
-  /**
-   * Set the OTM session. Called by spring's bean wiring.
-   *
-   * @param session the otm session
-   */
-  @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
-  }
-
-  /**
-   * Set the PermissionsService
-   *
-   * @param permissionsService permissionWebService
-   */
-  @Required
-  public void setPermissionsService(final PermissionsService permissionsService) {
-    this.permissionsService = permissionsService;
   }
 }

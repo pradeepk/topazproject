@@ -42,7 +42,6 @@ import org.topazproject.ambra.models.AnnotationBlob;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Comment;
-import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
 import org.topazproject.otm.ClassMetadata;
@@ -64,8 +63,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   private static final Log     log                    =
     LogFactory.getLog(ArticleAnnotationService.class);
   private final AnnotationsPEP       pep;
-  private Session              session;
-  private PermissionsService permissionsService;
   private Cache              articleAnnotationCache;
   private Invalidator        invalidator;
 
@@ -296,33 +293,16 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   }
 
   /**
-   * List annotations for a target.
+   * Retrieve all Annotation instances that annotate the given target DOI.
    *
    * @param target the target
-   *
-   * @return the list
-   *
-   * @throws OtmException on an error
-   */
-  private List<ArticleAnnotation> listAnnotationsForTarget(String target) throws OtmException {
-    return listAnnotationsForTarget(target, null);
-  }
-
-  /**
-   * Retrieve all Annotation instances that annotate the given target DOI. If annotationClassTypes
-   * is null, then all annotation types are retrieved. If annotationClassTypes is not null, only the
-   * Annotation class types in the annotationClassTypes Set are returned.
-   *
-   * @param target
-   * @param annotationClassTypes
    *
    * @return list of annotations
    *
    * @throws OtmException on an error
    */
-  private List<ArticleAnnotation> listAnnotationsForTarget(final String target,
-      Set<Class<?extends ArticleAnnotation>> annotationClassTypes) throws OtmException {
-
+  private List<ArticleAnnotation> lookupAnnotations(final String target)
+      throws OtmException {
     // This flush is so that our own query cache reflects change.
     // TODO : implement query caching in OTM and let it manage this cached query
     if (session.getFlushMode().implies(FlushMode.always))
@@ -330,22 +310,22 @@ public class ArticleAnnotationService extends BaseAnnotationService {
 
     // lock @ Article level
     final Object     lock           = (FetchArticleService.ARTICLE_LOCK + target).intern();
-    List<ArticleAnnotation> allAnnotations =
-      articleAnnotationCache.get(ANNOTATED_KEY + target, -1,
+
+    return articleAnnotationCache.get(ANNOTATED_KEY + target, -1,
           new Cache.SynchronizedLookup<List<ArticleAnnotation>, OtmException>(lock) {
           @Override
           public List<ArticleAnnotation> lookup() throws OtmException {
-            return listAnnotations(target, getApplicationId(), -1, ALL_ANNOTATION_CLASSES);
+            return loadAnnotations(target, getApplicationId(), -1, ALL_ANNOTATION_CLASSES);
           }
         });
+  }
 
-    /*
-     * TODO: Since we cache the set of all annotations, we can't query and cache a limited
-     * set of annotations at this time, so we have to filter out the types here and query
-     * for all types above when populating the cache
-     */
-    if (annotationClassTypes == null)
-      annotationClassTypes = ALL_ANNOTATION_CLASSES;
+  private List<ArticleAnnotation> filterAnnotations(List<ArticleAnnotation> allAnnotations,
+      Set<Class<?extends ArticleAnnotation>> annotationClassTypes) {
+
+    if ((annotationClassTypes == null) || (annotationClassTypes.size() == 0)
+       || ALL_ANNOTATION_CLASSES.equals(annotationClassTypes))
+      return allAnnotations;
 
     List<ArticleAnnotation> filteredAnnotations = new
       ArrayList<ArticleAnnotation>(allAnnotations.size());
@@ -364,7 +344,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   }
 
   @SuppressWarnings("unchecked")
-  private List<ArticleAnnotation> listAnnotations(final String target, final String mediator,
+  private List<ArticleAnnotation> loadAnnotations(final String target, final String mediator,
       final int state, final Set<Class<?extends ArticleAnnotation>> classTypes)
     throws OtmException {
     List<ArticleAnnotation> combinedAnnotations = new ArrayList<ArticleAnnotation>();
@@ -410,21 +390,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   }
 
   /**
-   * See listAnnotations(target, annotationClassTypes). This method returns the result of
-   * that method that with annoationClassTypes set to null.
-   *
-   * @param target the target for annotations
-   *
-   * @return a list of annotations
-   *
-   * @throws OtmException on an error
-   */
-  @Transactional(readOnly = true)
-  public ArticleAnnotation[] listAnnotations(final String target) throws OtmException {
-    return listAnnotations(target, null);
-  }
-
-  /**
    * Retrieve all Annotation instances that annotate the given target DOI. If annotationClassTypes
    * is null, then all annotation types are retrieved. If annotationClassTypes is not null, only the
    * Annotation class types in the annotationClassTypes Set are returned. Each Class in
@@ -445,10 +410,9 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
 
 
-    List<ArticleAnnotation> all      = listAnnotationsForTarget(target, annotationClassTypes);
-    List<ArticleAnnotation> filtered = new ArrayList<ArticleAnnotation>(all.size());
+    List<ArticleAnnotation> filtered = new ArrayList<ArticleAnnotation>();
 
-    for (ArticleAnnotation a : all) {
+    for (ArticleAnnotation a : filterAnnotations(lookupAnnotations(target), annotationClassTypes)) {
       try {
         pep.checkAccess(AnnotationsPEP.GET_ANNOTATION_INFO, a.getId());
         filtered.add(a);
@@ -533,7 +497,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
                                    throws OtmException {
     pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS_IN_STATE, AbstractSimplePEP.ANY_RESOURCE);
     List<ArticleAnnotation> annotations =
-      listAnnotations(null, mediator, state, ALL_ANNOTATION_CLASSES);
+      loadAnnotations(null, mediator, state, ALL_ANNOTATION_CLASSES);
 
     return annotations.toArray(new ArticleAnnotation[annotations.size()]);
   }
@@ -585,7 +549,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
      * Find all Annotations that refer to the old Annotation and update their target 'annotates'
      * property to point to the new Annotation.
      */
-    List<ArticleAnnotation> refAns = listAnnotationsForTarget(oldAn.getId().toString());
+    List<ArticleAnnotation> refAns = lookupAnnotations(oldAn.getId().toString());
 
     for (ArticleAnnotation refAn : refAns) {
       refAn.setAnnotates(newIdUri);
@@ -615,26 +579,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       invalidator = new Invalidator();
       articleAnnotationCache.getCacheManager().registerListener(invalidator);
     }
-  }
-
-  /**
-   * Set the OTM session. Called by spring's bean wiring.
-   *
-   * @param session the otm session
-   */
-  @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
-  }
-
-  /**
-   * Set the PermissionsService
-   *
-   * @param permissionsService permissionWebService
-   */
-  @Required
-  public void setPermissionsService(final PermissionsService permissionsService) {
-    this.permissionsService = permissionsService;
   }
 
   private class Invalidator extends AbstractObjectListener {

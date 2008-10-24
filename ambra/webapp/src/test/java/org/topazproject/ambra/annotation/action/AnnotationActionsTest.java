@@ -725,7 +725,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
     String       title       = "Title";
     AnnotationService service = getAnnotationService();
-    WebAnnotation[] annotations = service.listAnnotations(subject, true, true);
+    WebAnnotation[] annotations = service.listAnnotations(subject, null, true, true);
 
     for (final WebAnnotation annotation : annotations) {
       service.deletePrivateAnnotation(annotation.getId(), true);
@@ -762,7 +762,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
     String       title       = "Title";
     AnnotationService service = getAnnotationService();
-    WebAnnotation[] annotations = service.listAnnotations(subject, true, true);
+    WebAnnotation[] annotations = service.listAnnotations(subject, null, true, true);
 
     for (final WebAnnotation annotation : annotations) {
       service.deletePrivateAnnotation(annotation.getId(), true);
@@ -775,7 +775,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     String content = getFetchArticleService().getAnnotatedContent(subject);
     log.debug(content);
 
-    annotations = service.listAnnotations(subject, true, true);
+    annotations = service.listAnnotations(subject, null, true, true);
     for (final WebAnnotation annotation : annotations)
       service.deletePrivateAnnotation(annotation.getId(), true);
   }

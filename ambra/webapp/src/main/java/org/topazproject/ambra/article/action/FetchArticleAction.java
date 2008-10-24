@@ -77,7 +77,7 @@ public class FetchArticleAction extends BaseActionSupport {
     try {
       setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
 
-      WebAnnotation[] articleAnnotations = annotationService.listAnnotations(articleURI, false, false);
+      WebAnnotation[] articleAnnotations = annotationService.listAnnotations(articleURI, null, false, false);
       for (WebAnnotation a : articleAnnotations) {
         if (a.getContext() == null) {
           numDiscussions ++;

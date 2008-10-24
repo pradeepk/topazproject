@@ -19,6 +19,8 @@
 package org.topazproject.ambra.annotation.service;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.ambra.permission.service.PermissionsService;
+import org.topazproject.otm.Session;
 
 /**
  * Base class for Annotaion and Reply web service wrappers
@@ -28,6 +30,8 @@ public abstract class BaseAnnotationService {
   private String encodingCharset = "UTF-8";
   private String applicationId;
   private boolean isAnonymous;
+  protected Session session;
+  protected PermissionsService permissionsService;
 
   /**
    * Set the default annotation type.
@@ -88,5 +92,25 @@ public abstract class BaseAnnotationService {
 
   protected String getContentType(final String mimeType) {
     return mimeType + ";charset=" + getEncodingCharset();
+  }
+
+  /**
+   * Set the OTM session. Called by spring's bean wiring.
+   *
+   * @param session the otm session
+   */
+  @Required
+  public void setOtmSession(Session session) {
+    this.session = session;
+  }
+
+  /**
+   * Set the PermissionsService
+   *
+   * @param permissionsService permissionWebService
+   */
+  @Required
+  public void setPermissionsService(final PermissionsService permissionsService) {
+    this.permissionsService = permissionsService;
   }
 }

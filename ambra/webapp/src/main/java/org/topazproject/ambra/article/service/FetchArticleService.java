@@ -144,7 +144,7 @@ public class FetchArticleService {
                                          ex);
     }
 
-    final ArticleAnnotation[] annotations = articleAnnotationService.listAnnotations(articleDOI);
+    final ArticleAnnotation[] annotations = articleAnnotationService.listAnnotations(articleDOI, null);
     return applyAnnotationsOnContentAsDocument(content, annotations);
   }
 
