@@ -128,7 +128,7 @@
         <param name="templateFile">/user/inSufficientRole.ftl</param>
       </result>
       <result name="error" type="ambraFreemarker">
-        <param name="templateFile">/static/serverError.ftl</param>
+        <param name="templateFile">/static/error.ftl</param>
       </result>
     </global-results>
 
@@ -686,7 +686,7 @@
         <param name="noCache">true</param>
       </result>
       <result name="error" type="ambraFreemarker">
-        <param name="location">/static/serverError.ftl</param>
+        <param name="location">/static/error.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
