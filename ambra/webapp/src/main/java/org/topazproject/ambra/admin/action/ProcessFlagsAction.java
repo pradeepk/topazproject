@@ -261,8 +261,6 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         log.debug("Reply " + reply.getId() + " has " + replyFlags.length + " flags");
       }
       for (Flag flag: replyFlags) {
-        if (flag.isDeleted())
-          continue;
         deleteFlag(reply.getId().toString(), flag.getId().toString(), AnnotationService.WEB_TYPE_REPLY);
       }
     }
@@ -279,7 +277,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         targetType.equals(AnnotationService.WEB_TYPE_MINOR_CORRECTION) ||
         targetType.equals(AnnotationService.WEB_TYPE_FORMAL_CORRECTION)) {
       replyService.deleteReplies(target, target);
-      annotationService.deletePublicAnnotation(target);
+      annotationService.deleteAnnotation(target);
       if (log.isDebugEnabled()) {
         log.debug("Deleted annotation: " + target);
       }
@@ -302,36 +300,6 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
     if (log.isDebugEnabled())
       log.debug("Deleting flag: " + flag + " on target: " + target);
     annotationService.deleteFlag(flag);
-    /*
-     * TODO: The Action shouldn't have to worry about this kind of housekeeping. Move this to the
-     * service!  Deal with 'flagged' status
-     */
-    Flag[] flags = annotationService.listFlags(target, false, false);
-    if (log.isDebugEnabled())
-      log.debug("Checking for flags on target: " + target + ". There are " + flags.length +
-                " flags remaining");
-
-    if (flags.length == 0) {
-      if (log.isDebugEnabled()) {
-        log.debug("Setting status to unflagged");
-      }
-      if (targetType.equals(AnnotationService.WEB_TYPE_NOTE) ||
-          targetType.equals(AnnotationService.WEB_TYPE_COMMENT) ||
-          targetType.equals(AnnotationService.WEB_TYPE_MINOR_CORRECTION) ||
-          targetType.equals(AnnotationService.WEB_TYPE_FORMAL_CORRECTION)) {
-        annotationService.unflagAnnotation(target);
-      } else if (targetType.equals(AnnotationService.WEB_TYPE_RATING)) {
-        ratingsService.unflagRating(target);
-      } else if (targetType.equals(AnnotationService.WEB_TYPE_REPLY)) {
-        annotationService.unflagReply(target);
-      } else {
-        String msg = target + " cannot be unFlagged - not annotation, rating or reply";
-        log.error(msg);
-        throw new ApplicationException(msg);
-      }
-    } else {
-      log.debug("Flags exist. Target will remain marked as flagged");
-    }
   }
 
   public void setReplyService(ReplyService replyService) {

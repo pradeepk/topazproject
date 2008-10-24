@@ -18,9 +18,6 @@
  */
 package org.topazproject.ambra.annotation.service;
 
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.FLAG_MASK;
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.PUBLIC_MASK;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -43,7 +40,6 @@ import org.topazproject.ambra.models.MinorCorrection;
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.permission.service.PermissionsService;
-import org.topazproject.ambra.rating.service.RatingsService;
 import org.topazproject.ambra.user.AmbraUser;
 
 /**
@@ -56,7 +52,6 @@ public class AnnotationService {
    */
   private ArticleAnnotationService articleAnnotationService;
   private ReplyService replyService;
-  private RatingsService ratingsService;
 
   private static final Log log = LogFactory.getLog(AnnotationService.class);
   private AnnotationConverter converter;
@@ -161,14 +156,7 @@ public class AnnotationService {
         throws ApplicationException {
     try {
       final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
-      final String flagId =
-                articleAnnotationService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
-      if (isAnnotation) {
-        articleAnnotationService.setFlagged(target);
-      } else {
-        replyService.setFlagged(target);
-      }
-      return flagId;
+      return articleAnnotationService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -190,79 +178,22 @@ public class AnnotationService {
         throws ApplicationException {
     try {
       final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
-      final String flagId =
-                  articleAnnotationService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
-      ratingsService.setFlagged(target);
-      return flagId;
+      return articleAnnotationService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
     } catch (Exception e) {
       throw new ApplicationException("Failed to create a flag for Ratings Annotation", e);
     }
   }
 
   /**
-   * Unflag the given annotation.
+   * Delete the given annotation.
    *
    * @param annotationId annotationId
    * @throws ApplicationException ApplicationException
    */
-  public void unflagAnnotation(final String annotationId) throws ApplicationException {
-    try {
-      articleAnnotationService.unflagAnnotation(annotationId);
-    } catch (Exception e) {
-      throw new ApplicationException(e);
-    }
-  }
-
-  /**
-   * Unflag the given reply
-   *
-   * @param replyId replyId
-   * @throws ApplicationException ApplicationException
-   */
-  public void unflagReply(final String replyId) throws ApplicationException {
-    try {
-      replyService.unflagReply(replyId);
-    } catch (Exception e) {
-      throw new ApplicationException(e);
-    }
-  }
-
-  /**
-   * Unflag the given Rating
-   *
-   * @param ratingId the id of the Rating object for which a flag is to be removed
-   * @throws ApplicationException on an error
-   */
-  public void unflagRating(final String ratingId) throws ApplicationException {
-    ratingsService.unflagRating(ratingId);
-  }
-
-  /**
-   * Delete the given annotation along with/without the one it supercedes
-   *
-   * @param annotationId annotationId
-   * @param deletePreceding deletePreceding
-   * @throws ApplicationException ApplicationException
-   */
-  public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding)
+  public void deleteAnnotation(final String annotationId)
         throws ApplicationException {
     try {
-      articleAnnotationService.deletePrivateAnnotation(annotationId, deletePreceding);
-    } catch (Exception e) {
-      throw new ApplicationException(e);
-    }
-  }
-
-  /**
-   * Delete the given annotation along with/without the one it supercedes
-   *
-   * @param annotationId annotationId
-   * @throws ApplicationException ApplicationException
-   */
-  public void deletePublicAnnotation(final String annotationId) throws ApplicationException {
-    try {
-      articleAnnotationService.deletePublicAnnotation(annotationId);
-      //TODO: Set the access permissions for administrator only
+      articleAnnotationService.deleteAnnotation(annotationId);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -275,9 +206,23 @@ public class AnnotationService {
    * @param inReplyTo inReplyTo
    * @throws ApplicationException ApplicationException
    */
-  public void deleteReply(final String root, final String inReplyTo) throws ApplicationException {
+  public void deleteReplies(final String root, final String inReplyTo) throws ApplicationException {
     try {
       replyService.deleteReplies(root, inReplyTo);
+    } catch (Exception e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
+   * Delete replies starting with a given id.
+   *
+   * @param id the id
+   * @throws ApplicationException ApplicationException
+   */
+  public void deleteReplies(final String id) throws ApplicationException {
+    try {
+      replyService.deleteReplies(id);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -292,20 +237,6 @@ public class AnnotationService {
   public void deleteFlag(final String flagId) throws ApplicationException {
     try {
       articleAnnotationService.deleteFlag(flagId);
-    } catch (Exception e) {
-      throw new ApplicationException(e);
-    }
-  }
-
-  /**
-   * delete reply with id
-   *
-   * @param replyId replyId of the reply
-   * @throws ApplicationException ApplicationException
-   */
-  public void deleteReply(final String replyId) throws ApplicationException {
-    try {
-      replyService.deleteReply(replyId);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -377,7 +308,7 @@ public class AnnotationService {
   }
 
   /**
-   * List all the flags on all the undeleted annotations on the target.
+   * List all the flags on the target.
    *
    * @param target target of the annotation
    * @param needCreatorName indicates if a display-name of the creator needs to be fetched
@@ -390,11 +321,10 @@ public class AnnotationService {
           throws ApplicationException {
     final WebAnnotation[] annotations = listAnnotations(target, null, needCreatorName, needBody);
     final Collection<Flag> flagList = new ArrayList<Flag>(annotations.length);
-    for (final WebAnnotation annotation : annotations) {
-      if (!annotation.isDeleted()) {
-        flagList.add(new Flag(annotation));
-      }
-    }
+
+    for (final WebAnnotation annotation : annotations)
+      flagList.add(new Flag(annotation));
+
     return flagList.toArray(new Flag[flagList.size()]);
   }
 
@@ -520,26 +450,12 @@ public class AnnotationService {
     }
   }
 
-  /**
-   * Obtain a list of flagged ratings
-   *
-   * @return a list of flagged ratings
-   * @throws ApplicationException on an error
-   */
-  public Rating[] listFlaggedRatings() throws ApplicationException {
-    return ratingsService.listRatings(null, FLAG_MASK | PUBLIC_MASK);
-  }
-
   public void setArticleAnnotationService(final ArticleAnnotationService articleAnnotationService) {
     this.articleAnnotationService = articleAnnotationService;
   }
 
   public void setReplyService(final ReplyService replyService) {
     this.replyService = replyService;
-  }
-
-  public void setRatingsService(final RatingsService ratingsService) {
-    this.ratingsService = ratingsService;
   }
 
   /**
@@ -562,8 +478,6 @@ public class AnnotationService {
               new String[]{
                       AnnotationsPEP.DELETE_ANNOTATION,
                       AnnotationsPEP.SUPERSEDE}, everyone);
-
-      articleAnnotationService.setPublic(annotationDoi);
 
     } catch (final Exception e) {
       throw new ApplicationException(e);

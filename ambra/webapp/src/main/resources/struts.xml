@@ -559,11 +559,7 @@
       <result name="success">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
     </action>
 
-    <action name="deletePrivateAnnotation" class="org.topazproject.ambra.annotation.action.DeleteAnnotationAction" method="deletePrivateAnnotation">
-      <result name="success" type="redirect">/home.action</result>
-    </action>
-
-    <action name="deletePublicAnnotation" class="org.topazproject.ambra.annotation.action.DeleteAnnotationAction" method="deletePublicAnnotation">
+    <action name="deleteAnnotation" class="org.topazproject.ambra.annotation.action.DeleteAnnotationAction" method="deleteAnnotation">
       <result name="success" type="redirect">/home.action</result>
     </action>
 
@@ -595,14 +591,6 @@
     </action>
 
     <action name="deleteFlag" class="org.topazproject.ambra.annotation.action.DeleteFlagAction">
-      <result name="success" type="redirect">/home.action</result>
-    </action>
-
-    <action name="unflagAnnotation" class="org.topazproject.ambra.annotation.action.UnflagAnnotationAction" method="unflagAnnotation">
-      <result name="success" type="redirect">/home.action</result>
-    </action>
-
-    <action name="unflagReply" class="org.topazproject.ambra.annotation.action.UnflagAnnotationAction" method="unflagReply">
       <result name="success" type="redirect">/home.action</result>
     </action>
 

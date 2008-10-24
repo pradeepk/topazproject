@@ -85,16 +85,8 @@
           <@s.a href="%{makePublicAnnotationURL}">Set Annotation as public</@s.a> <br/>
         </li>
         <li>
-          <@s.url id="unflagAnnotationURL" action="unflagAnnotation" targetId="${annotation.id}" />
-          <@s.a href="%{unflagAnnotationURL}">unflag Annotation</@s.a> <br/>
-        </li>
-        <li>
-          <@s.url id="deletePrivateAnnotationURL" action="deletePrivateAnnotation" annotationId="${annotation.id}" namespace="/annotation/secure" />
-          <@s.a href="%{deletePrivateAnnotationURL}">delete private annotation</@s.a><br/>
-        </li>
-        <li>
-          <@s.url id="deletePublicAnnotationURL" action="deletePublicAnnotation" annotationId="${annotation.id}" namespace="/annotation/secure" />
-          <@s.a href="%{deletePublicAnnotationURL}">delete public annotation</@s.a><br/>
+          <@s.url id="deleteAnnotationURL" action="deleteAnnotation" annotationId="${annotation.id}" namespace="/annotation/secure" />
+          <@s.a href="%{deleteAnnotationURL}">delete annotation</@s.a><br/>
         </li>
       </ul>
        <hr/>

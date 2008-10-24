@@ -21,7 +21,6 @@ package org.topazproject.ambra.annotation.service;
 import java.util.Date;
 
 import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.Blob;
 import org.topazproject.ambra.util.TextUtils;
@@ -38,9 +37,6 @@ import com.googlecode.jsonplugin.annotations.JSON;
  */
 public abstract class BaseAnnotation<T extends Annotea<? extends Blob>> {
   /** An integer constant to indicate a unique value for the  */
-  public static final int PUBLIC_MASK = Constants.StateMask.PUBLIC;
-  public static final int FLAG_MASK = Constants.StateMask.FLAG;
-  public static final int DELETE_MASK = Constants.StateMask.DELETE;
   private static final int TRUNCATED_COMMENT_LENGTH = 256;
   protected final T annotea;
   protected final String originalBodyContent;
@@ -91,30 +87,6 @@ public abstract class BaseAnnotation<T extends Annotea<? extends Blob>> {
    */
   protected String escapeText(final String text) {
     return TextUtils.escapeHtml(text);
-  }
-
-  /**
-   * Is the Annotation public?
-   * @return true if the annotation/reply is public, false if private
-   */
-  public boolean isPublic() {
-    return (getState() & PUBLIC_MASK) == PUBLIC_MASK;
-  }
-
-  /**
-   * Is the annotation flagged?
-   * @return true if the annotation is flagged, false otherwise
-   */
-  public boolean isFlagged() {
-    return (getState() & FLAG_MASK) == FLAG_MASK;
-  }
-
-  /**
-   * Is the annotation deleted?
-   * @return true if the annotation has been deleted.
-   */
-  public boolean isDeleted() {
-    return (getState() & DELETE_MASK) == DELETE_MASK;
   }
 
   /**

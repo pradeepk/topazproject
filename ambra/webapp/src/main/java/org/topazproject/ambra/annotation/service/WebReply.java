@@ -84,9 +84,4 @@ public class WebReply extends BaseAnnotation<Reply> {
   public WebReply[] getReplies() {
     return replies.toArray(new WebReply[replies.size()]);
   }
-
-  @Override
-  public boolean isPublic() {
-    throw new UnsupportedOperationException("A reply is always public, so please don't call this");
-  }
 }

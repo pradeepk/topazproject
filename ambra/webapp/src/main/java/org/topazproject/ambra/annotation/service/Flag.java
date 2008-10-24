@@ -67,7 +67,4 @@ public class Flag {
     return annotation.getOriginalBodyContent();
   }
 
-  public boolean isDeleted() {
-    return annotation.isDeleted();
-  }
 }

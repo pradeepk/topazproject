@@ -32,36 +32,17 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 @SuppressWarnings("serial")
 public class DeleteAnnotationAction extends AnnotationActionSupport {
   private String annotationId;
-  private boolean deletePreceding;
 
   private static final Log log = LogFactory.getLog(DeleteAnnotationAction.class);
-
-  /**
-   * Annotation deletion action.
-   * @return status
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public String deletePrivateAnnotation() {
-    try {
-      getAnnotationService().deletePrivateAnnotation(annotationId, deletePreceding);
-    } catch (final ApplicationException e) {
-      log.error("Could not delete annotation: " + annotationId, e);
-      addActionError("Annotation deletion failed with error message: " + e.getMessage());
-      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-      return ERROR;
-    }
-    addActionMessage("Annotation deleted with id:" + annotationId);
-    return SUCCESS;
-  }
 
   /**
    * Delete public annotation.
    * @return status
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public String deletePublicAnnotation() {
+  public String deleteAnnotation() {
     try {
-      getAnnotationService().deletePublicAnnotation(annotationId);
+      getAnnotationService().deleteAnnotation(annotationId);
     } catch (final ApplicationException e) {
       log.error("Could not delete annotation: " + annotationId, e);
       addActionError("Annotation deletion failed with error message: " + e.getMessage());
@@ -78,10 +59,6 @@ public class DeleteAnnotationAction extends AnnotationActionSupport {
    */
   public void setAnnotationId(final String annotationId) {
     this.annotationId = annotationId;
-  }
-
-  public void setDeletePreceding(final boolean deletePreceding) {
-    this.deletePreceding = deletePreceding;
   }
 
   /**

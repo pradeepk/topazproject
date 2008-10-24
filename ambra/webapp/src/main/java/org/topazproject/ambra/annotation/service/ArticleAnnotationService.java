@@ -18,9 +18,6 @@
  */
 package org.topazproject.ambra.annotation.service;
 
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.FLAG_MASK;
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.PUBLIC_MASK;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -227,7 +224,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   }
 
   /**
-   * Unflag an annotation.
+   * Delete an annotation.
    *
    * @param annotationId annotationId
    *
@@ -235,42 +232,13 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws SecurityException if a security policy prevented this operation
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public void unflagAnnotation(final String annotationId) throws OtmException, SecurityException {
-    pep.checkAccess(AnnotationsPEP.SET_ANNOTATION_STATE, URI.create(annotationId));
-
+  public void deleteAnnotation(final String annotationId)
+    throws OtmException, SecurityException {
+    pep.checkAccess(AnnotationsPEP.DELETE_ANNOTATION, URI.create(annotationId));
     ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
-    a.setState(a.getState() & ~FLAG_MASK);
-  }
 
-  /**
-   * Delete an annotation subtree and not just mark it.
-   *
-   * @param annotationId annotationId
-   * @param deletePreceding deletePreceding
-   *
-   * @throws OtmException on an error
-   * @throws SecurityException if a security policy prevented this operation
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding)
-    throws OtmException, SecurityException {
-    pep.checkAccess(AnnotationsPEP.DELETE_ANNOTATION, URI.create(annotationId));
-    deleteAnnotation(annotationId);
-  }
-
-  /**
-   * Mark an annotation as deleted.
-   *
-   * @param annotationId annotationId
-   *
-   * @throws OtmException on an error
-   * @throws SecurityException if a security policy prevented this operation
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public void deletePublicAnnotation(final String annotationId)
-    throws OtmException, SecurityException {
-    pep.checkAccess(AnnotationsPEP.DELETE_ANNOTATION, URI.create(annotationId));
-    deleteAnnotation(annotationId);
+    if (a != null)
+      session.delete(a);
   }
 
   /**
@@ -283,15 +251,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void deleteFlag(final String flagId) throws OtmException, SecurityException {
-    pep.checkAccess(AnnotationsPEP.DELETE_ANNOTATION, URI.create(flagId));
     deleteAnnotation(flagId);
-  }
-
-  private void deleteAnnotation(final String annotationId) throws OtmException {
-    ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
-
-    if (a != null)
-      session.delete(a);
   }
 
   /**
@@ -470,38 +430,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     }
 
     a.setContext(context);
-  }
-
-  /**
-   * Set the annotation as public.
-   *
-   * @param annotationDoi annotationDoi
-   *
-   * @throws OtmException on an error
-   * @throws SecurityException if a security policy prevented this operation
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public void setPublic(final String annotationDoi) throws OtmException, SecurityException {
-    pep.checkAccess(AnnotationsPEP.SET_ANNOTATION_STATE, URI.create(annotationDoi));
-
-    ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationDoi);
-    a.setState(a.getState() | PUBLIC_MASK);
-  }
-
-  /**
-   * Set the annotation as flagged.
-   *
-   * @param annotationId annotationId
-   *
-   * @throws OtmException on an error
-   * @throws SecurityException if a security policy prevented this operation
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public void setFlagged(final String annotationId) throws OtmException, SecurityException {
-    pep.checkAccess(AnnotationsPEP.SET_ANNOTATION_STATE, URI.create(annotationId));
-
-    ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
-    a.setState(a.getState() | FLAG_MASK);
   }
 
   /**

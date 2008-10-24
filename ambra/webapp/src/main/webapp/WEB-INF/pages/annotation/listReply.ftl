@@ -78,10 +78,6 @@
               </@s.form>
           </fieldset>
         </li>
-        <li>
-          <@s.url id="unflagAnnotationURL" action="unflagAnnotation" targetId="${reply.id}" />
-          <@s.a href="%{unflagAnnotationURL}">unflag Reply</@s.a> <br/>
-        </li>
       </ul>
       <hr/>
       </#list>

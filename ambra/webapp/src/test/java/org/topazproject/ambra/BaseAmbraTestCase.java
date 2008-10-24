@@ -32,7 +32,6 @@ import org.topazproject.ambra.annotation.action.GetReplyAction;
 import org.topazproject.ambra.annotation.action.ListAnnotationAction;
 import org.topazproject.ambra.annotation.action.ListFlagAction;
 import org.topazproject.ambra.annotation.action.ListReplyAction;
-import org.topazproject.ambra.annotation.action.UnflagAnnotationAction;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.article.action.FetchArticleAction;
 import org.topazproject.ambra.article.action.FetchObjectAction;
@@ -84,7 +83,6 @@ public abstract class BaseAmbraTestCase extends AbstractDependencyInjectionSprin
   private AnnotationService annotationService;
   private UserService userService;
   private DeleteFlagAction deleteFlagAction;
-  private UnflagAnnotationAction unflagAnnotationAction;
   private ListFlagAction listFlagAction;
   private SearchAction searchAction;
   private SearchUserAction searchUserAction;
@@ -324,18 +322,6 @@ public abstract class BaseAmbraTestCase extends AbstractDependencyInjectionSprin
    */
   public void setDeleteFlagAction(final DeleteFlagAction deleteFlagAction) {
     this.deleteFlagAction = deleteFlagAction;
-  }
-
-  /**
-   * @return the unflagAnnotationAction
-   */
-  public UnflagAnnotationAction getUnflagAnnotationAction() {
-    return unflagAnnotationAction;
-  }
-
-  /** Set the unflagAnnotationAction */
-  public void setUnflagAnnotationAction(final UnflagAnnotationAction unflagAnnotationAction) {
-    this.unflagAnnotationAction = unflagAnnotationAction;
   }
 
   /** Get the listFlagAction */

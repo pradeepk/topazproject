@@ -18,9 +18,6 @@
  */
 package org.topazproject.ambra.annotation.service;
 
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.DELETE_MASK;
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.FLAG_MASK;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -108,22 +105,6 @@ public class ReplyService extends BaseAnnotationService {
     permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
 
     return newId;
-  }
-
-  /**
-   * Mark the reply as deleted.
-   *
-   * @param replyId replyId
-   *
-   * @throws OtmException on an error
-   * @throws SecurityException if a security policy prevented this operation
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public void deleteReply(final String replyId) throws OtmException, SecurityException {
-    pep.checkAccess(RepliesPEP.SET_REPLY_STATE, URI.create(replyId));
-
-    Reply a = session.get(Reply.class, replyId);
-    a.setState(DELETE_MASK);
   }
 
   /**
@@ -279,38 +260,6 @@ public class ReplyService extends BaseAnnotationService {
     }
 
     return l.toArray(new Reply[l.size()]);
-  }
-
-  /**
-   * Unflag a reply
-   *
-   * @param replyId replyId
-   *
-   * @throws OtmException on an error
-   * @throws SecurityException if a security policy prevented this operation
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public void unflagReply(final String replyId) throws OtmException, SecurityException {
-    pep.checkAccess(RepliesPEP.SET_REPLY_STATE, URI.create(replyId));
-
-    Reply a = session.get(Reply.class, replyId);
-    a.setState(a.getState() & ~FLAG_MASK);
-  }
-
-  /**
-   * Set the reply as flagged
-   *
-   * @param replyId replyId
-   *
-   * @throws OtmException on an error
-   * @throws SecurityException if a security policy prevented this operation
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public void setFlagged(final String replyId) throws OtmException, SecurityException {
-    pep.checkAccess(RepliesPEP.SET_REPLY_STATE, URI.create(replyId));
-
-    Reply a = session.get(Reply.class, replyId);
-    a.setState(a.getState() | FLAG_MASK);
   }
 
   /**

@@ -18,9 +18,6 @@
  */
 package org.topazproject.ambra.rating.service;
 
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.FLAG_MASK;
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.PUBLIC_MASK;
-
 import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
@@ -64,18 +61,6 @@ public class RatingsService {
     } catch (Exception e) {
       throw new Error("Failed to create Ratings PEP", e);
     }
-  }
-
-  /**
-   * Unflag a Rating
-   *
-   * @param ratingId the identifier of the Rating object to be unflagged
-   * @throws ApplicationException on an error
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public void unflagRating(final String ratingId)
-                  throws ApplicationException {
-    setPublic(ratingId);
   }
 
   /**
@@ -133,30 +118,6 @@ public class RatingsService {
     articleAnnotationCache.put(AVG_RATINGS_KEY + articleURI,
         new AverageRatings(articleRatingSummary));
     session.delete(articleRating);
-  }
-
-  /**
-   * Set the annotation as public.
-   *
-   * @param ratingId the id of the Rating
-   * @throws ApplicationException on an error
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public void setPublic(final String ratingId) throws ApplicationException {
-    Rating r = session.get(Rating.class,ratingId);
-    r.setState(PUBLIC_MASK);
-  }
-
-  /**
-   * Set the rating as flagged.
-   *
-   * @param ratingId the id of rating object
-   * @throws ApplicationException on an error
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public void setFlagged(final String ratingId) throws ApplicationException {
-    Rating r = session.get(Rating.class,ratingId);
-    r.setState(PUBLIC_MASK | FLAG_MASK);
   }
 
   /**
@@ -374,4 +335,5 @@ public class RatingsService {
       }
     }
   }
+
 }

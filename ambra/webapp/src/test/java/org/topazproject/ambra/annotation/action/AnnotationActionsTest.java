@@ -48,7 +48,6 @@ import org.topazproject.ambra.annotation.action.GetReplyAction;
 import org.topazproject.ambra.annotation.action.ListAnnotationAction;
 import org.topazproject.ambra.annotation.action.ListFlagAction;
 import org.topazproject.ambra.annotation.action.ListReplyAction;
-import org.topazproject.ambra.annotation.action.UnflagAnnotationAction;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.AnnotationsPEP;
 import org.topazproject.ambra.annotation.service.Flag;
@@ -109,7 +108,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
       final String annotationId1 = annotation.getId();
       resetAnnotationPermissionsToDefault(annotationId1, ANON_PRINCIPAL);
       DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId1, false);
-      assertEquals(SUCCESS, deleteAnnotationAction.deletePrivateAnnotation());
+      assertEquals(SUCCESS, deleteAnnotationAction.deleteAnnotation());
     }
   }
 
@@ -123,7 +122,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
   public void testDeleteAnnotationsRemovesPrivateAnnotations() throws Exception {
     String annotationId = createAnnotation(target, false);
     DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, false);
-    assertEquals(SUCCESS, deleteAnnotationAction.deletePrivateAnnotation());
+    assertEquals(SUCCESS, deleteAnnotationAction.deleteAnnotation());
     log.debug("annotation deleted with id:" + annotationId);
     assertEquals(0, deleteAnnotationAction.getActionErrors().size());
 
@@ -135,13 +134,11 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
   public void testDeleteAnnotationsMarksPublicAnnotationsAsDeleted() throws Exception {
     String annotationId = createAnnotation(target, true);
     DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, false);
-    assertEquals(SUCCESS, deleteAnnotationAction.deletePublicAnnotation());
+    assertEquals(SUCCESS, deleteAnnotationAction.deleteAnnotation());
     log.debug("annotation marked as deleted with id:" + annotationId);
     assertEquals(0, deleteAnnotationAction.getActionErrors().size());
 
     final WebAnnotation annotation = retrieveAnnotation(annotationId);
-    assertTrue(annotation.isDeleted());
-    assertTrue(annotation.isPublic());
     
     resetAnnotationPermissionsToDefault(annotationId, ANON_PRINCIPAL);
   }
@@ -162,7 +159,6 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     log.debug("annotation deleted with id:" + replyId);
 
     final WebReply reply = retrieveReply(replyId);
-    assertTrue(reply.isDeleted());
 
     resetAnnotationPermissionsToDefault(annotationId, ANON_PRINCIPAL);
   }
@@ -194,7 +190,6 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
-    assertEquals(publicVisibility, savedAnnotation.isPublic());
 
     return annotationId;
   }
@@ -216,7 +211,6 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
     assertEquals(body, savedAnnotation.getComment());
-    assertEquals(visibility, savedAnnotation.isPublic());
 
     AnnotationActionsTest.annotationId = annotationId;
   }
@@ -484,15 +478,12 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
-    assertFalse(savedAnnotation.isPublic());
-    assertFalse(savedAnnotation.isFlagged());
 
     final AnnotationService annotationService = getAnnotationService();
     final PermissionsService permissionsService = getPermissionsService();
     annotationService.setAnnotationPublic(annotationId);
 
     final WebAnnotation annotation = retrieveAnnotation(annotationId);
-    assertTrue(annotation.isPublic());
 
     final List<String> grantsList = Arrays.asList(permissionsService.listGrants(annotationId, Constants.Permission.ALL_PRINCIPALS));
     assertTrue(grantsList.contains(AnnotationsPEP.GET_ANNOTATION_INFO));
@@ -541,7 +532,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
     for (final WebAnnotation annotation : annotations) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
-      deleteAnnotationAction.deletePrivateAnnotation();
+      deleteAnnotationAction.deleteAnnotation();
     }
 
     class AnnotationCreator {
@@ -569,7 +560,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
     for (final String annotationId : annotationIdList) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, true);
-      deleteAnnotationAction.deletePrivateAnnotation();
+      deleteAnnotationAction.deleteAnnotation();
     }
   }
 
@@ -606,7 +597,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
     for (final WebAnnotation annotation : annotations) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
-      deleteAnnotationAction.deletePrivateAnnotation();
+      deleteAnnotationAction.deleteAnnotation();
     }
 
     class AnnotationCreator {
@@ -638,7 +629,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
     for (final String annotationId : annotationIdList) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, true);
-      deleteAnnotationAction.deletePrivateAnnotation();
+      deleteAnnotationAction.deleteAnnotation();
     }
 
     if (true) { //to test if the xsl transformation worked fine and got any annotation in the output
@@ -678,7 +669,6 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
   private DeleteAnnotationAction getDeleteAnnotationAction(final String annotationId, final boolean deletePreceding) {
     final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction();
     deleteAnnotationAction.setAnnotationId(annotationId);
-    deleteAnnotationAction.setDeletePreceding(deletePreceding);
     return deleteAnnotationAction;
   }
 
@@ -728,7 +718,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     WebAnnotation[] annotations = service.listAnnotations(subject, null, true, true);
 
     for (final WebAnnotation annotation : annotations) {
-      service.deletePrivateAnnotation(annotation.getId(), true);
+      service.deleteAnnotation(annotation.getId());
     }
 
     final Collection<String> annotationIdList = new ArrayList<String>();
@@ -746,7 +736,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
     for (final String annotationId : annotationIdList) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, true);
-      deleteAnnotationAction.deletePrivateAnnotation();
+      deleteAnnotationAction.deleteAnnotation();
     }
   }
 
@@ -765,7 +755,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     WebAnnotation[] annotations = service.listAnnotations(subject, null, true, true);
 
     for (final WebAnnotation annotation : annotations) {
-      service.deletePrivateAnnotation(annotation.getId(), true);
+      service.deleteAnnotation(annotation.getId());
     }
 
     service.createAnnotation(subject, context1, null, title, "text/plain", "body", false);
@@ -777,7 +767,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
     annotations = service.listAnnotations(subject, null, true, true);
     for (final WebAnnotation annotation : annotations)
-      service.deletePrivateAnnotation(annotation.getId(), true);
+      service.deleteAnnotation(annotation.getId());
   }
 
   public void testFlagActions() throws Exception {
@@ -797,9 +787,6 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
-    assertTrue(savedAnnotation.isPublic());
-    assertFalse(savedAnnotation.isFlagged());
-    assertFalse(savedAnnotation.isDeleted());
 
     final String reasonCode = "spam";
     final String flagComment = "This a viagra selling spammer. " +
@@ -815,16 +802,12 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
       assertEquals(title, flaggedAnnotation.getCommentTitle());
       assertEquals(context, flaggedAnnotation.getContext());
       assertEquals(body, flaggedAnnotation.getComment());
-      assertTrue(flaggedAnnotation.isPublic());
-      assertTrue(flaggedAnnotation.isFlagged());
-      assertFalse(flaggedAnnotation.isDeleted());
 
       //Retrieve a flag
       final Flag flag = retrieveFlag(flagId);
       assertEquals(annotationId, flag.getAnnotates());
       assertEquals(flagComment, flag.getComment());
       assertEquals(reasonCode, flag.getReasonCode());
-      assertFalse(flag.isDeleted());
 
       //Delete a flag
       final DeleteFlagAction deleteFlagAction = getDeleteFlagAction();
@@ -836,28 +819,10 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
       final Flag deletedFlag = retrieveFlag(flagId);
       assertEquals(annotationId, deletedFlag.getAnnotates());
       assertEquals(reasonCode, deletedFlag.getReasonCode());
-      assertTrue(deletedFlag.isDeleted());
 
       //Retrieve an annotation
       final WebAnnotation flaggedAnnotationAfterFlagDeleted = retrieveAnnotation(annotationId);
       assertEquals(target, flaggedAnnotationAfterFlagDeleted.getAnnotates());
-      assertTrue(flaggedAnnotationAfterFlagDeleted.isPublic());
-      assertTrue(flaggedAnnotationAfterFlagDeleted.isFlagged());
-      assertFalse(flaggedAnnotationAfterFlagDeleted.isDeleted());
-
-      //Unflag the annotation
-      // TODO - this is testing ABSOLUTELY NOTHING USEFUL! 
-      final UnflagAnnotationAction unflagAnnotationAction = getUnflagAnnotationAction();
-      unflagAnnotationAction.setTargetId(annotationId);
-      assertEquals(SUCCESS, unflagAnnotationAction.unflagAnnotation());
-
-      //Retrieve an annotation
-      final WebAnnotation flaggedAnnotationAfterFlagUnflagging = retrieveAnnotation(annotationId);
-      assertEquals(target, flaggedAnnotationAfterFlagUnflagging.getAnnotates());
-      assertTrue(flaggedAnnotationAfterFlagUnflagging.isPublic());
-      assertFalse(flaggedAnnotationAfterFlagUnflagging.isFlagged());
-      assertFalse(flaggedAnnotationAfterFlagUnflagging.isDeleted());
-      log.debug("Annotation with id:" + flagId + " unflagged");
     }
 
     {
@@ -870,8 +835,6 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
       //Retrieve a reply
       final WebReply reply = retrieveReply(replyId);
-      assertFalse(reply.isDeleted());
-      assertFalse(reply.isFlagged());
 
       //Create a flag against a reply
       final CreateFlagAction createReplyFlagAction = getCreateFlagAction(reasonCode, replyId, flagComment);
@@ -884,15 +847,12 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
       assertEquals(annotationId, flaggedReply.getRoot());
       assertEquals(replyTitle, flaggedReply.getCommentTitle());
       assertEquals(replyComment, flaggedReply.getComment());
-      assertTrue(flaggedReply.isFlagged());
-      assertFalse(flaggedReply.isDeleted());
 
       //Retrieve a flag
       final Flag flag = retrieveFlag(flagAnnotationId);
       assertEquals(replyId, flag.getAnnotates());
       assertEquals(flagComment, flag.getComment());
       assertEquals(reasonCode, flag.getReasonCode());
-      assertFalse(flag.isDeleted());
 
       //Delete a flag
       final DeleteFlagAction deleteFlagAction = getDeleteFlagAction();
@@ -904,24 +864,11 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
       final Flag deletedFlag = retrieveFlag(flagAnnotationId);
       assertEquals(replyId, deletedFlag.getAnnotates());
       assertEquals(reasonCode, deletedFlag.getReasonCode());
-      assertTrue(deletedFlag.isDeleted());
 
       //Retrieve the previously flagged reply
       final WebReply flaggedReplyAfterFlagDeleted = retrieveReply(replyId);
       assertEquals(annotationId, flaggedReplyAfterFlagDeleted.getRoot());
-      assertTrue(flaggedReplyAfterFlagDeleted.isFlagged());
-      assertFalse(flaggedReplyAfterFlagDeleted.isDeleted());
 
-      //Unflag the reply
-      final UnflagAnnotationAction unflagAnnotationAction = getUnflagAnnotationAction();
-      unflagAnnotationAction.setTargetId(replyId);
-      assertEquals(SUCCESS, unflagAnnotationAction.unflagReply());
-
-      //Retrieve an annotation
-      final WebReply flaggedReplyAfterUnflagging = retrieveReply(replyId);
-      assertEquals(annotationId, flaggedReplyAfterUnflagging.getRoot());
-      assertFalse(flaggedReplyAfterUnflagging.isFlagged());
-      assertFalse(flaggedReplyAfterUnflagging.isDeleted());
       log.debug("Reply with id:" + flagAnnotationId + " unflagged");
     }
   }

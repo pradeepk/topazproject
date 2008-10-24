@@ -42,7 +42,7 @@ public class DeleteReplyAction extends AnnotationActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   public String deleteReplyWithId() {
     try {
-      getAnnotationService().deleteReply(id);
+      getAnnotationService().deleteReplies(id);
     } catch (final ApplicationException e) {
       log.error("Could not delete reply: " + id, e);
       addActionError("Reply deletion failed with error message: " + e.getMessage());
@@ -59,7 +59,7 @@ public class DeleteReplyAction extends AnnotationActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   public String deleteReplyWithRootAndReplyTo() {
     try {
-      getAnnotationService().deleteReply(root, inReplyTo);
+      getAnnotationService().deleteReplies(root, inReplyTo);
     } catch (final ApplicationException e) {
       log.error("Could not delete reply with root: " + root + " replyTo: " + inReplyTo, e);
       addActionError("Reply deletion failed with error message: " + e.getMessage());
