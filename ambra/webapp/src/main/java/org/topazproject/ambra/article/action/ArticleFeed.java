@@ -700,7 +700,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
           articles.add(articleOtmService.getArticle(articleKey));
         } catch (NoSuchArticleIdException e) {
           if (log.isDebugEnabled())
-            log.debug("Ignoring "+articleKey);
+            log.debug("Ignoring " + articleKey);
         }
       }
 
@@ -711,7 +711,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
             articles.add(articleOtmService.getArticle(URI.create(oldArticleUri)));
           } catch (NoSuchArticleIdException e) {
             if (log.isDebugEnabled())
-              log.debug("Ignoring old "+oldArticleUri);
+              log.debug("Ignoring old " + oldArticleUri);
           }
         }
       }
