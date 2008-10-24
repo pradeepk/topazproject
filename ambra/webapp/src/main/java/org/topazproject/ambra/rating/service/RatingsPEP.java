@@ -28,8 +28,8 @@ import org.topazproject.ambra.xacml.AbstractSimplePEP;
 import org.topazproject.ambra.xacml.Util;
 import org.topazproject.ambra.xacml.XacmlUtil;
 
-import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
+import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.attr.AnyURIAttribute;
 import com.sun.xacml.ctx.Attribute;
@@ -92,9 +92,10 @@ public class RatingsPEP extends AbstractSimplePEP {
    * @param action one of the actions defined above
    * @param userId the ratings owner's internal id
    * @param object the object for which to get/set the ratings; may be null
+   * @throws SecurityException when access is denied
    */
   public void checkObjectAccess(String action, URI userId, URI object) throws SecurityException {
-    Set resourceAttrs = new HashSet();
+    Set<Attribute> resourceAttrs = new HashSet<Attribute>();
 
     resourceAttrs.add(
         new Attribute(Util.RESOURCE_ID, null, null, new AnyURIAttribute(userId)));

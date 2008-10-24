@@ -23,17 +23,12 @@ import static org.topazproject.ambra.annotation.service.BaseAnnotation.PUBLIC_MA
 
 import java.io.Serializable;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
@@ -41,14 +36,13 @@ import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.RatingContent;
 import org.topazproject.ambra.models.RatingSummary;
-import org.topazproject.ambra.models.RatingSummaryContent;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.Interceptor.Updates;
+import org.topazproject.otm.criterion.Restrictions;
 
 /**
  * This service allows client code to operate on ratings objects.
@@ -76,7 +70,7 @@ public class RatingsService {
    * Unflag a Rating
    *
    * @param ratingId the identifier of the Rating object to be unflagged
-   * @throws ApplicationException
+   * @throws ApplicationException on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void unflagRating(final String ratingId)
@@ -88,8 +82,9 @@ public class RatingsService {
    * Delete the Rating identified by ratingId and update the RatingSummary.
    *
    * @param ratingId the identifier of the Rating object to be deleted
-   * @throws ApplicationException
+   * @throws ApplicationException on an error
    */
+  @SuppressWarnings("unchecked")
   @Transactional(rollbackFor = { Throwable.class })
   public void deleteRating(final String ratingId)
                          throws ApplicationException {
@@ -144,7 +139,7 @@ public class RatingsService {
    * Set the annotation as public.
    *
    * @param ratingId the id of the Rating
-   * @throws ApplicationException
+   * @throws ApplicationException on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void setPublic(final String ratingId) throws ApplicationException {
@@ -156,7 +151,7 @@ public class RatingsService {
    * Set the rating as flagged.
    *
    * @param ratingId the id of rating object
-   * @throws ApplicationException
+   * @throws ApplicationException on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void setFlagged(final String ratingId) throws ApplicationException {
@@ -193,6 +188,7 @@ public class RatingsService {
    * @return an array of rating metadata; if no matching annotations are found, an empty array
    *         is returned
    */
+  @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public Rating[] listRatings(final String mediator,final int state) {
     Criteria c = session.createCriteria(Rating.class);
@@ -215,6 +211,8 @@ public class RatingsService {
 
     return articleAnnotationCache.get(AVG_RATINGS_KEY  + articleURI, -1,
             new Cache.SynchronizedLookup<AverageRatings, OtmException>(articleURI.intern()) {
+              @SuppressWarnings("unchecked")
+              @Override
               public AverageRatings lookup() throws OtmException {
                 if (log.isDebugEnabled())
                   log.debug("retrieving rating summaries for: " + articleURI);
@@ -227,6 +225,7 @@ public class RatingsService {
             });
   }
 
+  @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public boolean hasRated(String articleURI) {
     final AmbraUser   user               = AmbraUser.getCurrentUser();
@@ -237,7 +236,7 @@ public class RatingsService {
                 + user.getUserId());
       }
 
-      List ratingsList =
+      List<Rating> ratingsList =
         session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
               .add(Restrictions.eq("creator", user.getUserId())).list();
 
@@ -289,6 +288,7 @@ public class RatingsService {
   }
 
   public static class Average implements Serializable {
+    private static final long serialVersionUID = -2890067268188424471L;
     public final double total;
     public final int    count;
     public final double average;
@@ -301,6 +301,7 @@ public class RatingsService {
       rounded = RatingContent.roundTo(average, 0.5);
     }
 
+    @Override
     public String toString() {
       return "total = " + total + ", count = " + count + ", average = " + average
         + ", rounded = " + rounded;
@@ -308,6 +309,7 @@ public class RatingsService {
   }
 
   public static class AverageRatings implements Serializable {
+    private static final long serialVersionUID = -1666766336307635633L;
     public final Average style;
     public final Average insight;
     public final Average reliability;
@@ -341,6 +343,7 @@ public class RatingsService {
       roundedOverall = RatingContent.roundTo(overall, 0.5);
     }
 
+    @Override
     public String toString() {
       return "style = [" + style + "], insight = [" + insight + "], reliability = [" + reliability
         + "], single = [" + single + "], numUsersThatRated = " + numUsersThatRated + ", overall = "
@@ -349,6 +352,7 @@ public class RatingsService {
   }
 
   private class Invalidator extends AbstractObjectListener {
+    @Override
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
         Updates updates) {
       if (o instanceof RatingSummary) {
@@ -357,6 +361,7 @@ public class RatingsService {
         articleAnnotationCache.remove(AVG_RATINGS_KEY + ((RatingSummary)o).getAnnotates());
       }
     }
+    @Override
     public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
       if (o instanceof Article) {
         if (log.isDebugEnabled())

@@ -34,6 +34,7 @@ import org.topazproject.ambra.models.Article;
  *
  * @author jkirton
  */
+@SuppressWarnings("serial")
 public abstract class AbstractRatingAction extends BaseActionSupport {
 
   protected static final Log log = LogFactory.getLog(AbstractRatingAction.class);
@@ -51,12 +52,10 @@ public abstract class AbstractRatingAction extends BaseActionSupport {
   /**
    * Determines if an article is a research type article.
    *
-   * @param articleURI
-   *          The URI of the article.
+   * @param articleURI The URI of the article.
    * @return true/false
-   * @throws ApplicationException
-   *           When the articleURI is not resolvable to an article or when no article type is
-   *           resolvable for the article.
+   * @throws ApplicationException When the articleURI is not resolvable to an article or when no
+   *                              article type is resolvable for the article.
    */
   protected final boolean isResearchArticle(String articleURI) throws ApplicationException {
     assert fetchArticleService != null;

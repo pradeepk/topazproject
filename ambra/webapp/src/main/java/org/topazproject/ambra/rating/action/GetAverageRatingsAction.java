@@ -64,7 +64,7 @@ public class GetAverageRatingsAction extends AbstractRatingAction {
    *
    * @param articleURI The articleUri to set.
    */
-  public void setArticleURI(String articleURI) throws Exception {
+  public void setArticleURI(String articleURI) {
     this.articleURI = articleURI;
   }
 
