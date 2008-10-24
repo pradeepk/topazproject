@@ -26,7 +26,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.transform.TransformerException;
@@ -73,9 +72,19 @@ public class Annotator {
         regions.addRegion(lists[i], annotations[i]);
       }
     }
+
+    if (log.isDebugEnabled())
+      log.debug("Surrounding selection ranges ...");
+
     regions.surroundContents(AML_NS, "aml:annotated", "aml:id", "aml:first");
 
+    if (log.isDebugEnabled())
+      log.debug("Creating region element ...");
+
     Element rRoot = regions.createElement(AML_NS, "aml:region", "aml:annotation", "aml:id");
+
+    if (log.isDebugEnabled())
+      log.debug("Creating annotation namespaces ...");
 
     Element aRoot = document.createElementNS(AML_NS, "aml:annotations");
     AnnotationModel.appendNSAttr(aRoot);
@@ -85,12 +94,19 @@ public class Annotator {
     for (int i = 0; i < annotations.length; i++) {
       annotation = annotations[i];
       if ((lists[i] != null) && (annotation.getContext() != null)) {
+        if (log.isDebugEnabled())
+          log.debug("Creating annotation node for " + annotation.getId() + "...");
+
         Element a = document.createElementNS(AML_NS, "aml:annotation");
         a.setAttributeNS(AML_NS, "aml:id", annotation.getId().toString());
         aRoot.appendChild(a);
         AnnotationModel.appendToNode(a, annotation);
       }
     }
+
+    if (log.isDebugEnabled())
+      log.debug("Assembling result document ...");
+
     return assembleResultDoc(document, rRoot, aRoot);
   }
 
@@ -108,11 +124,12 @@ public class Annotator {
 
   private static LocationList[] evaluate(Document document, ArticleAnnotation[] annotations)
                                   throws URISyntaxException, TransformerException {
-    ArrayList<LocationList> lists = new ArrayList<LocationList>(annotations.length);
+    LocationList[] lists = new LocationList[annotations.length];
 
     String annotationContext;
 
     for (int i = 0; i < annotations.length; i++) {
+      lists[i] = null;
       annotationContext = annotations[i].getContext();
       if (annotationContext != null){
         URI    context    = new URI(annotationContext);
@@ -125,33 +142,19 @@ public class Annotator {
           }
 
           try {
-            LocationList list = XPointerAPI.evalFullptr(document, expression);
-            lists.add(list);
+            if (log.isDebugEnabled())
+              log.debug("Evaluating xpointer : " + expression);
+            lists[i] = XPointerAPI.evalFullptr(document, expression);
           } catch (Exception e) {
-            StringBuilder errorMsg = new StringBuilder();
-            log.error ("Could not evaluate xPointer");
-            errorMsg.append("AnnotationID: ").append(annotations[i].getId());
-            errorMsg.append(" Context: ").append(annotations[i].getContext());
-            errorMsg.append(" Created: ").append(annotations[i].getCreated());
-            errorMsg.append(" Creator: ").append(annotations[i].getCreator());
-            errorMsg.append(" ID: ").append(annotations[i].getId());
-            errorMsg.append(" Annotates: ").append(annotations[i].getAnnotates());
-            errorMsg.append(" Title: ").append(annotations[i].getTitle());
-            log.error(errorMsg, e);
-            lists.add(null);
+            log.error ("Could not evaluate xPointer: " + expression + " in " + annotations[i].getId(), e);
             // Trap the error here and continue.  One bad annotation shouldn't
             // cause the article to fail rendering.
             //throw new TransformerException(expression, e);
           }
-        } else {
-          lists.add(null);
         }
-      } else {
-        lists.add(null);
       }
     }
-    LocationList[] theList = new LocationList[lists.size()];
-    return lists.toArray(theList);
+    return lists;
   }
 
   private static class Regions extends SelectionRangeList {
@@ -179,8 +182,11 @@ public class Annotator {
       }
 
       // Ignore it if this range is collapsed (ie. start == end)
-      if (!range.getCollapsed())
+      if (!range.getCollapsed()) {
+        if (log.isDebugEnabled())
+          log.debug("Inserting selection range for " + annotation.getId());
         insert(new SelectionRange(range, annotation));
+      }
     }
 
 

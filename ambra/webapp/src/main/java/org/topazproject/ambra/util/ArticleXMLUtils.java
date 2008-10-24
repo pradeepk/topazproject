@@ -166,6 +166,9 @@ public class ArticleXMLUtils {
   public String getTransformedDocument(Document doc) throws ApplicationException {
     String transformedString = null;
     try {
+      if (log.isDebugEnabled())
+        log.debug("Applying XSLT transform to the document...");
+
       final DOMSource domSource = new DOMSource(doc);
       final Transformer transformer = getTranslet();
       final Writer writer = new StringWriter(1000);

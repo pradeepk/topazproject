@@ -121,7 +121,7 @@ public class FetchArticleService {
   }
 
   /**
-   * 
+   *
    * @param articleDOI - the DOI of the (Article) content
    * @return
    * @throws IOException
@@ -134,6 +134,7 @@ public class FetchArticleService {
       throws IOException, NoSuchArticleIdException, ParserConfigurationException, SAXException,
              ApplicationException {
     DataSource content;
+
     try {
       content =
         articleXmlUtils.getArticleService().getContent(articleDOI, articleXmlUtils.getArticleRep());
@@ -151,11 +152,17 @@ public class FetchArticleService {
                                                        ArticleAnnotation[] annotations)
           throws ApplicationException {
     try {
+      if (log.isDebugEnabled())
+        log.debug("Parsing article xml ...");
+
       Document doc = articleXmlUtils.createDocBuilder().parse(content.getInputStream());
-      if (annotations.length != 0)
-        return Annotator.annotateAsDocument(doc, annotations);
-      else
+      if (annotations.length == 0)
         return doc;
+
+      if (log.isDebugEnabled())
+        log.debug("Applying " + annotations.length + " annotations to article ...");
+
+      return Annotator.annotateAsDocument(doc, annotations);
     } catch (Exception e){
       if (log.isErrorEnabled()) {
         log.error("Could not apply annotations to article: " + content.getName(), e);
@@ -167,7 +174,7 @@ public class FetchArticleService {
 
   /**
    * Getter for ArticleAnnotationService
-   * 
+   *
    * @return the articleAnnotationService
    */
   public ArticleAnnotationService getArticleAnnotationService() {
@@ -176,7 +183,7 @@ public class FetchArticleService {
 
   /**
    * Setter for articleAnnotationService
-   * 
+   *
    * @param articleAnnotationService articleAnnotationService
    */
   public void setArticleAnnotationService(final ArticleAnnotationService articleAnnotationService) {
@@ -265,7 +272,7 @@ public class FetchArticleService {
         articleAnnotationCache.remove(ARTICLE_KEY + id);
       } else if (o instanceof ArticleAnnotation) {
         if (log.isDebugEnabled())
-          log.debug("ArticleAnnotation changed/deleted. Invalidating transformed-article " + 
+          log.debug("ArticleAnnotation changed/deleted. Invalidating transformed-article " +
               " for the article this was annotating or is about to annotate.");
         articleAnnotationCache.remove(ARTICLE_KEY + ((ArticleAnnotation)o).getAnnotates().toString());
         if ((updates != null) && updates.isChanged("annotates")) {
