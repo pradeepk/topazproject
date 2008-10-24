@@ -163,7 +163,7 @@
     -->
     <cacheManagerPeerListenerFactory
       class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
-      properties="port=8111,remoteObjectPort=8111"/>
+      properties="port=8111,remoteObjectPort=8112"/>
 
     <!-- Cache configuration.
 
