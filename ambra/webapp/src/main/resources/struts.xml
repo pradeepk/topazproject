@@ -835,7 +835,7 @@
       </result>
     </action>
 
-    <action name="viewAnnotation" class="org.topazproject.ambra.admin.action.ViewAnnotationAction">
+    <action name="viewAnnotation" class="org.topazproject.ambra.annotation.action.GetAnnotationAction">
         <result name="success">/WEB-INF/pages/admin/viewAnnotation.ftl</result>
     </action>
 
