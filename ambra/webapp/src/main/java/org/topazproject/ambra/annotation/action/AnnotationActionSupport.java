@@ -20,7 +20,6 @@ package org.topazproject.ambra.annotation.action;
 
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationService;
-import org.topazproject.ambra.user.service.UserService;
 
 /**
  * To be subclassed by Action classes for Annotations and Replies that can use
@@ -29,7 +28,6 @@ import org.topazproject.ambra.user.service.UserService;
 @SuppressWarnings("serial")
 public abstract class AnnotationActionSupport extends BaseActionSupport {
   private AnnotationService annotationService;
-  private UserService userService;
 
   /**
    * Set the annotations service.
@@ -44,21 +42,6 @@ public abstract class AnnotationActionSupport extends BaseActionSupport {
    */
   protected AnnotationService getAnnotationService() {
     return annotationService;
-  }
-
-  /**
-   * @return the user service
-   */
-  protected UserService getUserService() {
-    return userService;
-  }
-
-  /**
-   * Set the user service
-   * @param userService userService
-   */
-  public void setUserService(final UserService userService) {
-    this.userService = userService;
   }
 
 }
