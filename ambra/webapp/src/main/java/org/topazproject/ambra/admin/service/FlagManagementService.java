@@ -19,18 +19,16 @@
 
 package org.topazproject.ambra.admin.service;
 
+import static org.topazproject.ambra.annotation.service.BaseAnnotation.FLAG_MASK;
+import static org.topazproject.ambra.annotation.service.BaseAnnotation.PUBLIC_MASK;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import static org.topazproject.ambra.annotation.service.WebAnnotation.FLAG_MASK;
-import static org.topazproject.ambra.annotation.service.WebAnnotation.PUBLIC_MASK;
-
 import org.springframework.transaction.annotation.Transactional;
-
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.ArticleAnnotationService;

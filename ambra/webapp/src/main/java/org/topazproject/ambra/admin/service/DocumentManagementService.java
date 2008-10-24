@@ -27,11 +27,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.activation.FileDataSource;
@@ -42,15 +42,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.DuplicateArticleIdException;
@@ -61,9 +58,8 @@ import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.xml.transform.cache.CachedSource;
-
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -92,8 +88,7 @@ public class DocumentManagementService {
   /**
    * Set the article web service
    *
-   * @param articleOtmService
-   *          articleOtmService
+   * @param articleOtmService articleOtmService
    */
   @Required
   public void setArticleOtmService(final ArticleOtmService articleOtmService) {
@@ -158,9 +153,9 @@ public class DocumentManagementService {
    * Useful for deleting a recently ingested article that hasn't been published
    *
    * @param objectURI URI of the article to delete
-   * @throws RemoteException
-   * @throws ServiceException
-   * @throws NoSuchArticleIdException
+   * @throws RemoteException on an error from search service
+   * @throws ServiceException on an error from search service
+   * @throws NoSuchArticleIdException if id is invalid
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void delete(String objectURI)
@@ -179,8 +174,8 @@ public class DocumentManagementService {
    * Revert the data out of the ingested queue
    *
    * @param uri the article uri
-   * 
-   * @throws IOException
+   *
+   * @throws IOException on an error
    */
   public void revertIngestedQueue(String uri) throws IOException {
     // delete any crossref submission file
@@ -243,9 +238,9 @@ public class DocumentManagementService {
    * @param file  file to be ingested
    * @param force if true don't check for duplicate and instead always (re-)ingest
    * @return the ingested article
-   * @throws IngestException
-   * @throws DuplicateArticleIdException
-   * @throws IOException
+   * @throws IngestException on an error in ingest
+   * @throws DuplicateArticleIdException if the article exists and force is false
+   * @throws IOException on any other error
    */
   @Transactional(rollbackFor = { Throwable.class })
   public Article ingest(File file, boolean force)
@@ -282,14 +277,14 @@ public class DocumentManagementService {
   }
 
   /**
-   * Move the file to the ingested directory
+   * Move the file to the ingested directory and generate cross-ref.
    *
    * @param file the file to move
    * @param article the associated article
    *
-   * @throws IOException
-   * @throws TransformerException
-   * @throws SAXException
+   * @throws IOException on an error
+   * @throws TransformerException on a cross ref generation error
+   * @throws SAXException on a cross ref generation error
    */
   public void generateIngestedData(File file, Article article)
     throws IOException, TransformerException, SAXException {
@@ -306,7 +301,7 @@ public class DocumentManagementService {
 
   /**
    * @return A list of URIs of ingested documents in ST_DISABLED
-   * @throws ApplicationException
+   * @throws ApplicationException on an error
    */
   public Collection<String> getPublishableFiles() throws ApplicationException {
     try {

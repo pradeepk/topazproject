@@ -21,24 +21,18 @@ package org.topazproject.ambra.admin.action;
 
 import java.net.URI;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.AnnotationsPEP;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.article.service.NoSuchObjectIdException;
+import org.topazproject.ambra.models.Annotation;
 import org.topazproject.otm.Session;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
-
+@SuppressWarnings("serial")
 public class EditAnnotationAction extends BaseActionSupport {
-
-  private static final Log log = LogFactory.getLog(EditAnnotationAction.class);
-
   private String loadAnnotationId;
   private WebAnnotation annotation;
   private String saveAnnotationId;
@@ -59,6 +53,7 @@ public class EditAnnotationAction extends BaseActionSupport {
   }
 
 
+  @Override
   public String execute() throws Exception {
 
     // default action is just to display the template
@@ -67,6 +62,9 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Struts Action to load an Annotation.
+   *
+   * @return the struts status
+   * @throws Exception on an error
    */
   @Transactional(readOnly = true)
   public String loadAnnotation() throws Exception {
@@ -79,6 +77,9 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Struts Action to save an Annotation.
+   *
+   * @return the struts status
+   * @throws Exception on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String saveAnnotation() throws Exception {
@@ -86,7 +87,7 @@ public class EditAnnotationAction extends BaseActionSupport {
     // ask PEP if allowed
     getPEP().checkAccess(AnnotationsPEP.UPDATE_ANNOTATION, URI.create(saveAnnotationId));
 
-    org.topazproject.ambra.models.Annotation a = session.get(org.topazproject.ambra.models.Annotation.class, saveAnnotationId);
+    Annotation<?> a = session.get(Annotation.class, saveAnnotationId);
     if (a == null) {
       throw new NoSuchObjectIdException(saveAnnotationId);
     }
@@ -101,6 +102,7 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Get Annotation Id.
+   * @return the annotation id
    */
   public String getAnnotationId() {
 
@@ -113,6 +115,7 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Get Annotation type.
+   * @return the annotation type
    */
   public String getAnnotationType() {
 
@@ -125,6 +128,7 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Get Annotation created.
+   * @return the annotation created
    */
   public String getAnnotationCreated() {
 
@@ -137,6 +141,7 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Get Annotation creator.
+   * @return the annotation creator
    */
   public String getAnnotationCreator() {
 
@@ -149,6 +154,7 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Get Annotation annotates
+   * @return the annotation target
    */
   public String getAnnotationAnnotates() {
 
@@ -161,6 +167,7 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Get Annotation context.
+   * @return the annotation context
    */
   public String getAnnotationContext() {
 
@@ -173,6 +180,7 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Set Annotation id to save.
+   * @param saveAnnotationId the annotation to save
    */
   public void setSaveAnnotationId(String saveAnnotationId) {
 
@@ -181,6 +189,7 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Set Annotation context to save.
+   * @param saveAnnotationContext the changed context
    */
   public void setSaveAnnotationContext(String saveAnnotationContext) {
 
@@ -189,6 +198,7 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Get Annotation superseded by.
+   * @return the superseder
    */
   public String getAnnotationSupersededBy() {
 
@@ -200,7 +210,8 @@ public class EditAnnotationAction extends BaseActionSupport {
   }
 
   /**
-   * Get Annotation superseds.
+   * Get Annotation superseds
+   * @return the superseded
    */
   public String getAnnotationSupersedes() {
 
@@ -213,6 +224,7 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Get Annotation title.
+   * @return the annotation title
    */
   public String getAnnotationTitle() {
 
@@ -225,6 +237,7 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Struts setter for editAnnotation form.
+   * @param loadAnnotationId the annotation to load
    */
   public void setLoadAnnotationId(String loadAnnotationId) {
     this.loadAnnotationId = loadAnnotationId;
@@ -242,6 +255,7 @@ public class EditAnnotationAction extends BaseActionSupport {
 
   /**
    * Set AnnotationService.
+   * @param annotationService the annotation service to set
    */
   public void setAnnotationService(AnnotationService annotationService) {
     this.annotationService = annotationService;

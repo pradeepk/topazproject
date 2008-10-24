@@ -25,14 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.ApplicationException;
-
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+@SuppressWarnings("serial")
 public class PublishArchivesAction extends BaseAdminActionSupport {
   private static final Log log = LogFactory.getLog(PublishArchivesAction.class);
 
@@ -44,6 +42,7 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
    * Deletes and publishes checked articles from the admin console.  Note that delete has priority
    * over publish.
    */
+  @Override
   @Transactional(rollbackFor = { Throwable.class })
   public String execute() {
     try {

@@ -1,8 +1,8 @@
 /* $HeadURL::                                                                            $
  * $Id$
- * 
+ *
  * Copyright (c) 2006-2008 by Topaz, Inc. http://topazproject.org
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,14 +18,11 @@
 
 package org.topazproject.ambra.admin.action;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.transaction.annotation.Transactional;
 
+@SuppressWarnings("serial")
 public class AdminTopAction extends BaseAdminActionSupport {
-  private static final Log log = LogFactory.getLog(AdminTopAction.class);
-
+  @Override
   @Transactional(readOnly = true)
   public String execute() throws Exception {
     return base();

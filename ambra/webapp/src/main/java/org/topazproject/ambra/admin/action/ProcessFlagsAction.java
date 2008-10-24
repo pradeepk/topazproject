@@ -33,6 +33,7 @@ import org.topazproject.ambra.models.MinorCorrection;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.rating.service.RatingsService;
 
+@SuppressWarnings("serial")
 public class ProcessFlagsAction extends BaseAdminActionSupport {
 
   private static final Log log = LogFactory.getLog(ProcessFlagsAction.class);
@@ -88,6 +89,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
    * items. The same admin console will be displayed regardless of error, and the errors will be
    * displayed in the console at the top of the page.
    */
+  @Override
   @Transactional(rollbackFor = { Throwable.class })
   public String execute() {
     if (commentsToUnflag != null){

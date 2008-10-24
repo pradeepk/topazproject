@@ -23,15 +23,13 @@ import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-
-import org.topazproject.ambra.ApplicationException;
+import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ambra.article.service.DuplicateArticleIdException;
 import org.topazproject.ambra.article.service.SearchUtil;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.otm.Session;
-import org.springframework.beans.factory.annotation.Required;
 
+@SuppressWarnings("serial")
 public class IngestArchivesAction extends BaseAdminActionSupport {
   private static final Log log = LogFactory.getLog(IngestArchivesAction.class);
   private String[] filesToIngest;
@@ -51,6 +49,7 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
     this.session = session;
   }
 
+  @Override
   public String execute() {
     if (filesToIngest != null) {
       for (String filename : filesToIngest) {

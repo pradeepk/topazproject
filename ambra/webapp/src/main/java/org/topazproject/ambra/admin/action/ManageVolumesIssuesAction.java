@@ -41,6 +41,7 @@ import org.topazproject.otm.criterion.Restrictions;
  *
  * @author Jeff Suttor
  */
+@SuppressWarnings("serial")
 public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
   public static final String CREATE_VOLUME = "CREATE_VOLUME";
@@ -280,6 +281,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    *
    * Issue values taken from Struts Form.
    */
+  @SuppressWarnings("unchecked")
   private String updateIssue() {
     // the Issue to update
     Issue issue = session.get(Issue.class, doi.toString());
@@ -327,7 +329,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
   /**
    * Gets all Volumes for the Journal.
-   * 
+   *
    * @return all Volumes for the Journal.
    */
   public List<Volume> getVolumes() {

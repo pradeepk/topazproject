@@ -26,13 +26,15 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.admin.service.DocumentManagementService;
 import org.topazproject.ambra.admin.service.FlagManagementService;
+import org.topazproject.ambra.admin.service.FlaggedCommentRecord;
 
+@SuppressWarnings("serial")
 public class BaseAdminActionSupport  extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(BaseAdminActionSupport.class);
 
-  private Collection uploadableFiles;
-  private Collection publishableFiles;
-  private Collection flaggedComments;
+  private Collection<String> uploadableFiles;
+  private Collection<String> publishableFiles;
+  private Collection<FlaggedCommentRecord> flaggedComments;
 
   private DocumentManagementService documentManagementService;
   private FlagManagementService flagManagementService;
@@ -59,15 +61,15 @@ public class BaseAdminActionSupport  extends BaseActionSupport {
     return documentManagementService;
   }
 
-  public Collection getUploadableFiles() {
+  public Collection<String> getUploadableFiles() {
     return uploadableFiles;
   }
 
-  public Collection getPublishableFiles() {
+  public Collection<String> getPublishableFiles() {
     return publishableFiles;
   }
 
-  public Collection getFlaggedComments() {
+  public Collection<FlaggedCommentRecord> getFlaggedComments() {
     return flaggedComments;
   }
 

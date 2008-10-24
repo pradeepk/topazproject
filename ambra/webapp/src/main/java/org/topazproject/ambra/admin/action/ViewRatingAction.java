@@ -19,26 +19,20 @@
 
 package org.topazproject.ambra.admin.action;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.rating.service.RatingsService;
 
-
+@SuppressWarnings("serial")
 public class ViewRatingAction extends BaseActionSupport {
-
-  private static final Log log = LogFactory.getLog(ViewRatingAction.class);
-
   private String ratingId;
   private Rating rating;
   private RatingsService ratingsService;
 
-
+  @Override
   @Transactional(readOnly = true)
   public String execute() throws Exception {
-
     rating = getRatingsService().getRating(ratingId);
     return SUCCESS;
   }

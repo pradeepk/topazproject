@@ -22,10 +22,12 @@ package org.topazproject.ambra.admin.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+@SuppressWarnings("serial")
 public class DeleteArticleAction extends BaseAdminActionSupport {
   private static final Log log = LogFactory.getLog(DeleteArticleAction.class);
   private String article;
 
+  @Override
   public String execute() throws Exception {
     try {
       getDocumentManagementService().delete(article);

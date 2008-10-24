@@ -16,24 +16,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.ambra.admin.action;
 
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.models.Reply;
 
+@SuppressWarnings("serial")
 public class ViewReplyAction extends BaseAdminActionSupport {
-
   private String replyId;
   private Reply reply;
   private ReplyService replyService;
 
-  private static final Log log = LogFactory.getLog(ViewReplyAction.class);
-
-
+  @Override
   public String execute() throws Exception {
     reply = replyService.getReply(replyId);
     return SUCCESS;

@@ -19,22 +19,20 @@
 
 package org.topazproject.ambra.admin.action;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 
 
+@SuppressWarnings("serial")
 public class ViewAnnotationAction extends BaseActionSupport {
-  private static final Log log = LogFactory.getLog(ViewAnnotationAction.class);
-
   private String annotationId;
   private WebAnnotation annotation;
   private AnnotationService annotationService;
 
 
+  @Override
   @Transactional(readOnly = true)
   public String execute() throws Exception {
     annotation = getAnnotationService().getAnnotation(annotationId, true, true);

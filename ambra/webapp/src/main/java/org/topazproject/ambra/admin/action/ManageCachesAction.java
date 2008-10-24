@@ -30,10 +30,6 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.Statistics;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ambra.action.BaseActionSupport;
 
@@ -42,6 +38,7 @@ import org.topazproject.ambra.action.BaseActionSupport;
  *
  * @author jsuttor
  */
+@SuppressWarnings("serial")
 public class ManageCachesAction extends BaseActionSupport {
 
   private SortedMap<String, String[]> cacheStats = new TreeMap<String, String[]>();
@@ -49,11 +46,11 @@ public class ManageCachesAction extends BaseActionSupport {
   private CacheManager cacheManager;
   private String cacheAction;
   private String cacheName;
+  @SuppressWarnings("unchecked")
   private List   cacheKeys = new ArrayList();
   private String cacheKey;
 
-  private static final Log log = LogFactory.getLog(ManageCachesAction.class);
-
+  @SuppressWarnings("unchecked")
   @Override
   public String execute() throws Exception {
 
@@ -141,6 +138,7 @@ public class ManageCachesAction extends BaseActionSupport {
    *
    * @return Cache keys.
    */
+  @SuppressWarnings("unchecked")
   public List getCacheKeys() {
     return cacheKeys;
   }
