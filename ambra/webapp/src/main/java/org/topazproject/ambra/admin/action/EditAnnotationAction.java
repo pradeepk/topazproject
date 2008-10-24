@@ -19,17 +19,10 @@
 
 package org.topazproject.ambra.admin.action;
 
-import java.net.URI;
-
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationService;
-import org.topazproject.ambra.annotation.service.AnnotationsPEP;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
-import org.topazproject.ambra.article.service.NoSuchObjectIdException;
-import org.topazproject.ambra.models.Annotation;
-import org.topazproject.otm.Session;
 
 @SuppressWarnings("serial")
 public class EditAnnotationAction extends BaseActionSupport {
@@ -38,20 +31,6 @@ public class EditAnnotationAction extends BaseActionSupport {
   private String saveAnnotationId;
   private String saveAnnotationContext;
   private AnnotationService annotationService;
-  private AnnotationsPEP pep;
-  private Session session;
-
-  private AnnotationsPEP getPEP() {
-    try {
-      if (pep == null) {
-        pep = new AnnotationsPEP();
-      }
-    } catch (Exception e) {
-      throw new Error("Failed to create AnnotationsPEP", e);
-    }
-    return pep;
-  }
-
 
   @Override
   public String execute() throws Exception {
@@ -84,15 +63,7 @@ public class EditAnnotationAction extends BaseActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   public String saveAnnotation() throws Exception {
 
-    // ask PEP if allowed
-    getPEP().checkAccess(AnnotationsPEP.UPDATE_ANNOTATION, URI.create(saveAnnotationId));
-
-    Annotation<?> a = session.get(Annotation.class, saveAnnotationId);
-    if (a == null) {
-      throw new NoSuchObjectIdException(saveAnnotationId);
-    }
-
-    a.setContext(saveAnnotationContext);
+    annotationService.updateContext(saveAnnotationId, saveAnnotationContext);
 
     addActionMessage("Annotation: " + saveAnnotationId
       + ", Updated Context: " + saveAnnotationContext);
@@ -241,16 +212,6 @@ public class EditAnnotationAction extends BaseActionSupport {
    */
   public void setLoadAnnotationId(String loadAnnotationId) {
     this.loadAnnotationId = loadAnnotationId;
-  }
-
-  /**
-   * Sets the otm util.
-   *
-   * @param session The otm session to set.
-   */
-  @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
   }
 
   /**

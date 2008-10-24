@@ -482,6 +482,23 @@ public class AnnotationService {
       throw new ApplicationException(e);
     }
   }
+  /**
+   * Set the annotation context.
+   *
+   * @param annotationId the annotation id
+   * @param annotationContext the context to set
+   *
+   * @throws ApplicationException on an error
+   */
+  @Transactional(rollbackFor = { Throwable.class })
+  public void updateContext(String annotationId, String annotationContext)
+     throws ApplicationException {
+    try {
+      articleAnnotationService.updateContext(annotationId, annotationContext);
+    } catch (Exception e) {
+      throw new ApplicationException(e);
+    }
+  }
 
   /**
    * Get the specified reply.

@@ -36,8 +36,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.article.service.FetchArticleService;
+import org.topazproject.ambra.article.service.NoSuchObjectIdException;
 import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
+import org.topazproject.ambra.models.Annotation;
 import org.topazproject.ambra.models.AnnotationBlob;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.ArticleAnnotation;
@@ -446,6 +448,28 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       throw new IllegalArgumentException("invalid annoation id: " + annotationId);
 
     return a;
+  }
+
+  /**
+   * Set the annotation context.
+   *
+   * @param id the annotation id
+   * @param context the context to set
+   *
+   * @throws OtmException on an error
+   * @throws SecurityException if a security policy prevented this operation
+   * @throws NoSuchObjectIdException if an annotation with the given id does not exist
+   */
+  @Transactional(rollbackFor = { Throwable.class })
+  public void updateContext(String id, String context) throws NoSuchObjectIdException {
+    pep.checkAccess(AnnotationsPEP.UPDATE_ANNOTATION, URI.create(id));
+
+    Annotation<?> a = session.get(Annotation.class, id);
+    if (a == null) {
+      throw new NoSuchObjectIdException(id);
+    }
+
+    a.setContext(context);
   }
 
   /**
