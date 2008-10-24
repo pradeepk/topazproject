@@ -19,7 +19,6 @@
 package org.topazproject.ambra.models;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 
 import org.topazproject.otm.annotations.Entity;
 
@@ -66,17 +65,6 @@ public abstract class Blob implements Serializable {
   @org.topazproject.otm.annotations.Blob
   public void setBody(byte[] body) {
     this.body = body;
-  }
-
-  /**
-   * Get body as a string.
-   *
-   * @return body as a string
-   *
-   * @throws UnsupportedEncodingException DOCUMENT ME!
-   */
-  public String getText() throws UnsupportedEncodingException {
-    return new String(getBody(), "UTF-8");
   }
 
   /**
