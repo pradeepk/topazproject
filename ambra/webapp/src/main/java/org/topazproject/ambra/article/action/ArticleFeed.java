@@ -44,7 +44,6 @@ import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Category;
 import org.topazproject.ambra.models.DublinCore;
-import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.web.VirtualJournalContext;
 import org.topazproject.otm.Session;
@@ -311,8 +310,6 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     private String  title;
     private String  selfLink;
     private int     maxResults;
-
-    Set<Representation> representations;
 
     final SimpleDateFormat dateFrmt = new SimpleDateFormat("yyyy/MM/dd");
     private int hashCode;
