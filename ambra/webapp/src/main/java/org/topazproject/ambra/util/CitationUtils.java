@@ -46,7 +46,7 @@ public abstract class CitationUtils {
    * @param sb StringBuffer to which the authors String is appended
    * @param correction Is this for an article correction citation?
    */
-  private static void handleAuthors(CitationInfo ci, StringBuffer sb, boolean correction) {
+  private static void handleAuthors(CitationInfo ci, StringBuilder sb, boolean correction) {
     // obtain a list of all author names
     Author[] authors = ci.getAuthors();
     if(authors != null) {
@@ -69,9 +69,15 @@ public abstract class CitationUtils {
           int gnc = 0;
           for(String gn :givenNames) {
             if (gn.length() > 0 && ((correction && gnc++ == givenNames.length - 1) || !correction)) {
+              // Handle dashes in name
               if(gn.matches(".*\\p{Pd}\\p{Lu}.*")) {
                 String[] sarr = gn.split("\\p{Pd}");
-                sb.append(sarr[0].charAt(0));
+
+                for (int j = 0; j < sarr.length; j++) {
+                  if (j>0)
+                    sb.append('-');
+                  sb.append(sarr[j].charAt(0));
+                }
               }
               else {
                 sb.append(gn.charAt(0));
@@ -97,52 +103,6 @@ public abstract class CitationUtils {
   }
 
   /**
-   * Generates the citation string.
-   * @param ci The {@link CitationInfo}
-   * @return String
-   */
-  public static String generateArticleCitationString(CitationInfo ci) {
-    if(ci == null) return null;
-
-    StringBuffer sb = new StringBuffer(1024);
-
-    handleAuthors(ci, sb, false);
-
-    // publication date
-    synchronized(dateFormat) {
-      sb.append(dateFormat.format(ci.getPublicationDate()));
-    }
-    sb.append(' ');
-
-    // article title
-    sb.append(ci.getArticleTitle());
-    sb.append(". ");
-
-    // journal title
-    sb.append(ci.getJournalTitle());
-    sb.append(" ");
-
-    // volume
-    sb.append(ci.getVolume());
-
-    // issue
-    sb.append('(');
-    sb.append(ci.getIssue());
-    sb.append(')');
-
-    // start page
-    sb.append(": ");
-    sb.append(ci.getStartPage());
-    sb.append(' ');
-
-    // doi
-    sb.append("doi:");  // XXX: Fixing #921 should get rid of this.
-    sb.append(ci.getDOI());
-
-    return sb.toString();
-  }
-
-  /**
    * Assembles a String representing an annotation citatation based on a prescribed format.
    * <p>
    * FORMAT:
@@ -162,7 +122,7 @@ public abstract class CitationUtils {
     assert ci != null;
     assert wa != null;
 
-    StringBuffer sb = new StringBuffer(1024);
+    StringBuilder sb = new StringBuilder();
 
     // authors
     handleAuthors(ci, sb, true);

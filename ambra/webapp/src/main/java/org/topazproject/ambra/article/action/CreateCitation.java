@@ -40,7 +40,6 @@ import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.util.ArticleXMLUtils;
-import org.topazproject.ambra.util.CitationUtils;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session;
@@ -61,7 +60,6 @@ public class CreateCitation extends BaseActionSupport {
   private String articleURI;
   private ArticleXMLUtils citationService;
   private CitationInfo citation;
-  private String citationString;
   private Cache articleAnnotationCache;
 
   private static final Log log = LogFactory.getLog(CreateCitation.class);
@@ -96,8 +94,6 @@ public class CreateCitation extends BaseActionSupport {
               }
     });
 
-    citationString = CitationUtils.generateArticleCitationString(citation);
-
     return SUCCESS;
   }
 
@@ -127,13 +123,6 @@ public class CreateCitation extends BaseActionSupport {
    */
   public CitationInfo getCitation() {
     return citation;
-  }
-
-  /**
-   * @return The formatted citation String.
-   */
-  public String getCitationString() {
-    return citationString;
   }
 
   /**

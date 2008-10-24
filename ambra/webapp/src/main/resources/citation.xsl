@@ -30,7 +30,7 @@
           <xsl:with-param name="dateSelector">epub</xsl:with-param>
         </xsl:call-template>
       </publicationDate>
-      <articleTitle><xsl:value-of select="article/front/article-meta/title-group/article-title"/></articleTitle>
+      <articleTitle><xsl:apply-templates select="article/front/article-meta/title-group/article-title"/></articleTitle>
       <journalName><xsl:value-of select="article/front/journal-meta/journal-id[@journal-id-type='nlm-ta']"/></journalName>
       <journalTitle><xsl:value-of select="article/front/journal-meta/journal-title[1]"/></journalTitle>
       <publisherName><xsl:value-of select="article/front/journal-meta/publisher/publisher-name"/></publisherName>
@@ -104,6 +104,64 @@
         <xsl:text>-01</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="article-title">
+    <xsl:apply-templates/>
+  </xsl:template>
+
+  <!-- ============================================================= -->
+  <!--  24. FORMATTING ELEMENTS                                      -->
+  <!-- ============================================================= -->
+
+  <xsl:template match="bold">&lt;b&gt;<xsl:apply-templates/>&lt;/b&gt;</xsl:template>
+
+  <xsl:template match="italic">&lt;i&gt;<xsl:apply-templates/>&lt;/i&gt;</xsl:template>
+
+  <xsl:template match="monospace">
+    &lt;span class="monospace"&gt;<xsl:apply-templates/>&lt;/span&gt;
+  </xsl:template>
+
+  <xsl:template match="overline">
+    &lt;span class="overline"&gt;
+      <xsl:apply-templates/>
+    &lt;/span&gt;
+  </xsl:template>
+
+  <xsl:template match="sc">
+    <!-- handle any tags as usual, until we're down to the text strings -->
+    &lt;small&gt;<xsl:apply-templates/>&lt;/small&gt;
+  </xsl:template>
+
+  <xsl:template match="sc//text()">
+    <xsl:call-template name="capitalize">
+      <xsl:with-param name="str" select="."/>
+    </xsl:call-template>
+  </xsl:template>
+
+  <xsl:template match="strike">
+    &lt;s&gt;<xsl:apply-templates/>&lt;/s&gt;
+  </xsl:template>
+
+  <xsl:template match="sub">&lt;sub&gt;<xsl:apply-templates/>&lt;/sub&gt;</xsl:template>
+
+  <xsl:template match="sup">&lt;sup&gt;<xsl:apply-templates/>&lt;/sup&gt;</xsl:template>
+
+  <xsl:template match="underline">&lt;u&gt;<xsl:apply-templates/>&lt;/u&gt;</xsl:template>
+
+  <!-- ============================================================= -->
+  <!--  "capitalize" Capitalize a string                             -->
+  <!-- ============================================================= -->
+
+  <xsl:template name="capitalize">
+    <xsl:param name="str"/>
+    <xsl:value-of select="translate($str,
+                                    'abcdefghjiklmnopqrstuvwxyz',
+                                    'ABCDEFGHJIKLMNOPQRSTUVWXYZ')"/>
+  </xsl:template>
+
+  <xsl:template match="text()">
+    <xsl:value-of select="translate(., '&#8194;&#x200A;&#8764;&#x02236;&#x02208;', '  ~:&#x404;') "/>
   </xsl:template>
   
 </xsl:stylesheet>
