@@ -45,14 +45,15 @@ import org.apache.commons.logging.LogFactory;
  * in a higher layer overrides those of the lower layers. Starting from the lowest layer,
  * configuration consists of:
  * <ul>
- *   <li>/global-defaults.xml - A resource in this library
- *   <li>/defaults.xml - A resource or resources on libraries and webapps using this lib
- *   <li>org.topazproject.ambra.configuration.overrides - If set, this defines a named resource or URL
+ *   <li><var>/global-defaults.xml</var> - A resource in this library
+ *   <li><var>/defaults.xml</var> - A resource or resources in libraries and webapps using this lib
+ *   <li><var>ambra.configuration.overrides</var> - If set, this defines a named resource or URL
  *        of a resource that is added to the configuration tree - usually supplementing
- *        and overriding settings in /global-defaults.xml and /defaults.xml.
- *   <li>file:/etc/topaz/ambra.xml (or ambra.configuration) - A set of user overrides
- *        in /etc. The name of this file can be changed for webapps that use WebAppInitializer
- *        by changing web.xml or by setting the ambra.configuraiton system property.
+ *        and overriding settings in <var>/global-defaults.xml</var> and <var>/defaults.xml</var>.
+ *   <li><var>file:/etc/topaz/ambra.xml</var> (or <var>ambra.configuration</var>) - A set of user
+ *        overrides in <var>/etc</var>. The name of this file can be changed for webapps that use
+ *        WebAppInitializer by changing web.xml or by setting the ambra.configuraiton system
+ *        property.
  *   <li>System properties
  * </ul>
  *
