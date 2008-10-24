@@ -186,6 +186,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
     this.id = id;
   }
 
+  @Override
   public void setBody(byte[] body) {
     super.setBody(body);
     blobModified = true;
