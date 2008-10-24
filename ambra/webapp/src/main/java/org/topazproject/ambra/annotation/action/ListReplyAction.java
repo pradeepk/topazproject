@@ -64,7 +64,7 @@ public class ListReplyAction extends AnnotationActionSupport {
   @Override
   public String execute() throws Exception {
     try {
-      replies = getAnnotationService().listReplies(root, inReplyTo);
+      replies = getAnnotationService().listReplies(root, inReplyTo, true, true);
     } catch (final ApplicationException e) {
       log.error("ListReplyAction.execute() failed for root: " + root, e);
       addActionError("Reply fetching failed with error message: " + e.getMessage());
@@ -91,8 +91,8 @@ public class ListReplyAction extends AnnotationActionSupport {
       if (log.isDebugEnabled()) {
         log.debug("listing all Replies for root: " + root);
       }
-      baseAnnotation = getAnnotationService().getAnnotation(root);
-      replies = getAnnotationService().listAllReplies(root, inReplyTo);
+      baseAnnotation = getAnnotationService().getAnnotation(root, true, true);
+      replies = getAnnotationService().listAllReplies(root, inReplyTo, true, true);
       final String articleId = baseAnnotation.getAnnotates();
       article = fetchArticleService.getArticleInfo(articleId);
 

@@ -18,17 +18,19 @@
  */
 package org.topazproject.ambra.annotation.action;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
+import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.FormalCorrection;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Action class to get a list of annotations.
@@ -37,7 +39,6 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 public class ListAnnotationAction extends AnnotationActionSupport {
   private String target;
   private WebAnnotation[] annotations;
-  private WebAnnotation[] formalCorrections;
 
   private static final Log log = LogFactory.getLog(ListAnnotationAction.class);
 
@@ -45,9 +46,9 @@ public class ListAnnotationAction extends AnnotationActionSupport {
    * Loads all annotations for a given target.
    * @return status
    */
-  private String loadAnnotations() {
+  private String loadAnnotations(Set<Class<? extends ArticleAnnotation>> annotationTypeClasses, boolean needBody) {
     try {
-      annotations = getAnnotationService().listAnnotations(target);
+      annotations = getAnnotationService().listAnnotations(target, annotationTypeClasses, true, needBody);
     } catch (final ApplicationException e) {
       log.error("Could not list annotations for target: " + target, e);
       addActionError("Annotation fetching failed with error message: " + e.getMessage());
@@ -59,26 +60,16 @@ public class ListAnnotationAction extends AnnotationActionSupport {
   @Override
   @Transactional(readOnly = true)
   public String execute() throws Exception {
-    return loadAnnotations();
+    return loadAnnotations(null, false);
   }
 
   /**
    * @return Only those annotations that represent formal corrections.
    */
+  @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public String fetchFormalCorrections() {
-    if(!SUCCESS.equals(loadAnnotations())) {
-      formalCorrections = null;
-      return ERROR;
-    }
-    List<WebAnnotation> list = new ArrayList<WebAnnotation>();
-    for(WebAnnotation wa : annotations) {
-      if(FormalCorrection.RDF_TYPE.equals(wa.getType())) {
-        list.add(wa);
-      }
-    }
-    formalCorrections = list.toArray( new WebAnnotation[list.size()] );
-    return SUCCESS;
+    return loadAnnotations(Collections.singleton(FormalCorrection.class), true);
   }
 
   /**
@@ -92,7 +83,7 @@ public class ListAnnotationAction extends AnnotationActionSupport {
    * @return List of associated formal corrections
    */
   public WebAnnotation[] getFormalCorrections() {
-    return formalCorrections;
+    return annotations;
   }
 
   /**

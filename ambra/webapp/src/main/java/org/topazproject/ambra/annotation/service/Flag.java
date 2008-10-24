@@ -39,6 +39,10 @@ public class Flag {
     return annotation.getCreator();
   }
 
+  public String getCreatorName() throws ApplicationException {
+    return annotation.getCreatorName();
+  }
+
   public int getState() {
     return annotation.getState();
   }

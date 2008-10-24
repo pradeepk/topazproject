@@ -37,7 +37,7 @@ public class ViewAnnotationAction extends BaseActionSupport {
 
   @Transactional(readOnly = true)
   public String execute() throws Exception {
-    annotation = getAnnotationService().getAnnotation(annotationId);
+    annotation = getAnnotationService().getAnnotation(annotationId, true, true);
     return SUCCESS;
   }
 

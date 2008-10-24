@@ -40,7 +40,7 @@ public class ListFlagAction extends AnnotationActionSupport {
   @Override
   public String execute() throws Exception {
     try {
-      flags = getAnnotationService().listFlags(target);
+      flags = getAnnotationService().listFlags(target, true, true);
     } catch (final ApplicationException e) {
       log.error("Could not list flags for target: " + target, e);
       addActionError("Flag fetch failed with error message: " + e.getMessage());

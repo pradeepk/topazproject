@@ -20,77 +20,28 @@ package org.topazproject.ambra.annotation.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.topazproject.ambra.models.Reply;
-import org.topazproject.ambra.user.service.UserService;
 
 /**
  * Ambra wrapper around the Reply from topaz service. It provides
  * - A way to escape title/body text when returning the result to the web layer
  * - a separation from any topaz changes
  */
-public abstract class WebReply extends BaseAnnotation {
-  private static final Log log = LogFactory.getLog(WebReply.class);
-
-  private final Reply reply;
+public class WebReply extends BaseAnnotation<Reply> {
   private Collection<WebReply> replies = new ArrayList<WebReply>();
-  private String creatorName;
-  private UserService userService;
-
-  public WebReply(final Reply reply) {
-    this.reply = reply;
-  }
 
   /**
-   * Constructor that takes in a UserService object in addition to Reply in order
-   * to retrieve the username.
+   * Creates a WebReply object.
    *
    * @param reply the reply
-   * @param userSvc the userSvc
+   * @param creatorName the display name of the creator (must be non-null if the view requires it)
+   * @param originalBodyContent body as text (must be non-null if the view requires it)
    */
-  public WebReply(final Reply reply, UserService userSvc) {
-    this.reply = reply;
-    this.userService = userSvc;
+  public WebReply(Reply reply, String creatorName, String originalBodyContent) {
+    super(reply, creatorName, originalBodyContent);
   }
 
-  /**
-   * Get created date.
-   * @return created as java.util.Date.
-   */
-  public Date getCreatedAsDate() {
-    return reply.getCreated();
-  }
-
-  /**
-   * Get created.
-   *
-   * @return created as String.
-   */
-  public String getCreated() {
-    return reply.getCreatedAsString();
-  }
-
-
-  /**
-   * Get creator.
-   *
-   * @return creator as String.
-   */
-  public String getCreator() {
-    return reply.getCreator();
-  }
-
-  /**
-   * Get id.
-   *
-   * @return id as String.
-   */
-  public String getId() {
-    return reply.getId().toString();
-  }
 
   /**
    * Get inReplyTo.
@@ -98,16 +49,7 @@ public abstract class WebReply extends BaseAnnotation {
    * @return inReplyTo as String.
    */
   public String getInReplyTo() {
-    return reply.getInReplyTo();
-  }
-
-  /**
-   * Get mediator.
-   *
-   * @return mediator as String.
-   */
-  public String getMediator() {
-    return reply.getMediator();
+    return annotea.getInReplyTo();
   }
 
   /**
@@ -116,17 +58,7 @@ public abstract class WebReply extends BaseAnnotation {
    * @return root as String.
    */
   public String getRoot() {
-    return reply.getRoot();
-  }
-
-  /**
-   * Get state.
-   *
-   * @return state as int.
-   */
-  @Override
-  public int getState() {
-    return reply.getState();
+    return annotea.getRoot();
   }
 
   /**
@@ -135,16 +67,7 @@ public abstract class WebReply extends BaseAnnotation {
    * @return title as String.
    */
   public String getCommentTitle() {
-    return escapeText(reply.getTitle());
-  }
-
-  /**
-   * Get type.
-   *
-   * @return type as String.
-   */
-  public String getType() {
-    return reply.getType();
+    return escapeText(annotea.getTitle());
   }
 
   /**
@@ -165,44 +88,5 @@ public abstract class WebReply extends BaseAnnotation {
   @Override
   public boolean isPublic() {
     throw new UnsupportedOperationException("A reply is always public, so please don't call this");
-  }
-
-  /**
-   * @return Returns the creatorName.
-   */
-  public String getCreatorName() {
-    if (creatorName == null) {
-      try {
-        if (log.isDebugEnabled())
-          log.debug("getting User Object for id: " + getCreator());
-        creatorName = userService.getUsernameByTopazId(getCreator());
-      } catch (Exception ae) {
-        if (log.isDebugEnabled())
-          log.debug("Failed to lookup user name of the Reply creator.", ae);
-        creatorName = getCreator();
-      }
-    }
-    return creatorName;
-  }
-
-  /**
-   * @param creatorName The creatorName to set.
-   */
-  public void setCreatorName(String creatorName) {
-    this.creatorName = creatorName;
-  }
-
-  /**
-   * @return Returns the userService.
-   */
-  protected UserService getUserService() {
-    return userService;
-  }
-
-  /**
-   * @param userService The userService to set.
-   */
-  public void setUserService(UserService userService) {
-    this.userService = userService;
   }
 }

@@ -77,7 +77,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
   private String list(boolean isCorrections) {
     try {
       article = fetchArticleService.getArticleInfo(target);
-      WebAnnotation[] annotations = isCorrections? getAnnotationService().listCorrections(target) : getAnnotationService().listComments(target);
+      WebAnnotation[] annotations = isCorrections? getAnnotationService().listCorrections(target, true, false) : getAnnotationService().listComments(target, true, false);
       commentary = new Commentary[annotations.length];
       Commentary com = null;
       if (annotations.length > 0) {
@@ -85,7 +85,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
           com = new Commentary();
           com.setAnnotation(annotations[i]);
           try {
-            getAnnotationService().listAllReplies(annotations[i].getId(), annotations[i].getId(), com);
+            getAnnotationService().listAllReplies(annotations[i].getId(), annotations[i].getId(), com, false, false);
           } catch (ApplicationException ae) {
             Throwable t = ae.getCause();
             if ((t instanceof NoSuchArticleIdException) || (t instanceof java.lang.SecurityException)) {

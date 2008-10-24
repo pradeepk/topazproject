@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import static org.topazproject.ambra.annotation.service.WebAnnotation.FLAG_MASK;
 import static org.topazproject.ambra.annotation.service.WebAnnotation.PUBLIC_MASK;
 
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.ApplicationException;
@@ -40,8 +39,6 @@ import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.models.Annotation;
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.Reply;
-import org.topazproject.ambra.user.service.UserService;
-import org.topazproject.otm.Session;
 
 /**
  * @author alan
@@ -51,20 +48,16 @@ public class FlagManagementService {
 
   private static final Log log = LogFactory.getLog(FlagManagementService.class);
 
-  private Session session;
-
   private ArticleAnnotationService articleAnnotationService;
   private AnnotationService annotationService;
   private ReplyService replyService;
-  private UserService userService;
 
   @Transactional(readOnly = true)
   public Collection<FlaggedCommentRecord> getFlaggedComments() throws ApplicationException {
     ArrayList<FlaggedCommentRecord> commentrecords = new ArrayList<FlaggedCommentRecord>();
-    Annotation[] annotations;
+    Annotation<?>[] annotations;
     Reply[] replies;
     Flag flags[] = null;
-    String creatorUserName;
 
     final Rating[] ratings = annotationService.listFlaggedRatings();
     annotations = articleAnnotationService.listAnnotations(null, FLAG_MASK | PUBLIC_MASK);
@@ -72,14 +65,14 @@ public class FlagManagementService {
     if (log.isDebugEnabled()) {
       log.debug("There are " + ratings.length + " ratings with flags");
       log.debug("There are " + annotations.length + " annotations with flags");
-      for (Annotation annotation : annotations) {
+      for (Annotation<?> annotation : annotations) {
         log.debug("\t"+ annotation.toString());
       }
       log.debug("There are " + replies.length + " replies with flags");
     }
 
     for (final Rating rating : ratings) {
-      flags = annotationService.listFlags(rating.getId().toString());
+      flags = annotationService.listFlags(rating.getId().toString(), true, true);
       if (log.isDebugEnabled()) {
         log.debug("There are " + flags.length + " flags on rating: " + rating.getId());
       }
@@ -114,11 +107,6 @@ public class FlagManagementService {
           continue;
         }
 
-        try {
-          creatorUserName = userService.getUsernameByTopazId(flag.getCreator());
-        } catch (ApplicationException ae) { // Bug ?
-          creatorUserName = "anonymous";
-        }
         FlaggedCommentRecord fcr =
           new FlaggedCommentRecord(
               flag.getId(),
@@ -126,7 +114,7 @@ public class FlagManagementService {
               rating.getBody().getCommentTitle(),
               flag.getComment(),
               flag.getCreated(),
-              creatorUserName,
+              flag.getCreatorName(),
               flag.getCreator(),
               null,
               flag.getReasonCode(),
@@ -138,8 +126,8 @@ public class FlagManagementService {
     /*
      * Add a FlaggedCommentRecord for each flag reported against each flagged annotation
      */
-    for (final Annotation flaggedAnnotation : annotations) {
-      flags = annotationService.listFlags((String) flaggedAnnotation.getId().toString());
+    for (final Annotation<?> flaggedAnnotation : annotations) {
+      flags = annotationService.listFlags(flaggedAnnotation.getId().toString(), true, true);
       if (log.isDebugEnabled())
         log.debug("There are " + flags.length + " flags on annotation: " + flaggedAnnotation.getId());
       for (Flag flag : flags) {
@@ -147,11 +135,6 @@ public class FlagManagementService {
           if (log.isDebugEnabled())
             log.debug("Flag: " + flag.getId() + " is deleted - skipping");
           continue;
-        }
-        try {
-          creatorUserName = userService.getUsernameByTopazId(flag.getCreator());
-        } catch (ApplicationException ae) { // Bug ?
-          creatorUserName = "anonymous";
         }
 
         FlaggedCommentRecord fcr =
@@ -161,7 +144,7 @@ public class FlagManagementService {
               flaggedAnnotation.getTitle(),
               flag.getComment(),
               flag.getCreated(),
-              creatorUserName,
+              flag.getCreatorName(),
               flag.getCreator(),
               null,
               flag.getReasonCode(),
@@ -171,7 +154,7 @@ public class FlagManagementService {
     }
 
     for (Reply reply : replies) {
-      flags = annotationService.listFlags(reply.getId().toString());
+      flags = annotationService.listFlags(reply.getId().toString(), true, true);
       if (log.isDebugEnabled())
         log.debug("There are " + flags.length + " flags on reply: " + reply.getId());
       for (Flag flag : flags) {
@@ -180,12 +163,6 @@ public class FlagManagementService {
             log.debug("Flag: " + flag.getId() + " is deleted - skipping");
           continue;
         }
-        try {
-          creatorUserName = userService.getUsernameByTopazId(flag
-              .getCreator());
-        } catch (ApplicationException ae) {
-          creatorUserName = "anonymous";
-        }
         FlaggedCommentRecord fcr =
           new FlaggedCommentRecord(
               flag.getId(),
@@ -193,7 +170,7 @@ public class FlagManagementService {
               reply.getTitle(),
               flag.getComment(),
               flag.getCreated(),
-              creatorUserName,
+              flag.getCreatorName(),
               flag.getCreator(),
               reply.getRoot(),
               flag.getReasonCode(),
@@ -220,20 +197,6 @@ public class FlagManagementService {
 
   public void setAnnotationService(AnnotationService annotationService) {
     this.annotationService = annotationService;
-  }
-
-  /**
-   * Set the OTM session. Called by spring's bean wiring.
-   *
-   * @param session the otm session
-   */
-  @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
-  }
-
-  public void setUserService(UserService userService) {
-    this.userService = userService;
   }
 
   public AnnotationService getAnnotationService() {

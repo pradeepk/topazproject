@@ -18,69 +18,74 @@
  */
 package org.topazproject.ambra.annotation.service;
 
-
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.Commentary;
+import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.ArticleAnnotation;
+import org.topazproject.ambra.models.Blob;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.user.service.UserService;
+import org.topazproject.otm.OtmException;
 
 /**
  * A kind of utility class to convert types between topaz and ambra types for Annotations and Replies
  */
 public class AnnotationConverter {
+  private static final Log log = LogFactory.getLog(WebAnnotation.class);
   private UserService userService;
 
   /**
    * @param annotations an array of annotations
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @return an array of Annotation objects as required by the web layer
    */
   @Transactional(readOnly = true)
-  public WebAnnotation[] convert(final ArticleAnnotation[] annotations) {
+  public WebAnnotation[] convert(final ArticleAnnotation[] annotations, boolean needCreatorName,
+                                 boolean needBody) {
     final WebAnnotation wa[]  = new WebAnnotation[annotations.length];
 
     for (int i = 0; i < annotations.length; i++)
-      wa[i] = convert(annotations[i]);
+      wa[i] = convert(annotations[i], needCreatorName, needBody);
 
     return wa;
   }
 
   /**
    * @param annotation annotation
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @return the Annotation
    */
   @Transactional(readOnly = true)
-  public WebAnnotation convert(final ArticleAnnotation annotation) {
-    return new WebAnnotation(annotation, userService) {
-      @Override
-      @Transactional(readOnly = true)
-      protected String getOriginalBodyContent() throws ApplicationException {
-        try {
-          return annotation.getBody().getText();
-        } catch (Exception e) {
-          throw new ApplicationException("Failed to load annotation body", e);
-        }
-      }
-    };
+  public WebAnnotation convert(final ArticleAnnotation annotation, boolean needCreatorName,
+                               boolean needBody) {
+    String creator = needCreatorName ? lookupCreatorName(annotation) : null;
+    String body = needBody ? loadBody(annotation) : null;
 
+    return new WebAnnotation(annotation, creator, body);
   }
-
   /**
    * Creates a hierarchical array of replies based on the flat array passed in.
    *
    * @param replies an array of Replies
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @return an array of Reply objects as required by the web layer
    * @throws org.topazproject.ambra.ApplicationException ApplicationException
    */
   @Transactional(readOnly = true)
-  public WebReply[] convert(final Reply[] replies) throws ApplicationException {
-    return convert (replies, null);
+  public WebReply[] convert(final Reply[] replies, boolean needCreatorName, boolean needBody) throws ApplicationException {
+    return convert (replies, null, needCreatorName, needBody);
   }
 
   /**
@@ -89,10 +94,12 @@ public class AnnotationConverter {
    *
    * @param replies the list of replies to convert
    * @param com the commentary
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @return the hierarchical replies
    */
   @Transactional(readOnly = true)
-  public WebReply[] convert(final Reply[] replies, Commentary com) {
+  public WebReply[] convert(final Reply[] replies, Commentary com, boolean needCreatorName, boolean needBody) {
     final List<WebReply> webReplies = new ArrayList<WebReply>();
     final LinkedHashMap<String, WebReply> repliesMap = new LinkedHashMap<String, WebReply>(replies.length);
     int numReplies = replies.length;
@@ -105,7 +112,7 @@ public class AnnotationConverter {
     }
 
     for (final Reply reply : replies) {
-      final WebReply convertedObj = convert(reply);
+      final WebReply convertedObj = convert(reply, needCreatorName, needBody);
       repliesMap.put(reply.getId().toString(), convertedObj);
 
       final String replyTo = reply.getInReplyTo();
@@ -143,22 +150,15 @@ public class AnnotationConverter {
 
   /**
    * @param reply reply
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @return the reply for the web layer
    */
-  public WebReply convert(final Reply reply) {
+  public WebReply convert(final Reply reply, boolean needCreatorName, boolean needBody) {
+    String creator = needCreatorName ? lookupCreatorName(reply) : null;
+    String body = needBody ? loadBody(reply) : null;
 
-    return new WebReply(reply, userService) {
-      @Override
-      @Transactional(readOnly = true)
-      protected String getOriginalBodyContent() throws ApplicationException {
-        try {
-          return reply.getBody().getText();
-        } catch (Exception e) {
-          throw new ApplicationException("Failed to load reply body", e);
-        }
-      }
-
-    };
+    return new WebReply(reply, creator, body);
   }
 
   /**
@@ -173,5 +173,33 @@ public class AnnotationConverter {
    */
   public void setUserService(UserService userService) {
     this.userService = userService;
+  }
+
+  private String loadBody(final Annotea<? extends Blob> annotea) throws OtmException, Error {
+    String body = null;
+    byte[] b = annotea.getBody().getBody(); // could throw OtmException (lazy loaded)
+
+    try {
+      body = (b == null) ? "" : new String(b, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new Error("UTF-8 missing", e);
+    }
+
+    return body;
+  }
+
+  private String lookupCreatorName(final Annotea<?> annotea) {
+    String creator = annotea.getCreator();
+    if (creator == null)
+      creator = "anonymous";
+    else {
+      try {
+        creator = userService.getUsernameByTopazId(creator);
+       } catch (Exception e) {
+         log.warn("Failed to lookup display name for creator <" + creator + ">", e);
+       }
+    }
+
+    return creator;
   }
 }

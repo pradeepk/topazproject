@@ -19,37 +19,26 @@
 package org.topazproject.ambra.annotation.service;
 
 import java.net.URI;
-import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.topazproject.ambra.models.Annotation;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Correction;
 import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.MinorCorrection;
-import org.topazproject.ambra.user.service.UserService;
 
-import com.googlecode.jsonplugin.annotations.JSON;
 
 /**
  *  View level wrapper for Annotations. It provides
  * - A way to escape title/body text when returning the result to the web layer
  * - a separation from any content model changes
  */
-public abstract class WebAnnotation extends BaseAnnotation {
-  private final ArticleAnnotation annotation;
-  private UserService userService;
-  private String creatorName;
-
-  private static final Log log = LogFactory.getLog(WebAnnotation.class);
-
+public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
   /**
    * Get the target(probably a uri) that it annotates
    * @return target
    */
   public String getAnnotates() {
-    URI u = annotation.getAnnotates();
+    URI u = annotea.getAnnotates();
     return (u == null) ? null : u.toString();
   }
 
@@ -58,96 +47,7 @@ public abstract class WebAnnotation extends BaseAnnotation {
    * @return context as String.
    */
   public String getContext() {
-    return annotation.getContext();
-  }
-
-  /**
-   * Get created date.
-   * @return created as java.util.Date.
-   */
-  @JSON(serialize = false)
-  public Date getCreatedAsDate() {
-    return annotation.getCreated();
-  }
-
-  /**
-   * Get created date.
-   * @return created as java.util.Date.
-   */
-  public long getCreatedAsMillis() {
-    Date d = getCreatedAsDate();
-    return (d != null) ? d.getTime() : 0;
-  }
-
-  /**
-   * Get created.
-   * @return created as String.
-   */
-  public String getCreated() {
-    return annotation.getCreatedAsString();
-  }
-
-  /**
-   * Get creator.
-   * @return creator as String.
-   */
-  public String getCreator() {
-    return annotation.getCreator();
-  }
-
-  /**
-   * Set creator.
-   * @param creator the value to set.
-   */
-  /*
-  public void setCreator(final String creator) {
-    annotation.setCreator(creator);
-  }
-  */
-
-  /**
-   * @return Returns the creatorName.
-   */
-  public String getCreatorName() {
-    if (creatorName == null) {
-      final String creator = getCreator();
-      try {
-        if (log.isDebugEnabled())
-          log.debug("getting User Object for id: " + creator);
-        creatorName = userService.getUsernameByTopazId(creator);
-      } catch (Exception ae) {
-        if (log.isDebugEnabled())
-          log.debug("Failed to lookup user name of the Annotation creator.", ae);
-        creatorName = creator;
-      }
-    }
-    return creatorName;
-  }
-
-  /**
-   * Get id.
-   * @return id as String.
-   */
-  public String getId() {
-    return annotation.getId().toString();
-  }
-
-  /**
-   * Get mediator.
-   * @return mediator as String.
-   */
-  public String getMediator() {
-    return annotation.getMediator();
-  }
-
-
-  /**
-   * Get state.
-   * @return state as int.
-   */
-  @Override
-  public int getState() {
-    return annotation.getState();
+    return annotea.getContext();
   }
 
   /**
@@ -155,7 +55,7 @@ public abstract class WebAnnotation extends BaseAnnotation {
    * @return supersededBy as String.
    */
   public String getSupersededBy() {
-    Annotation<?> a = annotation.getSupersededBy();
+    Annotation<?> a = annotea.getSupersededBy();
     return (a == null) ? null : a.getId().toString();
   }
 
@@ -164,7 +64,7 @@ public abstract class WebAnnotation extends BaseAnnotation {
    * @return supersedes as String.
    */
   public String getSupersedes() {
-    Annotation<?> a = annotation.getSupersedes();
+    Annotation<?> a = annotea.getSupersedes();
     return (a == null) ? null : a.getId().toString();
   }
 
@@ -175,64 +75,38 @@ public abstract class WebAnnotation extends BaseAnnotation {
   public String getCommentTitle() {
     String title;
     if (isMinorCorrection()) {
-      title = "Minor Correction: " + annotation.getTitle();
+      title = "Minor Correction: " + annotea.getTitle();
     }
     else if (isFormalCorrection()) {
-      title = "Formal Correction: " + annotation.getTitle();
+      title = "Formal Correction: " + annotea.getTitle();
     }
     else {
-      title = annotation.getTitle();
+      title = annotea.getTitle();
     }
     return escapeText(title);
   }
 
-  /**
-   * Get annotation type.
-   * @return annotation type as String.
-   */
-  public String getType() {
-    return annotation.getType();
-  }
-
   public boolean isFormalCorrection() {
-    return annotation instanceof FormalCorrection;
+    return annotea instanceof FormalCorrection;
   }
 
   public boolean isMinorCorrection() {
-    return annotation instanceof MinorCorrection;
+    return annotea instanceof MinorCorrection;
   }
 
   public boolean isCorrection() {
-    return annotation instanceof Correction;
-  }
-
-  public WebAnnotation(final ArticleAnnotation annotation) {
-    this.annotation = annotation;
+    return annotea instanceof Correction;
   }
 
   /**
-   * Constructor that takes in an UserService object in addition to the annotation in order
-   * to do username lookups.
+   * Creates a WebAnnotation object.
    *
    * @param annotation the annotation
-   * @param userSvc the user service
+   * @param creatorName the display name of the creator (must be non-null if the view requires it)
+   * @param originalBodyContent body as text (must be non-null if the view requires it)
    */
-  public WebAnnotation(final ArticleAnnotation annotation, final UserService userSvc) {
-    this.annotation = annotation;
-    this.userService = userSvc;
+  public WebAnnotation(ArticleAnnotation annotation, String creatorName, String originalBodyContent) {
+    super(annotation, creatorName, originalBodyContent);
   }
 
-  /**
-   * @return Returns the userService.
-   */
-  protected UserService getUserService() {
-    return userService;
-  }
-
-  /**
-   * @param userService The userService to set.
-   */
-  public void setUserService(UserService userService) {
-    this.userService = userService;
-  }
 }

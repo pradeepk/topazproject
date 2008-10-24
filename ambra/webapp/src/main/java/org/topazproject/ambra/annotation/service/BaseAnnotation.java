@@ -18,22 +18,33 @@
  */
 package org.topazproject.ambra.annotation.service;
 
+import java.util.Date;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.Constants;
+import org.topazproject.ambra.models.Annotea;
+import org.topazproject.ambra.models.Blob;
 import org.topazproject.ambra.util.TextUtils;
+
+import com.googlecode.jsonplugin.annotations.JSON;
 
 /**
  * Base class for Annotation and reply.
  * For now it does not bring together all the common attributes as I still prefer delegation for now.
  * Further uses of these classes on the web layer should clarify the requirements and drive any changes
  * if required.
+ *
+ * @param <T> the Annotea sub-class being delegated to.
  */
-public abstract class BaseAnnotation {
+public abstract class BaseAnnotation<T extends Annotea<? extends Blob>> {
   /** An integer constant to indicate a unique value for the  */
   public static final int PUBLIC_MASK = Constants.StateMask.PUBLIC;
   public static final int FLAG_MASK = Constants.StateMask.FLAG;
   public static final int DELETE_MASK = Constants.StateMask.DELETE;
   private static final int TRUNCATED_COMMENT_LENGTH = 256;
+  protected final T annotea;
+  protected final String originalBodyContent;
+  protected final String creatorName;
 
   /**
    * @return the escaped comment.
@@ -74,12 +85,6 @@ public abstract class BaseAnnotation {
   }
 
   /**
-   * @return the original content of the annotation body
-   * @throws ApplicationException ApplicationException
-   */
-  protected abstract String getOriginalBodyContent() throws ApplicationException;
-
-  /**
    * Escape text so as to avoid any java scripting maliciousness when rendering it on a web page
    * @param text text
    * @return the escaped text
@@ -97,12 +102,6 @@ public abstract class BaseAnnotation {
   }
 
   /**
-   * Get state.
-   * @return state as int.
-   */
-  public abstract int getState();
-
-  /**
    * Is the annotation flagged?
    * @return true if the annotation is flagged, false otherwise
    */
@@ -118,4 +117,98 @@ public abstract class BaseAnnotation {
     return (getState() & DELETE_MASK) == DELETE_MASK;
   }
 
+  /**
+   * Get created date.
+   * @return created as java.util.Date.
+   */
+  @JSON(serialize = false)
+  public Date getCreatedAsDate() {
+    return annotea.getCreated();
+  }
+
+  /**
+   * Get created date.
+   * @return created as java.util.Date.
+   */
+  public long getCreatedAsMillis() {
+    Date d = getCreatedAsDate();
+    return (d != null) ? d.getTime() : 0;
+  }
+
+  /**
+   * Get created.
+   * @return created as String.
+   */
+  public String getCreated() {
+    return annotea.getCreatedAsString();
+  }
+
+  /**
+   * Get creator.
+   * @return creator as String.
+   */
+  public String getCreator() {
+    return annotea.getCreator();
+  }
+
+  /**
+   * @return Returns the creatorName.
+   * @throws ApplicationException if the creator name was not loaded
+   */
+  public String getCreatorName() throws ApplicationException {
+    if (creatorName == null)
+      throw new ApplicationException("Creator name is not looked-up");
+    return creatorName;
+  }
+
+  /**
+   * Get id.
+   * @return id as String.
+   */
+  public String getId() {
+    return annotea.getId().toString();
+  }
+
+  /**
+   * Get mediator.
+   * @return mediator as String.
+   */
+  public String getMediator() {
+    return annotea.getMediator();
+  }
+
+  /**
+   * Get state.
+   * @return state as int.
+   */
+  public int getState() {
+    return annotea.getState();
+  }
+
+  /**
+   * Get annotation type.
+   * @return annotation type as String.
+   */
+  public String getType() {
+    return annotea.getType();
+  }
+
+  protected String getOriginalBodyContent() throws ApplicationException {
+    if (originalBodyContent == null)
+      throw new ApplicationException("Body blob is not loaded.");
+    return originalBodyContent;
+  }
+
+  /**
+   * Creates a BaseAnnotation object.
+   *
+   * @param annotea the annotation
+   * @param creatorName the display name of the creator (must be non-null if the view requires it)
+   * @param originalBodyContent body as text (must be non-null if the view requires it)
+   */
+  public BaseAnnotation(T annotea, String creatorName, String originalBodyContent) {
+    this.annotea = annotea;
+    this.creatorName = creatorName;
+    this.originalBodyContent = originalBodyContent;
+  }
 }

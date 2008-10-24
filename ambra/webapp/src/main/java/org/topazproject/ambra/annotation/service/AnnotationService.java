@@ -315,36 +315,45 @@ public class AnnotationService {
    * Lists all annotations for the given target DOI.
    *
    * @param target target of the annotation
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @throws ApplicationException ApplicationException
    * @return a list of annotations
    */
   @Transactional(readOnly = true)
-  public WebAnnotation[] listAnnotations(String target)  throws ApplicationException {
-    return listAnnotations(target, null);
+  public WebAnnotation[] listAnnotations(String target, boolean needCreatorName, boolean needBody)
+          throws ApplicationException {
+    return listAnnotations(target, null, needCreatorName, needBody);
   }
 
   /**
    * Lists all correction annotations for the given target DOI.
    *
    * @param target the target article to list correction annotations on
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @return the list of corrections
    * @throws ApplicationException on an error
    */
   @Transactional(readOnly = true)
-  public WebAnnotation[] listCorrections(String target) throws ApplicationException {
-    return listAnnotations(target, CORRECTION_SET);
+  public WebAnnotation[] listCorrections(String target, boolean needCreatorName, boolean needBody)
+          throws ApplicationException {
+    return listAnnotations(target, CORRECTION_SET, needCreatorName, needBody);
   }
 
   /**
    * Lists all comment annotations for the given target DOI.
    *
    * @param target the target article to list comment annotations on
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @return the list of comments
    * @throws ApplicationException on an error
    */
   @Transactional(readOnly = true)
-  public WebAnnotation[] listComments(String target) throws ApplicationException {
-    return listAnnotations(target, COMMENT_SET);
+  public WebAnnotation[] listComments(String target, boolean needCreatorName, boolean needBody)
+          throws ApplicationException {
+    return listAnnotations(target, COMMENT_SET, needCreatorName, needBody);
   }
 
   /**
@@ -357,22 +366,20 @@ public class AnnotationService {
    *
    * @param target target doi that the listed annotations annotate
    * @param annotationTypeClasses a set of Annotation class types to filter the results
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @return a list of annotations
    * @throws ApplicationException on an error
    */
   @Transactional(readOnly = true)
   public WebAnnotation[] listAnnotations(String target,
-                                         Set<Class<? extends ArticleAnnotation>> annotationTypeClasses)
+                                         Set<Class<? extends ArticleAnnotation>> annotationTypeClasses
+                                         , boolean needCreatorName, boolean needBody)
         throws ApplicationException {
     /* TODO: Remove this entire layer of WebAnnotation and AnnotationService and reference the
      * ArticleAnnotationService directly!
      */
 
-    /* Placing the caching here rather than in ArticleAnnotationService because this
-     * produces the objects for the Commentary view.  The Article HTML is cached
-     * which calls the ArticleAnnotationService listAnnotations directly, so that call
-     * won't happen too much.
-     */
     WebAnnotation[] allAnnotations;
     ArticleAnnotation[] annotations;
     try {
@@ -380,7 +387,7 @@ public class AnnotationService {
     } catch (Exception re){
       throw new ApplicationException(re);
     }
-    allAnnotations = converter.convert(annotations);
+    allAnnotations = converter.convert(annotations, needCreatorName, needBody);
     return allAnnotations;
   }
 
@@ -388,12 +395,15 @@ public class AnnotationService {
    * List all the flags on all the undeleted annotations on the target.
    *
    * @param target target of the annotation
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @throws ApplicationException ApplicationException
    * @return a list of undeleted flags
    */
   @Transactional(readOnly = true)
-  public Flag[] listFlags(final String target) throws ApplicationException {
-    final WebAnnotation[] annotations = listAnnotations(target);
+  public Flag[] listFlags(final String target, boolean needCreatorName, boolean needBody)
+          throws ApplicationException {
+    final WebAnnotation[] annotations = listAnnotations(target, needCreatorName, needBody);
     final Collection<Flag> flagList = new ArrayList<Flag>(annotations.length);
     for (final WebAnnotation annotation : annotations) {
       if (!annotation.isDeleted()) {
@@ -412,15 +422,17 @@ public class AnnotationService {
    *
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @throws ApplicationException ApplicationException
    * @return a list of replies
    */
   @Transactional(readOnly = true)
-  public WebReply[] listReplies(final String root, final String inReplyTo)
-        throws ApplicationException {
+  public WebReply[] listReplies(final String root, final String inReplyTo, boolean needCreatorName,
+                                boolean needBody) throws ApplicationException {
     try {
       final Reply[] replies = replyService.listReplies(root, inReplyTo);
-      return converter.convert(replies);
+      return converter.convert(replies, needCreatorName, needBody);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -431,13 +443,16 @@ public class AnnotationService {
    *
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @throws ApplicationException ApplicationException
    * @return a list of all replies
    */
   @Transactional(readOnly = true)
-  public WebReply[] listAllReplies(final String root, final String inReplyTo)
-        throws ApplicationException {
-    return listAllReplies(root, inReplyTo, null);
+  public WebReply[] listAllReplies(final String root, final String inReplyTo,
+                                   boolean needCreatorName, boolean needBody)
+                                     throws ApplicationException {
+    return listAllReplies(root, inReplyTo, null, needCreatorName, needBody);
   }
 
   /**
@@ -463,15 +478,18 @@ public class AnnotationService {
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed
    * @param com commentary
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @throws ApplicationException ApplicationException
    * @return a list of all replies
    */
   @Transactional(readOnly = true)
-  public WebReply[] listAllReplies(final String root, final String inReplyTo, final Commentary com)
+  public WebReply[] listAllReplies(final String root, final String inReplyTo, final Commentary com,
+                                   boolean needCreatorName, boolean needBody)
                                 throws ApplicationException {
     try {
       final Reply[] replies = replyService.listAllReplies(root, inReplyTo);
-      return converter.convert(replies, com);
+      return converter.convert(replies, com, needCreatorName, needBody);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -481,14 +499,17 @@ public class AnnotationService {
    * Get the specified annotation.
    *
    * @param annotationId annotationId
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @throws ApplicationException ApplicationException
    * @return Annotation
    */
   @Transactional(readOnly = true)
-  public WebAnnotation getAnnotation(final String annotationId) throws ApplicationException {
+  public WebAnnotation getAnnotation(final String annotationId, boolean needCreatorName,
+                                     boolean needBody) throws ApplicationException {
     try {
       final ArticleAnnotation annotation = articleAnnotationService.getAnnotation(annotationId);
-      return converter.convert(annotation);
+      return converter.convert(annotation, needCreatorName, needBody);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -498,14 +519,17 @@ public class AnnotationService {
    * Get the specified reply.
    *
    * @param replyId replyId
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
    * @return the reply object
    * @throws ApplicationException ApplicationException
    */
   @Transactional(readOnly = true)
-  public WebReply getReply(final String replyId) throws ApplicationException {
+  public WebReply getReply(final String replyId, boolean needCreatorName, boolean needBody)
+            throws ApplicationException {
     try {
       final Reply reply = replyService.getReply(replyId);
-      return converter.convert(reply);
+      return converter.convert(reply, needCreatorName, needBody);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }

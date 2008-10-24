@@ -220,7 +220,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
   private void deleteTarget(String root, String target, String targetType)
       throws ApplicationException {
     Reply[] replies;
-    Flag[] flags = annotationService.listFlags(target);
+    Flag[] flags = annotationService.listFlags(target, false, false);
 
     if (log.isDebugEnabled()) {
       log.debug("Deleting Target" + target + " Root is " + root);
@@ -254,7 +254,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       log.debug(target + " has " + replies.length + " replies. Removing their flags");
     }
     for (Reply reply : replies) {
-      Flag[] replyFlags = annotationService.listFlags(reply.getId().toString());
+      Flag[] replyFlags = annotationService.listFlags(reply.getId().toString(), false, false);
       if (log.isDebugEnabled()) {
         log.debug("Reply " + reply.getId() + " has " + replyFlags.length + " flags");
       }
@@ -304,7 +304,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
      * TODO: The Action shouldn't have to worry about this kind of housekeeping. Move this to the
      * service!  Deal with 'flagged' status
      */
-    Flag[] flags = annotationService.listFlags(target);
+    Flag[] flags = annotationService.listFlags(target, false, false);
     if (log.isDebugEnabled())
       log.debug("Checking for flags on target: " + target + ". There are " + flags.length +
                 " flags remaining");

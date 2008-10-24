@@ -40,7 +40,7 @@ public class GetReplyAction extends AnnotationActionSupport {
   @Override
   public String execute() throws Exception {
     try {
-      reply = getAnnotationService().getReply(replyId);
+      reply = getAnnotationService().getReply(replyId, true, true);
     } catch (final ApplicationException e) {
       log.error("Could not retrieve reply: " + replyId, e);
       addActionError("Reply fetching failed with error message: " + e.getMessage());

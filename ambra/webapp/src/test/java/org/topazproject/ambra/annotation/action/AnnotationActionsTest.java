@@ -232,7 +232,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     final GetReplyAction getReplyAction = getGetReplyAction();
     getReplyAction.setReplyId(replyId);
     assertEquals(SUCCESS, getReplyAction.execute());
-    final WebReply savedReply = getAnnotationService().getReply(replyId);
+    final WebReply savedReply = getAnnotationService().getReply(replyId, true, true);
     assertEquals(annotationId, savedReply.getRoot());
     assertEquals(annotationId, savedReply.getInReplyTo());
     assertEquals(title, savedReply.getCommentTitle());
@@ -253,7 +253,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
       final GetReplyAction getReplyAction = getGetReplyAction();
       getReplyAction.setReplyId(replyId);
       assertEquals(SUCCESS, getReplyAction.execute());
-      final WebReply savedReply = getAnnotationService().getReply(replyId);
+      final WebReply savedReply = getAnnotationService().getReply(replyId, true, true);
       assertEquals(annotationId, savedReply.getRoot());
       assertEquals(annotationId, savedReply.getInReplyTo());
       assertEquals(title, savedReply.getCommentTitle());
@@ -273,7 +273,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
       final GetReplyAction getReplyAction = getGetReplyAction();
       getReplyAction.setReplyId(replyToReplyId);
       assertEquals(SUCCESS, getReplyAction.execute());
-      final WebReply savedReply = getAnnotationService().getReply(replyToReplyId);
+      final WebReply savedReply = getAnnotationService().getReply(replyToReplyId, true, true);
       assertEquals(annotationId, savedReply.getRoot());
       assertEquals(replyId, savedReply.getInReplyTo());
       assertEquals(title, savedReply.getCommentTitle());
@@ -415,7 +415,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
-    final WebAnnotation savedAnnotation = getAnnotationService().getAnnotation(annotationId1);
+    final WebAnnotation savedAnnotation = getAnnotationService().getAnnotation(annotationId1, true, true);
     assertEquals(declawedBody, savedAnnotation.getComment());
 
   }
@@ -448,7 +448,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String id = createAnnotationAction.getReplyId();
 
-    final WebReply savedReply = getAnnotationService().getReply(id);
+    final WebReply savedReply = getAnnotationService().getReply(id, true, true);
     assertEquals(declawedBody, savedReply.getComment());
   }
 
@@ -725,7 +725,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
     String       title       = "Title";
     AnnotationService service = getAnnotationService();
-    WebAnnotation[] annotations = service.listAnnotations(subject);
+    WebAnnotation[] annotations = service.listAnnotations(subject, true, true);
 
     for (final WebAnnotation annotation : annotations) {
       service.deletePrivateAnnotation(annotation.getId(), true);
@@ -762,7 +762,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
     String       title       = "Title";
     AnnotationService service = getAnnotationService();
-    WebAnnotation[] annotations = service.listAnnotations(subject);
+    WebAnnotation[] annotations = service.listAnnotations(subject, true, true);
 
     for (final WebAnnotation annotation : annotations) {
       service.deletePrivateAnnotation(annotation.getId(), true);
@@ -775,7 +775,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     String content = getFetchArticleService().getAnnotatedContent(subject);
     log.debug(content);
 
-    annotations = service.listAnnotations(subject);
+    annotations = service.listAnnotations(subject, true, true);
     for (final WebAnnotation annotation : annotations)
       service.deletePrivateAnnotation(annotation.getId(), true);
   }

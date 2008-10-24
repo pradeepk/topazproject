@@ -42,18 +42,8 @@ public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
   @Override
   public String execute() throws Exception {
     try {
-      annotation = getAnnotationService().getAnnotation(annotationId);
-      try {
-        creatorUserName = getUserService().getUsernameByTopazId(annotation.getCreator());
-      } catch (ApplicationException ae){
-        log.debug("Couldn't retrieve username: " + annotationId, ae);
-        //Temporarily here to allow for anonymous annotations
-        creatorUserName = "anonymous";
-      }
-      if (log.isDebugEnabled()){
-        StringBuilder message = new StringBuilder("CreatorUserName for annotationId ");
-        log.debug(message.append(annotationId).append(": ").append(creatorUserName));
-      }
+      annotation = getAnnotationService().getAnnotation(annotationId, true, true);
+      creatorUserName = annotation.getCreatorName();
     } catch (final ApplicationException e) {
       log.error("Could not retreive annotation with id: " + annotationId, e);
       addActionError("Annotation fetching failed with error message: " + e.getMessage());
