@@ -117,10 +117,6 @@ import com.opensymphony.xwork2.ModelDriven;
 public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   private static final Log log = LogFactory.getLog(ArticleFeed.class);
 
-  //TODO: move these to BaseAction support and standardize on result dispatching.
-  private static final String ATOM_RESULT = "ATOM1_0";
-  private static final String JSON_RESULT = "json";
-
   private static Invalidator       invalidator;           // Cache listener (must be static)
   private        ArticleOtmService articleOtmService;     // OTM service Spring injected.
   private        Cache             feedCache;             // Feed Cache Spring injected
@@ -208,6 +204,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    *
    * @param  articleOtmService  the object transaction model reference
    */
+  @Required
   public void setArticleOtmService(final ArticleOtmService articleOtmService) {
     this.articleOtmService = articleOtmService;
   }
@@ -219,14 +216,20 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    *
    * @param feedCache the ehcache instance
    */
+  @Required
   public void setFeedCache(Cache feedCache) {
     this.feedCache = feedCache;
     if (invalidator == null) {
-      invalidator = new Invalidator();
-      /* CacheManager is a singleton and will notify all caches registered when a commit to the
-       * datastore is executed
-       */
-      this.feedCache.getCacheManager().registerListener(invalidator);
+      // First if is to avoid unnecessary synchronization
+      synchronized (this.feedCache) {
+        if (invalidator == null) {
+          invalidator = new Invalidator();
+          /* CacheManager is a singleton and will notify all caches registered when a commit to the
+          * datastore is executed
+          */
+          this.feedCache.getCacheManager().registerListener(invalidator);
+        }
+      }
     }
   }
 
