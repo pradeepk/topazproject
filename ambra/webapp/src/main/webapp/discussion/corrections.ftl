@@ -31,7 +31,7 @@
   <#else>
     <table class="directory" cellpadding="0" cellspacing="0">
       <#list commentary as comment>
-        <#if (comment.annotation.context)?length == 0>
+        <#if ((comment.annotation.context)!"")?length == 0>
           <#assign class="discuss"/>
         <#else>
           <#assign class="annotation"/>
