@@ -45,4 +45,9 @@ public class Rating extends Annotation<RatingContent> {
   public String getType() {
     return RDF_TYPE;
   }
+
+  @Override
+  public String getWebType() {
+    return WEB_TYPE_RATING;
+  }
 }

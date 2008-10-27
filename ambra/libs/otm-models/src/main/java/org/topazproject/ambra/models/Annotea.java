@@ -31,14 +31,13 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.Predicate.PropType;
 
 /**
  * This is the base class to capture common predicates between Annotations and
  * Replies (discussion threads).
  *
  * @param <T> The annotation body type
- * 
+ *
  * @author Pradeep Krishnan
  */
 @Entity(graph = "ri")
@@ -56,13 +55,18 @@ public abstract class Annotea<T> implements Serializable {
   public static final String TOPAZ_TYPE_NS = Rdf.topaz + "2008/01/annotationType#";
 
   private Date   created;
-  private String type;
   private String creator;
   private String anonymousCreator;
   private String title;
   private String mediator;
   private int    state;
   private T      body;
+  public static final String WEB_TYPE_COMMENT = "Comment";
+  public static final String WEB_TYPE_NOTE = "Note";
+  public static final String WEB_TYPE_FORMAL_CORRECTION = "FormalCorrection";
+  public static final String WEB_TYPE_MINOR_CORRECTION = "MinorCorrection";
+  public static final String WEB_TYPE_REPLY = "Reply";
+  public static final String WEB_TYPE_RATING = "Rating";
 
   static {
     fmt.setTimeZone(new SimpleTimeZone(0, "UTC"));
@@ -184,24 +188,13 @@ public abstract class Annotea<T> implements Serializable {
   public void setState(int state) {
     this.state = state;
   }
+
   /**
-   * Get type.
+   * Get the rdf:type that best describes this instance.
    *
    * @return type as String.
    */
-  public String getType() {
-    return type;
-  }
-
-  /**
-   * Set type.
-   *
-   * @param type the value to set.
-   */
-  @Predicate(uri = "rdf:type", type = PropType.OBJECT)
-  public void setType(String type) {
-    this.type = type;
-  }
+  public abstract String getType();
 
   /**
    * Gets the created date as a formatted String in UTC.
@@ -231,7 +224,7 @@ public abstract class Annotea<T> implements Serializable {
   }
 
   /**
-   * Gets the body as a blob. 
+   * Gets the body as a blob.
    *
    * @return Returns the body of the article annotation
    */
@@ -248,4 +241,10 @@ public abstract class Annotea<T> implements Serializable {
   public void setBody(T body) {
     this.body = body;
   }
+
+  /**
+   * Returns the PubApp type name for the given Annotea object.
+   * @return the type
+   */
+  public abstract String getWebType();
 }

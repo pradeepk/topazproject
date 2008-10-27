@@ -19,7 +19,7 @@
 
 package org.topazproject.ambra.admin.service;
 
-import org.topazproject.ambra.annotation.service.BaseAnnotationService;
+import org.topazproject.ambra.models.Annotea;
 
 public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
 
@@ -77,16 +77,16 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
   }
 
   public boolean isCorrection() {
-    return (BaseAnnotationService.WEB_TYPE_FORMAL_CORRECTION.equals(targetType) ||
-        BaseAnnotationService.WEB_TYPE_MINOR_CORRECTION.equals(targetType));
+    return (Annotea.WEB_TYPE_FORMAL_CORRECTION.equals(targetType) ||
+        Annotea.WEB_TYPE_MINOR_CORRECTION.equals(targetType));
   }
 
   public boolean isFormalCorrection() {
-    return (BaseAnnotationService.WEB_TYPE_FORMAL_CORRECTION.equals(getTargetType()));
+    return (Annotea.WEB_TYPE_FORMAL_CORRECTION.equals(getTargetType()));
   }
 
   public boolean isMinorCorrection() {
-    return (BaseAnnotationService.WEB_TYPE_MINOR_CORRECTION.equals(getTargetType()));
+    return (Annotea.WEB_TYPE_MINOR_CORRECTION.equals(getTargetType()));
   }
 
   /**
@@ -95,8 +95,8 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
    * @return true if Flag for an Annotation, else false.
    */
   public boolean getIsAnnotation() {
-    if (BaseAnnotationService.WEB_TYPE_COMMENT.equals(targetType) ||
-        BaseAnnotationService.WEB_TYPE_NOTE.equals(targetType) ||
+    if (Annotea.WEB_TYPE_COMMENT.equals(targetType) ||
+        Annotea.WEB_TYPE_NOTE.equals(targetType) ||
         isCorrection()) {
       return true;
     }
@@ -110,7 +110,7 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
    */
   public boolean getIsRating() {
 
-    if (targetType.equals(BaseAnnotationService.WEB_TYPE_RATING)) {
+    if (targetType.equals(Annotea.WEB_TYPE_RATING)) {
       return true;
     }
 
@@ -124,7 +124,7 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
    */
   public boolean getIsReply() {
 
-    if (targetType.equals(BaseAnnotationService.WEB_TYPE_REPLY)) {
+    if (targetType.equals(Annotea.WEB_TYPE_REPLY)) {
       return true;
     }
 

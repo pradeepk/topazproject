@@ -18,6 +18,7 @@
  */
 package org.topazproject.ambra.models;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 
 /**
@@ -28,4 +29,14 @@ import org.topazproject.otm.annotations.Entity;
 @Entity(types = {"topaz:RatingSummaryAnnotation"})
 public class RatingSummary extends Annotation<RatingSummaryContent> {
   private static final long serialVersionUID = 185069387294534599L;
+
+  @Override
+  public String getType() {
+    return Rdf.topaz + "RatingSummaryAnnotation";
+  }
+
+  @Override
+  public String getWebType() {
+    return null;
+  }
 }

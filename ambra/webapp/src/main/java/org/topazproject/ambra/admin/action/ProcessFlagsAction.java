@@ -26,9 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
-import org.topazproject.ambra.annotation.service.BaseAnnotationService;
 import org.topazproject.ambra.annotation.service.Flag;
 import org.topazproject.ambra.annotation.service.ReplyService;
+import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.Comment;
 import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.MinorCorrection;
@@ -241,13 +241,13 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       }
     }
 
-    if (targetType.equals(BaseAnnotationService.WEB_TYPE_REPLY)) {
+    if (targetType.equals(Annotea.WEB_TYPE_REPLY)) {
       replies = replyService.listAllReplies(root, target);
     } else if (
-        targetType.equals(BaseAnnotationService.WEB_TYPE_COMMENT) ||
-        targetType.equals(BaseAnnotationService.WEB_TYPE_NOTE) ||
-        targetType.equals(BaseAnnotationService.WEB_TYPE_MINOR_CORRECTION) ||
-        targetType.equals(BaseAnnotationService.WEB_TYPE_FORMAL_CORRECTION)) {
+        targetType.equals(Annotea.WEB_TYPE_COMMENT) ||
+        targetType.equals(Annotea.WEB_TYPE_NOTE) ||
+        targetType.equals(Annotea.WEB_TYPE_MINOR_CORRECTION) ||
+        targetType.equals(Annotea.WEB_TYPE_FORMAL_CORRECTION)) {
       replies = replyService.listAllReplies(target, target);
     } else {
       // Flag type doesn't have Replies
@@ -267,23 +267,23 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       }
     }
 
-    if (targetType.equals(BaseAnnotationService.WEB_TYPE_REPLY)) {
+    if (targetType.equals(Annotea.WEB_TYPE_REPLY)) {
       replyService.deleteReplies(target); // Bulk delete
       //annotationService.deleteReply(target);
       if (log.isDebugEnabled()) {
         log.debug("Deleted reply: " + target);
       }
     } else if (
-        targetType.equals(BaseAnnotationService.WEB_TYPE_COMMENT) ||
-        targetType.equals(BaseAnnotationService.WEB_TYPE_NOTE) ||
-        targetType.equals(BaseAnnotationService.WEB_TYPE_MINOR_CORRECTION) ||
-        targetType.equals(BaseAnnotationService.WEB_TYPE_FORMAL_CORRECTION)) {
+        targetType.equals(Annotea.WEB_TYPE_COMMENT) ||
+        targetType.equals(Annotea.WEB_TYPE_NOTE) ||
+        targetType.equals(Annotea.WEB_TYPE_MINOR_CORRECTION) ||
+        targetType.equals(Annotea.WEB_TYPE_FORMAL_CORRECTION)) {
       replyService.deleteReplies(target, target);
       annotationService.deleteAnnotation(target);
       if (log.isDebugEnabled()) {
         log.debug("Deleted annotation: " + target);
       }
-    } else if (targetType.equals(BaseAnnotationService.WEB_TYPE_RATING)) {
+    } else if (targetType.equals(Annotea.WEB_TYPE_RATING)) {
       ratingsService.deleteRating(target);
       if (log.isDebugEnabled()) {
         log.debug("Deleted Rating: " + target);

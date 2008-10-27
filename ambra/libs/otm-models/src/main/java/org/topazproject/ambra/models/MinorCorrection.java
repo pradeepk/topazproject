@@ -33,4 +33,9 @@ public class MinorCorrection extends Correction {
   public String getType() {
     return RDF_TYPE;
   }
+
+  @Override
+  public String getWebType() {
+    return WEB_TYPE_MINOR_CORRECTION;
+  }
 }

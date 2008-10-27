@@ -145,7 +145,7 @@ public class ModelsTest {
 
     // persist to file
     Article article = new Article();
-    Correction correction = new Correction();
+    FormalCorrection correction = new FormalCorrection();
     Citation citation = new Citation();
 
     File articleTmpFile = File.createTempFile("org.topazproject.ambra.models-serializationTest-", ".obj");
@@ -161,7 +161,7 @@ public class ModelsTest {
     ObjectInputStream in = new ObjectInputStream(fis);
     Article restoredArticle = (Article) in.readObject();
     Citation restoredCitation = (Citation) in.readObject();
-    Correction restoredCorrection = (Correction) in.readObject();
+    FormalCorrection restoredCorrection = (FormalCorrection) in.readObject();
     in.close();
 
     assert restoredArticle != null;

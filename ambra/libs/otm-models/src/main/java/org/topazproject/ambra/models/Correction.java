@@ -21,13 +21,13 @@ package org.topazproject.ambra.models;
 import org.topazproject.otm.annotations.Entity;
 
 /**
- * Correction is an abstract Model class that represents types of correction annotation. 
- * It is a superclass to MinorCorrection and FormalCorrection 
- * 
+ * Correction is an abstract Model class that represents types of correction annotation.
+ * It is a superclass to MinorCorrection and FormalCorrection
+ *
  * @author Alex Worden
  */
 @Entity(types = {Annotea.W3C_TYPE_NS + "Change"})
-public class Correction extends ArticleAnnotation {
+public abstract class Correction extends ArticleAnnotation {
   private static final long serialVersionUID = -7581290891099274371L;
 }
 

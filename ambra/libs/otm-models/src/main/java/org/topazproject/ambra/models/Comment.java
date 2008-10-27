@@ -33,4 +33,9 @@ public class Comment extends ArticleAnnotation {
   public String getType() {
     return RDF_TYPE;
   }
+
+  @Override
+  public String getWebType() {
+    return (getContext() != null) ? WEB_TYPE_NOTE : WEB_TYPE_COMMENT;
+  }
 }

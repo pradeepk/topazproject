@@ -21,6 +21,7 @@ package org.topazproject.ambra.models;
 
 import java.net.URL;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 
 /**
@@ -31,6 +32,12 @@ import org.topazproject.otm.annotations.Entity;
 @Entity(types = {"topaz:TrackbackAnnotation"})
 public class Trackback extends Annotation<TrackbackContent> {
   private static final long serialVersionUID = -7569629877623116742L;
+
+  @Override
+  public String getType() {
+    return Rdf.topaz + "TrackbackAnnotation";
+  }
+
   /**
    * @return Returns the url.
    */
@@ -67,4 +74,8 @@ public class Trackback extends Annotation<TrackbackContent> {
     return "";
   }
 
+  @Override
+  public String getWebType() {
+    return null;
+  }
 }

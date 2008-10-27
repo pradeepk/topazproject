@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
-import org.topazproject.ambra.annotation.service.BaseAnnotationService;
 import org.topazproject.ambra.annotation.service.Flag;
 import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.ArticleAnnotation;
@@ -85,7 +84,7 @@ public class FlagManagementService {
       String title = (a instanceof Rating) ? ((Rating)a).getBody().getCommentTitle()
                                            : a.getTitle();
       String root  = (a instanceof Reply) ? ((Reply)a).getRoot() : null;
-      String wt    = BaseAnnotationService.getWebType(a);
+      String wt    = a.getWebType();
 
       for (Flag flag : flags) {
         FlaggedCommentRecord fcr =

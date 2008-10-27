@@ -33,4 +33,9 @@ public class FormalCorrection extends Correction {
   public String getType() {
     return RDF_TYPE;
   }
+
+  @Override
+  public String getWebType() {
+    return WEB_TYPE_FORMAL_CORRECTION;
+  }
 }

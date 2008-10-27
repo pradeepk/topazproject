@@ -44,6 +44,7 @@ public class Reply extends Annotea<ReplyBlob> {
   private URI                                                           id;
   private String                                                       root;
   private String                                                       inReplyTo;
+  private String type;
 
   /**
    * Creates a new Reply object.
@@ -118,8 +119,23 @@ public class Reply extends Annotea<ReplyBlob> {
     this.id = id;
   }
 
+  @Override
   public String getType() {
-    return RDF_TYPE;
+    return type;
   }
 
+  /**
+   * Set the type of this reply. Usually a value defined here: http://www.w3.org/2001/12/replyType
+   *
+   * @param type the value to set.
+   */
+  @Predicate(uri = "rdf:type", type = PropType.OBJECT)
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  @Override
+  public String getWebType() {
+    return WEB_TYPE_REPLY;
+  }
 }

@@ -43,6 +43,7 @@ import org.topazproject.otm.criterion.Restrictions;
 public class ReplyService extends BaseAnnotationService {
   private static final Log     log         = LogFactory.getLog(ReplyService.class);
   private final RepliesPEP     pep;
+  private String defaultType;
   /**
    * Create a new instance of ReplyService.
    *
@@ -310,6 +311,21 @@ public class ReplyService extends BaseAnnotationService {
               new String[]{
                       RepliesPEP.DELETE_REPLY}, everyone);
 
+  }
+
+  /**
+   * Set the default annotation type.
+   * @param defaultType defaultType
+   */
+  public void setDefaultType(final String defaultType) {
+    this.defaultType = defaultType;
+  }
+
+  /**
+   * @return the default type for the annotation or reply
+   */
+  public String getDefaultType() {
+    return defaultType;
   }
 
 }
