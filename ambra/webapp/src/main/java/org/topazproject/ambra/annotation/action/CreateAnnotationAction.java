@@ -29,7 +29,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.Context;
 import org.topazproject.ambra.annotation.ContextFormatter;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.util.ProfanityCheckingService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -53,7 +53,7 @@ public class CreateAnnotationAction extends BaseActionSupport {
   private String supercedes;
 
   private ProfanityCheckingService profanityCheckingService;
-  protected ArticleAnnotationService annotationService;
+  protected AnnotationService annotationService;
   private static final Log log = LogFactory.getLog(CreateAnnotationAction.class);
 
   /**
@@ -259,7 +259,7 @@ public class CreateAnnotationAction extends BaseActionSupport {
   }
 
   @Required
-  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+  public void setAnnotationService(final AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 }

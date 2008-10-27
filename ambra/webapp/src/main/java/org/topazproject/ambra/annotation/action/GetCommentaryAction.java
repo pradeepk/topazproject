@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.Commentary;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.article.service.FetchArticleService;
@@ -56,7 +56,7 @@ public class GetCommentaryAction extends BaseActionSupport {
   private FetchArticleService fetchArticleService;
   protected ReplyService replyService;
   protected AnnotationConverter converter;
-  protected ArticleAnnotationService annotationService;
+  protected AnnotationService annotationService;
 
   /**
    * Provides a list of comments for the target.
@@ -171,7 +171,7 @@ public class GetCommentaryAction extends BaseActionSupport {
   }
 
   @Required
-  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+  public void setAnnotationService(final AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 

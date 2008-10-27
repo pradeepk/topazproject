@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.topazproject.ambra.action.BaseActionSupport;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -34,7 +34,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 @SuppressWarnings("serial")
 public class DeleteFlagAction extends BaseActionSupport {
   private String flagId;
-  protected ArticleAnnotationService annotationService;
+  protected AnnotationService annotationService;
 
   private static final Log log = LogFactory.getLog(DeleteFlagAction.class);
 
@@ -70,7 +70,7 @@ public class DeleteFlagAction extends BaseActionSupport {
   }
 
   @Required
-  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+  public void setAnnotationService(final AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 }

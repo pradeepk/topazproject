@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.article.service.BrowseService;
 import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
@@ -61,7 +61,7 @@ public class FetchArticleAction extends BaseActionSupport {
   private ArticleInfo articleInfoX;
   private String transformedArticle;
   private final String articleTypeHeading = "Research Article"; // displayed article type (assigned default)
-  private ArticleAnnotationService annotationService;
+  private AnnotationService annotationService;
   private int numDiscussions = 0;
   private int numMinorCorrections = 0;
   private int numFormalCorrections = 0;
@@ -192,14 +192,14 @@ public class FetchArticleAction extends BaseActionSupport {
   /**
    * @return Returns the annotationService.
    */
-  public ArticleAnnotationService getAnnotationService() {
+  public AnnotationService getAnnotationService() {
     return annotationService;
   }
 
   /**
    * @param annotationService The annotationService to set.
    */
-  public void setAnnotationService(ArticleAnnotationService annotationService) {
+  public void setAnnotationService(AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 

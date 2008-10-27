@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.annotation.service.WebReply;
@@ -63,7 +63,7 @@ public class ListReplyAction extends BaseActionSupport {
   private String citation;
   protected ReplyService replyService;
   protected AnnotationConverter converter;
-  protected ArticleAnnotationService annotationService;
+  protected AnnotationService annotationService;
 
 
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
@@ -233,7 +233,7 @@ public class ListReplyAction extends BaseActionSupport {
   }
 
   @Required
-  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+  public void setAnnotationService(final AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 

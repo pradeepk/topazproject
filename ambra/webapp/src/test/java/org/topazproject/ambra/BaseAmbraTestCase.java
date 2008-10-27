@@ -32,7 +32,7 @@ import org.topazproject.ambra.annotation.action.GetReplyAction;
 import org.topazproject.ambra.annotation.action.ListAnnotationAction;
 import org.topazproject.ambra.annotation.action.ListFlagAction;
 import org.topazproject.ambra.annotation.action.ListReplyAction;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.article.action.FetchArticleAction;
@@ -82,7 +82,7 @@ public abstract class BaseAmbraTestCase extends AbstractDependencyInjectionSprin
   private ProfanityCheckingService profanityCheckingService;
   private ArticleOtmService articleOtmService;
   private PermissionsService permissionsService;
-  private ArticleAnnotationService annotationService;
+  private AnnotationService annotationService;
   private ReplyService replyService;
   private AnnotationConverter converter;
   private UserService userService;
@@ -127,11 +127,11 @@ public abstract class BaseAmbraTestCase extends AbstractDependencyInjectionSprin
     this.fetchArticleAction = fetchArticleAction;
   }
 
-  public ArticleAnnotationService getAnnotationService() throws MalformedURLException, ServiceException {
+  public AnnotationService getAnnotationService() throws MalformedURLException, ServiceException {
     return annotationService;
   }
 
-  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+  public void setAnnotationService(final AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
   

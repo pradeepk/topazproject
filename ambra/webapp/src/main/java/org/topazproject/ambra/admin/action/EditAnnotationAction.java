@@ -22,7 +22,7 @@ package org.topazproject.ambra.admin.action;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.models.ArticleAnnotation;
 
@@ -33,7 +33,7 @@ public class EditAnnotationAction extends BaseActionSupport {
   private WebAnnotation annotation;
   private String saveAnnotationId;
   private String saveAnnotationContext;
-  private ArticleAnnotationService annotationService;
+  private AnnotationService annotationService;
   private AnnotationConverter converter;
 
   @Override
@@ -222,7 +222,7 @@ public class EditAnnotationAction extends BaseActionSupport {
    * Set AnnotationService.
    * @param annotationService the annotation service to set
    */
-  public void setAnnotationService(ArticleAnnotationService annotationService) {
+  public void setAnnotationService(AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 }

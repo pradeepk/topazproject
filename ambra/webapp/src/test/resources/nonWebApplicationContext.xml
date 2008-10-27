@@ -116,7 +116,7 @@
     </property>
   </bean>
 
-  <bean id="articleAnnotationService" class="org.topazproject.ambra.annotation.service.ArticleAnnotationService">
+  <bean id="articleAnnotationService" class="org.topazproject.ambra.annotation.service.AnnotationService">
     <property name="userContext" ref="userContext"/>
     <property name="articleAnnotationCache" ref="articleAnnotationCache"/>
     <property name="applicationId" ref="applicationId"/>

@@ -56,13 +56,13 @@ import org.topazproject.otm.criterion.Restrictions;
 /**
  * Wrapper over annotation(not the same as reply) web service
  */
-public class ArticleAnnotationService extends BaseAnnotationService {
+public class AnnotationService extends BaseAnnotationService {
   public static final String ANNOTATED_KEY = "ArticleAnnotationCache-Annotation-";
 
   protected static final Set<Class<?extends ArticleAnnotation>> ALL_ANNOTATION_CLASSES =
     new HashSet<Class<?extends ArticleAnnotation>>();
   private static final Log     log                    =
-    LogFactory.getLog(ArticleAnnotationService.class);
+    LogFactory.getLog(AnnotationService.class);
   private final AnnotationsPEP       pep;
   private Cache              articleAnnotationCache;
   private Invalidator        invalidator;
@@ -72,11 +72,11 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   }
 
   /**
-   * Create an ArticleAnnotationService object.
+   * Create an AnnotationService object.
    *
    * @throws IOException on a PEP creation error
    */
-  public ArticleAnnotationService() throws IOException {
+  public AnnotationService() throws IOException {
     try {
       pep  = new AnnotationsPEP();
     } catch (IOException e) {
@@ -395,7 +395,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws Exception on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public String convertArticleAnnotationToType(final String srcAnnotationId,
+  public String convertAnnotationToType(final String srcAnnotationId,
       final Class<? extends ArticleAnnotation> newAnnotationClassType) throws Exception {
     ArticleAnnotation srcAnnotation = session.get(ArticleAnnotation.class, srcAnnotationId);
 

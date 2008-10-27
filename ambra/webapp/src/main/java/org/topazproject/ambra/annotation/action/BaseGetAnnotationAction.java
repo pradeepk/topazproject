@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -37,7 +37,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 public abstract class BaseGetAnnotationAction extends BaseActionSupport {
   private String annotationId;
   private WebAnnotation annotation;
-  protected ArticleAnnotationService annotationService;
+  protected AnnotationService annotationService;
   protected AnnotationConverter converter;
 
   private static final Log log = LogFactory.getLog(BaseGetAnnotationAction.class);
@@ -81,7 +81,7 @@ public abstract class BaseGetAnnotationAction extends BaseActionSupport {
 
 
   @Required
-  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+  public void setAnnotationService(final AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 

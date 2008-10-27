@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.Flag;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.models.Annotea;
@@ -44,12 +44,12 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
   private String[] convertToFormalCorrection;
   private String[] convertToMinorCorrection;
   private String[] convertToNote;
-  private ArticleAnnotationService annotationService;
+  private AnnotationService annotationService;
   private RatingsService ratingsService;
   private ReplyService replyService;
   protected AnnotationConverter converter;
 
-  public void setAnnotationService(ArticleAnnotationService annotationService) {
+  public void setAnnotationService(AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 
@@ -142,7 +142,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         }
         String[] tokens = paramStr.split("_");
         try {
-          annotationService.convertArticleAnnotationToType(tokens[1], FormalCorrection.class);
+          annotationService.convertAnnotationToType(tokens[1], FormalCorrection.class);
           deleteFlag(tokens[1], tokens[0]);
         } catch(Exception e) {
           String errorMessage = "Failed to convert annotation id='" + tokens[1] +
@@ -162,7 +162,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         }
         String[] tokens = paramStr.split("_");
         try {
-          annotationService.convertArticleAnnotationToType(tokens[1], MinorCorrection.class);
+          annotationService.convertAnnotationToType(tokens[1], MinorCorrection.class);
           deleteFlag(tokens[1], tokens[0]);
         } catch(Exception e) {
           String errorMessage = "Failed to convert annotation id='" + tokens[1] +
@@ -182,7 +182,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         }
         String[] tokens = paramStr.split("_");
         try {
-          annotationService.convertArticleAnnotationToType(tokens[1], Comment.class);
+          annotationService.convertAnnotationToType(tokens[1], Comment.class);
           deleteFlag(tokens[1], tokens[0]);
         } catch(Exception e) {
           String errorMessage = "Failed to convert annotation id='" + tokens[1]

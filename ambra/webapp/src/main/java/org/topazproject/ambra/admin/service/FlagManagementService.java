@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.Flag;
 import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.ArticleAnnotation;
@@ -46,7 +46,7 @@ import org.topazproject.otm.query.Results;
  */
 public class FlagManagementService {
   private static final Log log = LogFactory.getLog(FlagManagementService.class);
-  private ArticleAnnotationService articleAnnotationService;
+  private AnnotationService annotationService;
   private AnnotationConverter converter;
   private Session session;
 
@@ -68,7 +68,7 @@ public class FlagManagementService {
       while (f.next()) {
         String id = f.getString(0);
         try {
-          ArticleAnnotation ann = articleAnnotationService.getAnnotation(id);
+          ArticleAnnotation ann = annotationService.getAnnotation(id);
           if (ann != null)
             flags.add(new Flag(converter.convert(ann, true, true)));
         } catch (SecurityException e) {
@@ -108,8 +108,8 @@ public class FlagManagementService {
   }
 
   public void setAnnotationService(
-      ArticleAnnotationService articleAnnotationService) {
-    this.articleAnnotationService = articleAnnotationService;
+      AnnotationService annotationService) {
+    this.annotationService = annotationService;
   }
 
   /**

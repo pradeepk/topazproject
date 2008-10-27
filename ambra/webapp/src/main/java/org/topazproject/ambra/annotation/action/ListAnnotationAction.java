@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.FormalCorrection;
@@ -42,7 +42,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
 public class ListAnnotationAction extends BaseActionSupport {
   private String target;
   private WebAnnotation[] annotations;
-  protected ArticleAnnotationService annotationService;
+  protected AnnotationService annotationService;
   protected AnnotationConverter converter;
 
   private static final Log log = LogFactory.getLog(ListAnnotationAction.class);
@@ -108,7 +108,7 @@ public class ListAnnotationAction extends BaseActionSupport {
   }
 
   @Required
-  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+  public void setAnnotationService(final AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 

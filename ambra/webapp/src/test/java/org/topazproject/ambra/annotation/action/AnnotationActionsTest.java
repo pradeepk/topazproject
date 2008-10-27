@@ -48,7 +48,7 @@ import org.topazproject.ambra.annotation.action.GetReplyAction;
 import org.topazproject.ambra.annotation.action.ListAnnotationAction;
 import org.topazproject.ambra.annotation.action.ListFlagAction;
 import org.topazproject.ambra.annotation.action.ListReplyAction;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.AnnotationsPEP;
 import org.topazproject.ambra.annotation.service.Flag;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
@@ -480,7 +480,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
 
-    final ArticleAnnotationService annotationService = getAnnotationService();
+    final AnnotationService annotationService = getAnnotationService();
     final PermissionsService permissionsService = getPermissionsService();
     annotationService.setPublicPermissions(annotationId);
 
@@ -715,7 +715,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     String       context2    = "foo:bar#xpointer(string-range(/,'indeed,+wonderful'))";
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
     String       title       = "Title";
-    ArticleAnnotationService service = getAnnotationService();
+    AnnotationService service = getAnnotationService();
     WebAnnotation[] annotations = getAnnotationConverter()
              .convert(service.listAnnotations(subject, null), true, true);
 
@@ -753,7 +753,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     String       context2    = "foo:bar#xpointer(string-range(/doc/chapter/title,'',0,5)[1])";
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
     String       title       = "Title";
-    ArticleAnnotationService service = getAnnotationService();
+    AnnotationService service = getAnnotationService();
     WebAnnotation[] annotations = getAnnotationConverter()
               .convert(service.listAnnotations(subject, null), true, true);
 

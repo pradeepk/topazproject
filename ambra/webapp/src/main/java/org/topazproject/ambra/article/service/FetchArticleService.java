@@ -40,7 +40,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.Annotator;
-import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.models.Article;
@@ -67,7 +67,7 @@ public class FetchArticleService {
   private ArticleXMLUtils articleXmlUtils;
 
   private static final Log log = LogFactory.getLog(FetchArticleService.class);
-  private ArticleAnnotationService articleAnnotationService;
+  private AnnotationService annotationService;
 
   private Cache articleAnnotationCache;
   private Invalidator invalidator;
@@ -144,7 +144,7 @@ public class FetchArticleService {
                                          ex);
     }
 
-    final ArticleAnnotation[] annotations = articleAnnotationService.listAnnotations(articleDOI, null);
+    final ArticleAnnotation[] annotations = annotationService.listAnnotations(articleDOI, null);
     return applyAnnotationsOnContentAsDocument(content, annotations);
   }
 
@@ -173,21 +173,21 @@ public class FetchArticleService {
   }
 
   /**
-   * Getter for ArticleAnnotationService
+   * Getter for AnnotationService
    *
-   * @return the articleAnnotationService
+   * @return the annotationService
    */
-  public ArticleAnnotationService getAnnotationService() {
-    return articleAnnotationService;
+  public AnnotationService getAnnotationService() {
+    return annotationService;
   }
 
   /**
-   * Setter for articleAnnotationService
+   * Setter for annotationService
    *
-   * @param articleAnnotationService articleAnnotationService
+   * @param annotationService annotationService
    */
-  public void setAnnotationService(final ArticleAnnotationService articleAnnotationService) {
-    this.articleAnnotationService = articleAnnotationService;
+  public void setAnnotationService(final AnnotationService annotationService) {
+    this.annotationService = annotationService;
   }
 
   /**
