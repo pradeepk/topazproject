@@ -20,7 +20,6 @@ package org.topazproject.ambra.annotation.service;
 
 import java.util.Date;
 
-import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.Blob;
 import org.topazproject.ambra.util.TextUtils;
@@ -44,26 +43,23 @@ public abstract class BaseAnnotation<T extends Annotea<? extends Blob>> {
 
   /**
    * @return the escaped comment.
-   * @throws org.topazproject.ambra.ApplicationException ApplicationException
    */
-  public String getComment() throws ApplicationException {
+  public String getComment() {
     return escapeText(getOriginalBodyContent());
   }
 
   /**
    * @return the url linked and escaped comment.
-   * @throws org.topazproject.ambra.ApplicationException ApplicationException
    */
-  public String getCommentWithUrlLinking() throws ApplicationException {
+  public String getCommentWithUrlLinking() {
     return TextUtils.hyperlinkEnclosedWithPTags(getComment());
   }
 
 
   /**
    * @return the url linked and escaped comment with a limit of 256 characters.
-   * @throws org.topazproject.ambra.ApplicationException ApplicationException
    */
-  public String getEscapedTruncatedComment() throws ApplicationException {
+  public String getEscapedTruncatedComment() {
     String comment = getComment();
     if (comment.length() > TRUNCATED_COMMENT_LENGTH) {
       final String abrsfx = "...";
@@ -125,11 +121,11 @@ public abstract class BaseAnnotation<T extends Annotea<? extends Blob>> {
 
   /**
    * @return Returns the creatorName.
-   * @throws ApplicationException if the creator name was not loaded
+   * @throws NullPointerException if the creator name was not loaded
    */
-  public String getCreatorName() throws ApplicationException {
+  public String getCreatorName() throws NullPointerException {
     if (creatorName == null)
-      throw new ApplicationException("Creator name is not looked-up");
+      throw new NullPointerException("Creator name is not looked-up");
     return creatorName;
   }
 
@@ -165,9 +161,9 @@ public abstract class BaseAnnotation<T extends Annotea<? extends Blob>> {
     return annotea.getType();
   }
 
-  protected String getOriginalBodyContent() throws ApplicationException {
+  protected String getOriginalBodyContent() throws NullPointerException {
     if (originalBodyContent == null)
-      throw new ApplicationException("Body blob is not loaded.");
+      throw new NullPointerException("Body blob is not loaded.");
     return originalBodyContent;
   }
 

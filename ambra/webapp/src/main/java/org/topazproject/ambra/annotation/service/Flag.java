@@ -39,7 +39,7 @@ public class Flag {
     return annotation.getCreator();
   }
 
-  public String getCreatorName() throws ApplicationException {
+  public String getCreatorName() {
     return annotation.getCreatorName();
   }
 
@@ -63,7 +63,7 @@ public class Flag {
     return FlagUtil.getReasonCode(getOriginalComment());
   }
 
-  private String getOriginalComment() throws ApplicationException {
+  private String getOriginalComment() {
     return annotation.getOriginalBodyContent();
   }
 

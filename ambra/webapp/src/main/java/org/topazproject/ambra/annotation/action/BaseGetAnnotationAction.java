@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
@@ -75,9 +74,8 @@ public abstract class BaseGetAnnotationAction extends BaseActionSupport {
 
   /**
    * @return Returns the creatorUserName.
-   * @throws ApplicationException if user-name not loaded
    */
-  public String getCreatorUserName() throws ApplicationException {
+  public String getCreatorUserName() {
     return annotation.getCreatorName();
   }
 
