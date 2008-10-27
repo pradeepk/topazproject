@@ -20,9 +20,11 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -30,70 +32,25 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * Create a flag for a given annotation or reply
  */
 @SuppressWarnings("serial")
-public class CreateFlagAction extends AnnotationActionSupport {
+public class CreateFlagAction extends BaseActionSupport {
   private String target;
   private String comment;
   private String mimeType = "text/plain";
   private String annotationId;
   private String reasonCode;
+  protected ArticleAnnotationService annotationService;
 
   private static final Log log = LogFactory.getLog(CreateFlagAction.class);
 
-  /**
-   * Flag a Rating.
-   *
-   * @return WebWorks SUCCESS or ERROR.
-   */
   @Transactional(rollbackFor = { Throwable.class })
-  public String createRatingFlag() {
+  @Override
+  public String execute() throws Exception {
     try {
-      annotationId = getAnnotationService().createRatingFlag(target, reasonCode, comment, mimeType);
-    } catch (final ApplicationException e) {
+      annotationId = annotationService.createFlag(target, reasonCode, comment, mimeType);
+    } catch (final Exception e) {
       log.error("Could not create flag for target: " + target, e);
       addActionError("Flag creation failed with error message: " + e.getMessage());
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-      return ERROR;
-    }
-    addActionMessage("Flag created with id:" + annotationId);
-    return SUCCESS;
-  }
-
-  /**
-   * Create a flag for a given annotation
-   *
-   * @return SUCCESS or ERROR
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public String createAnnotationFlag() {
-    String status = createFlag(true);
-
-    if ("ERROR".equals(status))
-      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-
-    return status;
-  }
-
-  /**
-   * Create a flag for a given reply
-   *
-   * @return SUCCESS or ERROR
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public String createReplyFlag() {
-    String status = createFlag(true);
-
-    if ("ERROR".equals(status))
-      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-
-    return status;
-  }
-
-  private String createFlag(final boolean isAnnotation) {
-    try {
-      annotationId = getAnnotationService().createFlag(target, reasonCode, comment, mimeType, isAnnotation);
-    } catch (final ApplicationException e) {
-      log.error("Could not create flag for target: " + target, e);
-      addActionError("Flag creation failed with error message: " + e.getMessage());
       return ERROR;
     }
     addActionMessage("Flag created with id:" + annotationId);
@@ -156,4 +113,8 @@ public class CreateFlagAction extends AnnotationActionSupport {
     return annotationId;
   }
 
+  @Required
+  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+    this.annotationService = annotationService;
+  }
 }

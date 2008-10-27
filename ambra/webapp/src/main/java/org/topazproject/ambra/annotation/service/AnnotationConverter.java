@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.Commentary;
 import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.ArticleAnnotation;
@@ -61,6 +60,23 @@ public class AnnotationConverter {
   }
 
   /**
+   * @param annotations an array of annotations
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
+   * @return an array of Flag objects as required by the web layer
+   */
+  @Transactional(readOnly = true)
+  public Flag[] convertAsFlags(final ArticleAnnotation[] annotations, boolean needCreatorName,
+                                 boolean needBody) {
+    final Flag flags[]  = new Flag[annotations.length];
+
+    for (int i = 0; i < annotations.length; i++)
+      flags[i] = new Flag(convert(annotations[i], needCreatorName, needBody));
+
+    return flags;
+  }
+
+  /**
    * @param annotation annotation
    * @param needCreatorName indicates if a display-name of the creator needs to be fetched
    * @param needBody indicates if the annotation body is required
@@ -81,10 +97,9 @@ public class AnnotationConverter {
    * @param needCreatorName indicates if a display-name of the creator needs to be fetched
    * @param needBody indicates if the annotation body is required
    * @return an array of Reply objects as required by the web layer
-   * @throws org.topazproject.ambra.ApplicationException ApplicationException
    */
   @Transactional(readOnly = true)
-  public WebReply[] convert(final Reply[] replies, boolean needCreatorName, boolean needBody) throws ApplicationException {
+  public WebReply[] convert(final Reply[] replies, boolean needCreatorName, boolean needBody) {
     return convert (replies, null, needCreatorName, needBody);
   }
 

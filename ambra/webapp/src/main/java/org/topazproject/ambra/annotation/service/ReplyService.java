@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.models.ReplyBlob;
 import org.topazproject.ambra.models.ReplyThread;
@@ -62,10 +63,10 @@ public class ReplyService extends BaseAnnotationService {
   /**
    * Create a reply that replies to a message.
    *
-   * @param mimeType mimeType of the reply body
    * @param root root of this thread
    * @param inReplyTo the message this is in reply to
    * @param title title of this message
+   * @param mimeType mimeType of the reply body
    * @param body the reply body
    *
    * @return a new reply
@@ -73,8 +74,8 @@ public class ReplyService extends BaseAnnotationService {
    * @throws Exception on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public String createReply(final String mimeType, final String root, final String inReplyTo,
-                            final String title, final String body)
+  public String createReply(final String root, final String inReplyTo, final String title,
+                            final String mimeType, final String body)
                      throws Exception {
     pep.checkAccess(RepliesPEP.CREATE_REPLY, URI.create(root));
 
@@ -103,6 +104,7 @@ public class ReplyService extends BaseAnnotationService {
     String  newId      = session.saveOrUpdate(r);
 
     permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
+    setReplyPublic(newId);
 
     return newId;
   }
@@ -294,4 +296,20 @@ public class ReplyService extends BaseAnnotationService {
 
     return l.toArray(new Reply[l.size()]);
   }
+
+  @Transactional(rollbackFor = { Throwable.class })
+  public void setReplyPublic(final String id) throws OtmException, SecurityException {
+    final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
+    permissionsService.grant(
+              id,
+              new String[]{
+                      RepliesPEP.GET_REPLY_INFO}, everyone);
+
+    permissionsService.revoke(
+              id,
+              new String[]{
+                      RepliesPEP.DELETE_REPLY}, everyone);
+
+  }
+
 }

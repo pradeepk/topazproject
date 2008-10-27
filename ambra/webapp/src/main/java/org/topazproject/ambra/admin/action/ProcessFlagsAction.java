@@ -21,10 +21,12 @@ package org.topazproject.ambra.admin.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.annotation.service.AnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationConverter;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.BaseAnnotationService;
 import org.topazproject.ambra.annotation.service.Flag;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.models.Comment;
@@ -42,12 +44,12 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
   private String[] convertToFormalCorrection;
   private String[] convertToMinorCorrection;
   private String[] convertToNote;
-  private AnnotationService annotationService;
+  private ArticleAnnotationService annotationService;
   private RatingsService ratingsService;
   private ReplyService replyService;
+  protected AnnotationConverter converter;
 
-
-  public void setAnnotationService(AnnotationService annotationService) {
+  public void setAnnotationService(ArticleAnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 
@@ -98,14 +100,14 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
           log.debug("Found comment to unflag: " + toUnFlag);
         }
         String[] tokens = toUnFlag.split("_");
-        // token[0] = the flag ID
-        // token[1] = the target ID
+        // token[0] = the target ID
+        // token[1] = the flag ID
         // token[2] = the targetType (a string identifier)
         try {
-          deleteFlag(tokens[0], tokens[1], tokens[2]);
+          deleteFlag(tokens[0], tokens[1]);
         } catch(Exception e) {
-          String errorMessage = "Failed to delete flag id='" + tokens[0] + "'" +
-          "for annotation id='" + tokens[1] + "'";
+          String errorMessage = "Failed to delete flag id='" + tokens[1] + "'" +
+          "for annotation id='" + tokens[0] + "'";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
           TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -123,8 +125,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         try {
           deleteTarget(tokens[0], tokens[1], tokens[2]);
         } catch (Exception e) {
-          String errorMessage = "Failed to delete annotation id='" + tokens[1] +
-                                "to Formal Correction annotation.";
+          String errorMessage = "Failed to delete annotation id='" + tokens[1] + "'.";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
           TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -142,10 +143,10 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         String[] tokens = paramStr.split("_");
         try {
           annotationService.convertArticleAnnotationToType(tokens[1], FormalCorrection.class);
-          annotationService.deleteFlag(tokens[0]);
+          deleteFlag(tokens[1], tokens[0]);
         } catch(Exception e) {
           String errorMessage = "Failed to convert annotation id='" + tokens[1] +
-                                "to Formal Correction annotation.";
+                                "' to Formal Correction annotation.";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
           TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -162,10 +163,10 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         String[] tokens = paramStr.split("_");
         try {
           annotationService.convertArticleAnnotationToType(tokens[1], MinorCorrection.class);
-          annotationService.deleteFlag(tokens[0]);
+          deleteFlag(tokens[1], tokens[0]);
         } catch(Exception e) {
           String errorMessage = "Failed to convert annotation id='" + tokens[1] +
-                                "to Minor Correction annotation.";
+                                "' to Minor Correction annotation.";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
           TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -182,9 +183,10 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         String[] tokens = paramStr.split("_");
         try {
           annotationService.convertArticleAnnotationToType(tokens[1], Comment.class);
-          annotationService.deleteFlag(tokens[0]);
+          deleteFlag(tokens[1], tokens[0]);
         } catch(Exception e) {
-          String errorMessage = "Failed to convert annotation id='" + tokens[1] + "to Note annotation.";
+          String errorMessage = "Failed to convert annotation id='" + tokens[1]
+                                 + "' to Note annotation.";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
           TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -217,12 +219,12 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
    *  been deleted by previous actions. So we catch 'non-exsietent-id' exceptions
    *  which may well get thrown and recover and continue (faster than going across
    *  teh web service tro see if the ID is valid then going out again to get its object).
-   * @throws ApplicationException
+   * @throws Exception
    */
   private void deleteTarget(String root, String target, String targetType)
-      throws ApplicationException {
+      throws Exception {
     Reply[] replies;
-    Flag[] flags = annotationService.listFlags(target, false, false);
+    Flag[] flags = converter.convertAsFlags(annotationService.listAnnotations(target, annotationService.COMMENT_SET), false, false);
 
     if (log.isDebugEnabled()) {
       log.debug("Deleting Target" + target + " Root is " + root);
@@ -230,7 +232,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
     }
     for (Flag flag: flags) {
       try {
-        deleteFlag(target, flag.getId(), targetType);
+        deleteFlag(target, flag.getId());
       } catch (Exception e) {
         //keep going through the list even if there is an exception
         if (log.isWarnEnabled()) {
@@ -239,14 +241,14 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       }
     }
 
-    if (targetType.equals(AnnotationService.WEB_TYPE_REPLY)) {
-      replies = annotationService.listAllRepliesFlattened(root, target);
+    if (targetType.equals(BaseAnnotationService.WEB_TYPE_REPLY)) {
+      replies = replyService.listAllReplies(root, target);
     } else if (
-        targetType.equals(AnnotationService.WEB_TYPE_COMMENT) ||
-        targetType.equals(AnnotationService.WEB_TYPE_NOTE) ||
-        targetType.equals(AnnotationService.WEB_TYPE_MINOR_CORRECTION) ||
-        targetType.equals(AnnotationService.WEB_TYPE_FORMAL_CORRECTION)) {
-      replies = annotationService.listAllRepliesFlattened(target, target);
+        targetType.equals(BaseAnnotationService.WEB_TYPE_COMMENT) ||
+        targetType.equals(BaseAnnotationService.WEB_TYPE_NOTE) ||
+        targetType.equals(BaseAnnotationService.WEB_TYPE_MINOR_CORRECTION) ||
+        targetType.equals(BaseAnnotationService.WEB_TYPE_FORMAL_CORRECTION)) {
+      replies = replyService.listAllReplies(target, target);
     } else {
       // Flag type doesn't have Replies
       replies = new Reply[0];
@@ -256,32 +258,32 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       log.debug(target + " has " + replies.length + " replies. Removing their flags");
     }
     for (Reply reply : replies) {
-      Flag[] replyFlags = annotationService.listFlags(reply.getId().toString(), false, false);
+      Flag[] replyFlags = converter.convertAsFlags(annotationService.listAnnotations(reply.getId().toString(), annotationService.COMMENT_SET), false, false);
       if (log.isDebugEnabled()) {
         log.debug("Reply " + reply.getId() + " has " + replyFlags.length + " flags");
       }
       for (Flag flag: replyFlags) {
-        deleteFlag(reply.getId().toString(), flag.getId().toString(), AnnotationService.WEB_TYPE_REPLY);
+        deleteFlag(reply.getId().toString(), flag.getId().toString());
       }
     }
 
-    if (targetType.equals(AnnotationService.WEB_TYPE_REPLY)) {
+    if (targetType.equals(BaseAnnotationService.WEB_TYPE_REPLY)) {
       replyService.deleteReplies(target); // Bulk delete
       //annotationService.deleteReply(target);
       if (log.isDebugEnabled()) {
         log.debug("Deleted reply: " + target);
       }
     } else if (
-        targetType.equals(AnnotationService.WEB_TYPE_COMMENT) ||
-        targetType.equals(AnnotationService.WEB_TYPE_NOTE) ||
-        targetType.equals(AnnotationService.WEB_TYPE_MINOR_CORRECTION) ||
-        targetType.equals(AnnotationService.WEB_TYPE_FORMAL_CORRECTION)) {
+        targetType.equals(BaseAnnotationService.WEB_TYPE_COMMENT) ||
+        targetType.equals(BaseAnnotationService.WEB_TYPE_NOTE) ||
+        targetType.equals(BaseAnnotationService.WEB_TYPE_MINOR_CORRECTION) ||
+        targetType.equals(BaseAnnotationService.WEB_TYPE_FORMAL_CORRECTION)) {
       replyService.deleteReplies(target, target);
       annotationService.deleteAnnotation(target);
       if (log.isDebugEnabled()) {
         log.debug("Deleted annotation: " + target);
       }
-    } else if (targetType.equals(AnnotationService.WEB_TYPE_RATING)) {
+    } else if (targetType.equals(BaseAnnotationService.WEB_TYPE_RATING)) {
       ratingsService.deleteRating(target);
       if (log.isDebugEnabled()) {
         log.debug("Deleted Rating: " + target);
@@ -294,16 +296,20 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
    * correct target or targetType. This information should be retrieved from the flag by the
    * service.
    */
-  private void deleteFlag(String target, String flag, String targetType)
-    throws ApplicationException {
+  private void deleteFlag(String target, String flag) throws Exception {
     // Delete flag
     if (log.isDebugEnabled())
       log.debug("Deleting flag: " + flag + " on target: " + target);
-    annotationService.deleteFlag(flag);
+    annotationService.deleteAnnotation(flag);
   }
 
   public void setReplyService(ReplyService replyService) {
     this.replyService = replyService;
+  }
+
+  @Required
+  public void setAnnotationConverter(AnnotationConverter converter) {
+    this.converter = converter;
   }
 
 }

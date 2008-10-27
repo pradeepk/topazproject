@@ -21,8 +21,11 @@ package org.topazproject.ambra.admin.action;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
-import org.topazproject.ambra.annotation.service.AnnotationService;
+import org.topazproject.ambra.annotation.service.AnnotationConverter;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
+import org.topazproject.ambra.models.ArticleAnnotation;
+
 
 @SuppressWarnings("serial")
 public class EditAnnotationAction extends BaseActionSupport {
@@ -30,7 +33,8 @@ public class EditAnnotationAction extends BaseActionSupport {
   private WebAnnotation annotation;
   private String saveAnnotationId;
   private String saveAnnotationContext;
-  private AnnotationService annotationService;
+  private ArticleAnnotationService annotationService;
+  private AnnotationConverter converter;
 
   @Override
   public String execute() throws Exception {
@@ -48,8 +52,8 @@ public class EditAnnotationAction extends BaseActionSupport {
   @Transactional(readOnly = true)
   public String loadAnnotation() throws Exception {
 
-    annotation = annotationService.getAnnotation(loadAnnotationId, true, true);
-
+    ArticleAnnotation a = annotationService.getAnnotation(loadAnnotationId);
+    annotation = converter.convert(a, true, true);
     // tell Struts to continue
     return SUCCESS;
   }
@@ -218,7 +222,7 @@ public class EditAnnotationAction extends BaseActionSupport {
    * Set AnnotationService.
    * @param annotationService the annotation service to set
    */
-  public void setAnnotationService(AnnotationService annotationService) {
+  public void setAnnotationService(ArticleAnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 }

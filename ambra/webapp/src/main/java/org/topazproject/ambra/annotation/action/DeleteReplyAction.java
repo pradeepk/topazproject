@@ -20,18 +20,21 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.annotation.service.ReplyService;
 
 /**
  * Action class to delete a given reply.
  */
 @SuppressWarnings("serial")
-public class DeleteReplyAction extends AnnotationActionSupport {
+public class DeleteReplyAction extends BaseActionSupport {
   private String id;
   private String root;
   private String inReplyTo;
+  protected ReplyService replyService;
 
   private static final Log log = LogFactory.getLog(DeleteReplyAction.class);
 
@@ -42,8 +45,8 @@ public class DeleteReplyAction extends AnnotationActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   public String deleteReplyWithId() {
     try {
-      getAnnotationService().deleteReplies(id);
-    } catch (final ApplicationException e) {
+      replyService.deleteReplies(id);
+    } catch (final Exception e) {
       log.error("Could not delete reply: " + id, e);
       addActionError("Reply deletion failed with error message: " + e.getMessage());
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -59,8 +62,8 @@ public class DeleteReplyAction extends AnnotationActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   public String deleteReplyWithRootAndReplyTo() {
     try {
-      getAnnotationService().deleteReplies(root, inReplyTo);
-    } catch (final ApplicationException e) {
+      replyService.deleteReplies(root, inReplyTo);
+    } catch (final Exception e) {
       log.error("Could not delete reply with root: " + root + " replyTo: " + inReplyTo, e);
       addActionError("Reply deletion failed with error message: " + e.getMessage());
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -91,5 +94,10 @@ public class DeleteReplyAction extends AnnotationActionSupport {
 
   public String getInReplyTo() {
     return inReplyTo;
+  }
+
+  @Required
+  public void setReplyService(final ReplyService replyService) {
+    this.replyService = replyService;
   }
 }

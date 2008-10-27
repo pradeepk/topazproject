@@ -48,7 +48,7 @@ import org.topazproject.ambra.annotation.action.GetReplyAction;
 import org.topazproject.ambra.annotation.action.ListAnnotationAction;
 import org.topazproject.ambra.annotation.action.ListFlagAction;
 import org.topazproject.ambra.annotation.action.ListReplyAction;
-import org.topazproject.ambra.annotation.service.AnnotationService;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
 import org.topazproject.ambra.annotation.service.AnnotationsPEP;
 import org.topazproject.ambra.annotation.service.Flag;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
@@ -226,13 +226,12 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     final GetReplyAction getReplyAction = getGetReplyAction();
     getReplyAction.setReplyId(replyId);
     assertEquals(SUCCESS, getReplyAction.execute());
-    final WebReply savedReply = getAnnotationService().getReply(replyId, true, true);
+    final WebReply savedReply = getReplyAction.getReply(); 
     assertEquals(annotationId, savedReply.getRoot());
     assertEquals(annotationId, savedReply.getInReplyTo());
     assertEquals(title, savedReply.getCommentTitle());
     assertEquals(body, savedReply.getComment());
   }
-
 
   public void testCreateThreadedReplies() throws Exception {
     final String replyId;
@@ -247,7 +246,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
       final GetReplyAction getReplyAction = getGetReplyAction();
       getReplyAction.setReplyId(replyId);
       assertEquals(SUCCESS, getReplyAction.execute());
-      final WebReply savedReply = getAnnotationService().getReply(replyId, true, true);
+      final WebReply savedReply = getReplyAction.getReply();
       assertEquals(annotationId, savedReply.getRoot());
       assertEquals(annotationId, savedReply.getInReplyTo());
       assertEquals(title, savedReply.getCommentTitle());
@@ -267,7 +266,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
       final GetReplyAction getReplyAction = getGetReplyAction();
       getReplyAction.setReplyId(replyToReplyId);
       assertEquals(SUCCESS, getReplyAction.execute());
-      final WebReply savedReply = getAnnotationService().getReply(replyToReplyId, true, true);
+      final WebReply savedReply = getReplyAction.getReply();
       assertEquals(annotationId, savedReply.getRoot());
       assertEquals(replyId, savedReply.getInReplyTo());
       assertEquals(title, savedReply.getCommentTitle());
@@ -409,7 +408,8 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
-    final WebAnnotation savedAnnotation = getAnnotationService().getAnnotation(annotationId1, true, true);
+    final WebAnnotation savedAnnotation = getAnnotationConverter()
+               .convert(getAnnotationService().getAnnotation(annotationId1), true, true);
     assertEquals(declawedBody, savedAnnotation.getComment());
 
   }
@@ -442,7 +442,8 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String id = createAnnotationAction.getReplyId();
 
-    final WebReply savedReply = getAnnotationService().getReply(id, true, true);
+    final WebReply savedReply = getAnnotationConverter()
+                            .convert(getReplyService().getReply(id), true, true);
     assertEquals(declawedBody, savedReply.getComment());
   }
 
@@ -456,10 +457,10 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(SUCCESS, createReplyAction.execute());
     final String replyId1 = createReplyAction.getReplyId();
 
-    final GetReplyAction getAnnotationAction = getGetReplyAction();
-    getAnnotationAction.setReplyId(replyId1);
-    assertEquals(SUCCESS, getAnnotationAction.execute());
-    final WebReply savedReply = getAnnotationAction.getReply();
+    final GetReplyAction getReplyAction = getGetReplyAction();
+    getReplyAction.setReplyId(replyId1);
+    assertEquals(SUCCESS, getReplyAction.execute());
+    final WebReply savedReply = getReplyAction.getReply();
     assertNotNull(savedReply);
     assertEquals(declawedTitle, savedReply.getCommentTitle());
   }
@@ -479,7 +480,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
 
-    final AnnotationService annotationService = getAnnotationService();
+    final ArticleAnnotationService annotationService = getAnnotationService();
     final PermissionsService permissionsService = getPermissionsService();
     annotationService.setAnnotationPublic(annotationId);
 
@@ -714,8 +715,9 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     String       context2    = "foo:bar#xpointer(string-range(/,'indeed,+wonderful'))";
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
     String       title       = "Title";
-    AnnotationService service = getAnnotationService();
-    WebAnnotation[] annotations = service.listAnnotations(subject, null, true, true);
+    ArticleAnnotationService service = getAnnotationService();
+    WebAnnotation[] annotations = getAnnotationConverter()
+             .convert(service.listAnnotations(subject, null), true, true);
 
     for (final WebAnnotation annotation : annotations) {
       service.deleteAnnotation(annotation.getId());
@@ -723,11 +725,11 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
     final Collection<String> annotationIdList = new ArrayList<String>();
     annotationIdList.add(
-      service.createAnnotation(subject, context1, null, title, "text/plain", "body", false));
+      service.createComment(subject, context1, null, title, "text/plain", "body", false));
     annotationIdList.add(
-      service.createAnnotation(subject, context2, null, title, "text/plain", "body", false));
+      service.createComment(subject, context2, null, title, "text/plain", "body", false));
     annotationIdList.add(
-      service.createAnnotation(subject, context3, null, title, "text/plain", "body", false));
+      service.createComment(subject, context3, null, title, "text/plain", "body", false));
 
     String annotatedContent = getFetchArticleService().getAnnotatedContent(subject);
     for (final String annotationId : annotationIdList) {
@@ -751,21 +753,23 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     String       context2    = "foo:bar#xpointer(string-range(/doc/chapter/title,'',0,5)[1])";
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
     String       title       = "Title";
-    AnnotationService service = getAnnotationService();
-    WebAnnotation[] annotations = service.listAnnotations(subject, null, true, true);
+    ArticleAnnotationService service = getAnnotationService();
+    WebAnnotation[] annotations = getAnnotationConverter()
+              .convert(service.listAnnotations(subject, null), true, true);
 
     for (final WebAnnotation annotation : annotations) {
       service.deleteAnnotation(annotation.getId());
     }
 
-    service.createAnnotation(subject, context1, null, title, "text/plain", "body", false);
-    service.createAnnotation(subject, context2, null, title, "text/plain", "body", false);
-    service.createAnnotation(subject, context3, null, title, "text/plain", "body", false);
+    service.createComment(subject, context1, null, title, "text/plain", "body", false);
+    service.createComment(subject, context2, null, title, "text/plain", "body", false);
+    service.createComment(subject, context3, null, title, "text/plain", "body", false);
 
     String content = getFetchArticleService().getAnnotatedContent(subject);
     log.debug(content);
 
-    annotations = service.listAnnotations(subject, null, true, true);
+    annotations = getAnnotationConverter()
+              .convert(service.listAnnotations(subject, null), true, true);
     for (final WebAnnotation annotation : annotations)
       service.deleteAnnotation(annotation.getId());
   }
@@ -838,7 +842,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
       //Create a flag against a reply
       final CreateFlagAction createReplyFlagAction = getCreateFlagAction(reasonCode, replyId, flagComment);
-      assertEquals(SUCCESS, createReplyFlagAction.createReplyFlag());
+      assertEquals(SUCCESS, createReplyFlagAction.execute());
       final String flagAnnotationId = createReplyFlagAction.getAnnotationId();
       log.debug("Flag for reply created with id:" + flagAnnotationId);
 
@@ -924,7 +928,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
   private String createFlag(final String reasonCode, final String annotationId, final String flagComment) throws Exception {
     final CreateFlagAction createFlagAction = getCreateFlagAction(reasonCode, annotationId, flagComment);
-    assertEquals(SUCCESS, createFlagAction.createAnnotationFlag());
+    assertEquals(SUCCESS, createFlagAction.execute());
     final String flagId = createFlagAction.getAnnotationId();
     log.debug("Flag comment created with id:" + flagId);
     return flagId;

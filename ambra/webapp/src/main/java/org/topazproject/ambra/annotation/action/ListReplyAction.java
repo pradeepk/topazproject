@@ -27,6 +27,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.annotation.service.AnnotationConverter;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.annotation.service.WebReply;
 import org.topazproject.ambra.article.action.CreateCitation;
@@ -46,7 +50,7 @@ import com.thoughtworks.xstream.XStream;
  * Action class to get a list of replies to annotations.
  */
 @SuppressWarnings("serial")
-public class ListReplyAction extends AnnotationActionSupport {
+public class ListReplyAction extends BaseActionSupport {
 
   private String root;
   private String inReplyTo;
@@ -57,6 +61,10 @@ public class ListReplyAction extends AnnotationActionSupport {
   private FetchArticleService fetchArticleService;
   private Cache articleAnnotationCache;
   private String citation;
+  protected ReplyService replyService;
+  protected AnnotationConverter converter;
+  protected ArticleAnnotationService annotationService;
+
 
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
 
@@ -64,8 +72,8 @@ public class ListReplyAction extends AnnotationActionSupport {
   @Override
   public String execute() throws Exception {
     try {
-      replies = getAnnotationService().listReplies(root, inReplyTo, true, true);
-    } catch (final ApplicationException e) {
+      replies = converter.convert(replyService.listReplies(root, inReplyTo), true, true);
+    } catch (final Exception e) {
       log.error("ListReplyAction.execute() failed for root: " + root, e);
       addActionError("Reply fetching failed with error message: " + e.getMessage());
       return ERROR;
@@ -91,8 +99,8 @@ public class ListReplyAction extends AnnotationActionSupport {
       if (log.isDebugEnabled()) {
         log.debug("listing all Replies for root: " + root);
       }
-      baseAnnotation = getAnnotationService().getAnnotation(root, true, true);
-      replies = getAnnotationService().listAllReplies(root, inReplyTo, null, true, true);
+      baseAnnotation = converter.convert(annotationService.getAnnotation(root), true, true);
+      replies = converter.convert(replyService.listAllReplies(root, inReplyTo), true, true);
       final String articleId = baseAnnotation.getAnnotates();
       article = fetchArticleService.getArticleInfo(articleId);
 
@@ -124,7 +132,7 @@ public class ListReplyAction extends AnnotationActionSupport {
         });
         citation = CitationUtils.generateArticleCorrectionCitationString(result, baseAnnotation);
       }
-    } catch (ApplicationException ae) {
+    } catch (Exception ae) {
       citation = null;
       log.error("Could not list all replies for root: " + root, ae);
       addActionError("Reply fetching failed with error message: " + ae.getMessage());
@@ -213,4 +221,20 @@ public class ListReplyAction extends AnnotationActionSupport {
   public void setCitationService(ArticleXMLUtils citationService) {
     this.citationService = citationService;
   }
+
+  @Required
+  public void setReplyService(final ReplyService replyService) {
+    this.replyService = replyService;
+  }
+
+  @Required
+  public void setAnnotationConverter(AnnotationConverter converter) {
+    this.converter = converter;
+  }
+
+  @Required
+  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+    this.annotationService = annotationService;
+  }
+
 }

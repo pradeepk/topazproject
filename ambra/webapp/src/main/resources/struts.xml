@@ -286,7 +286,7 @@
       <result name="error" type="json"/>
     </action>
 
-    <action name="createRatingFlagSubmit" class="org.topazproject.ambra.annotation.action.CreateFlagAction" method="createRatingFlag">
+    <action name="createRatingFlagSubmit" class="org.topazproject.ambra.annotation.action.CreateFlagAction">
       <result name="input"   type="json"/>
       <result name="error"   type="json"/>
       <result name="success" type="json"/>
@@ -547,7 +547,7 @@
       <result name="success" type="json"/>
     </action>
 
-    <action name="createDiscussionSubmit" class="org.topazproject.ambra.annotation.action.CreateAnnotationAction" method="executeSaveDiscussion">
+    <action name="createDiscussionSubmit" class="org.topazproject.ambra.annotation.action.CreateAnnotationAction">
       <result name="input" type="json"/>
       <result name="error" type="json"/>
       <result name="success" type="json"/>
@@ -578,13 +578,13 @@
       <result>/WEB-INF/pages/annotation/createFlag.ftl</result>
     </action>
 
-    <action name="createAnnotationFlagSubmit" class="org.topazproject.ambra.annotation.action.CreateFlagAction" method="createAnnotationFlag">
+    <action name="createAnnotationFlagSubmit" class="org.topazproject.ambra.annotation.action.CreateFlagAction">
       <result name="input" type="json"/>
       <result name="error" type="json"/>
       <result name="success" type="json"/>
     </action>
 
-    <action name="createReplyFlagSubmit" class="org.topazproject.ambra.annotation.action.CreateFlagAction" method="createReplyFlag">
+    <action name="createReplyFlagSubmit" class="org.topazproject.ambra.annotation.action.CreateFlagAction">
       <result name="input" type="json"/>
       <result name="error" type="json"/>
       <result name="success" type="json"/>

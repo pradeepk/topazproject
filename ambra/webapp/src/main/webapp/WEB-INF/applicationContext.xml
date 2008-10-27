@@ -29,7 +29,6 @@
 
   <!--Ambra developer beans here -->
   <bean id="fetchArticleService" class="org.topazproject.ambra.article.service.FetchArticleService">
-    <property name="articleAnnotationService" ref="articleAnnotationService"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="articleXmlUtils" ref="articleXmlUtils"/>
   </bean>
@@ -120,7 +119,7 @@
     <property name="permissionsService" ref="permissionsService"/>
   </bean>
 
-  <bean id="articleAnnotationService" class="org.topazproject.ambra.annotation.service.ArticleAnnotationService">
+  <bean id="annotationService" class="org.topazproject.ambra.annotation.service.ArticleAnnotationService">
     <property name="articleAnnotationCache" ref="articleAnnotationCache"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
@@ -130,12 +129,6 @@
 
   <bean id="ratingsService" class="org.topazproject.ambra.rating.service.RatingsService">
     <property name="applicationId" ref="applicationId"/>
-  </bean>
-
-  <bean id="annotationService" class="org.topazproject.ambra.annotation.service.AnnotationService">
-    <property name="converter" ref="annotationConverter"/>
-    <property name="replyService" ref="replyService"/>
-    <property name="permissionsService" ref="permissionsService"/>
   </bean>
 
   <bean id="userService" class="org.topazproject.ambra.user.service.UserService">

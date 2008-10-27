@@ -22,8 +22,11 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.annotation.service.AnnotationConverter;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.FormalCorrection;
@@ -36,9 +39,11 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * Action class to get a list of annotations.
  */
 @SuppressWarnings("serial")
-public class ListAnnotationAction extends AnnotationActionSupport {
+public class ListAnnotationAction extends BaseActionSupport {
   private String target;
   private WebAnnotation[] annotations;
+  protected ArticleAnnotationService annotationService;
+  protected AnnotationConverter converter;
 
   private static final Log log = LogFactory.getLog(ListAnnotationAction.class);
 
@@ -48,8 +53,8 @@ public class ListAnnotationAction extends AnnotationActionSupport {
    */
   private String loadAnnotations(Set<Class<? extends ArticleAnnotation>> annotationTypeClasses, boolean needBody) {
     try {
-      annotations = getAnnotationService().listAnnotations(target, annotationTypeClasses, true, needBody);
-    } catch (final ApplicationException e) {
+      annotations = converter.convert(annotationService.listAnnotations(target, annotationTypeClasses), true, needBody);
+    } catch (final Exception e) {
       log.error("Could not list annotations for target: " + target, e);
       addActionError("Annotation fetching failed with error message: " + e.getMessage());
       return ERROR;
@@ -100,6 +105,16 @@ public class ListAnnotationAction extends AnnotationActionSupport {
   @RequiredStringValidator(message="You must specify the target that you want to list the annotations for")
   public String getTarget() {
     return target;
+  }
+
+  @Required
+  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+    this.annotationService = annotationService;
+  }
+
+  @Required
+  public void setAnnotationConverter(AnnotationConverter converter) {
+    this.converter = converter;
   }
 
 }

@@ -20,8 +20,11 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.annotation.service.AnnotationConverter;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
 import org.topazproject.ambra.annotation.service.Flag;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -30,9 +33,11 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * Action class to get a list of flags for a given uri.
  */
 @SuppressWarnings("serial")
-public class ListFlagAction extends AnnotationActionSupport {
+public class ListFlagAction extends BaseActionSupport {
   private String target;
   private Flag[] flags;
+  protected ArticleAnnotationService annotationService;
+  protected AnnotationConverter converter;
 
   private static final Log log = LogFactory.getLog(ListFlagAction.class);
 
@@ -40,8 +45,8 @@ public class ListFlagAction extends AnnotationActionSupport {
   @Override
   public String execute() throws Exception {
     try {
-      flags = getAnnotationService().listFlags(target, true, true);
-    } catch (final ApplicationException e) {
+      flags = converter.convertAsFlags(annotationService.listAnnotations(target, annotationService.COMMENT_SET), true, true);
+    } catch (final Exception e) {
       log.error("Could not list flags for target: " + target, e);
       addActionError("Flag fetch failed with error message: " + e.getMessage());
       return ERROR;
@@ -70,6 +75,16 @@ public class ListFlagAction extends AnnotationActionSupport {
   @RequiredStringValidator(message="You must specify the target that you want to list the flags for")
   public String getTarget() {
     return target;
+  }
+
+  @Required
+  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+    this.annotationService = annotationService;
+  }
+
+  @Required
+  public void setAnnotationConverter(AnnotationConverter converter) {
+    this.converter = converter;
   }
 
 }

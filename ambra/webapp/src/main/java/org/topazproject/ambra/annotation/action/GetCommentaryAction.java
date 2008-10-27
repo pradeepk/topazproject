@@ -20,16 +20,21 @@
 package org.topazproject.ambra.annotation.action;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.Commentary;
+import org.topazproject.ambra.annotation.service.AnnotationConverter;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.article.service.FetchArticleService;
-import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.ArticleAnnotation;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -42,22 +47,24 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * @author Alex Worden
  */
 @SuppressWarnings("serial")
-public class GetCommentaryAction extends AnnotationActionSupport {
-
+public class GetCommentaryAction extends BaseActionSupport {
   protected final Log log = LogFactory.getLog(this.getClass());
 
   protected String target;
   private Commentary[] commentary;
   private Article article;
   private FetchArticleService fetchArticleService;
+  protected ReplyService replyService;
+  protected AnnotationConverter converter;
+  protected ArticleAnnotationService annotationService;
 
   /**
    * Provides a list of comments for the target.
    * @return Array of {@link WebAnnotation}s representing the target's comments
    */
   @Transactional(readOnly = true)
-  public final String listComments() {
-    return list(false);
+  public String listComments() {
+    return list(annotationService.COMMENT_SET);
   }
 
   /**
@@ -65,19 +72,19 @@ public class GetCommentaryAction extends AnnotationActionSupport {
    * @return Array of {@link WebAnnotation}s representing the target's corrections
    */
   @Transactional(readOnly = true)
-  public final String listCorrections() {
-    return list(true);
+  public String listCorrections() {
+    return list(annotationService.CORRECTION_SET);
   }
 
   /**
    * Pulls either all corrections or all non-correction comments for the given target.
-   * @param isCorrections Pull corrections?
+   * @param set Pull corrections?
    * @return status
    */
-  private String list(boolean isCorrections) {
+  private String list(Set<Class<? extends ArticleAnnotation>> set) {
     try {
       article = fetchArticleService.getArticleInfo(target);
-      WebAnnotation[] annotations = isCorrections? getAnnotationService().listCorrections(target, true, false) : getAnnotationService().listComments(target, true, false);
+      WebAnnotation[] annotations = converter.convert(annotationService.listAnnotations(target, set), true, false);
       commentary = new Commentary[annotations.length];
       Commentary com = null;
       if (annotations.length > 0) {
@@ -85,31 +92,26 @@ public class GetCommentaryAction extends AnnotationActionSupport {
           com = new Commentary();
           com.setAnnotation(annotations[i]);
           try {
-            getAnnotationService().listAllReplies(annotations[i].getId(), annotations[i].getId(), com, false, false);
-          } catch (ApplicationException ae) {
-            Throwable t = ae.getCause();
-            if ((t instanceof NoSuchArticleIdException) || (t instanceof java.lang.SecurityException)) {
-              // don't error if that id is gone or if you can't list the replies
-              com.setNumReplies(0);
-              com.setReplies(null);
-            } else {
-              throw ae;
-            }
+            converter.convert(replyService.listAllReplies(annotations[i].getId(), annotations[i].getId()), com, false, false);
+          } catch (SecurityException t) {
+              // don't error if you can't list the replies
+            com.setNumReplies(0);
+            com.setReplies(null);
           }
           commentary[i] = com;
         }
         Arrays.sort(commentary, commentary[0]);
       }
-    } catch (final ApplicationException e) {
-      if(log.isErrorEnabled()) log.error("Could not get " + (isCorrections ? "corrections" : "comments") + " for articleID: " + target, e);
-      addActionError("Annotation fetching failed with error message: " + e.getMessage());
+    } catch (final Exception e) {
+      log.error("Failed to create commentary for articleID: " + target, e);
+      addActionError("Commentary creation failed with error message: " + e.getMessage());
       return ERROR;
     }
     return SUCCESS;
   }
 
   @Transactional(readOnly = true)
-  public final String getArticleMetaInfo () throws Exception {
+  public String getArticleMetaInfo () throws Exception {
     article = fetchArticleService.getArticleInfo(target);
     return SUCCESS;
   }
@@ -118,7 +120,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
    * Set the target that it annotates.
    * @param target target
    */
-  public final void setTarget(final String target) {
+  public void setTarget(final String target) {
     this.target = target;
   }
 
@@ -126,36 +128,51 @@ public class GetCommentaryAction extends AnnotationActionSupport {
    * @return the target of the annotation
    */
   @RequiredStringValidator(message="You must specify the target that you want to list the annotations for")
-  public final String getTarget() {
+  public String getTarget() {
     return target;
   }
 
   /**
    * @param service The fetchArticleService to set.
    */
-  public final void setFetchArticleService(FetchArticleService service) {
+  public void setFetchArticleService(FetchArticleService service) {
     this.fetchArticleService = service;
   }
 
   /**
    * @return Returns the articleInfo.
    */
-  public final Article getArticleInfo() {
+  public Article getArticleInfo() {
     return article;
   }
 
   /**
    * @param articleInfo The articleInfo to set.
    */
-  public final void setArticleInfo(Article articleInfo) {
+  public void setArticleInfo(Article articleInfo) {
     this.article = articleInfo;
   }
 
   /**
    * @return The commentary array
    */
-  public final Commentary[] getCommentary() {
+  public Commentary[] getCommentary() {
     return commentary;
+  }
+
+  @Required
+  public void setReplyService(final ReplyService replyService) {
+    this.replyService = replyService;
+  }
+
+  @Required
+  public void setAnnotationConverter(AnnotationConverter converter) {
+    this.converter = converter;
+  }
+
+  @Required
+  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+    this.annotationService = annotationService;
   }
 
 }

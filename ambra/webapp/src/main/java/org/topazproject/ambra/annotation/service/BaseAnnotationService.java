@@ -18,7 +18,21 @@
  */
 package org.topazproject.ambra.annotation.service;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.Annotea;
+import org.topazproject.ambra.models.ArticleAnnotation;
+import org.topazproject.ambra.models.Comment;
+import org.topazproject.ambra.models.Correction;
+import org.topazproject.ambra.models.FormalCorrection;
+import org.topazproject.ambra.models.MinorCorrection;
+import org.topazproject.ambra.models.Rating;
+import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.otm.Session;
 
@@ -26,12 +40,31 @@ import org.topazproject.otm.Session;
  * Base class for Annotaion and Reply web service wrappers
  */
 public abstract class BaseAnnotationService {
+  private static final Log log = LogFactory.getLog(BaseAnnotationService.class);
+
   private String defaultType;
   private String encodingCharset = "UTF-8";
   private String applicationId;
   private boolean isAnonymous;
   protected Session session;
   protected PermissionsService permissionsService;
+
+  public final Set<Class<? extends ArticleAnnotation>> CORRECTION_SET =
+  new HashSet<Class<? extends ArticleAnnotation>>();
+
+  public final Set<Class<? extends ArticleAnnotation>> COMMENT_SET =
+  new HashSet<Class<? extends ArticleAnnotation>>();
+  public static final String WEB_TYPE_COMMENT = "Comment";
+  public static final String WEB_TYPE_NOTE = "Note";
+  public static final String WEB_TYPE_FORMAL_CORRECTION = "FormalCorrection";
+  public static final String WEB_TYPE_MINOR_CORRECTION = "MinorCorrection";
+  public static final String WEB_TYPE_REPLY = "Reply";
+  public static final String WEB_TYPE_RATING = "Rating";
+
+  {
+    CORRECTION_SET.add(Correction.class);
+    COMMENT_SET.add(Comment.class);
+  }
 
   /**
    * Set the default annotation type.
@@ -112,5 +145,41 @@ public abstract class BaseAnnotationService {
   @Required
   public void setPermissionsService(final PermissionsService permissionsService) {
     this.permissionsService = permissionsService;
+  }
+
+  /**
+   * Returns the PubApp type name for the given Annotea object.
+   * @param ann the Annotea base class
+   * @return the type
+   */
+  @Transactional(readOnly = true)
+  public static String getWebType(Annotea<?> ann) {
+    if (ann == null || ann.getType() == null){
+      return null;
+    }
+
+    if (ann.getType().equals(MinorCorrection.RDF_TYPE)) {
+      return WEB_TYPE_MINOR_CORRECTION;
+    }
+    if (ann.getType().equals(FormalCorrection.RDF_TYPE)) {
+      return WEB_TYPE_FORMAL_CORRECTION;
+    }
+    if (ann.getType().equals(Rating.RDF_TYPE)) {
+      return WEB_TYPE_RATING;
+    }
+    if (ann.getType().equals(Reply.RDF_TYPE)) {
+      return WEB_TYPE_REPLY;
+    }
+    if (ann.getType().equals(Comment.RDF_TYPE)) {
+      if (((ArticleAnnotation)ann).getContext() != null) {
+        return WEB_TYPE_NOTE;
+      } else {
+        return WEB_TYPE_COMMENT;
+      }
+    }
+
+    log.error("Unable to determine annotation WEB_TYPE. Annotation ID='" + ann.getId() +
+              "' ann.getType() = '" + ann.getType() + "'");
+    return null;
   }
 }

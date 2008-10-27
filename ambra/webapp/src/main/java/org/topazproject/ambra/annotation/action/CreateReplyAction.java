@@ -22,9 +22,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.util.ProfanityCheckingService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -33,7 +35,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * Action for creating a reply.
  */
 @SuppressWarnings("serial")
-public class CreateReplyAction extends AnnotationActionSupport {
+public class CreateReplyAction extends BaseActionSupport {
   private String replyId;
   private String root;
   private String inReplyTo;
@@ -42,6 +44,7 @@ public class CreateReplyAction extends AnnotationActionSupport {
   private String comment;
 
   private ProfanityCheckingService profanityCheckingService;
+  protected ReplyService replyService;
 
   private static final Log log = LogFactory.getLog(CreateReplyAction.class);
 
@@ -53,13 +56,13 @@ public class CreateReplyAction extends AnnotationActionSupport {
       final List<String> profaneWordsInBody = profanityCheckingService.validate(comment);
 
       if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty()) {
-        replyId = getAnnotationService().createReply(root, inReplyTo, commentTitle, mimeType, comment);
+        replyId = replyService.createReply(root, inReplyTo, commentTitle, mimeType, comment);
       } else {
         addProfaneMessages(profaneWordsInBody, "comment", "comment");
         addProfaneMessages(profaneWordsInTitle, "commentTitle", "title");
         return INPUT;
       }
-    } catch (final ApplicationException e) {
+    } catch (Exception e) {
       log.error("Could not create reply to root: " + root + " and inReplyTo: " + inReplyTo, e);
       addActionError("Reply creation failed with error message: " + e.getMessage());
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -118,4 +121,8 @@ public class CreateReplyAction extends AnnotationActionSupport {
     this.profanityCheckingService = profanityCheckingService;
   }
 
+  @Required
+  public void setReplyService(final ReplyService replyService) {
+    this.replyService = replyService;
+  }
 }

@@ -20,8 +20,11 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.annotation.service.AnnotationConverter;
+import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.annotation.service.WebReply;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -30,9 +33,11 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * Used to fetch a reply given an id.
  */
 @SuppressWarnings("serial")
-public class GetReplyAction extends AnnotationActionSupport {
+public class GetReplyAction extends BaseActionSupport {
   private String replyId;
   private WebReply reply;
+  protected ReplyService replyService;
+  protected AnnotationConverter converter;
 
   private static final Log log = LogFactory.getLog(GetReplyAction.class);
 
@@ -40,8 +45,8 @@ public class GetReplyAction extends AnnotationActionSupport {
   @Override
   public String execute() throws Exception {
     try {
-      reply = getAnnotationService().getReply(replyId, true, true);
-    } catch (final ApplicationException e) {
+      reply = converter.convert(replyService.getReply(replyId), true, true);
+    } catch (final Exception e) {
       log.error("Could not retrieve reply: " + replyId, e);
       addActionError("Reply fetching failed with error message: " + e.getMessage());
       return ERROR;
@@ -60,5 +65,15 @@ public class GetReplyAction extends AnnotationActionSupport {
 
   public WebReply getReply() {
     return reply;
+  }
+
+  @Required
+  public void setReplyService(final ReplyService replyService) {
+    this.replyService = replyService;
+  }
+
+  @Required
+  public void setAnnotationConverter(AnnotationConverter converter) {
+    this.converter = converter;
   }
 }

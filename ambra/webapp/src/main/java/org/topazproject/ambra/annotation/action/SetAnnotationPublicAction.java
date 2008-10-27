@@ -20,9 +20,11 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -30,8 +32,9 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * Set the annotation as public.
  */
 @SuppressWarnings("serial")
-public class SetAnnotationPublicAction extends AnnotationActionSupport {
+public class SetAnnotationPublicAction extends BaseActionSupport {
   private String targetId;
+  protected ArticleAnnotationService annotationService;
   private static final Log log = LogFactory.getLog(SetAnnotationPublicAction.class);
 
   /**
@@ -41,8 +44,8 @@ public class SetAnnotationPublicAction extends AnnotationActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   public String executeSetAnnotationPublic() {
     try {
-      getAnnotationService().setAnnotationPublic(targetId);
-    } catch (final ApplicationException e) {
+      annotationService.setAnnotationPublic(targetId);
+    } catch (final Exception e) {
       log.error(e, e);
       addActionError("Annotation creation failed with error message: " + e.getMessage());
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -66,5 +69,10 @@ public class SetAnnotationPublicAction extends AnnotationActionSupport {
    */
   public void setTargetId(final String targetId) {
     this.targetId = targetId;
+  }
+
+  @Required
+  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+    this.annotationService = annotationService;
   }
 }

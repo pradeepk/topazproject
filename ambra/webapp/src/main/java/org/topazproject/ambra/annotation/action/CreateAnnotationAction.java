@@ -23,11 +23,13 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.Context;
 import org.topazproject.ambra.annotation.ContextFormatter;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
 import org.topazproject.ambra.util.ProfanityCheckingService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -36,7 +38,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * Action to create an annotation. It also does profanity validation on the user content.
  */
 @SuppressWarnings("serial")
-public class CreateAnnotationAction extends AnnotationActionSupport {
+public class CreateAnnotationAction extends BaseActionSupport {
   private String target;
   private String commentTitle;
   private String comment;
@@ -51,6 +53,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   private String supercedes;
 
   private ProfanityCheckingService profanityCheckingService;
+  protected ArticleAnnotationService annotationService;
   private static final Log log = LogFactory.getLog(CreateAnnotationAction.class);
 
   /**
@@ -60,30 +63,8 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   @Override
   @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws Exception {
-    String status = createAnnotation();
-
-    if ("ERROR".equals(status))
-      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-
-    return status;
-  }
-
-  /**
-   * Save the discussion
-   * @return webwork status
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public String executeSaveDiscussion() {
-    String status = createAnnotation();
-
-    if ("ERROR".equals(status))
-      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-
-    return status;
-  }
-
-  private String createAnnotation() {
-    if (isInvalid()) return INPUT;
+    if (isInvalid())
+      return INPUT;
 
     try {
       final List<String> profaneWordsInTitle = profanityCheckingService.validate(commentTitle);
@@ -91,22 +72,23 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
 
       if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty()) {
         final String scontext = ContextFormatter.asXPointer(new Context(startPath, startOffset, endPath, endOffset, target));
-        annotationId = getAnnotationService().createAnnotation(target, scontext, supercedes, commentTitle, mimeType, comment, isPublic);
+        annotationId = annotationService.createComment(target, scontext, supercedes, commentTitle, mimeType, comment, isPublic);
         if (log.isDebugEnabled()) {
           log.debug("CreateAnnotationAction called and annotation created with id: " + annotationId);
         }
         if ("correction".equals(noteType)) {
-          getAnnotationService().createFlag(annotationId, "Create Correction",
-              "Note created and flagged as a correction", mimeType, true);
+          annotationService.createFlag(annotationId, "Create Correction",
+              "Note created and flagged as a correction", mimeType);
         }
       } else {
         addProfaneMessages(profaneWordsInBody, "comment", "comment");
         addProfaneMessages(profaneWordsInTitle, "commentTitle", "title");
         return INPUT;
       }
-    } catch (final ApplicationException e) {
+    } catch (final Exception e) {
       log.error("Could not create annotation", e);
       addActionError("Annotation creation failed with error message: " + e.getMessage());
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;
     }
     addActionMessage("Annotation created with id:" + annotationId);
@@ -274,5 +256,10 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   /** @param supercedes the older annotation that it supersedes */
   public void setSupercedes(final String supercedes) {
     this.supercedes = supercedes;
+  }
+
+  @Required
+  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+    this.annotationService = annotationService;
   }
 }

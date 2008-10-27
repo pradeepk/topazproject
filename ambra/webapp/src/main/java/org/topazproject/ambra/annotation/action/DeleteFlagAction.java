@@ -20,9 +20,11 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -30,8 +32,9 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * Action to delete a flag
  */
 @SuppressWarnings("serial")
-public class DeleteFlagAction extends AnnotationActionSupport {
+public class DeleteFlagAction extends BaseActionSupport {
   private String flagId;
+  protected ArticleAnnotationService annotationService;
 
   private static final Log log = LogFactory.getLog(DeleteFlagAction.class);
 
@@ -39,8 +42,8 @@ public class DeleteFlagAction extends AnnotationActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws Exception {
     try {
-      getAnnotationService().deleteFlag(flagId);
-    } catch (final ApplicationException e) {
+      annotationService.deleteAnnotation(flagId);
+    } catch (final Exception e) {
       log.error("Could not delete flag: " + flagId, e);
       addActionError("Flag deletion failed with error message: " + e.getMessage());
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -64,5 +67,10 @@ public class DeleteFlagAction extends AnnotationActionSupport {
   @RequiredStringValidator(message="You must specify the id of the flag that you want to delete")
   public String getFlagId() {
     return flagId;
+  }
+
+  @Required
+  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+    this.annotationService = annotationService;
   }
 }

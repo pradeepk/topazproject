@@ -177,7 +177,7 @@ public class FetchArticleService {
    *
    * @return the articleAnnotationService
    */
-  public ArticleAnnotationService getArticleAnnotationService() {
+  public ArticleAnnotationService getAnnotationService() {
     return articleAnnotationService;
   }
 
@@ -186,7 +186,7 @@ public class FetchArticleService {
    *
    * @param articleAnnotationService articleAnnotationService
    */
-  public void setArticleAnnotationService(final ArticleAnnotationService articleAnnotationService) {
+  public void setAnnotationService(final ArticleAnnotationService articleAnnotationService) {
     this.articleAnnotationService = articleAnnotationService;
   }
 

@@ -32,7 +32,9 @@ import org.topazproject.ambra.annotation.action.GetReplyAction;
 import org.topazproject.ambra.annotation.action.ListAnnotationAction;
 import org.topazproject.ambra.annotation.action.ListFlagAction;
 import org.topazproject.ambra.annotation.action.ListReplyAction;
-import org.topazproject.ambra.annotation.service.AnnotationService;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.annotation.service.ReplyService;
+import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.article.action.FetchArticleAction;
 import org.topazproject.ambra.article.action.FetchObjectAction;
 import org.topazproject.ambra.article.action.SecondaryObjectAction;
@@ -80,7 +82,9 @@ public abstract class BaseAmbraTestCase extends AbstractDependencyInjectionSprin
   private ProfanityCheckingService profanityCheckingService;
   private ArticleOtmService articleOtmService;
   private PermissionsService permissionsService;
-  private AnnotationService annotationService;
+  private ArticleAnnotationService annotationService;
+  private ReplyService replyService;
+  private AnnotationConverter converter;
   private UserService userService;
   private DeleteFlagAction deleteFlagAction;
   private ListFlagAction listFlagAction;
@@ -123,13 +127,30 @@ public abstract class BaseAmbraTestCase extends AbstractDependencyInjectionSprin
     this.fetchArticleAction = fetchArticleAction;
   }
 
-  public AnnotationService getAnnotationService() throws MalformedURLException, ServiceException {
+  public ArticleAnnotationService getAnnotationService() throws MalformedURLException, ServiceException {
     return annotationService;
   }
 
-  public void setAnnotationService(final AnnotationService annotationService) {
+  public void setAnnotationService(final ArticleAnnotationService annotationService) {
     this.annotationService = annotationService;
   }
+  
+  public ReplyService getReplyService() {
+    return replyService;
+  }
+
+  public void setReplyService(ReplyService replyService) {
+    this.replyService = replyService;
+  }
+
+  public AnnotationConverter getAnnotationConverter() {
+    return converter;
+  }
+
+  public void setAnnotationConverter(AnnotationConverter converter) {
+    this.converter = converter;
+  }
+
 
   public CreateAnnotationAction getCreateAnnotationAction() {
     return createAnnotationAction;

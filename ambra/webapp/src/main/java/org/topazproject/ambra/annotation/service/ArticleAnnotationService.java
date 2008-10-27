@@ -30,10 +30,12 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.Constants;
+import org.topazproject.ambra.annotation.FlagUtil;
 import org.topazproject.ambra.article.service.FetchArticleService;
-import org.topazproject.ambra.article.service.NoSuchObjectIdException;
 import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.models.Annotation;
@@ -76,7 +78,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    */
   public ArticleAnnotationService() throws IOException {
     try {
-      pep                                             = new AnnotationsPEP();
+      pep  = new AnnotationsPEP();
     } catch (IOException e) {
       throw e;
     } catch (Exception e) {
@@ -84,84 +86,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       ioe.initCause(e);
       throw ioe;
     }
-  }
-
-  /**
-   * Create a Flag Annotation.
-   *
-   * @param mimeType of the body content
-   * @param target the target of this annotation
-   * @param body the body string
-   * @param reasonCode the reason for flagging
-   *
-   * @return the id of the flag annotation
-   *
-   * @throws Exception on an error in create
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public String createFlagAnnotation(final String mimeType, final String target, final String body,
-      String reasonCode) throws Exception {
-    // TODO - eventually this should create a different type of annotation and not call this ...
-    return createAnnotation(mimeType, target, null, null, null, body);
-  }
-
-  /**
-   * Create a Comment annotation.
-   *
-   * @param mimeType mimeType of the body content
-   * @param target target for this comment
-   * @param context the context within the target that is being commented upon
-   * @param olderAnnotation olderAnnotation that the new one will supersede
-   * @param title title of this comment
-   * @param body body of this comment
-   *
-   * @return the new annotation id
-   *
-   * @throws Exception on an error
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public String createAnnotation(final String mimeType, final String target, final String context,
-      final String olderAnnotation, final String title, final String body) throws Exception {
-    pep.checkAccess(AnnotationsPEP.CREATE_ANNOTATION, URI.create(target));
-
-    final String contentType = getContentType(mimeType);
-
-    //Ensure that it is null if the olderAnnotation is empty
-    final String earlierAnnotation = StringUtils.isEmpty(olderAnnotation) ? null : olderAnnotation;
-
-    if (earlierAnnotation != null)
-      throw new UnsupportedOperationException("supersedes is not supported");
-
-    String         user       = AmbraUser.getCurrentUser().getUserId();
-    AnnotationBlob blob       =
-      new AnnotationBlob(contentType, body.getBytes(getEncodingCharset()));
-
-    final Comment  newComment = new Comment();
-
-    newComment.setMediator(getApplicationId());
-    newComment.setType(getDefaultType());
-    newComment.setAnnotates(URI.create(target));
-    newComment.setContext(context);
-    newComment.setTitle(title);
-
-    if (isAnonymous())
-      newComment.setAnonymousCreator(user);
-    else
-      newComment.setCreator(user);
-
-    newComment.setBody(blob);
-    newComment.setCreated(new Date());
-
-    String newId = session.saveOrUpdate(newComment);
-
-    if (log.isDebugEnabled())
-      log.debug("created annotaion " + newId + " for " + target + " with body in blob "
-                + blob.getId());
-
-
-    permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
-
-    return newId;
   }
 
   /**
@@ -174,15 +98,18 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @param olderAnnotation olderAnnotation that the new one will supersede
    * @param title title of this annotation
    * @param body body of this annotation
+   * @param isPublic to set up public permissions
    *
    * @return a the new annotation id
    *
    * @throws Exception on an error
    */
-  @Transactional(rollbackFor = { Throwable.class })
-  public String createArticleAnnotation(Class<ArticleAnnotation> annotationClass,
-      final String mimeType, final String target, final String context, final String olderAnnotation,
-      final String title, final String body) throws Exception {
+  private String createAnnotation(Class<? extends ArticleAnnotation> annotationClass,
+                   final String mimeType, final String target,
+                   final String context, final String olderAnnotation,
+                   final String title, final String body, boolean isPublic)
+                     throws Exception {
+
     pep.checkAccess(AnnotationsPEP.CREATE_ANNOTATION, URI.create(target));
 
     final String contentType = getContentType(mimeType);
@@ -220,6 +147,9 @@ public class ArticleAnnotationService extends BaseAnnotationService {
 
     permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
 
+    if (isPublic)
+      setAnnotationPublic(newId);
+
     return newId;
   }
 
@@ -239,19 +169,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
 
     if (a != null)
       session.delete(a);
-  }
-
-  /**
-   * Mark the given flag as deleted.
-   *
-   * @param flagId flagId
-   *
-   * @throws OtmException on an error
-   * @throws SecurityException if a security policy prevented this operation
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public void deleteFlag(final String flagId) throws OtmException, SecurityException {
-    deleteAnnotation(flagId);
   }
 
   /**
@@ -397,10 +314,11 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
+   * @throws IllegalArgumentException if an annotation with this id does not exist
    */
   @Transactional(readOnly = true)
   public ArticleAnnotation getAnnotation(final String annotationId)
-    throws OtmException, SecurityException {
+    throws OtmException, SecurityException, IllegalArgumentException {
     pep.checkAccess(AnnotationsPEP.GET_ANNOTATION_INFO, URI.create(annotationId));
     // comes from object-cache.
     ArticleAnnotation   a = session.get(ArticleAnnotation.class, annotationId);
@@ -418,16 +336,17 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
-   * @throws NoSuchObjectIdException if an annotation with the given id does not exist
+   * @throws IllegalArgumentException if an annotation with this id does not exist
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public void updateContext(String id, String context) throws NoSuchObjectIdException {
+  public void updateContext(String id, String context)
+    throws OtmException, SecurityException, IllegalArgumentException {
+
     pep.checkAccess(AnnotationsPEP.UPDATE_ANNOTATION, URI.create(id));
 
     Annotation<?> a = session.get(Annotation.class, id);
-    if (a == null) {
-      throw new NoSuchObjectIdException(id);
-    }
+    if (a == null)
+      throw new IllegalArgumentException("invalid annoation id: " + id);
 
     a.setContext(context);
   }
@@ -443,10 +362,11 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *         is returned
    *
    * @throws OtmException if some error occurred
+   * @throws SecurityException if a security policy prevented this operation
    */
   @Transactional(readOnly = true)
   public ArticleAnnotation[] listAnnotations(final String mediator, final int state)
-                                   throws OtmException {
+                                   throws OtmException, SecurityException {
     pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS_IN_STATE, AbstractSimplePEP.ANY_RESOURCE);
     List<ArticleAnnotation> annotations =
       loadAnnotations(null, mediator, state, ALL_ANNOTATION_CLASSES);
@@ -491,11 +411,12 @@ public class ArticleAnnotationService extends BaseAnnotationService {
      */
     newAn.setId(null);
 
-    pep.checkAccess(AnnotationsPEP.CREATE_ANNOTATION, oldAn.getAnnotates());
-
     String newId    = session.saveOrUpdate(newAn);
     URI    newIdUri = new URI(newId);
-    permissionsService.propagatePermissions(newId, new String[] { newAn.getBody().getId() });
+    String pp[]     = new String[] { newAn.getBody().getId() };
+
+    permissionsService.propagatePermissions(newId, pp);
+    permissionsService.cancelPropagatePermissions(srcAnnotationId, pp);
 
     /*
      * Find all Annotations that refer to the old Annotation and update their target 'annotates'
@@ -507,15 +428,13 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       refAn.setAnnotates(newIdUri);
     }
 
-    /*
-     * Delete the original annotation from mulgara. Note, we don't call deleteAnnotation() here
-     * since that also removes the body of the article from fedora and we are referencing that from
-     * the new annotation.
-     */
+    //Delete the original annotation (orphan-delete must be disabled for 'body')
     oldAn.setBody(null);
     session.delete(oldAn);
 
-    return newAn.getId().toString();
+    setAnnotationPublic(newId);
+
+    return newId;
   }
 
   /**
@@ -531,6 +450,84 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       invalidator = new Invalidator();
       articleAnnotationCache.getCacheManager().registerListener(invalidator);
     }
+  }
+
+  /**
+   * Create an annotation.
+   *
+   * @param target target that an annotation is being created for
+   * @param context context
+   * @param olderAnnotation olderAnnotation that the new one will supersede
+   * @param title title
+   * @param mimeType mimeType
+   * @param body body
+   * @param isPublic isPublic
+   * @throws Exception on an error
+   * @return unique identifier for the newly created annotation
+   */
+  @Transactional(rollbackFor = { Throwable.class })
+  public String createComment(final String target, final String context,
+                              final String olderAnnotation, final String title,
+                              final String mimeType, final String body,
+                              final boolean isPublic) throws Exception {
+
+    if (log.isDebugEnabled()) {
+      log.debug("creating Comment for target: " + target + "; context: " + context +
+                "; supercedes: " + olderAnnotation + "; title: " + title + "; mimeType: " +
+                mimeType + "; body: " + body + "; isPublic: " + isPublic);
+    }
+
+    String annotationId = createAnnotation(Comment.class, mimeType, target, context,
+                                           olderAnnotation, title, body, true);
+
+    if (log.isDebugEnabled()) {
+      final AmbraUser user = AmbraUser.getCurrentUser();
+      log.debug("Comment created with ID: " + annotationId + " for user: " + user +
+                  " for IP: " + ServletActionContext.getRequest().getRemoteAddr());
+    }
+
+    return annotationId;
+  }
+
+  /**
+   * Set the annotation as public.
+   *
+   * @param annotationDoi annotationDoi
+   *
+   * @throws OtmException if some error occurred
+   * @throws SecurityException if a security policy prevented this operation
+   */
+  @Transactional(rollbackFor = { Throwable.class })
+  public void setAnnotationPublic(final String annotationDoi)
+                throws OtmException, SecurityException {
+    final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
+    permissionsService.grant(
+            annotationDoi,
+            new String[]{
+                    AnnotationsPEP.GET_ANNOTATION_INFO}, everyone);
+
+    permissionsService.revoke(
+            annotationDoi,
+            new String[]{
+                    AnnotationsPEP.DELETE_ANNOTATION,
+                    AnnotationsPEP.SUPERSEDE}, everyone);
+  }
+
+  /**
+   * Create a flag against an annotation or a reply
+   *
+   * @param target target that a flag is being created for
+   * @param reasonCode reasonCode
+   * @param body body
+   * @param mimeType mimeType
+   * @return unique identifier for the newly created flag
+   * @throws Exception on an error
+   */
+  @Transactional(rollbackFor = { Throwable.class })
+  public String createFlag(final String target, final String reasonCode, final String body, final String mimeType)
+        throws Exception {
+    final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
+    return createComment(target, null, null, null, mimeType, flagBody, true);
   }
 
   private class Invalidator extends AbstractObjectListener {

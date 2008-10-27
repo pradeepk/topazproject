@@ -20,8 +20,12 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.annotation.service.AnnotationConverter;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -31,10 +35,11 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  *
  */
 @SuppressWarnings("serial")
-public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
+public abstract class BaseGetAnnotationAction extends BaseActionSupport {
   private String annotationId;
   private WebAnnotation annotation;
-  private String creatorUserName;
+  protected ArticleAnnotationService annotationService;
+  protected AnnotationConverter converter;
 
   private static final Log log = LogFactory.getLog(BaseGetAnnotationAction.class);
 
@@ -42,9 +47,8 @@ public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
   @Override
   public String execute() throws Exception {
     try {
-      annotation = getAnnotationService().getAnnotation(annotationId, true, true);
-      creatorUserName = annotation.getCreatorName();
-    } catch (final ApplicationException e) {
+      annotation = converter.convert(annotationService.getAnnotation(annotationId), true, true);
+    } catch (Exception e) {
       log.error("Could not retreive annotation with id: " + annotationId, e);
       addActionError("Annotation fetching failed with error message: " + e.getMessage());
       return ERROR;
@@ -71,16 +75,21 @@ public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
 
   /**
    * @return Returns the creatorUserName.
+   * @throws ApplicationException if user-name not loaded
    */
-  public String getCreatorUserName() {
-    return creatorUserName;
+  public String getCreatorUserName() throws ApplicationException {
+    return annotation.getCreatorName();
   }
 
-  /**
-   * @param creatorUserName The creatorUserName to set.
-   */
-  public void setCreatorUserName(String creatorUserName) {
-    this.creatorUserName = creatorUserName;
+
+  @Required
+  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+    this.annotationService = annotationService;
+  }
+
+  @Required
+  public void setAnnotationConverter(AnnotationConverter converter) {
+    this.converter = converter;
   }
 
 }

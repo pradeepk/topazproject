@@ -20,9 +20,11 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -30,8 +32,9 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * Action to delete an annotation
  */
 @SuppressWarnings("serial")
-public class DeleteAnnotationAction extends AnnotationActionSupport {
+public class DeleteAnnotationAction extends BaseActionSupport {
   private String annotationId;
+  protected ArticleAnnotationService annotationService;
 
   private static final Log log = LogFactory.getLog(DeleteAnnotationAction.class);
 
@@ -42,8 +45,8 @@ public class DeleteAnnotationAction extends AnnotationActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   public String deleteAnnotation() {
     try {
-      getAnnotationService().deleteAnnotation(annotationId);
-    } catch (final ApplicationException e) {
+      annotationService.deleteAnnotation(annotationId);
+    } catch (final Exception e) {
       log.error("Could not delete annotation: " + annotationId, e);
       addActionError("Annotation deletion failed with error message: " + e.getMessage());
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -67,5 +70,10 @@ public class DeleteAnnotationAction extends AnnotationActionSupport {
   @RequiredStringValidator(message="You must specify the id of the annotation that you want to delete")
   public String getAnnotationId() {
     return annotationId;
+  }
+
+  @Required
+  public void setAnnotationService(final ArticleAnnotationService annotationService) {
+    this.annotationService = annotationService;
   }
 }

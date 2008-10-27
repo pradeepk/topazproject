@@ -27,8 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
-import org.topazproject.ambra.annotation.service.AnnotationService;
-import org.topazproject.ambra.annotation.service.WebAnnotation;
+import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
 import org.topazproject.ambra.article.service.BrowseService;
 import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
@@ -36,8 +35,10 @@ import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.model.article.ArticleInfo;
 import org.topazproject.ambra.model.article.ArticleType;
 import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.ArticleAnnotation;
+import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.Journal;
-import org.topazproject.otm.Session;
+import org.topazproject.ambra.models.MinorCorrection;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -55,13 +56,12 @@ public class FetchArticleAction extends BaseActionSupport {
   private FetchArticleService fetchArticleService;
   private JournalService journalService;
   private Set<Journal> journalList;
-  private Session session;
   private Article articleInfo;
   private ArticleType articleType;
   private ArticleInfo articleInfoX;
   private String transformedArticle;
   private final String articleTypeHeading = "Research Article"; // displayed article type (assigned default)
-  private AnnotationService annotationService;
+  private ArticleAnnotationService annotationService;
   private int numDiscussions = 0;
   private int numMinorCorrections = 0;
   private int numFormalCorrections = 0;
@@ -77,14 +77,14 @@ public class FetchArticleAction extends BaseActionSupport {
     try {
       setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
 
-      WebAnnotation[] articleAnnotations = annotationService.listAnnotations(articleURI, null, false, false);
-      for (WebAnnotation a : articleAnnotations) {
+      ArticleAnnotation anns[] = annotationService.listAnnotations(articleURI, null);
+      for (ArticleAnnotation a : anns) {
         if (a.getContext() == null) {
           numDiscussions ++;
         } else {
-          if (a.isMinorCorrection()) {
+          if (a instanceof MinorCorrection) {
             numMinorCorrections++;
-          } else if (a.isFormalCorrection()) {
+          } else if (a instanceof FormalCorrection) {
             numFormalCorrections++;
           } else {
             numComments++;
@@ -120,7 +120,6 @@ public class FetchArticleAction extends BaseActionSupport {
     return SUCCESS;
   }
 
-
   /**
    * A struts Action method used to display the annotated article. 
    * The transformedArticle field is populated with the annotated articleURI content. 
@@ -137,7 +136,6 @@ public class FetchArticleAction extends BaseActionSupport {
     }
     return SUCCESS;
   }
-
 
   /**
    * @return transformed output
@@ -194,14 +192,14 @@ public class FetchArticleAction extends BaseActionSupport {
   /**
    * @return Returns the annotationService.
    */
-  public AnnotationService getAnnotationService() {
+  public ArticleAnnotationService getAnnotationService() {
     return annotationService;
   }
 
   /**
    * @param annotationService The annotationService to set.
    */
-  public void setAnnotationService(AnnotationService annotationService) {
+  public void setAnnotationService(ArticleAnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 
@@ -285,14 +283,12 @@ public class FetchArticleAction extends BaseActionSupport {
     this.articleInfo = articleInfo;
   }
 
-
   /**
    * @param journalService The journalService to set.
    */
   public void setJournalService(JournalService journalService) {
     this.journalService = journalService;
   }
-
 
   /**
    * @return Returns the journalList.
@@ -308,14 +304,6 @@ public class FetchArticleAction extends BaseActionSupport {
   public void setBrowseService(BrowseService browseService) {
     this.browseService = browseService;
   }
-
-  /**
-   * @param session The session to set.
-   */
-  public void setOtmSession(Session session) {
-    this.session = session;
-  }
-
 
   public ArticleType getArticleType() {
     return articleType;
