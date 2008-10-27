@@ -121,8 +121,8 @@ public class ReplyService extends BaseAnnotationService {
   public void deleteReplies(final String root, final String inReplyTo)
                      throws OtmException, SecurityException {
     final List<Reply> all =
-      session.createCriteria(ReplyThread.class).add(Restrictions.eq("root", root))
-              .add(Restrictions.walk("replies", inReplyTo)).list();
+      session.createCriteria(Reply.class).add(Restrictions.eq("root", root))
+              .add(Restrictions.eq("inReplyTo", inReplyTo)).list();
 
     for (Reply r : all)
       deleteReplies(r.getId().toString());
