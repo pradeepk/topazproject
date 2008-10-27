@@ -93,6 +93,14 @@ public class FilterResolverFactory implements ResolverFactory {
     // Claim the filter graph type
     resolverFactoryInitializer.addModelType(FilterResolver.GRAPH_TYPE, this);
 
+    /*
+      Nasty hack to deal with change from "models" to "graphs"
+      Necessary for WebAppListenerInitModels.dropObsoleteGraphs() to work
+      TODO: Remove this after 0.9.2
+    */
+    resolverFactoryInitializer.addModelType(URI.create("http://topazproject.org/models#filter"), this);
+    // end nasty hack
+  
     // remember the database uri
     dbURI = resolverFactoryInitializer.getDatabaseURI();
 
