@@ -139,7 +139,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(0, deleteAnnotationAction.getActionErrors().size());
 
     final WebAnnotation annotation = retrieveAnnotation(annotationId);
-    
+
     resetAnnotationPermissionsToDefault(annotationId, ANON_PRINCIPAL);
   }
 
@@ -169,7 +169,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(SUCCESS, listAnnotationAction.execute());
     assertEquals(1, listAnnotationAction.getAnnotations().length);
   }
-  
+
   private String getContext(CreateAnnotationAction caa) throws Exception {
     return ContextFormatter.asXPointer(
         new Context(caa.getStartPath(), caa.getStartOffset(), caa.getEndPath(), caa.getEndOffset(), caa.getTarget()));
@@ -226,7 +226,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     final GetReplyAction getReplyAction = getGetReplyAction();
     getReplyAction.setReplyId(replyId);
     assertEquals(SUCCESS, getReplyAction.execute());
-    final WebReply savedReply = getReplyAction.getReply(); 
+    final WebReply savedReply = getReplyAction.getReply();
     assertEquals(annotationId, savedReply.getRoot());
     assertEquals(annotationId, savedReply.getInReplyTo());
     assertEquals(title, savedReply.getCommentTitle());
@@ -332,7 +332,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
       listReplyAction.setRoot(annotationId);
       listReplyAction.setInReplyTo(replyA);
       assertEquals(SUCCESS, listReplyAction.listAllReplies());
-  
+
       final WebReply[] replies = listReplyAction.getReplies();
 
       final Collection<String> list = new ArrayList<String>();
@@ -482,7 +482,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
     final ArticleAnnotationService annotationService = getAnnotationService();
     final PermissionsService permissionsService = getPermissionsService();
-    annotationService.setAnnotationPublic(annotationId);
+    annotationService.setPublicPermissions(annotationId);
 
     final WebAnnotation annotation = retrieveAnnotation(annotationId);
 
@@ -576,7 +576,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 //    final String target = getArticleOtmService().getObjectURL("info:doi/10.1371/journal.pone.0000008", "XML");
     final String target = "info:doi/10.1371/journal.pone.0000008";
     log.debug("target =" + target);
-    
+
     final String startPath1    = "/article[1]/body[1]/sec[2]/sec[1]/p[4]";
     final int startOffset1 = 1;
     final String endPath1    = startPath1;

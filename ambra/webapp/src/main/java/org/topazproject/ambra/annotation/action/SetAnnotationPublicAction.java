@@ -44,7 +44,7 @@ public class SetAnnotationPublicAction extends BaseActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   public String executeSetAnnotationPublic() {
     try {
-      annotationService.setAnnotationPublic(targetId);
+      annotationService.setPublicPermissions(targetId);
     } catch (final Exception e) {
       log.error(e, e);
       addActionError("Annotation creation failed with error message: " + e.getMessage());

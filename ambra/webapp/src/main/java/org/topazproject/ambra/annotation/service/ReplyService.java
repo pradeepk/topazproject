@@ -105,7 +105,7 @@ public class ReplyService extends BaseAnnotationService {
     String  newId      = session.saveOrUpdate(r);
 
     permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
-    setReplyPublic(newId);
+    setPublicPermissions(newId);
 
     return newId;
   }
@@ -154,6 +154,7 @@ public class ReplyService extends BaseAnnotationService {
       pep.checkAccess(RepliesPEP.DELETE_REPLY, r.getId());
       permissionsService.cancelPropagatePermissions(r.getId().toString(),
                                                new String[] { r.getBody().getId() });
+      cancelPublicPermissions(r.getId().toString());
     }
 
     session.delete(root); // ... and cascade
@@ -164,6 +165,13 @@ public class ReplyService extends BaseAnnotationService {
 
     for (ReplyThread t : r.getReplies())
       add(all, t);
+  }
+
+  private void remove(List<ReplyThread> all, ReplyThread r) {
+    all.remove(r);
+
+    for (ReplyThread t : r.getReplies())
+      remove(all, t);
   }
 
   /**
@@ -205,6 +213,8 @@ public class ReplyService extends BaseAnnotationService {
   @Transactional(readOnly = true)
   public Reply[] listReplies(final String root, final String inReplyTo)
                           throws OtmException, SecurityException {
+    pep.checkAccess(RepliesPEP.LIST_REPLIES, URI.create(inReplyTo));
+
     List<Reply> all =
       session.createCriteria(Reply.class).add(Restrictions.eq("root", root))
               .add(Restrictions.eq("inReplyTo", inReplyTo)).list();
@@ -241,21 +251,24 @@ public class ReplyService extends BaseAnnotationService {
   @Transactional(readOnly = true)
   public Reply[] listAllReplies(final String root, final String inReplyTo)
                              throws OtmException, SecurityException {
-    List<Reply> all;
+    pep.checkAccess(RepliesPEP.LIST_ALL_REPLIES, URI.create(inReplyTo));
+
+    List<ReplyThread> all;
 
     if (inReplyTo.equals(root))
-      all = session.createCriteria(Reply.class).add(Restrictions.eq("root", root)).list();
+      all = session.createCriteria(ReplyThread.class).add(Restrictions.eq("root", root)).list();
     else
-      all = session.createCriteria(Reply.class).add(Restrictions.eq("root", root))
+      all = session.createCriteria(ReplyThread.class).add(Restrictions.eq("root", root))
               .add(Restrictions.walk("inReplyTo", inReplyTo)).list();
 
-    List<Reply> l   = new ArrayList<Reply>(all.size());
+    List<ReplyThread> l   = new ArrayList<ReplyThread>(all);
 
-    for (Reply a : all) {
+    for (ReplyThread a : all) {
       try {
-        pep.checkAccess(RepliesPEP.GET_REPLY_INFO, a.getId());
-        l.add(a);
-      } catch (Throwable t) {
+        if (l.contains(a))
+          pep.checkAccess(RepliesPEP.GET_REPLY_INFO, a.getId());
+      } catch (SecurityException t) {
+        remove(l, a);  // remove this thread
         if (log.isDebugEnabled())
           log.debug("no permission for viewing reply " + a.getId()
                     + " and therefore removed from list");
@@ -299,7 +312,7 @@ public class ReplyService extends BaseAnnotationService {
   }
 
   @Transactional(rollbackFor = { Throwable.class })
-  public void setReplyPublic(final String id) throws OtmException, SecurityException {
+  public void setPublicPermissions(final String id) throws OtmException, SecurityException {
     final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
     permissionsService.grant(
               id,
@@ -312,6 +325,22 @@ public class ReplyService extends BaseAnnotationService {
                       RepliesPEP.DELETE_REPLY}, everyone);
 
   }
+
+  @Transactional(rollbackFor = { Throwable.class })
+  public void cancelPublicPermissions(final String id) throws OtmException, SecurityException {
+    final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
+    permissionsService.cancelGrants(
+              id,
+              new String[]{
+                      RepliesPEP.GET_REPLY_INFO}, everyone);
+
+    permissionsService.cancelRevokes(
+              id,
+              new String[]{
+                      RepliesPEP.DELETE_REPLY}, everyone);
+
+  }
+
 
   /**
    * Set the default annotation type.

@@ -148,7 +148,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
 
     if (isPublic)
-      setAnnotationPublic(newId);
+      setPublicPermissions(newId);
 
     return newId;
   }
@@ -167,8 +167,12 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     pep.checkAccess(AnnotationsPEP.DELETE_ANNOTATION, URI.create(annotationId));
     ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
 
-    if (a != null)
+    if (a != null) {
+      String pp[]     = new String[] { a.getBody().getId() };
       session.delete(a);
+      permissionsService.cancelPropagatePermissions(annotationId, pp);
+      cancelPublicPermissions(annotationId);
+    }
   }
 
   /**
@@ -432,7 +436,8 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     oldAn.setBody(null);
     session.delete(oldAn);
 
-    setAnnotationPublic(newId);
+    cancelPublicPermissions(srcAnnotationId);
+    setPublicPermissions(newId);
 
     return newId;
   }
@@ -498,7 +503,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws SecurityException if a security policy prevented this operation
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public void setAnnotationPublic(final String annotationDoi)
+  public void setPublicPermissions(final String annotationDoi)
                 throws OtmException, SecurityException {
     final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
     permissionsService.grant(
@@ -512,6 +517,23 @@ public class ArticleAnnotationService extends BaseAnnotationService {
                     AnnotationsPEP.DELETE_ANNOTATION,
                     AnnotationsPEP.SUPERSEDE}, everyone);
   }
+
+  @Transactional(rollbackFor = { Throwable.class })
+  public void cancelPublicPermissions(final String annotationDoi)
+                throws OtmException, SecurityException {
+    final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
+    permissionsService.cancelGrants(
+            annotationDoi,
+            new String[]{
+                    AnnotationsPEP.GET_ANNOTATION_INFO}, everyone);
+
+    permissionsService.cancelRevokes(
+            annotationDoi,
+            new String[]{
+                    AnnotationsPEP.DELETE_ANNOTATION,
+                    AnnotationsPEP.SUPERSEDE}, everyone);
+  }
+
 
   /**
    * Create a flag against an annotation or a reply
