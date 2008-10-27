@@ -31,11 +31,27 @@ public class GraphConfig {
   private URI    type;
 
   /**
-   * Creates a new Graph object.
+   * Creates a new default type of Graph object.
+   * The <value>uri</value> parameter should be the same as the TripleStore URL,
+   * with "#graphname" appended.
    *
-   * @param id the id of this graph
-   * @param uri the graph uri
-   * @param type the graph type
+   * @param id the id of this graph. Use this to refer to the graph in OTM.
+   * @param uri the graph uri.
+   */
+  public GraphConfig(String id, URI uri) {
+    this.id     = id;
+    this.uri    = uri;
+    this.type   = null;
+  }
+
+  /**
+   * Creates a new Graph object.
+   * The <value>uri</value> parameter should be the same as the TripleStore URL,
+   * with "#graphname" appended.
+   *
+   * @param id the id of this graph. Use this to refer to the graph in OTM.
+   * @param uri the graph uri.
+   * @param type the graph type. <code>null</code> for the default graph type.
    */
   public GraphConfig(String id, URI uri, URI type) {
     this.id     = id;

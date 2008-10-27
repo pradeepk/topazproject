@@ -76,8 +76,32 @@ public class ItqlStore extends AbstractTripleStore {
   private              int               bnCtr = 0;
 
   /** 
-   * Create a new itql-store instance. 
+   * Create a new itql-store instance.
+   * The server URI will take one of two forms:
+   * <ul>
+   *   <li>rmi://hostname/server</li>
+   *   <li>local:///server</li>
+   * </ul>
+   * The RMI scheme is used to access an external TQL store.
+   * The <code>hostname</code> refers to the name of the computer that the
+   * store is running on. The <code>server</code> is the name of the server
+   * that TQL store is providing. By default, Mulgara servers are run with a
+   * name of "server1". So to access a server on the local machine, the URI
+   * might be: <code>rmi://localhost/server1</code>
    * 
+   * The <code>LOCAL</code> scheme is used to access an embedded Mulgara
+   * database in the current JVM. The host name is <code>null</code> which
+   * leads to the root of the path coming immediately after the "//"
+   * characters. The server name is defined here in order to create the
+   * database, so it can be anything.
+   * 
+   * Graphs created on this store should use the server URI with an added
+   * fragment. For instance:
+   * <ul>
+   *   <li>rmi://localhost/server1#data</li>
+   *   <li>local:///myserver#data</li>
+   * </ul>
+   *
    * @param server  the uri of the iTQL server.
    */
   public ItqlStore(URI server) throws OtmException {
@@ -85,7 +109,7 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
   /** 
-   * Create a new itql-store instance. 
+   * Create a new itql-store instance.
    * 
    * @param server  the uri of the iTQL server.
    * @param icf     the itql-client-factory to use
