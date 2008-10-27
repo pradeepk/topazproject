@@ -130,12 +130,7 @@ public class AnnotationService extends BaseAnnotationService {
     annotation.setAnnotates(URI.create(target));
     annotation.setContext(context);
     annotation.setTitle(title);
-
-    if (isAnonymous())
-      annotation.setAnonymousCreator(user);
-    else
-      annotation.setCreator(user);
-
+    annotation.setCreator(user);
     annotation.setBody(blob);
     annotation.setCreated(new Date());
 

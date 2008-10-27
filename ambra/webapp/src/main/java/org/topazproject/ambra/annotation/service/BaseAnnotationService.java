@@ -34,7 +34,6 @@ import org.topazproject.otm.Session;
 public abstract class BaseAnnotationService {
   private String encodingCharset = "UTF-8";
   private String applicationId;
-  private boolean isAnonymous;
   protected Session session;
   protected PermissionsService permissionsService;
 
@@ -69,18 +68,6 @@ public abstract class BaseAnnotationService {
    */
   public void setEncodingCharset(final String encodingCharset) {
     this.encodingCharset = encodingCharset;
-  }
-
-  /**
-   * Set whether the user isAnonymous.
-   * @param isAnonymous true if user isAnonymous
-   */
-  public void setAnonymous(final boolean isAnonymous) {
-    this.isAnonymous = isAnonymous;
-  }
-
-  public boolean isAnonymous() {
-    return isAnonymous;
   }
 
   /**

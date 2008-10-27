@@ -93,12 +93,7 @@ public class ReplyService extends BaseAnnotationService {
     r.setRoot(root);
     r.setInReplyTo(inReplyTo);
     r.setTitle(title);
-
-    if (isAnonymous())
-      r.setAnonymousCreator(user);
-    else
-      r.setCreator(user);
-
+    r.setCreator(user);
     r.setBody(blob);
     r.setCreated(new Date());
 
