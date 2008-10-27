@@ -36,7 +36,7 @@ import org.topazproject.ambra.util.InvalidDateException;
  * @author Stephen Cheng
  *
  */
-public class Commentary implements Comparator<Commentary> {
+public class Commentary {
   private WebAnnotation annotation;
   private int numReplies;
   private String lastModified;
@@ -72,29 +72,6 @@ public class Commentary implements Comparator<Commentary> {
    */
   public void setReplies(WebReply[] replies) {
     this.replies = replies;
-  }
-
-  /**
-   * This comparator does a reverse sort based on the last reply to the annotation.  If not replies
-   * are present, the annotation time is used.
-   *
-   * @param a the first Commentary object to be compared
-   * @param b the second Commentary object to be compared
-   * @return a number less than 0 if <var>a</var> less than <var>b</var>, a number greater than 0 if <var>a</var> greater than <var>b</var>, or 0 if <var>a</var> equals <var>b</var>
-   */
-  public int compare (Commentary a, Commentary b){
-    String dateA, dateB;
-    if (a.getNumReplies() == 0) {
-      dateA = a.getAnnotation().getCreated();
-    } else {
-      dateA = a.getLastModified();
-    }
-    if (b.getNumReplies() == 0) {
-      dateB = b.getAnnotation().getCreated();
-    } else {
-      dateB = b.getLastModified();
-    }
-    return dateB.compareTo(dateA);
   }
 
   /**
@@ -145,4 +122,30 @@ public class Commentary implements Comparator<Commentary> {
   public void setNumReplies(int numReplies) {
     this.numReplies = numReplies;
   }
+
+  public static class Sorter implements Comparator<Commentary> {
+    /**
+     * This comparator does a reverse sort based on the last reply to the annotation.  If not replies
+     * are present, the annotation time is used.
+     *
+     * @param a the first Commentary object to be compared
+     * @param b the second Commentary object to be compared
+     * @return a number less than 0 if <var>a</var> less than <var>b</var>, a number greater than 0 if <var>a</var> greater than <var>b</var>, or 0 if <var>a</var> equals <var>b</var>
+     */
+    public int compare (Commentary a, Commentary b){
+      String dateA, dateB;
+      if (a.getNumReplies() == 0) {
+        dateA = a.getAnnotation().getCreated();
+      } else {
+        dateA = a.getLastModified();
+      }
+      if (b.getNumReplies() == 0) {
+        dateB = b.getAnnotation().getCreated();
+      } else {
+        dateB = b.getLastModified();
+      }
+      return dateB.compareTo(dateA);
+    }
+  }
+
 }

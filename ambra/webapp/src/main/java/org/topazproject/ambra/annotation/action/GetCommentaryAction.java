@@ -100,7 +100,7 @@ public class GetCommentaryAction extends BaseActionSupport {
           }
           commentary[i] = com;
         }
-        Arrays.sort(commentary, commentary[0]);
+        Arrays.sort(commentary, new Commentary.Sorter());
       }
     } catch (final Exception e) {
       log.error("Failed to create commentary for articleID: " + target, e);
