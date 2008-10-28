@@ -51,9 +51,9 @@ Mulgara Semantic Store configuration file.
     and resolvers.  The persistent resolver is used to manipulate the system
     model.
   -->
-  <PersistentNodePoolFactory type="org.mulgara.store.stringpool.xa11.XA11StringPoolFactory" dir="xaStringPool"/>
+  <PersistentNodePoolFactory type="org.mulgara.store.nodepool.xa.XANodePoolFactory" dir="xaNodePool"/>
   <TemporaryNodePoolFactory  type="org.mulgara.store.nodepool.memory.MemoryNodePoolFactory"/>
-  <PersistentStringPoolFactory type="org.mulgara.store.stringpool.xa11.XA11StringPoolFactory" dir="xaStringPool"/>
+  <PersistentStringPoolFactory type="org.mulgara.store.stringpool.xa.XAStringPoolFactory" dir="xaStringPool"/>
   <TemporaryStringPoolFactory type="org.mulgara.store.stringpool.memory.MemoryStringPoolFactory"/>
   <PersistentResolverFactory type="org.mulgara.resolver.store.StatementStoreResolverFactory" dir="xaStatementStore"/>
   <TemporaryResolverFactory type="org.mulgara.resolver.memory.MemoryResolverFactory" dir="tempStatementStore"/>
@@ -71,6 +71,7 @@ Mulgara Semantic Store configuration file.
   <!--
   <DefaultContentHandler type="org.mulgara.content.rio.RDFXMLContentHandler"/>
   -->
+  <ContentHandler type="org.mulgara.content.mp3.MP3ContentHandler"/>
   <ContentHandler type="org.mulgara.content.mbox.MBoxContentHandler"/>
   <ContentHandler type="org.mulgara.content.n3.N3ContentHandler"/>
 
