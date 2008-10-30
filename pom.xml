@@ -87,6 +87,11 @@
       <name>Maven 2 Repository for Topaz</name>
       <url>http://maven.topazproject.org/maven2/</url>
     </pluginRepository>
+    <pluginRepository>
+      <id>codehaus-snapshot</id>
+      <name>gmaven 1.0-rc-4-SNAPSHOT location</name>
+      <url>http://snapshots.repository.codehaus.org/</url>
+    </pluginRepository>
   </pluginRepositories>
 
   <scm>
@@ -867,7 +872,7 @@
         <plugin>
           <groupId>org.codehaus.groovy.maven</groupId>
           <artifactId>gmaven-plugin</artifactId>
-          <version>1.0-rc-3</version>
+          <version>1.0-rc-4-SNAPSHOT</version>
           <executions>
             <execution>
               <id>compile</id>
