@@ -5,12 +5,11 @@
   <artifactId>ambra-emailer</artifactId>
   <packaging>jar</packaging>
   <version>0.9.1-SNAPSHOT</version>
-  <name>Ambra module for Email</name>
+  <name>Ambra library for Freemarker email</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
-    <artifactId>ambra</artifactId>
-    <relativePath>../pom.xml</relativePath>
+    <artifactId>ambra-libs</artifactId>
     <version>0.9.1-SNAPSHOT</version>
   </parent>
 

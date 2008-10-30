@@ -15,6 +15,7 @@
   </parent>
 
   <modules>
+    <module>ambra-emailer</module>
     <module>otm-models</module>
     <module>conf-helper</module>
     <module>trackback-util</module>
