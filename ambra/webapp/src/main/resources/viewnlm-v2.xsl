@@ -635,11 +635,8 @@
         </xsl:when>
         <xsl:otherwise>
           <xsl:for-each select="$theNode[1]/ancestor-or-self::*[not(self::aml:annotated)]">
-            <xsl:text/>
-            /<xsl:value-of select="name()"/>
-            <xsl:text/>
-            [<xsl:value-of select="count(preceding-sibling::*[name() = name(current())]) + 1"/>]
-            <xsl:text/>
+            <xsl:text/>/<xsl:value-of select="name()"/>
+            <xsl:text/>[<xsl:value-of select="count(preceding-sibling::*[name() = name(current())]) + 1"/>]<xsl:text/>
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
@@ -652,9 +649,7 @@
         <xsl:otherwise>
           <xsl:for-each select="$theNode/ancestor-or-self::*[not(self::aml:annotated)]">
             <xsl:text/>/<xsl:value-of select="name()"/>
-            <xsl:text/>
-            [<xsl:value-of select="count(preceding-sibling::*[name() = name(current())]) + 1"/>]
-            <xsl:text/>
+            <xsl:text/>[<xsl:value-of select="count(preceding-sibling::*[name() = name(current())]) + 1"/>]<xsl:text/>
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
@@ -948,14 +943,14 @@
 
 <xsl:template name="fund-compete">
   <xsl:for-each select="/article/back/fn-group">
-  	<xsl:if test="fn[@fn-type='financial-disclosure']">
-    	<p><strong>Funding:</strong><xsl:text> </xsl:text>
+    <xsl:if test="fn[@fn-type='financial-disclosure']">
+      <p><strong>Funding:</strong><xsl:text> </xsl:text>
       <xsl:apply-templates select="fn[@fn-type='financial-disclosure']/p"/></p>
-	</xsl:if>
-	<xsl:if test="fn[@fn-type='conflict']">
-    	<p><strong>Competing interests:</strong><xsl:text> </xsl:text> 
+    </xsl:if>
+    <xsl:if test="fn[@fn-type='conflict']">
+      <p><strong>Competing interests:</strong><xsl:text> </xsl:text> 
       <xsl:apply-templates select="fn[@fn-type='conflict']/p"/></p>
-	</xsl:if>
+    </xsl:if>
   </xsl:for-each>
 </xsl:template>
 
