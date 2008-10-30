@@ -2,7 +2,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>${pom.parent.groupId}</groupId>
-  <artifactId>${pom.parent.artifactId}-it</artifactId>
+  <artifactId>ambra-it</artifactId>
   <name>PLoS ONE Web Application Integration Tests</name>
 
   <parent>
