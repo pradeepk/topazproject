@@ -50,11 +50,6 @@
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
-      <artifactId>ambra-util</artifactId>
-      <version>${pom.parent.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
       <artifactId>ambra-scripts</artifactId>
       <version>${pom.parent.version}</version>
       <classifier>scripts</classifier>
