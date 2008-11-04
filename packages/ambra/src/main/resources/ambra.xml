@@ -282,7 +282,7 @@
         <typeHeading>Book Review</typeHeading>
       </articleType>
       <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Book%20Review/Science%20in%20the%20Media</typeUri>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Book%20Review%2FScience%20in%20the%20Media</typeUri>
         <typeHeading>Book Review/Science in the Media</typeHeading>
       </articleType>
       <articleType>
