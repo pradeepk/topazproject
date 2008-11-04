@@ -23,10 +23,19 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 import javax.activation.DataSource;
+
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 
 /**
  * A simple abstraction of a zip archive, as needed by the ingester.
@@ -101,12 +110,37 @@ public interface Zip {
    * An implementation of {@link Zip Zip} where the zip archive is available from a stream.
    */
   public static abstract class StreamZip implements Zip {
-    private ZipInputStream curStream = null;
+    public static final Map<String, String> archiverTypes   = new HashMap<String, String>();
+    public static final Map<String, String> compressorTypes = new HashMap<String, String>();
+
+    static {
+      archiverTypes.put("application/zip",              "zip");
+      archiverTypes.put("application/x-zip",            "zip");
+      archiverTypes.put("application/x-zip-compressed", "zip");
+      archiverTypes.put("application/tar",              "tar");
+      archiverTypes.put("application/x-tar",            "tar");
+      archiverTypes.put("application/x-tar-gz",         "tar");
+      archiverTypes.put("application/x-tar-bz",         "tar");
+
+      compressorTypes.put("application/x-tar-gz", "gz");
+      compressorTypes.put("application/x-tar-bz", "bzip2");
+    }
+
+    public static boolean isZip(String contentType) {
+      return "zip".equals(archiverTypes.get(contentType));
+    }
+
+    public static boolean isArchive(String contentType) {
+      return archiverTypes.get(contentType) != null;
+    }
+
+    private ArchiveInputStream curStream = null;
 
     protected abstract InputStream getStream() throws IOException;
+    protected abstract String getContentType();
 
     public Enumeration getEntries() throws IOException {
-      final ZipInputStream zis = new ZipInputStream(getStream());
+      final ArchiveInputStream zis = getArchiveStream();
 
       return new Enumeration() {
         private ZipEntry ze;
@@ -123,7 +157,7 @@ public interface Zip {
           try {
             ZipEntry cur = ze;
 
-            ze = zis.getNextEntry();
+            ze = toZipEntry(zis.getNextEntry());
             if (ze == null)
               zis.close();
 
@@ -140,7 +174,7 @@ public interface Zip {
 
       ZipEntry ze;
       while (true) {
-        while ((ze = curStream.getNextEntry()) != null) {
+        while ((ze = toZipEntry(curStream.getNextEntry())) != null) {
           if (ze.getName().equals(name)) {
             size[0] = ze.getSize();
             return curStream;
@@ -163,8 +197,61 @@ public interface Zip {
       if (curStream != null)
         return true;
 
-      curStream = new ZipInputStream(getStream());
+      curStream = getArchiveStream();
       return false;
+    }
+
+    private ArchiveInputStream getArchiveStream() throws IOException {
+      InputStream in         = getStream();
+      if (in == null)
+        throw new NullPointerException("Missing input stream");
+      String      ct         = getContentType();
+      String      compressor = compressorTypes.get(ct);
+      String      archiver   = archiverTypes.get(ct);
+
+      if (archiver == null)
+        throw new IOException("Unknown content-type: '" + ct + "'");
+
+      try {
+        if (compressor != null) {
+          if ("bzip2".equals(compressor))
+            in.read(new byte[2]);  // Remove "Bz"
+          CompressorStreamFactory csf = new CompressorStreamFactory();
+          in = csf.createCompressorInputStream(compressor, in);
+        }
+        ArchiveStreamFactory asf = new ArchiveStreamFactory();
+        return asf.createArchiveInputStream(archiver, in);
+      } catch (CompressorException e) {
+        IOException ioe = new IOException("Failed to create stream");
+        ioe.initCause(e);
+        throw ioe;
+      } catch (ArchiveException e) {
+        IOException ioe = new IOException("Failed to create stream");
+        ioe.initCause(e);
+        throw ioe;
+      }
+    }
+
+    private ZipEntry toZipEntry(ArchiveEntry entry) {
+      if (entry == null)
+        return null;
+
+      if (entry instanceof ZipEntry)
+        return (ZipEntry) entry;
+
+      if (entry instanceof TarArchiveEntry) {
+        TarArchiveEntry te = (TarArchiveEntry) entry;
+        ZipEntry ze = new ZipEntry(te.getName());
+        ze.setMethod(ZipEntry.STORED);
+        ze.setSize(te.getSize());
+        ze.setCompressedSize(te.getSize());
+        if (te.getModTime() != null)
+          ze.setTime(te.getModTime().getTime());
+        return ze;
+      }
+
+      // Should not happen
+      throw new Error("Unknown entry type: " + entry.getClass());
     }
   }
 
@@ -194,6 +281,11 @@ public interface Zip {
       zs.reset();
       return zs;
     }
+
+    protected String getContentType() {
+      return "application/zip";
+    }
+
   }
 
   /**
@@ -233,6 +325,10 @@ public interface Zip {
         return is;
       } else
         return zs.getInputStream();
+    }
+
+    protected String getContentType() {
+      return zs.getContentType();
     }
   }
 }

@@ -90,7 +90,8 @@ public class ArticleOtmService {
   }
 
   private static Zip createZip(DataSource article) throws IOException {
-    if (article instanceof FileDataSource)
+    if ((article instanceof FileDataSource)
+        && Zip.StreamZip.isZip(article.getContentType()))
       return new Zip.FileZip(((FileDataSource) article).getFile().toString());
     return new Zip.DataSourceZip(article);
   }

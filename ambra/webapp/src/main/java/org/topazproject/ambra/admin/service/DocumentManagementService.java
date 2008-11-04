@@ -30,11 +30,13 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.activation.FileDataSource;
+import javax.activation.FileTypeMap;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -54,6 +56,7 @@ import org.topazproject.ambra.article.service.DuplicateArticleIdException;
 import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.article.service.IngestException;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
+import org.topazproject.ambra.article.service.Zip;
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Journal;
@@ -78,6 +81,35 @@ public class DocumentManagementService {
   private String plosDoiUrl;
   private String plosEmail;
   private boolean sendToXref;
+
+  private FileTypeMap fileTypeMap = new FileTypeMap() {
+    private final Map<String, String> extensions = new HashMap<String, String>();
+
+    {
+      extensions.put(".zip",     "application/zip");
+      extensions.put(".tar",     "application/x-tar");
+      extensions.put(".tar.gz",  "application/x-tar-gz");
+      extensions.put(".tgz",     "application/x-tar-gz");
+      extensions.put(".tar.bz2", "application/x-tar-bz");
+      extensions.put(".tbz2",    "application/x-tar-bz");
+      extensions.put(".tbz",     "application/x-tar-bz");
+      extensions.put(".tb2",     "application/x-tar-bz");
+    }
+
+    @Override
+    public String getContentType(File file) {
+      return getContentType(file.getName());
+    }
+
+    @Override
+    public String getContentType(String name) {
+      name = name.toLowerCase();
+      for (String ext : extensions.keySet())
+        if (name.endsWith(ext))
+          return extensions.get(ext);
+      return "application/octet-stream";
+    }
+  };
 
   public DocumentManagementService() {
   }
@@ -249,7 +281,9 @@ public class DocumentManagementService {
       log.info("Ingesting: " + file);
     }
 
-    Article article = articleOtmService.ingest(new FileDataSource(file), force);
+    FileDataSource fd = new FileDataSource(file);
+    fd.setFileTypeMap(fileTypeMap);
+    Article article = articleOtmService.ingest(fd, force);
 
     if (log.isInfoEnabled()) {
       log.info("Ingested: " + file + ":" + article.getId());
@@ -265,10 +299,9 @@ public class DocumentManagementService {
     List<String> documents = new ArrayList<String>();
     File dir = new File(documentDirectory);
     if (dir.isDirectory()) {
-      String filenames[] = dir.list();
-      for (int i = 0; i < filenames.length; ++i) {
-        if (filenames[i].toLowerCase().endsWith(".zip"))
-          documents.add(filenames[i]);
+      for (String name : dir.list()) {
+        if (Zip.StreamZip.isArchive(fileTypeMap.getContentType(name)))
+          documents.add(name);
       }
     }
 
