@@ -20,10 +20,16 @@
 package org.topazproject.ambra.article.service;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -36,6 +42,10 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.topazproject.ambra.admin.service.DocumentManagementService;
 
 /**
  * A simple abstraction of a zip archive, as needed by the ingester.
@@ -110,6 +120,7 @@ public interface Zip {
    * An implementation of {@link Zip Zip} where the zip archive is available from a stream.
    */
   public static abstract class StreamZip implements Zip {
+    private static final Log log = LogFactory.getLog(StreamZip.class);
     public static final Map<String, String> archiverTypes   = new HashMap<String, String>();
     public static final Map<String, String> compressorTypes = new HashMap<String, String>();
 
@@ -135,14 +146,45 @@ public interface Zip {
     }
 
     private ArchiveInputStream curStream = null;
+    private Map<String, File> tmpFiles = new HashMap<String, File>();
+    private boolean readCompletely = false;
+    private ArrayList<ZipEntry> entries = new ArrayList<ZipEntry>();
 
     protected abstract InputStream getStream() throws IOException;
     protected abstract String getContentType();
 
-    public Enumeration getEntries() throws IOException {
+    @Override
+    protected void finalize() throws Throwable {
+      for (File f : tmpFiles.values()) {
+        try {
+          f.delete();
+        } catch (Throwable t) {
+          log.warn("Failed to delete temp file '" + f, t);
+        }
+      }
+      super.finalize();
+    }
+
+    public Enumeration<ZipEntry> getEntries() throws IOException {
+      if (readCompletely) {
+        return new Enumeration<ZipEntry>() {
+
+          private Iterator<ZipEntry> it = entries.iterator();
+
+          public boolean hasMoreElements() {
+            return it.hasNext();
+          }
+
+          public ZipEntry nextElement() {
+            return it.next();
+          }
+
+        };
+      }
+
       final ArchiveInputStream zis = getArchiveStream();
 
-      return new Enumeration() {
+      return new Enumeration<ZipEntry>() {
         private ZipEntry ze;
 
         {
@@ -153,14 +195,17 @@ public interface Zip {
           return (ze != null);
         }
 
-        public Object nextElement() {
+        public ZipEntry nextElement() {
           try {
             ZipEntry cur = ze;
 
             ze = toZipEntry(zis.getNextEntry());
-            if (ze == null)
+            if (ze != null)
+              save(zis, ze);
+            else {
+              readCompletely = true;
               zis.close();
-
+            }
             return cur;
           } catch (IOException ioe) {
             throw new RuntimeException(ioe);
@@ -169,15 +214,40 @@ public interface Zip {
       };
     }
 
+    private void save(ArchiveInputStream zis, ZipEntry ze) throws IOException {
+      OutputStream out = null;
+      File f = null;
+      try {
+        f = File.createTempFile("ambra-unzip-entry", "");
+        out = new FileOutputStream(f);
+        IOUtils.copy(zis, out);
+        entries.add(ze);
+        tmpFiles.put(ze.getName(), f);
+        f = null;
+      } finally {
+        if (out != null)
+          out.close();
+        if (f != null)
+          f.delete();
+      }
+
+    }
+
     public InputStream getStream(String name, long[] size) throws IOException {
+      File f = tmpFiles.get(name);
+      if (f != null)
+        return new FileInputStream(f);
+
       boolean restart = loadStream();
 
       ZipEntry ze;
       while (true) {
         while ((ze = toZipEntry(curStream.getNextEntry())) != null) {
+          if (tmpFiles.get(ze.getName()) == null)
+            save(curStream, ze);
           if (ze.getName().equals(name)) {
             size[0] = ze.getSize();
-            return curStream;
+            return new FileInputStream(tmpFiles.get(name));
           }
         }
 
