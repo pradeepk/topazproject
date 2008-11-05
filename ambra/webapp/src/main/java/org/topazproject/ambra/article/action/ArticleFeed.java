@@ -219,16 +219,13 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   @Required
   public void setFeedCache(Cache feedCache) {
     this.feedCache = feedCache;
-    if (invalidator == null) {
-      // First if is to avoid unnecessary synchronization
-      synchronized (this.feedCache) {
-        if (invalidator == null) {
-          invalidator = new Invalidator();
-          /* CacheManager is a singleton and will notify all caches registered when a commit to the
-          * datastore is executed
-          */
-          this.feedCache.getCacheManager().registerListener(invalidator);
-        }
+    synchronized (this.feedCache) {
+      if (invalidator == null) {
+        invalidator = new Invalidator();
+        /* CacheManager is a singleton and will notify all caches registered when a commit to the
+        * datastore is executed
+        */
+        this.feedCache.getCacheManager().registerListener(invalidator);
       }
     }
   }
