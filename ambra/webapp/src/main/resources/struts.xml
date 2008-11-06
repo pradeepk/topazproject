@@ -322,7 +322,7 @@
     </action>
 
     <action name="emailThisArticleCreate" class="org.topazproject.ambra.article.action.EmailArticleAction" method="executeRender">
-      <result name="success">/WEB-INF/pages/emailArticle/emailArticle.ftl</result>
+      <result name="success">/emailArticle/emailArticle.ftl</result>
     </action>
 
     <action name="emailThisArticleSubmit" class="org.topazproject.ambra.article.action.EmailArticleAction" method="executeSend">
@@ -353,7 +353,7 @@
     </action>
 
     <action name="fetchSecondaryObjects" class="org.topazproject.ambra.article.action.SecondaryObjectAction">
-      <result name="success">/WEB-INF/pages/article/displayImages.ftl</result>
+      <result name="success">/article/displayImages.ftl</result>
     </action>
 
     <action name="slideshow" class="org.topazproject.ambra.article.action.SecondaryObjectAction" method="listFiguresAndTables">
@@ -387,7 +387,7 @@
     </action>
 
     <action name="fetchAnnotatedArticle" class="org.topazproject.ambra.article.action.FetchArticleAction" method="displayAnnotatedArticle">
-       <result name="success">/WEB-INF/pages/article/displayArticle.ftl</result>
+       <result name="success">/article/displayArticle.ftl</result>
     </action>
 
     <action name="fetchBody" class="org.topazproject.ambra.article.action.FetchArticleAction">
@@ -459,7 +459,7 @@
     <default-action-ref name="pageNotFound" />
 
     <action name="listAnnotation" class="org.topazproject.ambra.annotation.action.ListAnnotationAction">
-      <result name="success">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
+      <result name="success">/annotation/listAnnotation.ftl</result>
     </action>
 
     <action name="getFormalCorrections" class="org.topazproject.ambra.annotation.action.ListAnnotationAction" method="fetchFormalCorrections">
@@ -473,17 +473,17 @@
     </action>
 
     <action name="listReply" class="org.topazproject.ambra.annotation.action.ListReplyAction">
-      <result name="success">/WEB-INF/pages/annotation/listReply.ftl</result>
+      <result name="success">/annotation/listReply.ftl</result>
     </action>
 
     <action name="listAllReplies" class="org.topazproject.ambra.annotation.action.ListReplyAction"
       method="listAllReplies">
-      <result name="success">/WEB-INF/pages/annotation/listReply.ftl</result>
+      <result name="success">/annotation/listReply.ftl</result>
     </action>
 
     <action name="listThreadedReplies" class="org.topazproject.ambra.annotation.action.ListReplyAction"
       method="listAllReplies">
-      <result name="success">/WEB-INF/pages/annotation/listThreadedReply.ftl</result>
+      <result name="success">/annotation/listThreadedReply.ftl</result>
     </action>
 
     <action name="listThread" class="org.topazproject.ambra.annotation.action.ListReplyAction" method="listAllReplies">
@@ -519,7 +519,7 @@
     </action>
 
     <action name="listFlags" class="org.topazproject.ambra.annotation.action.ListFlagAction">
-      <result name="success">/WEB-INF/pages/annotation/listFlag.ftl</result>
+      <result name="success">/annotation/listFlag.ftl</result>
     </action>
 
     <action name="getFlag" class="org.topazproject.ambra.annotation.action.GetFlagAction">
@@ -532,7 +532,7 @@
     <default-action-ref name="pageNotFound" />
 
     <action name="createAnnotation">
-      <result>/WEB-INF/pages/annotation/createAnnotation.ftl</result>
+      <result>/annotation/createAnnotation.ftl</result>
     </action>
 
     <action name="startDiscussion" class="org.topazproject.ambra.annotation.action.GetCommentaryAction" method="getArticleMetaInfo">
@@ -554,9 +554,9 @@
     </action>
 
     <action name="setAnnotationPublic" class="org.topazproject.ambra.annotation.action.SetAnnotationPublicAction" method="executeSetAnnotationPublic">
-      <result name="input">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
-      <result name="error">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
-      <result name="success">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
+      <result name="input">/annotation/listAnnotation.ftl</result>
+      <result name="error">/annotation/listAnnotation.ftl</result>
+      <result name="success">/annotation/listAnnotation.ftl</result>
     </action>
 
     <action name="deleteAnnotation" class="org.topazproject.ambra.annotation.action.DeleteAnnotationAction" method="deleteAnnotation">
@@ -575,7 +575,7 @@
 
     <!--TODO: not needed ?? -->
     <action name="createFlag">
-      <result>/WEB-INF/pages/annotation/createFlag.ftl</result>
+      <result>/annotation/createFlag.ftl</result>
     </action>
 
     <action name="createAnnotationFlagSubmit" class="org.topazproject.ambra.annotation.action.CreateFlagAction">
@@ -608,7 +608,7 @@
     </action>
 
     <action name="getUserProfilePrivateFields" class="org.topazproject.ambra.user.action.DisplayUserAction" method="fetchUserProfileWithPrivateVisibility">
-      <result name="success">/WEB-INF/pages/user/displayPrivateFieldNames.ftl</result>
+      <result name="success">/user/displayPrivateFieldNames.ftl</result>
     </action>
 
     <action name="editAjaxAlerts" class="org.topazproject.ambra.user.action.MemberUserAlertsAction" method="retrieveAlerts">
@@ -743,7 +743,7 @@
     </action>
 
     <action name="displayUser" class="org.topazproject.ambra.user.action.DisplayUserAction">
-      <result name="success">/WEB-INF/pages/user/displayUser.ftl</result>
+      <result name="success">/user/displayUser.ftl</result>
     </action>
 
     <action name="showUser" class="org.topazproject.ambra.user.action.DisplayUserAction">
@@ -765,103 +765,103 @@
 
     <action name="adminTop" class="org.topazproject.ambra.admin.action.AdminTopAction">
       <result name="success" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
+        <param name="location">/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
       <!-- stay in adminTop even on error -->
       <result name="error" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
+        <param name="location">/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="deleteArticle" class="org.topazproject.ambra.admin.action.DeleteArticleAction">
       <result name="success" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
+        <param name="location">/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
       <!-- stay in adminTop even on error -->
       <result name="error" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
+        <param name="location">/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="ingestArchives" class="org.topazproject.ambra.admin.action.IngestArchivesAction">
       <result name="success" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
+        <param name="location">/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
       <!-- stay in adminTop even on error -->
       <result name="error" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
+        <param name="location">/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="publishArchives" class="org.topazproject.ambra.admin.action.PublishArchivesAction">
       <result name="success" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
+        <param name="location">/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
       <!-- stay in adminTop even on error -->
       <result name="error" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
+        <param name="location">/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="processFlags" class="org.topazproject.ambra.admin.action.ProcessFlagsAction">
       <result name="success" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
+        <param name="location">/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
       <!-- stay in adminTop even on error -->
       <result name="error" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
+        <param name="location">/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="viewAnnotation" class="org.topazproject.ambra.annotation.action.GetAnnotationAction">
-        <result name="success">/WEB-INF/pages/admin/viewAnnotation.ftl</result>
+        <result name="success">/admin/viewAnnotation.ftl</result>
     </action>
 
     <action name="viewRating" class="org.topazproject.ambra.admin.action.ViewRatingAction">
-        <result name="success">/WEB-INF/pages/admin/viewRating.ftl</result>
+        <result name="success">/admin/viewRating.ftl</result>
     </action>
 
         <action name="viewReply" class="org.topazproject.ambra.annotation.action.GetReplyAction">
-        <result name="success">/WEB-INF/pages/admin/viewReply.ftl</result>
+        <result name="success">/admin/viewReply.ftl</result>
     </action>
 
     <action name="findUser" class="org.topazproject.ambra.action.NoOpAction">
-        <result>/WEB-INF/pages/user/searchUser.ftl</result>
+        <result>/user/searchUser.ftl</result>
     </action>
 
     <action name="findUserByAuthId" class="org.topazproject.ambra.user.action.SearchUserAction" method="executeFindUserByAuthId">
-      <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
-      <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
+      <result name="success">/user/searchUser.ftl</result>
+      <result name="input">/user/searchUser.ftl</result>
     </action>
 
     <action name="findUserByAccountId" class="org.topazproject.ambra.user.action.SearchUserAction" method="executeFindUserByAccountId">
-      <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
-      <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
+      <result name="success">/user/searchUser.ftl</result>
+      <result name="input">/user/searchUser.ftl</result>
     </action>
 
     <action name="findUserByEmailAddress" class="org.topazproject.ambra.user.action.SearchUserAction" method="executeFindUserByEmailAddress">
-      <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
-      <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
+      <result name="success">/user/searchUser.ftl</result>
+      <result name="input">/user/searchUser.ftl</result>
     </action>
 
     <action name="findUserByName" class="org.topazproject.ambra.user.action.SearchUserAction" method="executeFindUserByName">
-      <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
-      <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
+      <result name="success">/user/searchUser.ftl</result>
+      <result name="input">/user/searchUser.ftl</result>
     </action>
 
     <action name="assignAdminRole" class="org.topazproject.ambra.user.action.AssignAdminRoleAction">
-      <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
-      <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
+      <result name="success">/user/searchUser.ftl</result>
+      <result name="input">/user/searchUser.ftl</result>
     </action>
 
     <action name="editProfileByAdmin" class="org.topazproject.ambra.user.action.AdminUserProfileAction" method="executeRetrieveUserProfile">
@@ -902,40 +902,40 @@
 
     <action name="editAnnotation" class="org.topazproject.ambra.admin.action.EditAnnotationAction">
       <result name="success" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
+        <param name="location">/admin/editAnnotation.ftl</param>
       </result>
     </action>
 
     <action name="editAnnotationLoad" class="org.topazproject.ambra.admin.action.EditAnnotationAction"
       method="loadAnnotation">
       <result name="success" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
+        <param name="location">/admin/editAnnotation.ftl</param>
       </result>
     </action>
 
     <action name="editAnnotationSave" class="org.topazproject.ambra.admin.action.EditAnnotationAction"
       method="saveAnnotation">
       <result name="success" type="ambraFreemarker">
-        <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
+        <param name="location">/admin/editAnnotation.ftl</param>
       </result>
     </action>
 
     <action name="manageVirtualJournals" class="org.topazproject.ambra.admin.action.ManageVirtualJournalsAction">
-      <result name="success">/WEB-INF/pages/admin/manageVirtualJournals.ftl</result>
+      <result name="success">/admin/manageVirtualJournals.ftl</result>
       <result name="input" type="ambraFreemarker">
-        <param name="templateFile">/WEB-INF/pages/admin/manageVirtualJournals.ftl</param>
+        <param name="templateFile">/admin/manageVirtualJournals.ftl</param>
       </result>
     </action>
 
     <action name="manageVolumesIssues" class="org.topazproject.ambra.admin.action.ManageVolumesIssuesAction">
-      <result name="success">/WEB-INF/pages/admin/manageVolumesIssues.ftl</result>
+      <result name="success">/admin/manageVolumesIssues.ftl</result>
       <result name="input" type="ambraFreemarker">
-        <param name="templateFile">/WEB-INF/pages/admin/manageVolumesIssues.ftl</param>
+        <param name="templateFile">/admin/manageVolumesIssues.ftl</param>
       </result>
     </action>
 
     <action name="manageCaches" class="org.topazproject.ambra.admin.action.ManageCachesAction">
-        <result name="success">/WEB-INF/pages/admin/manageCaches.ftl</result>
+        <result name="success">/admin/manageCaches.ftl</result>
     </action>
   </package>
 
