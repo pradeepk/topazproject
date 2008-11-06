@@ -42,13 +42,13 @@
         class="org.apache.struts2.views.freemarker.FreemarkerResult" default="true">
       </result-type>
       <result-type name="ambraFreemarker" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
-        <param name="location">/journals/plosJournals/templates/main_template.ftl</param>
+        <param name="location">/templates/main_template.ftl</param>
       </result-type>
       <result-type name="headless" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
-        <param name="location">/journals/plosJournals/templates/headless_template.ftl</param>
+        <param name="location">/templates/headless_template.ftl</param>
       </result-type>
       <result-type name="user" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
-        <param name="location">/journals/plosJournals/templates/user_shared_template.ftl</param>
+        <param name="location">/templates/user_shared_template.ftl</param>
       </result-type>
       <result-type name="ambraStream" class="org.topazproject.ambra.struts2.AmbraStreamResult" />
       <result-type name="json" class="org.topazproject.ambra.struts2.JsonResult">
@@ -255,7 +255,7 @@
       </interceptor-ref>
       <interceptor-ref name="ambraUserStack"/>
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/journals/plosJournals/article/article_body.ftl</param>
+        <param name="templateFile">/article/article_body.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
@@ -392,7 +392,7 @@
 
     <action name="fetchBody" class="org.topazproject.ambra.article.action.FetchArticleAction">
       <result name="success" type="ambraFreemarker">
-        <param name="location">/journals/plosJournals/article/article_content.ftl</param>
+        <param name="location">/article/article_content.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
@@ -648,33 +648,33 @@
 
     <action name="editProfile" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="user">
-        <param name="templateFile">/journals/plosJournals/user/editUser.ftl</param>
+        <param name="templateFile">/user/editUser.ftl</param>
       </result>
       <result name="input" type="user">
-        <param name="templateFile">/journals/plosJournals/user/editUser.ftl</param>
+        <param name="templateFile">/user/editUser.ftl</param>
       </result>
     </action>
 
     <action name="editPrefsAlerts" class="org.topazproject.ambra.user.action.MemberUserAlertsAction" method="retrieveAlerts">
       <result name="success" type="user">
-        <param name="templateFile">/journals/plosJournals/user/editUser.ftl</param>
+        <param name="templateFile">/user/editUser.ftl</param>
       </result>
       <result name="input" type="user">
-        <param name="templateFile">/journals/plosJournals/user/editUser.ftl</param>
+        <param name="templateFile">/user/editUser.ftl</param>
       </result>
     </action>
 
     <action name="editAjaxProfile" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="ambraFreemarker">
-        <param name="location">/journals/plosJournals/user/user.ftl</param>
+        <param name="location">/user/user.ftl</param>
         <param name="noCache">true</param>
       </result>
       <result name="input" type="ambraFreemarker">
-        <param name="location">/journals/plosJournals/user/user.ftl</param>
+        <param name="location">/user/user.ftl</param>
         <param name="noCache">true</param>
       </result>
       <result name="error" type="ambraFreemarker">
-        <param name="location">/journals/plosJournals/user/user.ftl</param>
+        <param name="location">/user/user.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
@@ -682,7 +682,7 @@
     <action name="saveAjaxProfile" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect-action">editAjaxProfile.action</result>
       <result name="input" type="ambraFreemarker">
-        <param name="location">/journals/plosJournals/user/user.ftl</param>
+        <param name="location">/user/user.ftl</param>
         <param name="noCache">true</param>
       </result>
       <result name="error" type="ambraFreemarker">
@@ -694,13 +694,13 @@
     <action name="saveProfile" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect">/user/secure/retrieveUserProfile.action </result>
       <result name="input" type="user">
-        <param name="templateFile">/journals/plosJournals/user/createNewUser.ftl</param>
+        <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
     </action>
 
     <action name="retrieveUserProfile" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="user">
-        <param name="templateFile">/journals/plosJournals/user/createNewUser.ftl</param>
+        <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
       <result name="input">/user/newUser.ftl</result>
       <result name="error" type="user">
@@ -722,10 +722,10 @@
 
     <action name="prePopulateNewUser" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="prePopulateUserDetails">
       <result name="new-profile" type="user">
-        <param name="templateFile">/journals/plosJournals/user/createNewUser.ftl</param>
+        <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
       <result name="update-profile" type="user">
-        <param name="templateFile">/journals/plosJournals/user/createNewUser.ftl</param>
+        <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
       <result name="success" type="redirect">/</result>
     </action>
@@ -733,7 +733,7 @@
     <action name="createNewUser" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect">/user/secure/editPrefsAlerts.action?tabId=alerts</result>
       <result name="input" type="user">
-        <param name="templateFile">/journals/plosJournals/user/createNewUser.ftl</param>
+        <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
     </action>
 
@@ -866,10 +866,10 @@
 
     <action name="editProfileByAdmin" class="org.topazproject.ambra.user.action.AdminUserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/journals/plosJournals/user/user.ftl</param>
+        <param name="templateFile">/user/user.ftl</param>
       </result>
       <result name="input" type="ambraFreemarker">
-        <param name="templateFile">/journals/plosJournals/user/user.ftl</param>
+        <param name="templateFile">/user/user.ftl</param>
       </result>
     </action>
 
@@ -878,7 +878,7 @@
         <param name="actionName">editProfileByAdmin</param>
       </result>
       <result name="input" type="ambraFreemarker">
-        <param name="templateFile">/journals/plosJournals/user/user.ftl</param>
+        <param name="templateFile">/user/user.ftl</param>
       </result>
     </action>
 
