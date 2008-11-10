@@ -90,6 +90,7 @@ public class DocumentManagementService {
       extensions.put(".tar",     "application/x-tar");
       extensions.put(".tar.gz",  "application/x-tar-gz");
       extensions.put(".tgz",     "application/x-tar-gz");
+      extensions.put(".tar.bz",  "application/x-tar-bz");
       extensions.put(".tar.bz2", "application/x-tar-bz");
       extensions.put(".tbz2",    "application/x-tar-bz");
       extensions.put(".tbz",     "application/x-tar-bz");
