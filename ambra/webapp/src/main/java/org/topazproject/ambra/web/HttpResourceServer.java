@@ -38,7 +38,6 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -170,7 +169,7 @@ public class HttpResourceServer {
       response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
       if (ranges.size() == 1) {
-        Range range = (Range) ranges.get(0);
+        Range range = ranges.get(0);
         response.addHeader("Content-Range",
                            "bytes " + range.start + "-" + range.end + "/" + range.length);
 
@@ -323,7 +322,6 @@ public class HttpResourceServer {
       try {
         headerValueTime = request.getDateHeader("If-Range");
       } catch (IllegalArgumentException e) {
-        ;
       }
 
       String eTag         = getETag(resource);
@@ -658,8 +656,6 @@ public class HttpResourceServer {
    */
   protected void copy(Resource resource, ServletOutputStream ostream)
                throws IOException {
-    IOException exception           = null;
-    InputStream resourceInputStream = null;
 
     // Optimization: If the binary content has already been loaded, send
     // it directly
@@ -671,12 +667,12 @@ public class HttpResourceServer {
       return;
     }
 
-    resourceInputStream = resource.streamContent();
+    InputStream resourceInputStream = resource.streamContent();
 
     InputStream istream = new BufferedInputStream(resourceInputStream, input);
 
     // Copy the input stream to the output stream
-    exception = copyRange(istream, ostream);
+    IOException exception = copyRange(istream, ostream);
 
     // Clean up the input stream
     istream.close();
@@ -697,11 +693,8 @@ public class HttpResourceServer {
    */
   protected void copy(Resource resource, PrintWriter writer)
                throws IOException {
-    IOException exception           = null;
 
-    InputStream resourceInputStream = null;
-
-    resourceInputStream             = resource.streamContent();
+    InputStream resourceInputStream = resource.streamContent();
 
     Reader reader;
 
@@ -712,7 +705,7 @@ public class HttpResourceServer {
     }
 
     // Copy the input stream to the output stream
-    exception = copyRange(reader, writer);
+    IOException exception = copyRange(reader, writer);
 
     // Clean up the reader
     reader.close();
@@ -734,11 +727,10 @@ public class HttpResourceServer {
    */
   protected void copy(Resource resource, ServletOutputStream ostream, Range range)
                throws IOException {
-    IOException exception           = null;
 
     InputStream resourceInputStream = resource.streamContent();
     InputStream istream             = new BufferedInputStream(resourceInputStream, input);
-    exception                       = copyRange(istream, ostream, range.start, range.end);
+    IOException exception           = copyRange(istream, ostream, range.start, range.end);
 
     // Clean up the input stream
     istream.close();
@@ -760,7 +752,6 @@ public class HttpResourceServer {
    */
   protected void copy(Resource resource, PrintWriter writer, Range range)
                throws IOException {
-    IOException exception           = null;
 
     InputStream resourceInputStream = resource.streamContent();
 
@@ -772,7 +763,7 @@ public class HttpResourceServer {
       reader = new InputStreamReader(resourceInputStream, fileEncoding);
     }
 
-    exception = copyRange(reader, writer, range.start, range.end);
+    IOException exception = copyRange(reader, writer, range.start, range.end);
 
     // Clean up the input stream
     reader.close();
@@ -894,7 +885,7 @@ public class HttpResourceServer {
     // Copy the input stream to the output stream
     IOException exception = null;
     byte[]      buffer    = new byte[input];
-    int         len       = buffer.length;
+    int         len;
 
     while (true) {
       try {
@@ -906,8 +897,6 @@ public class HttpResourceServer {
         ostream.write(buffer, 0, len);
       } catch (IOException e) {
         exception   = e;
-        len         = -1;
-
         break;
       }
     }
@@ -928,7 +917,7 @@ public class HttpResourceServer {
     // Copy the input stream to the output stream
     IOException exception = null;
     char[]      buffer    = new char[input];
-    int         len       = buffer.length;
+    int         len;
 
     while (true) {
       try {
@@ -940,8 +929,6 @@ public class HttpResourceServer {
         writer.write(buffer, 0, len);
       } catch (IOException e) {
         exception   = e;
-        len         = -1;
-
         break;
       }
     }
