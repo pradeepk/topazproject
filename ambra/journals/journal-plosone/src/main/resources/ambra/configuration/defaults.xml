@@ -10,7 +10,7 @@
         <journal>PLoSONE</journal>
         <eIssn>1932-6203</eIssn>
         <description>PLoS ONE</description>
-        <mappingPrefix></mappingPrefix>
+        <mappingPrefix>/journals/plosone</mappingPrefix>
         <rules>
           <host>.*plosone.*</host>
         </rules>
