@@ -45,7 +45,6 @@ import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.topazproject.ambra.admin.service.DocumentManagementService;
 
 /**
  * A simple abstraction of a zip archive, as needed by the ingester.
@@ -67,7 +66,7 @@ public interface Zip {
    *         entries
    * @throws IOException if an error occurred getting the enumeration
    */
-  public Enumeration getEntries() throws IOException;
+  public Enumeration<? extends ZipEntry> getEntries() throws IOException;
 
   /**
    * Get the given entry's contents as an InputStream.
@@ -100,7 +99,7 @@ public interface Zip {
       return zf.getName();
     }
 
-    public Enumeration getEntries() {
+    public Enumeration<? extends ZipEntry> getEntries() throws IOException {
       return zf.entries();
     }
 
@@ -165,7 +164,7 @@ public interface Zip {
       super.finalize();
     }
 
-    public Enumeration<ZipEntry> getEntries() throws IOException {
+    public Enumeration<? extends ZipEntry> getEntries() throws IOException {
       if (readCompletely) {
         return new Enumeration<ZipEntry>() {
 
@@ -372,6 +371,7 @@ public interface Zip {
      * Create a new instance.
      *
      * @param zipSource the zip archive as a datasource
+     * @throws IOException on an error
      */
     public DataSourceZip(DataSource zipSource) throws IOException {
       zs = zipSource;
