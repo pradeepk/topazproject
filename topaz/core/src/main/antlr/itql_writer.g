@@ -129,9 +129,9 @@ iquery[QueryBuilder qb]
 fclause[QueryBuilder qb]
     :   #(COMMA fclause[qb] fclause[qb])
     |   cls:ID var:ID {
-          String m = ((OqlAST) #var).getGraph();
-          if (m != null)
-            qb.graphs.add(m);
+          String g = ((OqlAST) #var).getGraph();
+          if (g != null)
+            qb.graphs.add(g);
         }
     ;
 
@@ -240,15 +240,15 @@ expr[QueryBuilder qb]
 
 constr[QueryBuilder qb]
 { StringBuilder e = qb.where; }
-    : #(TRIPLE s:ID p:ID o:ID (m:ID)?) {
+    : #(TRIPLE s:ID p:ID o:ID (g:ID)?) {
         if (#p.getText().equals("<mulgara:equals>"))
           throw new RecognitionException("failed to reduce a <mulgara:equals> - " +
                                          "please try a simpler query");
 
         e.append(toItqlStr(#s)).append(' ').append(toItqlStr(#p)).append(' ').append(toItqlStr(#o));
-        if (#m != null) {
-          e.append(" in <").append(#m.getText()).append('>');
-          qb.graphs.add(#m.getText());
+        if (#g != null) {
+          e.append(" in <").append(#g.getText()).append('>');
+          qb.graphs.add(#g.getText());
         }
         e.append(' ');
       }

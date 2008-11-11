@@ -48,10 +48,10 @@ public abstract class AbstractTest extends GroovyTestCase {
         sessFactory:new SessionFactoryImpl(tripleStore:store, blobStore:blobStore), defGraph:'ri', defUriPrefix:'topaz:')
 
     for (c in graphs) {
-      def m = new GraphConfig(c[0], "local:///topazproject#${c[1]}".toURI(), c[2])
-      rdf.sessFactory.addGraph(m)
-      try { store.dropGraph(m); } catch (Throwable t) { }
-      store.createGraph(m)
+      def g = new GraphConfig(c[0], "local:///topazproject#${c[1]}".toURI(), c[2])
+      rdf.sessFactory.addGraph(g)
+      try { store.dropGraph(g); } catch (Throwable t) { }
+      store.createGraph(g)
     }
   }
 

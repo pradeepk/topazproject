@@ -137,12 +137,12 @@ public class ItqlStore extends AbstractTripleStore {
     Map<String, List<RdfMapper>> mappersByGraph = groupMappersByGraph(cm, fields);
 
     // for every graph create an insert statement
-    for (String m : mappersByGraph.keySet()) {
-      StringBuilder insert = isc.getInserts().get(m);
+    for (String g : mappersByGraph.keySet()) {
+      StringBuilder insert = isc.getInserts().get(g);
       if (insert == null)
-        isc.getInserts().put(m, insert = new StringBuilder(500));
+        isc.getInserts().put(g, insert = new StringBuilder(500));
 
-      if (m.equals(cm.getGraph())) {
+      if (g.equals(cm.getGraph())) {
         for (String type : cm.getAllTypes())
           addStmt(insert, id, Rdf.rdf + "type", type, null, true);
       }
@@ -155,13 +155,13 @@ public class ItqlStore extends AbstractTripleStore {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
     StringBuilder insert = new StringBuilder(500);
 
-    for (String m : isc.getInserts().keySet()) {
-      StringBuilder stmts = isc.getInserts().get(m);
+    for (String g : isc.getInserts().keySet()) {
+      StringBuilder stmts = isc.getInserts().get(g);
       if (stmts.length() == 0)
         continue;
 
       insert.append("insert ").append(stmts).
-             append("into <").append(getGraphUri(m, isc)).append(">;");
+             append("into <").append(getGraphUri(g, isc)).append(">;");
     }
 
     isc.getInserts().clear();
@@ -180,17 +180,17 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
   private static Map<String, List<RdfMapper>> groupMappersByGraph(ClassMetadata cm, 
-                                                               Collection<RdfMapper> fields) {
+                                                                  Collection<RdfMapper> fields) {
     Map<String, List<RdfMapper>> mappersByGraph = new HashMap<String, List<RdfMapper>>();
 
     if (cm.getAllTypes().size() > 0)
       mappersByGraph.put(cm.getGraph(), new ArrayList<RdfMapper>());
 
     for (RdfMapper p : fields) {
-      String m = (p.getGraph() != null) ? p.getGraph() : cm.getGraph();
-      List<RdfMapper> pList = mappersByGraph.get(m);
+      String g = (p.getGraph() != null) ? p.getGraph() : cm.getGraph();
+      List<RdfMapper> pList = mappersByGraph.get(g);
       if (pList == null)
-        mappersByGraph.put(m, pList = new ArrayList<RdfMapper>());
+        mappersByGraph.put(g, pList = new ArrayList<RdfMapper>());
       pList.add(p);
     }
 
@@ -216,6 +216,7 @@ public class ItqlStore extends AbstractTripleStore {
         addStmts(buf, id, p.getUri(), sess.getIds(b.get(o)) , null,true, p.getColType(), 
                  "$s" + bnCtr++ + "i", p.hasInverseUri());
     }
+
     if (bnCtr > 1000000000)
       bnCtr = 0;        // avoid negative numbers
   }
@@ -289,12 +290,12 @@ public class ItqlStore extends AbstractTripleStore {
     StringBuilder delete = new StringBuilder(500);
 
     // for every graph create a delete statement
-    for (String m : mappersByGraph.keySet()) {
+    for (String g : mappersByGraph.keySet()) {
       int len = delete.length();
       delete.append("delete ");
-      if (buildDeleteSelect(delete, getGraphUri(m, isc), mappersByGraph.get(m),
-                        !partialDelete && m.equals(cm.getGraph()) && cm.getAllTypes().size() > 0, id))
-        delete.append("from <").append(getGraphUri(m, isc)).append(">;");
+      if (buildDeleteSelect(delete, getGraphUri(g, isc), mappersByGraph.get(g),
+                        !partialDelete && g.equals(cm.getGraph()) && cm.getAllTypes().size() > 0, id))
+        delete.append("from <").append(getGraphUri(g, isc)).append(">;");
       else
         delete.setLength(len);
     }
@@ -540,18 +541,18 @@ public class ItqlStore extends AbstractTripleStore {
   private static String getGraphsExpr(Set<? extends ClassMetadata> cmList,
                                       ItqlStoreConnection isc)
       throws OtmException {
-    Set<String> mList = new HashSet<String>();
+    Set<String> gList = new HashSet<String>();
     for (ClassMetadata cm : cmList) {
-      mList.add(getGraphUri(cm.getGraph(), isc));
+      gList.add(getGraphUri(cm.getGraph(), isc));
       for (RdfMapper p : cm.getRdfMappers()) {
         if (p.getGraph() != null)
-          mList.add(getGraphUri(p.getGraph(), isc));
+          gList.add(getGraphUri(p.getGraph(), isc));
       }
     }
 
     StringBuilder mexpr = new StringBuilder(100);
-    for (String m : mList)
-      mexpr.append("<").append(m).append("> or ");
+    for (String g : gList)
+      mexpr.append("<").append(g).append("> or ");
     mexpr.setLength(mexpr.length() - 4);
 
     return mexpr.toString();

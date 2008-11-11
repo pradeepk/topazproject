@@ -233,8 +233,8 @@ tokens {
       return ASTUtil.makeTriple(s, p, o, astFactory);
     }
 
-    private AST makeTriple(Object s, Object p, Object o, Object m) {
-      return ASTUtil.makeTriple(s, p, o, m, astFactory);
+    private AST makeTriple(Object s, Object p, Object o, Object g) {
+      return ASTUtil.makeTriple(s, p, o, g, astFactory);
     }
 
     private String expandAlias(String uri) {

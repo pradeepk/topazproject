@@ -51,33 +51,33 @@ public class ASTUtil implements ConstraintsTokenTypes {
     return makeTriple(s, p, o, (p instanceof OqlAST) ? ((OqlAST) p).getGraph() : null, af);
   }
 
-  public static OqlAST makeTriple(Object s, Object p, Object o, Object m, ASTFactory af) {
+  public static OqlAST makeTriple(Object s, Object p, Object o, Object g, ASTFactory af) {
     OqlAST sa = makeID(s, af);
     OqlAST pa = makeID(p, af);
     OqlAST oa = makeID(o, af);
-    OqlAST ma = (m != null) ? makeID(m, af) : null;
+    OqlAST ga = (g != null) ? makeID(g, af) : null;
 
     AST tr = af.create(TRIPLE, "triple");
     if (pa.isInverse())
-      return (OqlAST) af.make(new AST[] { tr, oa, pa, sa, ma });
+      return (OqlAST) af.make(new AST[] { tr, oa, pa, sa, ga });
     else
-      return (OqlAST) af.make(new AST[] { tr, sa, pa, oa, ma });
+      return (OqlAST) af.make(new AST[] { tr, sa, pa, oa, ga });
   }
 
   public static String getGraphUri(String graphId, SessionFactory sf) throws RecognitionException {
-    GraphConfig mc = sf.getGraph(graphId);
-    if (mc == null)
+    GraphConfig gc = sf.getGraph(graphId);
+    if (gc == null)
       throw new RecognitionException("Unable to find graph '" + graphId + "'");
-    return mc.getUri().toString();
+    return gc.getUri().toString();
   }
 
   public static String getGraphUri(URI graphType, SessionFactory sf) throws RecognitionException {
-    List<GraphConfig> mc = sf.getGraphs(graphType);
-    if (mc == null)
+    List<GraphConfig> gc = sf.getGraphs(graphType);
+    if (gc == null)
       throw new RecognitionException("Unable to find a graph of type '" + graphType +
                                      "' - please make sure you've created and configured a graph" +
                                      " for this type");
-    return mc.get(0).getUri().toString();
+    return gc.get(0).getUri().toString();
   }
 
   public static OqlAST makeTree(ASTFactory af, int rootType, String rootName, AST... children) {

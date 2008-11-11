@@ -248,10 +248,10 @@ options {
       if (graphId == null)
         return null;
 
-      GraphConfig mc = sessFactory.getGraph(graphId);
-      if (mc == null)
+      GraphConfig gc = sessFactory.getGraph(graphId);
+      if (gc == null)
         throw new RecognitionException("Unable to find graph '" + graphId + "'");
-      return mc.getUri().toString();
+      return gc.getUri().toString();
     }
 
     private String findEmbGraph(ExprType type) {
