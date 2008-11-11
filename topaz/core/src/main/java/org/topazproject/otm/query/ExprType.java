@@ -26,10 +26,10 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.mapping.EmbeddedMapper;
 
-/** 
+/**
  * This describes the type of an expression. It can be an untyped literal, a typed literal,
  * a URI, or class, or an embedded class.
- * 
+ *
  * @author Ronald Tschalär
  */
 class ExprType {
@@ -51,9 +51,9 @@ class ExprType {
     this.colType   = (colType != null) ? colType : CollectionType.PREDICATE;
   }
 
-  /** 
-   * Create a new expression type representing a class. 
-   * 
+  /**
+   * Create a new expression type representing a class.
+   *
    * @param meta    the class metadata
    * @param colType the collection type; if null it defaults to PREDICATE
    * @return the new type
@@ -65,9 +65,9 @@ class ExprType {
     return new ExprType(Type.CLASS, meta, null, null, colType);
   }
 
-  /** 
-   * Create a new expression type representing an embedded class. 
-   * 
+  /**
+   * Create a new expression type representing an embedded class.
+   *
    * @param meta  the container class' metadata
    * @param field the field name pointing to the embedded class
    * @return the new type
@@ -84,9 +84,9 @@ class ExprType {
     return new ExprType(Type.EMB_CLASS, meta, fields, null, null);
   }
 
-  /** 
-   * Create a new expression type representing a URI. 
-   * 
+  /**
+   * Create a new expression type representing a URI.
+   *
    * @param colType the collection type; if null it defaults to PREDICATE
    * @return the new type
    */
@@ -94,9 +94,9 @@ class ExprType {
     return new ExprType(Type.URI, null, null, null, colType);
   }
 
-  /** 
-   * Create a new expression type representing an untyped literal. 
-   * 
+  /**
+   * Create a new expression type representing an untyped literal.
+   *
    * @param colType the collection type; if null it defaults to PREDICATE
    * @return the new type
    */
@@ -104,9 +104,9 @@ class ExprType {
     return new ExprType(Type.UNTYPED_LIT, null, null, null, colType);
   }
 
-  /** 
-   * Create a new expression type representing a typed literal. 
-   * 
+  /**
+   * Create a new expression type representing a typed literal.
+   *
    * @param datatype the literal's datatype
    * @param colType the collection type; if null it defaults to PREDICATE
    * @return the new type
@@ -123,8 +123,7 @@ class ExprType {
    *
    * @return the expression type
    */
-  public Type getType()
-  {
+  public Type getType() {
       return type;
   }
 
@@ -151,8 +150,7 @@ class ExprType {
    *
    * @return datatype if this is a typed literal; null otherwise
    */
-  public String getDataType()
-  {
+  public String getDataType() {
       return datatype;
   }
 
@@ -161,12 +159,11 @@ class ExprType {
    *
    * @return the collection type
    */
-  public CollectionType getCollectionType()
-  {
+  public CollectionType getCollectionType() {
       return colType;
   }
 
-  /** 
+  /**
    * Get the class of this type. For non class or embedded-class types this returns null.
    *
    * @return the class metadata, or null if not a class type
@@ -212,7 +209,7 @@ class ExprType {
   @Override
   public String toString() {
     return type + (type == Type.CLASS ? "[" + meta.getName() + colType() + "]" :
-                   type == Type.EMB_CLASS ? "[" + meta.getName() + 
+                   type == Type.EMB_CLASS ? "[" + meta.getName() +
                                                   embFieldNames() + colType() + "]" :
                    type == Type.TYPED_LIT ? "[" + datatype + colType() + "]" :
                    (colType != CollectionType.PREDICATE) ? "[" + colType + "]" : "");

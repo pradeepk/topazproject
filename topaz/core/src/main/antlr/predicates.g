@@ -65,7 +65,7 @@ import antlr.collections.AST;
  * referencing projections, etc), and creates dummy variables for projections where no variable was
  * specified. And finally it associates types and graphs with the various nodes.
  *
- * @author Ronald Tschalär 
+ * @author Ronald Tschalär
  */
 class FieldTranslator extends TreeParser("OqlTreeParser");
 
@@ -86,7 +86,7 @@ options {
     private SessionFactory              sessFactory;
     private int                         varCnt = 0;
 
-    /** 
+    /**
      * Create a new translator instance.
      *
      * @param sessionFactory the session-factory to use to look up class-metatdata, graphs, etc
@@ -96,7 +96,7 @@ options {
       sessFactory = sessionFactory;
     }
 
-    /** 
+    /**
      * Get the list of parameters found in the query. This is only valid after invoking
      * <code>query()</code>.
      *
@@ -141,7 +141,7 @@ options {
         // see if this is a partial match on a hierarchy of embedded classes
         Mapper m = last.getEmbeddedClass().getMapperByName(field.getText());
         if (m instanceof EmbeddedMapper) {
-          type.getEmbeddedFields().add((EmbeddedMapper)m);
+          type.getEmbeddedFields().add((EmbeddedMapper) m);
           return type;
         }
       }
@@ -150,7 +150,7 @@ options {
       // see if we have a mapper for the field; if so, great
       Mapper m = type.getMeta().getMapperByName(fname);
       if (m instanceof RdfMapper) {
-        RdfMapper r = (RdfMapper)m;
+        RdfMapper r = (RdfMapper) m;
         ExprType cType = getTypeForMapper(r);
 
         String uri = "<" + r.getUri() + ">";
@@ -160,9 +160,9 @@ options {
 
         return cType;
       }
-      
+
       if (m instanceof EmbeddedMapper) {
-        type = ExprType.embeddedClassType(type.getMeta(), (EmbeddedMapper)m);
+        type = ExprType.embeddedClassType(type.getMeta(), (EmbeddedMapper) m);
         getCurAST(cur).setExprType(type);
         return type;
       }
@@ -235,7 +235,7 @@ options {
         a.setGraph(getGraphUri(findEmbGraph(prntType)));
 
       if (m instanceof RdfMapper) {
-        RdfMapper r = (RdfMapper)m;
+        RdfMapper r = (RdfMapper) m;
         a.setIsInverse(r.hasInverseUri());
         if (r.getGraph() != null)
           a.setGraph(getGraphUri(r.getGraph()));

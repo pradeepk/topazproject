@@ -58,7 +58,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * This is an AST transformer for OQL that replaces parameter references with their values.
  *
- * @author Ronald Tschalär 
+ * @author Ronald Tschalär
  */
 class ParameterResolver extends TreeParser("OqlTreeParser");
 
@@ -71,7 +71,7 @@ options {
     private static final Log log = LogFactory.getLog(ParameterResolver.class);
     private SessionFactory sessFactory;
 
-    /** 
+    /**
      * Create a new parameter-resolver instance.
      *
      * @param sessionFactory the session-factory to use to look up class-metatdata, graphs, etc

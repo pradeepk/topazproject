@@ -73,7 +73,7 @@ import antlr.collections.AST;
  * where clause's top AND; for variables with multiple types we add the filter expressions (if
  * needed) to the local AND's.
  *
- * @author Ronald Tschalär 
+ * @author Ronald Tschalär
  */
 class ItqlFilterApplicator extends TreeParser("OqlTreeParser");
 

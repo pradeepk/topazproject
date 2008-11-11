@@ -81,7 +81,7 @@ import antlr.collections.AST;
  *   cnstr: #(TRIPLE ID ID ID ID?)
  * </pre>
  *
- * @author Ronald Tschalär 
+ * @author Ronald Tschalär
  */
 class ItqlConstraintGenerator extends TreeParser("OqlTreeParser");
 

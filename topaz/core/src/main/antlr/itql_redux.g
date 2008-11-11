@@ -59,7 +59,7 @@ import org.apache.commons.logging.LogFactory;
  * &lt;mulgara:equals&gt; constraints. Most of these are unnecessary, but are generated
  * because doing so greatly simplifies the previous step.
  *
- * @author Ronald Tschalär 
+ * @author Ronald Tschalär
  */
 class ItqlRedux extends TreeParser("OqlTreeParser");
 
@@ -88,7 +88,7 @@ options {
      * the current subtree in the where clause, all variables in the projections, as well as in
      * all the projections and where clauses of subqueries (recursively).</p>
      *
-     * <p>For each group of variables that are equal (and hence are being replaced with the same 
+     * <p>For each group of variables that are equal (and hence are being replaced with the same
      * variable) a common type for the replacement variable is determined, and during replacement
      * the node's type is changed to this common type. This is needed for correct filter
      * application.</p>

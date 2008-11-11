@@ -216,7 +216,7 @@ public class SessionFactoryImpl implements SessionFactory {
     if (cb != null) {
       EntityBinder b = cb.getBinders().get(EntityMode.POJO);
 
-      if ((b != null) && (b instanceof ClassBinder) && c.equals(((ClassBinder)b).getSourceClass()))
+      if ((b != null) && (b instanceof ClassBinder) && c.equals(((ClassBinder) b).getSourceClass()))
         c = null;
     }
 
@@ -240,9 +240,9 @@ public class SessionFactoryImpl implements SessionFactory {
     for (Definition def : defs.values()) {
       def.resolveReference(this);
       if (def instanceof EntityDefinition)
-        entities.add((EntityDefinition)def);
+        entities.add((EntityDefinition) def);
       else if (def instanceof ViewDefinition)
-        views.add((ViewDefinition)def);
+        views.add((ViewDefinition) def);
     }
 
     for (EntityDefinition def : entities) {
@@ -267,13 +267,13 @@ public class SessionFactoryImpl implements SessionFactory {
       if (!(d instanceof EntityDefinition))
         throw new OtmException("Invalid super '" + sup + "' in " + def.getName());
 
-      buildClassMetadata((EntityDefinition)d);
+      buildClassMetadata((EntityDefinition) d);
     }
 
     for (String prop : getClassBindings(def.getName()).getProperties()) {
       Definition d = defs.get(prop);
       if (d instanceof EmbeddedDefinition)
-        buildClassMetadata((EntityDefinition)defs.get(((EmbeddedDefinition)d).getEmbedded()));
+        buildClassMetadata((EntityDefinition) defs.get(((EmbeddedDefinition) d).getEmbedded()));
     }
 
     setClassMetadata(def.buildClassMetadata(this));
@@ -300,7 +300,7 @@ public class SessionFactoryImpl implements SessionFactory {
       log.debug("Added definition : " + def.getName());
 
     if (def instanceof ClassDefinition)
-      classDefs.put(def.getName(), new SFClassBindings((ClassDefinition)def));
+      classDefs.put(def.getName(), new SFClassBindings((ClassDefinition) def));
   }
 
   /*

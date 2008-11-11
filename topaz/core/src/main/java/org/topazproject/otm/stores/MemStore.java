@@ -274,7 +274,7 @@ public class MemStore extends AbstractTripleStore {
       String name       = ((PredicateCriterion) c).getName();
       Object o          = ((PredicateCriterion) c).getValue();
       String value;
-      RdfMapper m = (RdfMapper)cm.getMapperByName(name);
+      RdfMapper m = (RdfMapper) cm.getMapperByName(name);
 
       try {
         value           = o.toString();

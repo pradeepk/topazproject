@@ -212,7 +212,7 @@ public class ItqlCriteria {
   private static void buildPredicateWhere(ClassMetadata cm, Criteria c, String name, String subject,
                                           String object, StringBuilder qry, String graph)
                             throws OtmException {
-    RdfMapper m = (RdfMapper)cm.getMapperByName(name);
+    RdfMapper m = (RdfMapper) cm.getMapperByName(name);
 
     if (m == null)
       throw new OtmException("No field with the name '" + name + "' in " + cm);

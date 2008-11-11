@@ -126,7 +126,7 @@ import antlr.collections.AST;
  * created the criteria for the aliases, we have a criteria object to which we can attach the
  * expression results (be they criteria and/or criterion).
  *
- * @author Ronald Tschalär 
+ * @author Ronald Tschalär
  */
 class CriteriaGenerator extends TreeParser("OqlTreeParser");
 
@@ -147,7 +147,7 @@ options {
     private Map<String, ClassMetadata> typeMap  = new HashMap<String, ClassMetadata>();
     private Map<String, Criteria>      critMap  = new HashMap<String, Criteria>();
 
-    /** 
+    /**
      * Create a new translator instance.
      *
      * @param sessionFactory the session-factory to use to look up entity-metadata, graphs, etc
@@ -357,7 +357,7 @@ options {
       }
     }
 
-    /** 
+    /**
      * Process what must be a criterion.
      *
      * @param node   the node to process
@@ -680,7 +680,7 @@ options {
      * representing the last id in the ref and builds referrer criteria for the id's in reverse
      * order.
      *
-     * @param ref the reference representing the 
+     * @param ref the reference representing the
      * @param p   the child criteria to create the referrer criteria on
      * @return the last referrer criteria created (representing the first id of <var>ref</var>)
      */
@@ -728,7 +728,7 @@ options {
           p = c.createReferrerCriteria(cm.getName(), field, true);
         } catch (OtmException oe) {
           throw (RecognitionException)
-              new RecognitionException("no field '" + field + "' in " 
+              new RecognitionException("no field '" + field + "' in "
                                        + c.getClassMetadata()).initCause(oe);
         }
       }

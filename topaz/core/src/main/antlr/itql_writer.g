@@ -52,7 +52,7 @@ import antlr.collections.AST;
  * This generates the iTQL string from a iTQL AST. It assumes the where and select clauses have
  * been converted to constraints.
  *
- * @author Ronald Tschalär 
+ * @author Ronald Tschalär
  */
 class ItqlWriter extends TreeParser("OqlTreeParser");
 

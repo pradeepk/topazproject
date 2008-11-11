@@ -25,9 +25,9 @@ import java.util.Set;
 import antlr.CommonAST;
 import antlr.collections.AST;
 
-/** 
+/**
  * This extends the normal AST to be able to store OTM meta data with each node.
- * 
+ *
  * @author Ronald Tschalär
  */
 public class OqlAST extends CommonAST {
@@ -75,8 +75,7 @@ public class OqlAST extends CommonAST {
    *
    * @return graph as String.
    */
-  public String getGraph()
-  {
+  public String getGraph() {
       return graph;
   }
 
@@ -85,8 +84,7 @@ public class OqlAST extends CommonAST {
    *
    * @param graph the value to set.
    */
-  public void setGraph(String graph)
-  {
+  public void setGraph(String graph) {
       this.graph = graph;
   }
 

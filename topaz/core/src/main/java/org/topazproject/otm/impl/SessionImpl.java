@@ -158,7 +158,7 @@ public class SessionImpl extends AbstractSession {
 
       for (Object o : workDirty.values())
         if (o instanceof PreInsertEventListener)
-          ((PreInsertEventListener)o).onPreInsert(this, o);
+          ((PreInsertEventListener) o).onPreInsert(this, o);
 
       for (Map.Entry<Id, Object> e : workDirty.entrySet())
         write(e.getKey(), e.getValue(), false);
@@ -421,7 +421,7 @@ public class SessionImpl extends AbstractSession {
       interceptor.onPostRead(this, id.getClassMetadata(), id.getId(), o, field);
 
     if (o instanceof PostLoadEventListener)
-      ((PostLoadEventListener)o).onPostLoad(this, o, field);
+      ((PostLoadEventListener) o).onPostLoad(this, o, field);
 
     if (field instanceof BlobMapper)
       states.digestUpdate(o, id.getClassMetadata(), this);
@@ -618,7 +618,7 @@ public class SessionImpl extends AbstractSession {
         interceptor.onPostRead(this, cm, id.getId(), instance);
 
       if (instance instanceof PostLoadEventListener)
-        ((PostLoadEventListener)instance).onPostLoad(this, instance);
+        ((PostLoadEventListener) instance).onPostLoad(this, instance);
 
       if (log.isDebugEnabled()) {
         if (instance == null)
@@ -808,7 +808,7 @@ public class SessionImpl extends AbstractSession {
       if (!(p instanceof RdfMapper))
         continue;
 
-      RdfMapper om = (RdfMapper)p;
+      RdfMapper om = (RdfMapper) p;
       Binder b  = m.getBinder(getEntityMode());
       Binder ob = om.getBinder(getEntityMode());
       if ((loopDetect == null) || !m.isAssociation())

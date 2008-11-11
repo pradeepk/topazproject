@@ -438,7 +438,7 @@ public class Criteria implements Parameterizable<Criteria> {
     if (!(r instanceof RdfMapper))
       throw new OtmException("'" + field + "' does not exist in " + classMetadata);
 
-    RdfMapper m = (RdfMapper)r;
+    RdfMapper m = (RdfMapper) r;
     Object val = getRoot().paramValues.get(name);
     if (val == null)
       throw new OtmException("No value specified for parameter '" + name + "': field '" 

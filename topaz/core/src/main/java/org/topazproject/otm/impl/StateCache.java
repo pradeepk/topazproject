@@ -215,7 +215,7 @@ class StateCache {
     }
 
     public BlobChange digestUpdate(Object instance, Binder blobField) throws OtmException {
-      byte[] blob = (byte[])blobField.getRawValue(instance, false);
+      byte[] blob = (byte[]) blobField.getRawValue(instance, false);
       int len = 0;
       byte[] digest = null;
       if (blob != null) {
