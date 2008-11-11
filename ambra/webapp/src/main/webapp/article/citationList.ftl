@@ -31,7 +31,7 @@
     </#list>
     <span class="citation_date">${citation.publicationDate?string("yyyy")}</span>
     <span class="citation_article_title">${citation.articleTitle}. </span>
-    <span class="citation_journal_title">${citation.journalTitle} </span>
+    <span class="citation_journal_title">${citation.journalName!citation.journalTitle} </span>
     <span class="citation_issue">${citation.volume}(${citation.issue}):</span>
     <span class="citation_start_page">${citation.startPage}.</span>
     <span class="citation_doi">doi:${citation.DOI}</span>
