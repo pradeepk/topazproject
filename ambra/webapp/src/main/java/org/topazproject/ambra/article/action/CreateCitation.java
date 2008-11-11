@@ -73,8 +73,11 @@ public class CreateCitation extends BaseActionSupport {
   @Transactional(readOnly = true)
   public String execute () throws Exception {
 
-    // lock @ Article level
-    final Object lock = (FetchArticleService.ARTICLE_LOCK + articleURI).intern();
+    /* lock @ Article level
+       Using intern() to ensure lock object is always the same for same articleURI
+       so that synchronization is done properly.
+     */
+    final String lock = (FetchArticleService.ARTICLE_LOCK + articleURI).intern();
 
     citation = articleAnnotationCache.get(CITATION_KEY + articleURI, -1,
             new Cache.SynchronizedLookup<CitationInfo, ApplicationException>(lock) {
