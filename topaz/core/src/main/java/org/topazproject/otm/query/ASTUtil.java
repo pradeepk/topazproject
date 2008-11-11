@@ -145,4 +145,62 @@ public class ASTUtil implements ConstraintsTokenTypes {
     System.arraycopy(children, 0, nodes, 1, children.length);
     return (OqlAST) af.make(nodes);
   }
+
+  /**
+   * Finds the definition of given alias.
+   *
+   * @param alias the name of the alias
+   * @param top   the top of the AST tree (where clause)
+   * @return the alias definition (the ASGN node), or null of not found
+   */
+  public static OqlAST findAliasDef(String alias, OqlAST top) {
+    return findAliasDef(alias, top, top);
+  }
+
+  private static OqlAST findAliasDef(String alias, OqlAST cur, OqlAST top) {
+    if (cur.getType() == ASGN) {
+      if (alias.equals(cur.getFirstChild().getText()))
+        return cur;
+    } else {
+      for (OqlAST n = (OqlAST) cur.getFirstChild(); n != null; n = (OqlAST) n.getNextSibling()) {
+        OqlAST res = findAliasDef(alias, n, top);
+        if (res != null)
+          return res;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Get the last dereference in a sequence. I.e. in the expression 'a.b.c' return 'c'. This will
+   * resolve aliases, so if you have 'a := b and b := c.d' and invoke this on 'a' then you'll get
+   * back 'd'.
+   *
+   * @param deref the dereference sequence; this node is expected to be an ID node, and the
+   *              dereferences are siblings
+   * @param top   the top of the AST tree (where clause)
+   * @return the node of the last dereference, or null if <var>deref</var> is never dereferenced
+   */
+  public static OqlAST getLastDeref(OqlAST deref, OqlAST top) {
+    if (deref.getNextSibling() == null && deref.getType() == ID) {      // presumably an alias
+      OqlAST def = findAliasDef(deref.getText(), top);
+      if (def == null)
+        return null;
+
+      def = (OqlAST) def.getFirstChild().getNextSibling();
+      if (def.getType() == REF)
+        return getLastDeref((OqlAST) def.getFirstChild(), top);
+      else
+        return null;
+    } else {
+      while (deref.getNextSibling() != null)
+        deref = (OqlAST) deref.getNextSibling();
+
+      if (deref.getType() == REF)
+        return getLastDeref((OqlAST) deref.getFirstChild(), top);
+      else
+        return deref;
+    }
+  }
 }

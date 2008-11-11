@@ -43,7 +43,7 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
   public  static final String   FUNC_NAME = "index";
   private static final ExprType RET_TYPE  = ExprType.literalType(Rdf.xsd + "int", null);
 
-  private final String               projVar;
+  private final OqlAST               projVar;
   private       OqlAST[]             derefNodes;
   private       OqlAST[]             projList;
   private       CollectionType           colType;
@@ -64,11 +64,9 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
 
     if (args.get(0).getType() != REF)
       throw new RecognitionException("the argument to index() must be a variable reference");
-    OqlAST var = (OqlAST) args.get(0).getFirstChild();
-    if (var.getType() != ID || !var.isVar() || var.getNextSibling() != null)
+    projVar = (OqlAST) args.get(0).getFirstChild();
+    if (projVar.getType() != ID || !projVar.isVar() || projVar.getNextSibling() != null)
       throw new RecognitionException("the argument to index() must reference an alias");
-
-    projVar = var.getText();
   }
 
   public String getName() {
@@ -94,7 +92,7 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
     assert f.getType() == FROM;
     assert w.getType() == WHERE;
 
-    OqlAST def = findAliasDef(projVar, (OqlAST) w.getFirstChild());
+    OqlAST def = getLastDeref(projVar, (OqlAST) w.getFirstChild());
     if (def != null)
       def.addListener(this);
     else
@@ -102,65 +100,12 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
                                      "dereference");
   }
 
-  private OqlAST findAliasDef(String var, OqlAST top) throws RecognitionException {
-    return findAliasDef(var, top, top);
-  }
+  private OqlAST getLastDeref(OqlAST var, OqlAST top) throws RecognitionException {
+    OqlAST def = ASTUtil.getLastDeref(var, top);
+    if (def == null || def.getType() != URIREF)
+      throw new RecognitionException("can only perform index() on a dereferenced field: " + def);
 
-  private OqlAST findAliasDef(String var, OqlAST cur, OqlAST top) throws RecognitionException {
-    if (cur.getType() == ASGN) {
-      if (var.equals(cur.getFirstChild().getText())) {
-        OqlAST fact = (OqlAST) cur.getFirstChild().getNextSibling();
-        switch (fact.getType()) {
-          case REF:
-            return getLastDeref((OqlAST) cur.getFirstChild(), top);
-
-          case QSTRING:
-          case URIREF:
-            throw new RecognitionException("can't perform index() on a constant: " +
-                                           fact.toStringTree());
-
-          case FUNC:
-            throw new RecognitionException("can't perform index() on another function: " +
-                                           fact.toStringTree());
-
-          default:
-            throw new RecognitionException("unexpected type in alias asignment for '" + var +
-                                           "': " + cur.toStringTree());
-        }
-      }
-    } else {
-      for (OqlAST n = (OqlAST) cur.getFirstChild(); n != null; n = (OqlAST) n.getNextSibling()) {
-        OqlAST res = findAliasDef(var, n, top);
-        if (res != null)
-          return res;
-      }
-    }
-    return null;
-  }
-
-  private OqlAST getLastDeref(OqlAST deref, OqlAST top) throws RecognitionException {
-    if (deref.getNextSibling() == null && deref.getType() == ID) { // presumably another alias
-      return findAliasDef(deref.getText(), top);
-    } else {
-      while (deref.getNextSibling() != null)
-        deref = (OqlAST) deref.getNextSibling();
-
-      switch (deref.getType()) {
-        case URIREF:
-          return deref;
-
-        case REF:
-          return getLastDeref((OqlAST) deref.getFirstChild(), top);
-
-        default:
-          throw new RecognitionException("can't perform index() on " +
-                                         (deref.getType() == EXPR ? "predicate-expression" :
-                                          deref.getType() == STAR ? "predicate-wildcard" :
-                                          deref.getType() == ID ? "id-field" :
-                                          "unknown node type " + deref.getType()) +
-                                         ": " + deref.toStringTree());
-      }
-    }
+    return def;
   }
 
   /**
