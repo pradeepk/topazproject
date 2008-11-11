@@ -46,7 +46,8 @@ public interface QueryFunction {
   ExprType getReturnType();
 
   /** 
-   * Post-predicate processing hook. 
+   * Post-predicate processing hook. This is invoked after all field-to-predicate translation has
+   * occurred, but before the parameter replacement has taken place.
    * 
    * @param pre  the query before the field-to-predicates translation
    * @param post the query after the field-to-predicates translation
@@ -54,15 +55,15 @@ public interface QueryFunction {
   void postPredicatesHook(OqlAST pre, OqlAST post) throws RecognitionException;
 
   /**   
-   * Generate the ITQL statements.
+   * Generate the ITQL statements for this function.
    *  
    * @param args   the arguments to the function; these are ITQL statements
    * @param vars   the variables holding the result of each argument (where the i-th variable
    *               is for the i-th argument)
-   * @param resVar the variable into which to put the result; for boolean condition functions
-   *               this can be ignored.
+   * @param resVar the variable into which to put the function result; for boolean condition
+   *               functions this can be ignored.
    * @param astFactory the ast-factory to use
-   * @return the AST to add to the where clause (if the AST is a COUNT or SUBQ then it's addd
+   * @return the AST to add to the where clause (if the AST is a COUNT or SUBQ then it is added
    *         to the projection instead)
    * @throws RecognitionException if an error occurred
    */

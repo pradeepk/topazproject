@@ -27,5 +27,16 @@ import antlr.RecognitionException;
  * @author Ronald Tschalär
  */
 public interface TransformListener {
+  /**
+   * This callback is invoked once on each dereference it was registered on while converting the
+   * generic query AST to a query-language specific query (i.e. after field-to-predicate translation
+   * and parameter replacement has occurred). E.g. in the expression "a.b.c" this callback is
+   * invoked twice, first for the ".b" and then for the ".c" dereference (assuming the listener was
+   * registered for both "b" and "c").
+   *
+   * @param reg   the dereferencing predicate (i.e. the predicate for the ".b" or the ".c")
+   * @param nodes a list of nodes representing the state at the time of this dereference
+   * @throws RecognitionException if an error occurs
+   */
   void deref(OqlAST reg, OqlAST[] nodes) throws RecognitionException;
 }

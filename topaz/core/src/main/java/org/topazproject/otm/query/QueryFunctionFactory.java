@@ -40,7 +40,8 @@ public interface QueryFunctionFactory {
 
   /**
    * Create an instance of the function. This should also do basic argument validation, such as
-   * checking the number and types of the arguments.
+   * checking the number and types of the arguments. This is invoked after the arguments have gone
+   * through field-to-predicate translation but before parameter replacement occurs.
    *
    * @param name  the name of the function to instantiate
    * @param args  the list of arguments to the function

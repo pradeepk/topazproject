@@ -35,6 +35,8 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.CollectionType;
 
 /** 
+ * This implements the OQL index() function. The single argument to the function must be an alias.
+ *
  * @author Ronald Tschalär
  */
 class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, TransformListener {
