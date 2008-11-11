@@ -2012,7 +2012,7 @@ public class OqlTest extends AbstractTest {
   }
 }
 
-class ResultChecker extends BuilderSupport {
+public class ResultChecker extends BuilderSupport {
   private Stack resHist = new Stack()
   private Stack colHist = new Stack()
 

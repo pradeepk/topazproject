@@ -32,7 +32,9 @@ import org.topazproject.otm.SessionFactory;
  */
 public class DefaultQueryFunctionFactory implements QueryFunctionFactory {
   private static final String[] FUNC_NAMES = new String[] {
-      CountFunction.FUNC_NAME, IndexFunction.FUNC_NAME, "gt", "ge", "lt", "le" };
+      CountFunction.FUNC_NAME, IndexFunction.FUNC_NAME, TextSearchFunction.FUNC_NAME,
+      "gt", "ge", "lt", "le"
+  };
 
   public String[] getNames() {
     return FUNC_NAMES;
@@ -45,6 +47,8 @@ public class DefaultQueryFunctionFactory implements QueryFunctionFactory {
       return new CountFunction(args, types);
     if (name.equals(IndexFunction.FUNC_NAME))
       return new IndexFunction(args, types);
+    if (name.equals(TextSearchFunction.FUNC_NAME))
+      return new TextSearchFunction(args, types, sf);
     return new BinaryCompare(name, args, types, sf);
   }
 }

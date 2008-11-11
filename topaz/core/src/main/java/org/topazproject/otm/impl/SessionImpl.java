@@ -40,6 +40,7 @@ import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoader;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
+import org.topazproject.otm.metadata.SearchableDefinition;
 import org.topazproject.otm.query.Results;
 
 import org.topazproject.otm.CascadeType;
@@ -50,6 +51,7 @@ import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.BlobStore;
+import org.topazproject.otm.SearchStore;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Query;
@@ -491,6 +493,7 @@ public class SessionImpl extends AbstractSession {
                                                                                getEntityMode(), o);
     TripleStore           store         = sessionFactory.getTripleStore();
     BlobStore             bs            = sessionFactory.getBlobStore();
+    SearchStore           ss            = sessionFactory.getSearchStore();
     boolean               bf            = (cm.getBlobField() != null);
     boolean               tp            = (cm.getRdfMappers().size() + cm.getAllTypes().size()) > 0;
 
@@ -501,10 +504,14 @@ public class SessionImpl extends AbstractSession {
      if (interceptor != null)
        interceptor.onPreDelete(this, cm, id.getId(), o);
      states.remove(o);
-     if (bf)
+     if (bf) {
+       updateBlobSearch(ss, bs, cm, id, o, true);
        bs.delete(cm, id.getId(), o, getBlobStoreCon());
-     if (tp)
+     }
+     if (tp) {
+       updateTripleSearch(ss, cm, cm.getRdfMappers(), id, o, true);
        store.delete(cm, cm.getRdfMappers(), id.getId(), o, getTripleStoreCon());
+     }
      if (interceptor != null)
        interceptor.onPostDelete(this, cm, id.getId(), o);
     } else if (isPristineProxy(id, o)) {
@@ -542,19 +549,24 @@ public class SessionImpl extends AbstractSession {
 
       boolean wroteSomething = false;
       if (tp && (firstTime || (nFields > 0))) {
+        updateTripleSearch(ss, cm, fields, id, o, true);
         store.delete(cm, fields, id.getId(), o, getTripleStoreCon());
         store.insert(cm, fields, id.getId(), o, getTripleStoreCon());
+        updateTripleSearch(ss, cm, fields, id, o, false);
         wroteSomething = true;
       }
       if (bf) {
         switch (states.digestUpdate(o, cm, this)) {
           case delete:
+            updateBlobSearch(ss, bs, cm, id, o, true);
             bs.delete(cm, id.getId(), o, getBlobStoreCon());
             break;
           case update:
+            updateBlobSearch(ss, bs, cm, id, o, true);
             bs.delete(cm, id.getId(), o, getBlobStoreCon());
           case insert:
             bs.insert(cm, id.getId(), o, getBlobStoreCon());
+            updateBlobSearch(ss, bs, cm, id, o, false);
             break;
           case noChange:
           default:
@@ -569,6 +581,49 @@ public class SessionImpl extends AbstractSession {
       if ((interceptor != null) && wroteSomething)
         interceptor.onPostWrite(this, cm, id.getId(), o, updates);
     }
+  }
+
+  /**
+   * Yuck: this assumes all (non-blob) searchable fields are stored in the triple-store (an
+   * assumption that is also made by the triple store.
+   */
+  private <T> void updateTripleSearch(SearchStore store, ClassMetadata cm,
+                                      Collection<RdfMapper> fields, Id id, T o, boolean delete)
+      throws OtmException {
+   List<SearchableDefinition> sdList = new ArrayList<SearchableDefinition>();
+   for (RdfMapper m : fields) {
+     SearchableDefinition sd = getSearchableDef(cm, m);
+     if (sd != null)
+       sdList.add(sd);
+   }
+   if (sdList.size() == 0)
+     return;
+
+   if (delete)
+     store.remove(cm, sdList, id.getId(), o, getSearchStoreCon());
+   else
+     store.index(cm, sdList, id.getId(), o, getSearchStoreCon());
+  }
+
+  private <T> void updateBlobSearch(SearchStore store, BlobStore bs, ClassMetadata cm, Id id, T o,
+                                    boolean delete)
+      throws OtmException {
+   SearchableDefinition sd = getSearchableDef(cm, cm.getBlobField());
+   if (sd == null)
+     return;
+
+   if (delete) {
+     o = (T) bs.get(cm, id.getId(), null, getBlobStoreCon());
+     if (o != null)
+       store.remove(cm, sd, id.getId(), o, getSearchStoreCon());
+   } else {
+     store.index(cm, Collections.singleton(sd), id.getId(), o, getSearchStoreCon());
+   }
+  }
+
+  private SearchableDefinition getSearchableDef(ClassMetadata cm, Mapper m) {
+    return (SearchableDefinition)
+        sessionFactory.getDefinition(SearchableDefinition.NS + m.getDefinition().getName());
   }
 
   private Wrapper getFromStore(Id id, Object instance, boolean filterObj)

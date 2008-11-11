@@ -32,6 +32,7 @@ import antlr.collections.AST;
  */
 public class OqlAST extends CommonAST {
   private ExprType               type;
+  private String                 propName;
   private String                 graph;
   private boolean                isVar;
   private boolean                isInv;
@@ -44,6 +45,7 @@ public class OqlAST extends CommonAST {
     if (t instanceof OqlAST) {
       OqlAST o  = (OqlAST) t;
       type      = o.type;
+      propName  = o.propName;
       graph     = o.graph;
       isVar     = o.isVar;
       isInv     = o.isInv;
@@ -71,7 +73,25 @@ public class OqlAST extends CommonAST {
   }
 
   /**
-   * Get graph.
+   * Get the property-name.
+   *
+   * @return the property-name
+   */
+  public String getPropName() {
+      return propName;
+  }
+
+  /**
+   * Set the property-name.
+   *
+   * @param propName the value to set.
+   */
+  public void setPropName(String propName) {
+      this.propName = propName;
+  }
+
+  /**
+   * Get the graph.
    *
    * @return graph as String.
    */
@@ -80,7 +100,7 @@ public class OqlAST extends CommonAST {
   }
 
   /**
-   * Set graph.
+   * Set the graph.
    *
    * @param graph the value to set.
    */

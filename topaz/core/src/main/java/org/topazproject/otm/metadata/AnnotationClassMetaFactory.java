@@ -54,6 +54,7 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Predicate.PropType;
 import org.topazproject.otm.annotations.PredicateMap;
 import org.topazproject.otm.annotations.Projection;
+import org.topazproject.otm.annotations.Searchable;
 import org.topazproject.otm.annotations.SubView;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.View;
@@ -61,6 +62,7 @@ import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.mapping.java.Property;
 import org.topazproject.otm.mapping.java.PropertyBinderFactory;
+import org.topazproject.otm.search.PreProcessor;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
@@ -214,12 +216,11 @@ public class AnnotationClassMetaFactory {
         if (t instanceof ParameterizedType)
           addGenericsSyntheticProps(def, clazz, (ParameterizedType) t, factories);
 
-      Map<String, String> supersedes = new HashMap<String, String>();
+      Map<String, Map<String, String>> supersedes = new HashMap<String, Map<String, String>>();
       buildSupersedes((EntityDefinition) def, supersedes);
 
       for (String name : supersedes.keySet()) {
         PropertyDefFactory pi = factories.get(name);
-
         if (pi != null)
           pi.setSupersedes(supersedes.get(name));
       }
@@ -227,7 +228,6 @@ public class AnnotationClassMetaFactory {
 
     for (PropertyDefFactory fi : factories.values()) {
       PropertyDefinition d = fi.getDefinition(sf, uriPrefix);
-
       if (d == null) {
         log.info("Skipped (WTF) " + fi);
 
@@ -236,10 +236,14 @@ public class AnnotationClassMetaFactory {
 
       sf.addDefinition(d);
       bin.addBinderFactory(new PropertyBinderFactory(fi.name, fi.property));
+
+      SearchableDefinition sd = fi.getSearchableDefinition(sf);
+      if (sd != null)
+        sf.addDefinition(sd);
     }
   }
 
-  private void buildSupersedes(EntityDefinition def, Map<String, String> supersedes) {
+  private void buildSupersedes(EntityDefinition def, Map<String, Map<String, String>> supersedes) {
     for (String sup : def.getSuperEntities()) {
       EntityDefinition sdef = (EntityDefinition) sf.getDefinition(sup);
 
@@ -252,11 +256,24 @@ public class AnnotationClassMetaFactory {
     if (b != null) {
       for (String prop : b.getProperties()) {
         PropertyDefinition pd = (PropertyDefinition) sf.getDefinition(prop);
+        if (pd != null)
+          put(supersedes, pd.getLocalName(), null, prop); // overwrite super-class
 
-        if ((pd != null) && def.getName().equals(pd.getNamespace()))
-          supersedes.put(pd.getLocalName(), prop); // overwrite super-class
+        SearchableDefinition sd = (SearchableDefinition)
+                                              sf.getDefinition(SearchableDefinition.NS + prop);
+        if (sd != null)
+          put(supersedes, sd.getLocalName(), SearchableDefinition.NS, prop);
       }
     }
+  }
+
+  private static void put(Map<String, Map<String, String>> map, String name, String type,
+                          String value) {
+    Map<String, String> inner = map.get(name);
+    if (inner == null)
+      map.put(name, inner = new HashMap<String, String>());
+
+    inner.put(type, value);
   }
 
   private void addGenericsSyntheticProps(ClassDefinition def, Class clazz,
@@ -350,10 +367,11 @@ public class AnnotationClassMetaFactory {
   }
 
   private static class PropertyDefFactory {
-    final ClassDefinition cd;
-    final Property        property;
-    final String          name;
-    String                supersedes;
+    final ClassDefinition     cd;
+    final Property            property;
+    final String              name;
+    final Map<String, String> supersedes = new HashMap<String, String>();
+    Searchable                searchable;
 
     public PropertyDefFactory(ClassDefinition cd, Property property)
                        throws OtmException {
@@ -362,8 +380,8 @@ public class AnnotationClassMetaFactory {
       this.name       = cd.getName() + ":" + property.getName();
     }
 
-    public void setSupersedes(String supersedes) {
-      this.supersedes = supersedes;
+    public void setSupersedes(Map<String, String> supersedes) {
+      this.supersedes.putAll(supersedes);
     }
 
     public String getName() {
@@ -386,9 +404,13 @@ public class AnnotationClassMetaFactory {
           continue;
 
         for (Annotation a : m.getAnnotations()) {
-          if (a instanceof GeneratedValue)
+          if (a instanceof GeneratedValue) {
             gv = (GeneratedValue) a;
-          else if (a.annotationType().getPackage().getName().equals(ours)) {
+          } else if (a instanceof Searchable) {
+            if (searchable != null)
+              throw new OtmException("Duplicate @Searchable found on " + getName());
+            searchable = (Searchable) a;
+          } else if (a.annotationType().getPackage().getName().equals(ours)) {
             if (ann != null) {
               if (!ann.getClass().equals(a.getClass())
                    || !decl.isAssignableFrom(m.getDeclaringClass())
@@ -486,7 +508,7 @@ public class AnnotationClassMetaFactory {
       String   ref  = ((rdf != null) && !"".equals(rdf.ref())) ? rdf.ref() : null;
 
       if (ref == null)
-        ref = supersedes;
+        ref = supersedes.get(null);
 
       String uri =
         ((rdf != null) && !"".equals(rdf.uri())) ? sf.expandAlias(rdf.uri())
@@ -551,8 +573,8 @@ public class AnnotationClassMetaFactory {
       if (ft == FetchType.undefined)
         ft = (ref == null) ? FetchType.lazy : null;
 
-      return new RdfDefinition(getName(), ref, supersedes, uri, dt, inverse, graph, mt, owned,
-                               generator, ct, ft, assoc, objectProperty);
+      return new RdfDefinition(getName(), ref, supersedes.get(null), uri, dt, inverse, graph, mt,
+                               owned, generator, ct, ft, assoc, objectProperty);
     }
 
     private Boolean getBooleanProperty(Predicate.BT raw, String ref, Boolean dflt) {
@@ -642,6 +664,37 @@ public class AnnotationClassMetaFactory {
       sf.preload(property.getComponentType());
 
       return new EmbeddedDefinition(getName(), getEntityName(property.getComponentType()));
+    }
+
+    public SearchableDefinition getSearchableDefinition(SessionFactory sf) throws OtmException {
+      String       ref = null, uri = null, index = null, analyzer = null;
+      Boolean      tokenize     = null;
+      Integer      boost        = null;
+      PreProcessor preProcessor = null;
+
+      if (searchable != null) {
+        ref = !searchable.ref().equals("") ? searchable.ref() : null;
+
+        uri = !searchable.uri().equals("") ? sf.expandAlias(searchable.uri()) : null;
+        index = !searchable.index().equals("") ? searchable.index() : null;
+        tokenize = searchable.tokenize();       // FIXME
+        boost = (searchable.boost() == Integer.MAX_VALUE) ? null : searchable.boost();
+
+        try {
+          if (!searchable.preProcessorClass().equals(""))
+            preProcessor = (PreProcessor) Thread.currentThread().getContextClassLoader()
+                                         .loadClass(searchable.preProcessorClass()).newInstance();
+        } catch (Throwable t) {
+          throw new OtmException("Unable to find implementation of '"
+                                 + searchable.preProcessorClass()
+                                 + "' pre-processor for " + this, t);
+        }
+      } else if (supersedes.get(SearchableDefinition.NS) == null) {
+        return null;
+      }
+
+      return new SearchableDefinition(getName(), ref, supersedes.get(SearchableDefinition.NS),
+                                      uri, index, tokenize, analyzer, boost, preProcessor);
     }
   }
 }

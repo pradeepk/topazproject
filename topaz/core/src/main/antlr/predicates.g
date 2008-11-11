@@ -49,6 +49,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.EmbeddedMapper;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
@@ -167,6 +168,16 @@ options {
         return type;
       }
 
+      // see if this is the blob field
+      m = type.getMeta().getBlobField();
+      if (m != null && fname.equals(m.getName())) {
+        AST ref = #([URIREF, "-blob-"]);
+        updateAST(ref, type, null, m, false);
+        astFactory.addASTChild(cur, ref);
+
+        return null;
+      }
+
       // see if this is the id-field
       m = type.getMeta().getIdField();
       if (m != null && fname.equals(m.getName())) {
@@ -233,6 +244,9 @@ options {
         a.setGraph(getGraphUri(prntType.getMeta().getGraph()));
       else if (prntType != null && prntType.getType() == ExprType.Type.EMB_CLASS)
         a.setGraph(getGraphUri(findEmbGraph(prntType)));
+
+      if (m != null)
+        a.setPropName(m.getDefinition().getName());
 
       if (m instanceof RdfMapper) {
         RdfMapper r = (RdfMapper) m;

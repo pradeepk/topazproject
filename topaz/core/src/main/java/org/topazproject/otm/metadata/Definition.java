@@ -23,13 +23,15 @@ import org.topazproject.otm.SessionFactory;
 
 /**
  * The base class for all meta definitions. Definitions all have a name that may optionally
- * contain a namespace portion followed by a ':' and a namespace specific portion. Class names
- * will usually have no namespace defined and are expected to be globally unique. Property names
- * however will usually have  a namespace to disambiguate.<p>Definitions in addition can
- * reference another definition. The reference may indicate this is an 'alias' or 're-use' of
- * another definition or may indicate that this definition is 'based-on' another definition. In
- * either case, forward declarations of the referenced definition is allowed and therefore the
- * referenced definition may not exist at the time of this definition.</p>
+ * contain a namespace portion followed by a ':' and a namespace specific portion, the local name.
+ * Class names will usually have no namespace defined and are expected to be globally unique.
+ * Property names however will usually have  a namespace to disambiguate.
+ *
+ * <p>Definitions in addition can reference another definition. The reference may indicate this is
+ * an 'alias' or 're-use' of another definition or may indicate that this definition is 'based-on'
+ * another definition. In either case, forward declarations of the referenced definition is
+ * allowed and therefore the referenced definition may not exist at the time of this
+ * definition.</p>
  *
  * @author Pradeep Krishnan
  */
@@ -37,7 +39,6 @@ public class Definition {
   private static enum State {UNRESOLVED, RESOLVING, RESOLVED;};
 
   private final String name;
-  private final String ns;
   private final String specific;
   private final String reference;
   private final String supersedes;
@@ -64,9 +65,7 @@ public class Definition {
     this.reference   = reference;
     this.supersedes  = supersedes;
 
-    String[] sp      = name.split(":", 2);
-    specific         = sp[sp.length - 1];
-    ns               = (sp.length == 1) ? null : sp[0];
+    specific         = name.substring(name.lastIndexOf(':') + 1);
   }
 
   /**
@@ -79,18 +78,9 @@ public class Definition {
   }
 
   /**
-   * Gets the namespace for this definition.
+   * Gets the local name for this definition.
    *
-   * @return name space or null for global
-   */
-  public String getNamespace() {
-    return ns;
-  }
-
-  /**
-   * Gets the namespace specific name for this definition.
-   *
-   * @return the specific name
+   * @return the local name
    */
   public String getLocalName() {
     return specific;

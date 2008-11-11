@@ -68,17 +68,18 @@ import org.topazproject.otm.query.DefaultQueryFunctionFactory;
 import org.topazproject.otm.query.QueryFunctionFactory;
 import org.topazproject.otm.serializer.SerializerFactory;
 
+import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.GraphConfig;
+import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Rdfs;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.SearchStore;
 import org.topazproject.otm.TripleStore;
-import org.topazproject.otm.BlobStore;
-import org.topazproject.otm.Interceptor;
 
 /**
  * A factory for otm sessions. It should be preloaded with the classes that would be persisted.
@@ -548,6 +549,10 @@ public class SessionFactoryImpl implements SessionFactory {
    */
   public void setBlobStore(BlobStore store) {
     this.blobStore = store;
+  }
+
+  protected SearchStore getSearchStore() {
+    return (SearchStore) tripleStore;
   }
 
   public void setTransactionManager(TransactionManager tm) {

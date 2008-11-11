@@ -19,6 +19,7 @@
 package org.topazproject.otm.stores;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
@@ -51,11 +53,19 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.SearchStore;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
 import org.topazproject.otm.filter.AbstractFilterImpl;
+import org.topazproject.otm.mapping.AbstractMapper;
 import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
+import org.topazproject.otm.mapping.java.AbstractFieldBinder;
+import org.topazproject.otm.metadata.Definition;
+import org.topazproject.otm.metadata.PropertyDefinition;
+import org.topazproject.otm.metadata.RdfDefinition;
+import org.topazproject.otm.metadata.SearchableDefinition;
 import org.topazproject.otm.query.GenericQuery;
 import org.topazproject.otm.query.QueryException;
 import org.topazproject.otm.query.QueryInfo;
@@ -66,7 +76,7 @@ import org.topazproject.otm.query.Results;
  * 
  * @author Ronald Tschalär
  */
-public class ItqlStore extends AbstractTripleStore {
+public class ItqlStore extends AbstractTripleStore implements SearchStore {
   private static final Log log = LogFactory.getLog(ItqlStore.class);
   private        final List<ItqlClient>  conCache = new ArrayList<ItqlClient>();
   private        final ItqlClientFactory itqlFactory;
@@ -132,9 +142,63 @@ public class ItqlStore extends AbstractTripleStore {
 
   public <T> void insert(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o, 
                          Connection con) throws OtmException {
+    insertInternal(cm, fields, id, o, con);
+  }
+
+  public <T> void index(ClassMetadata cm, Collection<SearchableDefinition> fields, String id, T o,
+                        Connection con) throws OtmException {
+    Collection<Mapper> mappers = new ArrayList<Mapper>();
+
+    for (SearchableDefinition sd : fields) {
+      final Map<EntityMode, Binder> binders = new HashMap<EntityMode, Binder>();
+      final SearchableDefinition def = sd;
+
+      Mapper m = cm.getMapperByName(sd.getLocalName());
+      if (m instanceof RdfMapper) {
+        binders.putAll(m.getBinders());
+      } else {
+        Session sess = ((ItqlStoreConnection) con).getSession();
+        binders.put(sess.getEntityMode(), getBlobBinder(cm, sess));
+      }
+
+      m = new AbstractMapper(binders) {
+        public PropertyDefinition getDefinition() {
+          return def;
+        }
+      };
+      mappers.add(m);
+    }
+
+    insertInternal(cm, mappers, id, o, con);
+  }
+
+  private static Binder getBlobBinder(ClassMetadata cm, Session sess) {
+    final Binder origBinder = cm.getBlobField().getBinder(sess);
+    if (origBinder.getSerializer() != null)
+      return origBinder;
+
+    // FIXME: this has too many assumptions...
+    return new AbstractFieldBinder(null, null) {
+      public List get(Object o) {
+        byte[] b = (byte[]) origBinder.getRawValue(o, false);
+        try {
+          return Collections.singletonList(new String(b, "UTF-8"));
+        } catch (UnsupportedEncodingException uee) {
+          throw new OtmException("Unexpected error", uee);
+        }
+      }
+
+      public void set(Object o, List l) {
+      }
+    };
+  }
+
+  private <T, M extends Mapper> void insertInternal(ClassMetadata cm, Collection<M> fields,
+                                                    String id, T o, Connection con)
+      throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
-    Map<String, List<RdfMapper>> mappersByGraph = groupMappersByGraph(cm, fields);
+    Map<String, List<M>> mappersByGraph = groupMappersByGraph(cm, fields);
 
     // for every graph create an insert statement
     for (String g : mappersByGraph.keySet()) {
@@ -147,7 +211,7 @@ public class ItqlStore extends AbstractTripleStore {
           addStmt(insert, id, Rdf.rdf + "type", type, null, true);
       }
 
-      buildInsert(insert, mappersByGraph.get(m), id, o, isc.getSession());
+      buildInsert(insert, mappersByGraph.get(g), id, o, isc.getSession());
     }
   }
 
@@ -179,59 +243,97 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private static Map<String, List<RdfMapper>> groupMappersByGraph(ClassMetadata cm, 
-                                                                  Collection<RdfMapper> fields) {
-    Map<String, List<RdfMapper>> mappersByGraph = new HashMap<String, List<RdfMapper>>();
+  private static <T> Map<String, List<T>> groupMappersByGraph(ClassMetadata cm,
+                                                              Collection<T> fields) {
+    Map<String, List<T>> mappersByGraph = new HashMap<String, List<T>>();
 
     if (cm.getAllTypes().size() > 0)
-      mappersByGraph.put(cm.getGraph(), new ArrayList<RdfMapper>());
+      mappersByGraph.put(cm.getGraph(), new ArrayList<T>());
 
-    for (RdfMapper p : fields) {
-      String g = (p.getGraph() != null) ? p.getGraph() : cm.getGraph();
-      List<RdfMapper> pList = mappersByGraph.get(g);
+    for (T p : fields) {
+      String g =
+          getGraph((p instanceof Definition) ? (Definition) p : ((Mapper) p).getDefinition(), cm);
+      List<T> pList = mappersByGraph.get(g);
       if (pList == null)
-        mappersByGraph.put(g, pList = new ArrayList<RdfMapper>());
+        mappersByGraph.put(g, pList = new ArrayList<T>());
       pList.add(p);
     }
 
     return mappersByGraph;
   }
 
+  private static String getGraph(Definition def, ClassMetadata cm) {
+    if (def instanceof RdfDefinition) {
+      RdfDefinition rd = (RdfDefinition) def;
+      return (rd.getGraph() != null) ? rd.getGraph() : cm.getGraph();
+    }
 
-  private void buildInsert(StringBuilder buf, List<RdfMapper> pList, String id, Object o, Session sess)
+    if (def instanceof SearchableDefinition) {
+      return ((SearchableDefinition) def).getIndex();
+    }
+
+    throw new Error("Unexpected definition type: " + def.getClass() + ": " + def);
+  }
+
+
+  private void buildInsert(StringBuilder buf, List<? extends Mapper> pList, String id, Object o,
+                           Session sess)
       throws OtmException {
-    for (RdfMapper p : pList) {
-      if (!p.isEntityOwned())
+    for (Mapper p : pList) {
+      Definition def = p.getDefinition();
+      Binder     b   = p.getBinder(sess);
+
+      if (def instanceof SearchableDefinition) {
+        SearchableDefinition sd = (SearchableDefinition) def;
+        List<String> objs = (List<String>) b.get(o);
+
+        if (sd.getPreProcessor() != null) {
+          List<String> procd = new ArrayList<String>(objs.size());
+          for (String obj : objs)
+            procd.add(sd.getPreProcessor().process(obj));
+          objs = procd;
+        }
+
+        addStmts(buf, id, sd.getUri(), objs, null, false, CollectionType.PREDICATE,
+                 "$s" + bnCtr++ + "i", false);
         continue;
-      Binder b = p.getBinder(sess);
-      if (p.isPredicateMap()) {
+      }
+
+      RdfDefinition rd = (RdfDefinition) def;
+      if (!rd.isEntityOwned())
+        continue;
+
+      if (rd.isPredicateMap()) {
         Map<String, List<String>> pMap = (Map<String, List<String>>) b.getRawValue(o, true);
         for (String k : pMap.keySet())
           for (String v : pMap.get(k))
             addStmt(buf, id, k, v, null, false); // xxx: uri or literal?
-      } else if (!p.isAssociation())
-        addStmts(buf, id, p.getUri(), (List<String>) b.get(o) , p.getDataType(), p.typeIsUri(), 
-                 p.getColType(), "$s" + bnCtr++ + "i", p.hasInverseUri());
+      } else if (!rd.isAssociation())
+        addStmts(buf, id, rd.getUri(), (List<String>) b.get(o) , rd.getDataType(),
+                 rd.typeIsUri(), rd.getColType(), "$s" + bnCtr++ + "i", rd.hasInverseUri());
       else
-        addStmts(buf, id, p.getUri(), sess.getIds(b.get(o)) , null,true, p.getColType(), 
-                 "$s" + bnCtr++ + "i", p.hasInverseUri());
+        addStmts(buf, id, rd.getUri(), sess.getIds(b.get(o)) , null,true, rd.getColType(),
+                 "$s" + bnCtr++ + "i", rd.hasInverseUri());
     }
 
     if (bnCtr > 1000000000)
       bnCtr = 0;        // avoid negative numbers
   }
 
-  private static void addStmts(StringBuilder buf, String subj, String pred, List<String> objs, 
-      String dt, boolean objIsUri, CollectionType mt, String prefix, boolean inverse) {
+  private static void addStmts(StringBuilder buf, String subj, String pred, List<String> objs,
+                               String dt, boolean objIsUri, CollectionType mt, String prefix,
+                               boolean inverse) {
     int i = 0;
     switch (mt) {
       case PREDICATE:
-        for (String obj : objs)
+        for (String obj : objs) {
           if (!inverse)
             addStmt(buf, subj, pred, obj, dt, objIsUri);
           else
             addStmt(buf, obj, pred, subj, dt, true);
+        }
         break;
+
       case RDFLIST:
         if (objs.size() > 0)
           buf.append("<").append(subj).append("> <").append(pred).append("> ")
@@ -247,6 +349,7 @@ public class ItqlStore extends AbstractTripleStore {
         if (i > 0)
           addStmt(buf, prefix+(i-1), "rdf:rest", "rdf:nil", null, true);
         break;
+
       case RDFBAG:
       case RDFSEQ:
       case RDFALT:
@@ -293,13 +396,79 @@ public class ItqlStore extends AbstractTripleStore {
     for (String g : mappersByGraph.keySet()) {
       int len = delete.length();
       delete.append("delete ");
+
       if (buildDeleteSelect(delete, getGraphUri(g, isc), mappersByGraph.get(g),
-                        !partialDelete && g.equals(cm.getGraph()) && cm.getAllTypes().size() > 0, id))
+                      !partialDelete && g.equals(cm.getGraph()) && cm.getAllTypes().size() > 0, id))
         delete.append("from <").append(getGraphUri(g, isc)).append(">;");
       else
         delete.setLength(len);
     }
 
+    doDelete(isc, delete.toString());
+  }
+
+  public <T> void remove(ClassMetadata cm, Collection<SearchableDefinition> fields, String id, T o,
+                         Connection con) throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection) con;
+
+    Map<String, List<SearchableDefinition>> defsByGraph = groupMappersByGraph(cm, fields);
+    StringBuilder delete = new StringBuilder(500);
+
+    // for every index and graph create a delete statement
+    for (String index : defsByGraph.keySet()) {
+      Map<String, List<RdfMapper>> rdfMappersByGraph =
+          groupMappersByGraph(cm, findRdfMappersForSearch(cm, defsByGraph.get(index)));
+
+      for (String g : rdfMappersByGraph.keySet()) {
+        int len = delete.length();
+        delete.append("delete ");
+
+        if (buildDeleteSelect(delete, getGraphUri(g, isc), rdfMappersByGraph.get(g), false, id))
+          delete.append("from <").append(getGraphUri(index, isc)).append(">;");
+        else
+          delete.setLength(len);
+      }
+      continue;
+    }
+
+    doDelete(isc, delete.toString());
+  }
+
+  private static Collection<RdfMapper> findRdfMappersForSearch(ClassMetadata cm,
+                                                               List<SearchableDefinition> defs) {
+    Collection<RdfMapper> mappers = new ArrayList<RdfMapper>();
+
+    for (SearchableDefinition def : defs) {
+      String propName = def.getBaseName();
+      Mapper m = cm.getMapperByName(propName.substring(propName.indexOf(':') + 1));
+      if (m instanceof RdfMapper)
+        mappers.add((RdfMapper) m);
+    }
+
+    return mappers;
+  }
+
+  public <T> void remove(ClassMetadata cm, SearchableDefinition field, String id, T o,
+                         Connection con) throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection) con;
+
+    byte[] b = (byte[]) cm.getBlobField().getBinder(isc.getSession()).getRawValue(o, false);
+    String text;
+    try {
+      text = new String(b, "UTF-8");
+    } catch (UnsupportedEncodingException uee) {
+      throw new OtmException("Unexpected error", uee);
+    }
+
+    if (field.getPreProcessor() != null)
+      text = field.getPreProcessor().process(text);
+
+    String tql = "delete <" + id + "> <" + field.getUri() + "> '" + RdfUtil.escapeLiteral(text) +
+                 "' from <" + getGraphUri(field.getIndex(), isc) + ">;";
+    doDelete(isc, tql);
+  }
+
+  private void doDelete(ItqlStoreConnection isc, String delete) throws OtmException {
     if (log.isDebugEnabled())
       log.debug("delete: " + delete);
 
@@ -307,14 +476,14 @@ public class ItqlStore extends AbstractTripleStore {
       return;
 
     try {
-      isc.getItqlClient().doUpdate(delete.toString());
+      isc.getItqlClient().doUpdate(delete);
     } catch (IOException ioe) {
-      throw new OtmException("error performing update: " + delete.toString(), ioe);
+      throw new OtmException("error performing update: " + delete, ioe);
     }
   }
 
   private boolean buildDeleteSelect(StringBuilder qry, String graph, List<RdfMapper> rdfMappers,
-                                 boolean delTypes, String id)
+                                    boolean delTypes, String id)
       throws OtmException {
     qry.append("select $s $p $o from <").append(graph).append("> where ");
     int len = qry.length();

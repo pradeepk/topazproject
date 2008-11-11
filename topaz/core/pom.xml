@@ -87,6 +87,13 @@
       <artifactId>groovy-all</artifactId>
     </dependency>
     <dependency>
+      <!-- only needed if you use HtmlTagStripper -->
+      <groupId>org.ccil.cowan.tagsoup</groupId>
+      <artifactId>tagsoup</artifactId>
+      <version>1.2</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>

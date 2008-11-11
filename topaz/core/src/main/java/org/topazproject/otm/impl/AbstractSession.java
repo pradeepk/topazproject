@@ -40,18 +40,19 @@ import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.query.Results;
 
-import org.topazproject.otm.OtmException;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
+import org.topazproject.otm.Criteria;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Interceptor;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.TripleStore;
-import org.topazproject.otm.Session;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Query;
-import org.topazproject.otm.Criteria;
+import org.topazproject.otm.SearchStore;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.TripleStore;
 
 /**
  * An otm session (similar to hibernate session). And similar to hibernate session, not thread
@@ -327,6 +328,15 @@ abstract class AbstractSession implements Session {
     }
 
     return bsCon;
+  }
+
+  protected Connection getSearchStoreCon() throws OtmException {
+    if (sessionFactory.getTripleStore() instanceof SearchStore)
+      return getTripleStoreCon();
+
+    throw new OtmException("Triple-Store '" + sessionFactory.getTripleStore() +
+                           "' does not double as a Search-Store - text-search is currently " +
+                           "only supported when using certain triple-stores");
   }
 
   private void ensureTxActive(boolean start, int txTimeout) throws OtmException {
