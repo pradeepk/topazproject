@@ -19,6 +19,8 @@
 
 package org.topazproject.otm.query;
 
+import antlr.RecognitionException;
+
 /** 
  * Indicates an OQL query function that's valid in the where clause and that returns a boolean.
  * I.e. this function can be used directly as a factor in the where clause expression, but not
@@ -35,4 +37,15 @@ public interface BooleanConditionFunction extends QueryFunction {
    * @return true if this is a binary comparison function
    */
   boolean isBinaryCompare();
+
+  /**
+   * A function may also designate certain arguments as "outputs" to return additional values
+   * besides the boolean result. This method should return the type for these outputs, or throw
+   * an exception if the specified argument is not an output.
+   *
+   * @param arg the position of the argument (0-based)
+   * @return the type of this "output", or null if unknown
+   * @throws RecognitionException if the argument is not an "output"
+   */
+  ExprType getOutputVarType(int arg) throws RecognitionException;
 }

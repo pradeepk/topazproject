@@ -436,11 +436,13 @@ factor[boolean isProj, boolean isComp] returns [ExprType type = null]
 
 fcall[boolean isProj, boolean isComp] returns [ExprType type = null]
 {
-  List<OqlAST>   args  = new ArrayList<OqlAST>();
-  List<ExprType> types = new ArrayList<ExprType>();
+  List<OqlAST>   args     = new ArrayList<OqlAST>();
+  List<ExprType> types    = new ArrayList<ExprType>();
+  List<OqlAST>   provVars = new ArrayList<OqlAST>();
   ExprType t;
 }
-    : #(FUNC fp:ID (COLON fn:ID)? (t=a:factor[isProj, false] { args.add((OqlAST) #a); types.add(t); })*) {
+    : #(FUNC fp:ID (COLON fn:ID)?
+          (t=a:arg[isProj, false, provVars] { args.add((OqlAST) #a); types.add(t); })*) {
         String fname = #fp.getText() + (#fn != null ? ":" + #fn.getText() : "");
 
         QueryFunctionFactory qff = sessFactory.getQueryFunctionFactory(fname);
@@ -456,14 +458,46 @@ fcall[boolean isProj, boolean isComp] returns [ExprType type = null]
           throw new RecognitionException("function '" + fname + "' is " +
                                          (isComp ? "not " : "") + "a boolean function");
 
-        if (args.size() == 2 && qf instanceof BooleanConditionFunction &&
-            ((BooleanConditionFunction) qf).isBinaryCompare())
-          checkTypeCompatibility(types.get(0), types.get(1), args.get(0), args.get(1), #fcall);
+        if (qf instanceof BooleanConditionFunction) {
+          BooleanConditionFunction bqf = (BooleanConditionFunction) qf;
+
+          if (args.size() == 2 && bqf.isBinaryCompare())
+            checkTypeCompatibility(types.get(0), types.get(1), args.get(0), args.get(1), #fcall);
+
+          for (int idx = 0; idx < provVars.size(); idx++) {
+            if (provVars.get(idx) != null) {
+              OqlAST var = (OqlAST) args.get(idx).getFirstChild();
+              assert var.isVar() : var + " is not a variable";
+              assert var.getText() == provVars.get(idx).getText() :
+                     "node name mismatch: " + var.getText() + " != " + provVars.get(idx).getText();
+
+              type = bqf.getOutputVarType(idx);
+              vars.put(var.getText(), type);
+              updateAST(var, null, type, null, true);
+            }
+          }
+        }
 
         qfs.add(qf);
         ((OqlAST) #fcall).setFunction(qf);
         type = qf.getReturnType();
       }
+    ;
+
+arg[boolean isProj, boolean isComp, List<OqlAST> provVars] returns [ExprType type = null]
+{
+  // create provisional output variables
+  AST id = #arg_in.getFirstChild();
+
+  if (#arg_in.getType() == REF && id.getType() == ID && id.getNextSibling() == null &&
+      !vars.containsKey(id.getText())) {
+    addVar(id, (ExprType) null);
+    provVars.add((OqlAST) id);
+  } else {
+    provVars.add(null);
+  }
+}
+    : type=factor[isProj, isComp]
     ;
 
 cast[boolean isProj] returns [ExprType type = null]

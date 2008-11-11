@@ -114,6 +114,10 @@ class BinaryCompare implements BooleanConditionFunction, ConstraintsTokenTypes {
     return true;
   }
 
+  public ExprType getOutputVarType(int arg) throws RecognitionException {
+    throw new RecognitionException("Argument " + arg + " to " + name + "() is not an output");
+  }
+
   public void postPredicatesHook(OqlAST pre, OqlAST post) {
   }
 
