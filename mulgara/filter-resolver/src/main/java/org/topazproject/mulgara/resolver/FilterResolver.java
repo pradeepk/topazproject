@@ -364,12 +364,20 @@ public class FilterResolver implements Resolver {
    */
   private static class MultiXAResource
       extends AbstractXAResource<AbstractXAResource.RMInfo<MultiXAResource.MultiTxInfo>, MultiXAResource.MultiTxInfo> {
+    private final List<XAResource> xaResources = new ArrayList<XAResource>();
+
     private static class MultiTxInfo extends AbstractXAResource.TxInfo {
       final List<XAResource> xaResources = new ArrayList<XAResource>();
     }
 
     MultiXAResource(FilterResolverFactory factory, FilterHandler[] handlers) {
-      super(10, factory, newTxInfo(handlers));
+      super(10, factory);
+
+      for (FilterHandler h : handlers) {
+        XAResource res = h.getXAResource();
+        if (res != null)
+          xaResources.add(res);
+      }
     }
 
     @Override
@@ -377,15 +385,10 @@ public class FilterResolver implements Resolver {
       return new RMInfo<MultiTxInfo>();
     }
 
-    private static MultiTxInfo newTxInfo(FilterHandler[] handlers) {
+    @Override
+    protected MultiTxInfo newTransactionInfo() {
       MultiTxInfo ti = new MultiTxInfo();
-
-      for (FilterHandler h : handlers) {
-        XAResource res = h.getXAResource();
-        if (res != null)
-          ti.xaResources.add(res);
-      }
-
+      ti.xaResources.addAll(xaResources);
       return ti;
     }
 
@@ -470,7 +473,7 @@ public class FilterResolver implements Resolver {
     public int getTransactionTimeout() throws XAException {
       int to = Integer.MAX_VALUE;
 
-      for (XAResource xaRes : tmpTxInfo.xaResources)
+      for (XAResource xaRes : xaResources)
         to = Math.min(xaRes.getTransactionTimeout(), to);
 
       return to;
@@ -480,7 +483,7 @@ public class FilterResolver implements Resolver {
     public boolean setTransactionTimeout(int transactionTimeout) throws XAException {
       boolean res = true;
 
-      for (XAResource xaRes : tmpTxInfo.xaResources)
+      for (XAResource xaRes : xaResources)
         res &= xaRes.setTransactionTimeout(transactionTimeout);
 
       return res;
@@ -490,7 +493,7 @@ public class FilterResolver implements Resolver {
     public Xid[] recover(int flag) throws XAException {
       List<Xid> xids = new ArrayList<Xid>();
 
-      for (XAResource xaRes : tmpTxInfo.xaResources) {
+      for (XAResource xaRes : xaResources) {
         Xid[] l = xaRes.recover(flag);
         for (Xid xid : l)
           xids.add(xid);
