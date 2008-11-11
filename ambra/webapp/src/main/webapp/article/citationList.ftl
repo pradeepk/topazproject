@@ -19,19 +19,6 @@
 -->
 <!-- begin : main content -->
 <div id="content" class="static">
-  <#list citation.authors as author>
-    <#if (author_index > 4) >
-      <span class="citation_author">et al. </span>
-      <#break>
-    </#if>
-    <span class="citation_author">${author.surname!} ${author.suffix!} <@authorName>${author.givenNames!}</@authorName>, </span>
-  </#list>
-  <span class="citation_date">${citation.publicationDate?string("yyyy")}</span>
-  <span class="citation_article_title">${citation.articleTitle}. </span>
-  <span class="citation_journal_title">${citation.journalTitle} </span>
-  <span class="citation_issue">${citation.volume}(${citation.issue}):</span>
-  <span class="citation_start_page">${citation.startPage}.</span>
-  <span class="citation_doi">doi:${citation.DOI}</span>
   <h1>Download Citation</h1>
   <h2>Article:</h2>
   <p class="intro">
@@ -40,7 +27,7 @@
         <span class="citation_author">et al. </span>
         <#break>
       </#if>
-      <span class="citation_author">${author.surname!} ${author.suffix!} <@authorName>${author.givenNames!}</@authorName>, </span>
+      <span class="citation_author">${author.surname!} <@abbreviation>${author.givenNames!}</@abbreviation> ${author.suffix!}, </span>
     </#list>
     <span class="citation_date">${citation.publicationDate?string("yyyy")}</span>
     <span class="citation_article_title">${citation.articleTitle}. </span>

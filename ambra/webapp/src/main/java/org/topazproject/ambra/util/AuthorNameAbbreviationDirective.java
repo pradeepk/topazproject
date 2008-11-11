@@ -36,7 +36,7 @@ import java.io.Writer;
  * For example "Marie-Louise" is converted to "M-L"
  *
  */
-public class AuthorNameDirective implements TemplateDirectiveModel {
+public class AuthorNameAbbreviationDirective implements TemplateDirectiveModel {
 
   public void execute(Environment environment, Map params,
     TemplateModel[] loopVars,
@@ -45,12 +45,12 @@ public class AuthorNameDirective implements TemplateDirectiveModel {
 
     if (!params.isEmpty()) {
       throw new TemplateModelException(
-          "AuthorNameDirective doesn't allow parameters.");
+          "AuthorNameAbbreviationDirective doesn't allow parameters.");
     }
 
     if (loopVars.length != 0) {
       throw new TemplateModelException(
-          "AuthorNameDirective doesn't allow loop variables.");
+          "AuthorNameAbbreviationDirective doesn't allow loop variables.");
     }
 
     if (body != null) {
