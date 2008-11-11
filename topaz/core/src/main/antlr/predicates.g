@@ -347,14 +347,6 @@ options {
                     " is not comparable to " + et2);
     }
 
-    private static boolean isBinaryCompare(String fname) {
-      for (String f : binaryComparisonFuncs) {
-        if (f.equals(fname))
-          return true;
-      }
-      return false;
-    }
-
     private String expandAlias(String uri) {
       return sessFactory.expandAlias(uri.substring(1, uri.length() - 1));
     }
