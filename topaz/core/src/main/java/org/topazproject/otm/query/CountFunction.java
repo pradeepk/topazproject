@@ -51,7 +51,8 @@ class CountFunction implements ProjectionFunction, ConstraintsTokenTypes {
   public void postPredicatesHook(OqlAST pre, OqlAST post) {
   }
 
-  public OqlAST toItql(List<OqlAST> args, List<OqlAST> vars, OqlAST resVar, ASTFactory af)
+  public OqlAST toItql(List<OqlAST> args, List<OqlAST> vars, OqlAST resVar, ASTFactory af,
+                       String locVarPfx)
       throws RecognitionException {
     OqlAST arg = args.get(0);
     OqlAST var = vars.get(0);

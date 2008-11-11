@@ -351,7 +351,8 @@ fcall[OqlAST var, boolean isProj]
 { List<OqlAST> args = new ArrayList<OqlAST>(), vars = new ArrayList<OqlAST>(); OqlAST v; }
     : ! #(FUNC ID (COLON ID)?
                (arg:factor[v = nextVar(), isProj] { vars.add(v); args.add((OqlAST) #arg); })*) {
-          #fcall = ((OqlAST) #FUNC).getFunction().toItql(args, vars, var, astFactory);
+          #fcall = ((OqlAST) #FUNC).getFunction().toItql(args, vars, var, astFactory,
+                                                         tmpVarPfx + varCnt++ + "f");
         }
     ;
 

@@ -116,7 +116,8 @@ class BinaryCompare implements BooleanConditionFunction, ConstraintsTokenTypes {
   public void postPredicatesHook(OqlAST pre, OqlAST post) {
   }
 
-  public OqlAST toItql(List<OqlAST> args, List<OqlAST> vars, OqlAST resVar, ASTFactory af)
+  public OqlAST toItql(List<OqlAST> args, List<OqlAST> vars, OqlAST resVar, ASTFactory af,
+                       String locVarPfx)
       throws RecognitionException {
     return toItql(args.get(0), vars.get(0), args.get(1), vars.get(1), af);
   }

@@ -63,10 +63,12 @@ public interface QueryFunction {
    * @param resVar the variable into which to put the function result; for boolean condition
    *               functions this can be ignored.
    * @param astFactory the ast-factory to use
+   * @param locVarPfx the prefix to use to generate local variables
    * @return the AST to add to the where clause (if the AST is a COUNT or SUBQ then it is added
    *         to the projection instead)
    * @throws RecognitionException if an error occurred
    */
-  OqlAST toItql(List<OqlAST> args, List<OqlAST> vars, OqlAST resVar, ASTFactory astFactory)
+  OqlAST toItql(List<OqlAST> args, List<OqlAST> vars, OqlAST resVar, ASTFactory astFactory,
+                String locVarPfx)
       throws RecognitionException;
 }
