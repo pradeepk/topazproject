@@ -27,6 +27,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.DetachedCriteria;
+import org.topazproject.otm.query.GenericQuery;
 import org.topazproject.otm.query.GenericQueryImpl;
 
 import org.apache.commons.logging.Log;
@@ -80,7 +81,7 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
       return crit;
     }
 
-    public GenericQueryImpl getQuery() throws OtmException {
+    public GenericQuery getQuery() throws OtmException {
       StringBuilder qry = new StringBuilder("select o from ");
       qry.append(crit.getClassMetadata().getName()).append(" o");
 

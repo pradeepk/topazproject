@@ -33,7 +33,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.filter.JunctionFilterDefinition;
 import org.topazproject.otm.filter.AbstractFilterImpl;
 import org.topazproject.otm.query.ErrorCollector;
-import org.topazproject.otm.query.GenericQueryImpl;
+import org.topazproject.otm.query.GenericQuery;
 import org.topazproject.otm.query.ItqlConstraintGenerator;
 import org.topazproject.otm.query.ItqlFilterApplicator;
 import org.topazproject.otm.query.ItqlRedux;
@@ -49,14 +49,14 @@ import org.topazproject.otm.query.QueryInfo;
  */
 class ItqlQuery extends QueryImplBase {
   private static final Log log = LogFactory.getLog(ItqlQuery.class);
-  private final GenericQueryImpl   query;
+  private final GenericQuery       query;
   private final Collection<Filter> filters;
   private final Session            sess;
 
   /** 
    * Create a new itql-query instance. 
    */
-  public ItqlQuery(GenericQueryImpl query, Collection<Filter> filters, Session sess) {
+  public ItqlQuery(GenericQuery query, Collection<Filter> filters, Session sess) {
     this.query   = query;
     this.filters = filters;
     this.sess    = sess;
@@ -127,7 +127,7 @@ class ItqlQuery extends QueryImplBase {
   }
 
   private ItqlFilter parsePlainItqlFilter(AbstractFilterImpl f, String pfx) throws OtmException {
-    GenericQueryImpl fqry = f.getQuery();
+    GenericQuery fqry = f.getQuery();
 
     if (log.isDebugEnabled())
       log.debug("parsing filter '" + fqry + "'");

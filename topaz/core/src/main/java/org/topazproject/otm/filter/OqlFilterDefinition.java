@@ -26,6 +26,7 @@ import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.query.GenericQuery;
 import org.topazproject.otm.query.GenericQueryImpl;
 
 import org.apache.commons.logging.Log;
@@ -114,7 +115,7 @@ public class OqlFilterDefinition extends AbstractFilterDefinition {
       return cr;
     }
 
-    public GenericQueryImpl getQuery() throws OtmException {
+    public GenericQuery getQuery() throws OtmException {
       query.prepareQuery(sess.getSessionFactory());
       query.applyParameterValues(paramValues, sess.getSessionFactory());
       return query;

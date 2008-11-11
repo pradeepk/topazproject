@@ -27,7 +27,7 @@ import java.util.Set;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.query.GenericQueryImpl;
+import org.topazproject.otm.query.GenericQuery;
 
 /**
  * This represents a filter-definition that is the result of a logical combination of other
@@ -105,7 +105,7 @@ public abstract class JunctionFilterDefinition extends AbstractFilterDefinition 
       throw new UnsupportedOperationException("not supported on junction filters");
     }
 
-    public GenericQueryImpl getQuery() {
+    public GenericQuery getQuery() {
       throw new UnsupportedOperationException("not supported on junction filters");
     }
 

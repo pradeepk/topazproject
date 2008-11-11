@@ -42,7 +42,7 @@ import antlr.collections.AST;
  *
  * @author Ronald Tschalär
  */
-public class GenericQueryImpl extends QueryImplBase implements Cloneable {
+public class GenericQueryImpl extends QueryImplBase implements GenericQuery, Cloneable {
   private final String            query;
   private final Log               log;
   private       List<String>      prepareWarnings = new ArrayList<String>();

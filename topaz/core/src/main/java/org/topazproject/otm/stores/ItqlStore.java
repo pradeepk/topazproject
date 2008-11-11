@@ -56,7 +56,7 @@ import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
 import org.topazproject.otm.filter.AbstractFilterImpl;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.RdfMapper;
-import org.topazproject.otm.query.GenericQueryImpl;
+import org.topazproject.otm.query.GenericQuery;
 import org.topazproject.otm.query.QueryException;
 import org.topazproject.otm.query.QueryInfo;
 import org.topazproject.otm.query.Results;
@@ -710,7 +710,7 @@ public class ItqlStore extends AbstractTripleStore {
     return ic.createResults(ans);
   }
 
-  public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Connection con)
+  public Results doQuery(GenericQuery query, Collection<Filter> filters, Connection con)
       throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 

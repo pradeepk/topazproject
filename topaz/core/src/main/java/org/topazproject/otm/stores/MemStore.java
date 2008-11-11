@@ -50,7 +50,7 @@ import org.topazproject.otm.criterion.PredicateCriterion;
 import org.topazproject.otm.criterion.SubjectCriterion;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.RdfMapper;
-import org.topazproject.otm.query.GenericQueryImpl;
+import org.topazproject.otm.query.GenericQuery;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -173,7 +173,7 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Connection con)
+  public Results doQuery(GenericQuery query, Collection<Filter> filters, Connection con)
                   throws OtmException {
     throw new OtmException("OQL queries not supported");
   }

@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.mapping.RdfMapper;
-import org.topazproject.otm.query.GenericQueryImpl;
+import org.topazproject.otm.query.GenericQuery;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -134,7 +134,7 @@ public interface TripleStore extends Store {
    * @return the query results
    * @throws OtmException on an error
    */
-  public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Connection con)
+  public Results doQuery(GenericQuery query, Collection<Filter> filters, Connection con)
       throws OtmException;
 
   /**

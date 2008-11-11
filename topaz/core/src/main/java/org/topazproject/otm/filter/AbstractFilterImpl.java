@@ -26,7 +26,7 @@ import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.query.GenericQueryImpl;
+import org.topazproject.otm.query.GenericQuery;
 
 /**
  * This defines the internal filter-impl interface and implements some common code for all filters.
@@ -66,7 +66,7 @@ public abstract class AbstractFilterImpl extends AbstractParameterizable<Filter>
    * 
    * @return the query representing this filter
    */
-  public abstract GenericQueryImpl getQuery() throws OtmException;
+  public abstract GenericQuery getQuery() throws OtmException;
 
   public int hashCode() {
     return getName().hashCode();
