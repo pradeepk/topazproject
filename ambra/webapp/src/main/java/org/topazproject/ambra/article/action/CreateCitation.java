@@ -132,8 +132,10 @@ public class CreateCitation extends BaseActionSupport {
   @Required
   public void setArticleAnnotationCache(Cache articleAnnotationCache) {
     this.articleAnnotationCache = articleAnnotationCache;
-    if (invalidator == null)
-      invalidator = new Invalidator(articleAnnotationCache);
+    synchronized (this.articleAnnotationCache) {
+      if (invalidator == null)
+        invalidator = new Invalidator(articleAnnotationCache);
+    }
   }
 
   private static class Invalidator extends AbstractObjectListener {
