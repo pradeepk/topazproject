@@ -26,6 +26,7 @@ import java.util.List;
 import antlr.ASTFactory;
 import antlr.RecognitionException;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
 
 /** 
@@ -34,15 +35,15 @@ import org.topazproject.otm.SessionFactory;
  * @author Ronald Tschalär
  */
 class BinaryCompare implements BooleanConditionFunction, ConstraintsTokenTypes {
-  private static final String   XSD        = "http://www.w3.org/2001/XMLSchema#";
   private static final String[] DATE_TYPES = {
-      XSD + "date", XSD + "dateTime", XSD + "gYear", XSD + "gYearMonth",
+      Rdf.xsd + "date", Rdf.xsd + "dateTime", Rdf.xsd + "gYear", Rdf.xsd + "gYearMonth",
   };
   private static final String[] NUM_TYPES = {
-      XSD + "decimal", XSD + "float", XSD + "double", XSD + "integer", XSD + "nonPositiveInteger",
-      XSD + "negativeInteger", XSD + "long", XSD + "int", XSD + "short", XSD + "byte",
-      XSD + "nonNegativeInteger", XSD + "unsignedLong", XSD + "unsignedInt",
-      XSD + "unsignedShort", XSD + "unsignedByte", XSD + "positiveInteger",
+      Rdf.xsd + "decimal", Rdf.xsd + "float", Rdf.xsd + "double", Rdf.xsd + "integer",
+      Rdf.xsd + "nonPositiveInteger", Rdf.xsd + "negativeInteger", Rdf.xsd + "long",
+      Rdf.xsd + "int", Rdf.xsd + "short", Rdf.xsd + "byte", Rdf.xsd + "nonNegativeInteger",
+      Rdf.xsd + "unsignedLong", Rdf.xsd + "unsignedInt", Rdf.xsd + "unsignedShort",
+      Rdf.xsd + "unsignedByte", Rdf.xsd + "positiveInteger",
   };
   private static final URI      XSD_GRAPH_TYPE =
                                         URI.create("http://mulgara.org/mulgara#XMLSchemaModel");

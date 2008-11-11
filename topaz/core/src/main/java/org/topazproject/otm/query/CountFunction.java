@@ -26,13 +26,14 @@ import antlr.RecognitionException;
 import antlr.collections.AST;
 
 import org.topazproject.mulgara.itql.Answer;
+import org.topazproject.otm.Rdf;
 
 /** 
  * @author Ronald Tschalär
  */
 class CountFunction implements ProjectionFunction, ConstraintsTokenTypes {
   public  static final String   FUNC_NAME = "count";
-  private static final ExprType RET_TYPE  = ExprType.literalType("xsd:double", null);
+  private static final ExprType RET_TYPE  = ExprType.literalType(Rdf.xsd + "double", null);
 
   CountFunction(List<OqlAST> args, List<ExprType> types) throws RecognitionException {
     if (args.size() != 1)
