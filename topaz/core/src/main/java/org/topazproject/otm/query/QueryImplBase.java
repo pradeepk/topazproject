@@ -34,17 +34,16 @@ public abstract class QueryImplBase {
    * Check the errors and warnings. If there were any errors, generate an exception; else if there
    * were any warnings add them to the list.
    * 
-   * @param errors   the list of parse errors
-   * @param warnings the list of parse warnings
-   * @param query    the query that was being parsed
-   * @throws QueryException if <var>errors</var> is non empty
+   * @param ec    the error-collector with the list of warnings and errors to check
+   * @param query the query that was being parsed
+   * @throws QueryException if <var>ec.getErrors()</var> is non empty
    */
-  protected void checkMessages(List<String> errors, List<String> warnings, Object query)
+  protected void checkMessages(ErrorCollector ec, Object query)
       throws QueryException {
-    if (errors != null && errors.size() > 0)
-      throw new QueryException("Error parsing query '" + query + "'", errors);
-    else if (warnings != null)
-      this.warnings.addAll(warnings);
+    if (ec.getErrors() != null && ec.getErrors().size() > 0)
+      throw new QueryException("Error parsing query '" + query + "'", ec.getErrors());
+    else if (ec.getWarnings() != null)
+      this.warnings.addAll(ec.getWarnings());
   }
 
   /** 

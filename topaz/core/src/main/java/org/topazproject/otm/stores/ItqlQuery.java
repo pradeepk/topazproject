@@ -79,22 +79,22 @@ class ItqlQuery extends QueryImplBase {
       ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess, "oqltmp2_", true);
       curParser = cg;
       cg.query(query.getResolvedQuery());
-      checkMessages(cg.getErrors(), cg.getWarnings(), query);
+      checkMessages(cg, query);
 
       ItqlRedux ir = new ItqlRedux();
       curParser = ir;
       ir.query(cg.getAST());
-      checkMessages(ir.getErrors(), ir.getWarnings(), query);
+      checkMessages(ir, query);
 
       ItqlFilterApplicator fa = new ItqlFilterApplicator(sess, "oqltmp3_", fInfos);
       curParser = fa;
       fa.query(ir.getAST());
-      checkMessages(fa.getErrors(), fa.getWarnings(), query);
+      checkMessages(fa, query);
 
       ItqlWriter wr = new ItqlWriter();
       curParser = wr;
       QueryInfo qi = wr.query(fa.getAST());
-      checkMessages(wr.getErrors(), wr.getWarnings(), query);
+      checkMessages(wr, query);
 
       if (log.isDebugEnabled())
         log.debug("parsed query '" + query + "': itql='" + qi.getQuery() + "', vars='" +
@@ -137,12 +137,12 @@ class ItqlQuery extends QueryImplBase {
       ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess, pfx, false);
       curParser = cg;
       cg.query(fqry.getResolvedQuery());
-      checkMessages(cg.getErrors(), cg.getWarnings(), fqry);
+      checkMessages(cg, fqry);
 
       ItqlRedux ir = new ItqlRedux();
       curParser = ir;
       ir.query(cg.getAST());
-      checkMessages(ir.getErrors(), ir.getWarnings(), query);
+      checkMessages(ir, query);
 
       if (log.isDebugEnabled())
         log.debug("parsed filter '" + fqry + "': ast='" + ir.getAST().toStringTree() + "'");

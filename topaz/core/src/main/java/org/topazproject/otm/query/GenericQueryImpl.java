@@ -186,7 +186,7 @@ public class GenericQueryImpl extends QueryImplBase implements Cloneable {
       throws OtmException {
     try {
       qStep.run(parser);
-      checkMessages(parser.getErrors(), parser.getWarnings(), query);
+      checkMessages(parser, query);
       return parser;
     } catch (OtmException oe) {
       throw oe;
