@@ -204,6 +204,6 @@ options {
 }
 
 query[Map<String, Object> paramValues]
-    : ! { #query = astFactory.dupList(_t); resolveParams(#query, paramValues); }
+    : ! { #query = astFactory.dupList(#query_in); resolveParams(#query, paramValues); }
     ;
 

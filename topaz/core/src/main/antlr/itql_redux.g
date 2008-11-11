@@ -665,10 +665,10 @@ options {
 
 query
     : ! {
-        if (_t == null)         // dummy throws to satisfy compiler
+        if (#query_in == null)         // dummy throws to satisfy compiler
           throw new RecognitionException();
-        simplifyQuery(_t, new HashSet<String>());
-        #query = _t;
+        simplifyQuery(#query_in, new HashSet<String>());
+        #query = #query_in;
       }
     ;
 
