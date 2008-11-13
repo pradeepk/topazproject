@@ -34,21 +34,21 @@ public interface SubClassResolver {
    * this resolver will be called only if the SessionFactory detects multiple candidates
    * all matching a set of rdf:type values.
    *
-   * @param superEntity      the starting point (or could be null). If not null, the
-   *                         set of rdf:types returned by {@link ClassMetadata#getTypes()}
-   *                         is a subset of the rdf:type values supplied in the <code>typeUris</code>.
-   * @param instantiatableIn the EntityMode in which an instance can be created.
-   *                         This means an
-   *                         This means {@link ClassMetadata#getEntityBinder(EntityMode)} must be
-   *                         non-null and also
-   *                         {@link org.topazproject.otm.mapping.EntityBinder#isInstantiable()}
-   *                         must return true for that EntityBinder.
+   * @param superEntity      the starting point (or could be null). If not null, the set of
+   *                         {@link ClassMetadata#getTypes rdf:types} defined on it is a subset
+   *                         of the rdf:type values supplied in the <code>typeUris</code>.
+   * @param instantiatableIn if not null, the resolved ClassMetadata must be {@link
+   *                         org.topazproject.otm.mapping.EntityBinder#isInstantiable instantiatable}
+   *                         in this EntityMode.
    * @param sf               the SessionFactory to do any additional lookups
-   * @param typeUris         collection of rdf:type uris
+   * @param typeUris         collection of rdf:type URIs
    * @param statements       the set of RDF statements
-   *
    * @return                 the resolved ClassMetadata or null. The resolved ClassMetadata
-   *                         must be a sub-class of the <code>superEntity</code>
+   *                         must be a sub-class of the <code>superEntity</code> and must
+   *                         satisfy the <code>instantialeIn</code> requirement and its {@link
+   *                         ClassMetadata#getTypes rdf:types} must be a subset of the
+   *                         supplied <code>typeUris</code>. If these conditions are not met, the
+   *                         resolved ClassMetadata may be discarded.
    */
   public ClassMetadata resolve(ClassMetadata superEntity, EntityMode instantiatableIn,
                     SessionFactory sf, Collection<String> typeUris, TripleStore.Result statements);

@@ -244,23 +244,29 @@ public class ClassMetadata {
   /**
    * Gets the most specific rdf:type that describes this class.
    *
-   * @return the rdf:type uri or null
+   * @return the set of rdf:type values. Could be an empty set.
+   *
+   * @see #getAllTypes
    */
   public Set<String> getTypes() {
     return types;
   }
 
   /**
-   * Gets the set of rdf:type values that describe this class.
+   * Gets the set of all rdf:type values that describe this class including all types
+   * that are inherited from the super-classes.
    *
-   * @return set of rdf:type uri values or an empty set; null for views
+   * @return set of rdf:type values. Could be an empty set.
+   *
+   * @see #getTypes
+   * @see #getSuperEntities
    */
   public Set<String> getAllTypes() {
     return allTypes;
   }
 
   /**
-   * Gets the entity for which this is a subclass-of.
+   * Gets the set of entities that are declared as super-classes for this entity.
    *
    * @return the super entity or null
    */
