@@ -333,14 +333,6 @@ public class OtmInterceptor implements Interceptor {
     }
 
     public Object get(Session sess, ClassMetadata cm, String id, Object instance) {
-      cm = sess.getSessionFactory().getSubClassMetadata(cm, sess.getEntityMode(), types);
-
-      if (cm == null)
-        return null;
-
-      if (!isEntityLoaded(cm))
-        return null;
-
       final Map<String, List<String>> f = copy(fvalues);
       final Map<String, List<String>> r = copy(rvalues);
 
@@ -348,6 +340,14 @@ public class OtmInterceptor implements Interceptor {
         public Map<String, List<String>> getFValues() { return f; }
         public Map<String, List<String>> getRValues() { return r; }
       };
+
+      cm = sess.getSessionFactory().getSubClassMetadata(cm, sess.getEntityMode(), types, result);
+
+      if (cm == null)
+        return null;
+
+      if (!isEntityLoaded(cm))
+        return null;
 
       instance = cm.getEntityBinder(sess).loadInstance(instance, id, result, sess);
       if (cm.getBlobField() != null)

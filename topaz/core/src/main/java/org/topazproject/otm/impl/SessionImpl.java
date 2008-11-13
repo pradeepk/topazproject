@@ -700,9 +700,9 @@ public class SessionImpl extends AbstractSession {
     }
 
     // figure out sub-class to instantiate
-    // XXX: should this be narrowed down based on other restrictions?
     List<String> t = fvalues.get(Rdf.rdf + "type");
-    ClassMetadata cm = getSessionFactory().getSubClassMetadata(id.getClassMetadata(), getEntityMode(), t);
+    ClassMetadata cm = getSessionFactory().getSubClassMetadata(id.getClassMetadata(),
+                                                               getEntityMode(), t, result);
     if (cm == null) {
       HashSet<String> props = new HashSet<String>(fvalues.keySet());
       props.addAll(rvalues.keySet());

@@ -327,7 +327,7 @@ class JournalFilterService {
         continue;
       }
 
-      ClassMetadata c = sf.getSubClassMetadata(null, EntityMode.POJO, types);
+      ClassMetadata c = sf.getSubClassMetadata(null, EntityMode.POJO, types, null);
       if (c == null) {
         log.error("no class registered for static collection object '" + id + "'; types were '" +
                   types + "'");

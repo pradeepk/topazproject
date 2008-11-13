@@ -24,9 +24,11 @@ import java.net.URI;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,6 +81,7 @@ import org.topazproject.otm.Rdfs;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.SearchStore;
+import org.topazproject.otm.SubClassResolver;
 import org.topazproject.otm.TripleStore;
 
 /**
@@ -150,6 +153,9 @@ public class SessionFactoryImpl implements SessionFactory {
    * Aliases
    */
   private final Map<String, String> aliases = new HashMap<String, String>();
+
+  private final Map<String, Set<SubClassResolver>> subClassResolvers
+                                                  = new HashMap<String, Set<SubClassResolver>>();
 
   private AnnotationClassMetaFactory cmf = new AnnotationClassMetaFactory(this);
   private SerializerFactory          serializerFactory = new SerializerFactory(this);
@@ -334,70 +340,128 @@ public class SessionFactoryImpl implements SessionFactory {
   /*
    * inherited javadoc
    */
-  public ClassMetadata getSubClassMetadata(ClassMetadata clazz, EntityMode mode, 
-                                Collection<String> typeUris) {
-    return getSubClassMetadata(clazz, mode, typeUris, true);
+  public ClassMetadata getAnySubClassMetadata(ClassMetadata clazz, Collection<String> typeUris) {
+    return getSubClassMetadata(clazz, null, typeUris, null);
   }
 
   /*
    * inherited javadoc
    */
-  public ClassMetadata getAnySubClassMetadata(ClassMetadata clazz, Collection<String> typeUris) {
-    return getSubClassMetadata(clazz, null, typeUris, false);
-  }
+  public ClassMetadata getSubClassMetadata(ClassMetadata clazz, EntityMode mode,
+                                Collection<String> typeUris, TripleStore.Result result) {
+    Set<ClassMetadata> candidates = new HashSet<ClassMetadata>();
 
-  private ClassMetadata getSubClassMetadata(ClassMetadata clazz, EntityMode mode, 
-                                Collection<String> typeUris, boolean instantiable) {
-    if ((typeUris == null) || (typeUris.size() == 0))
-      return (clazz == null) ? null : (!clazz.getTypes().isEmpty() ? null : clazz);
+    if (clazz != null)
+      candidates.add(clazz);
+    else
+      candidates.addAll(subClasses.get(null));
 
-    Set<ClassMetadata> solutions = null;
-
-    if ((clazz != null) && clazz.getTypes().isEmpty()) {
-      solutions = new HashSet<ClassMetadata>();
-      solutions.add(clazz);
-    }
+    if (typeUris == null)
+      typeUris = Collections.emptySet();
 
     for (String uri : typeUris) {
       Set<ClassMetadata> classes = typemap.get(uri);
+      if (classes != null)
+        candidates.addAll(classes);
+    }
 
-      if (classes == null)
-        continue;
+    Set<ClassMetadata> solutions = new HashSet<ClassMetadata>();
 
-      Set<ClassMetadata> candidates = new HashSet<ClassMetadata>();
+    // Eliminate candidates that are not sub-classes
+    for (ClassMetadata cl : candidates) {
+      if (isAcceptable(cl, clazz, mode, typeUris))
+        solutions.add(cl);
+    }
 
-      for (ClassMetadata cl : classes) {
-        if (instantiable && !cl.getEntityBinder(mode).isInstantiable())
-          continue;
-        if (typeUris.containsAll(cl.getTypes()) &&
-           ((clazz == null) || clazz.isAssignableFrom(cl)))
-          candidates.add(cl);
-      }
-
-      if ((solutions == null) || solutions.isEmpty())
-        solutions = candidates;
-      else if (!candidates.isEmpty()) {
-        Set<ClassMetadata> intersection = new HashSet<ClassMetadata>(solutions);
-        intersection.retainAll(candidates);
-        if (intersection.isEmpty())
-          solutions.addAll(candidates);
-        else
-          solutions = intersection;
+    // Eliminate super classes from an rdf:type perspective
+    candidates = new HashSet<ClassMetadata>(solutions);
+    for (ClassMetadata sup : candidates) {
+      for (ClassMetadata cm : candidates) {
+        if ((sup != cm) && cm.getAllTypes().size() > sup.getAllTypes().size()
+                        && cm.getAllTypes().containsAll(sup.getAllTypes())) {
+          solutions.remove(sup);
+          break;
+        }
       }
     }
 
-    if (solutions == null)
+    if (solutions.isEmpty())
       return null;
 
     if (solutions.size() == 1)
       return solutions.iterator().next();
 
-    ClassMetadata random = null;
-    for (ClassMetadata cl : solutions)
-      if ((random == null) || random.isAssignableFrom(cl))
-        random = cl;
+    // narrow down based on other rdf statements
+    if (result != null) {
+      LinkedHashSet<SubClassResolver> resolvers = new LinkedHashSet<SubClassResolver>();
 
-    return random;
+      // resolvers for sub-classes of the solutions (excluding the solutions)
+      for (ClassMetadata cl : solutions)
+        gatherSub(cl.getName(), resolvers);
+      for (ClassMetadata cl : solutions)
+        resolvers.removeAll(listRegisteredSubClassResolvers(cl.getName()));
+
+      // resolvers for the solutions
+      for (ClassMetadata cl : solutions)
+        resolvers.addAll(listRegisteredSubClassResolvers(cl.getName()));
+
+      // resolvers for the super-classes
+      for (ClassMetadata cl : solutions)
+        gatherSup(cl.getName(), resolvers);
+
+      // add the root as the last
+      Set<SubClassResolver> rs = subClassResolvers.get(null);
+      if (rs != null)
+        resolvers.addAll(rs);
+
+      for (SubClassResolver r : resolvers) {
+        ClassMetadata cm = r.resolve(clazz, mode, this, typeUris, result);
+        if ((cm != null) && isAcceptable(cm, clazz, mode, typeUris))
+          return cm;
+      }
+    }
+
+    // That didn't help. Eliminate super classes from an EntityBinder perspective
+    if (mode != null) {
+      candidates = new HashSet<ClassMetadata>(solutions);
+      for (ClassMetadata sup : candidates) {
+        EntityBinder supBinder = sup.getEntityBinder(mode);
+        for (ClassMetadata cm : candidates) {
+          EntityBinder binder = cm.getEntityBinder(mode);
+          if ((sup != cm)  && supBinder.isAssignableFrom(binder)) {
+            solutions.remove(sup);
+            break;
+          }
+        }
+      }
+    }
+
+    ClassMetadata solution = solutions.iterator().next();
+
+    if (solutions.size() > 1) {
+      // That didn't help either. Pick the first in the solutions set
+      log.warn("Randomly chose " + solution + " as a subclass for " + clazz
+          + " from the set " + solutions);
+    }
+
+    return solution;
+  }
+
+  private boolean isAcceptable(ClassMetadata cm, ClassMetadata clazz, EntityMode mode,
+                               Collection<String> typeUris) {
+    // assignable test
+    if ((clazz != null) && !clazz.isAssignableFrom(cm))
+      return false;
+
+    // type membership test
+    if (!typeUris.containsAll(cm.getTypes()))
+      return false;
+
+    // instantiability test
+    if ((mode != null) && !cm.getEntityBinder(mode).isInstantiable())
+      return false;
+
+    return true;
   }
 
   /*
@@ -678,6 +742,68 @@ public class SessionFactoryImpl implements SessionFactory {
     return uri;
   }
 
+  public void addSubClassResolver(String entity, SubClassResolver resolver) {
+    Set<SubClassResolver> resolvers = subClassResolvers.get(entity);
+    if (resolvers == null) {
+      resolvers = new HashSet<SubClassResolver>();
+      subClassResolvers.put(entity, resolvers);
+    }
+    resolvers.add(resolver);
+  }
+
+  public LinkedHashSet<SubClassResolver> listEffectiveSubClassResolvers(String entity) {
+    LinkedHashSet<SubClassResolver> resolvers = new LinkedHashSet<SubClassResolver>();
+    gatherSub(entity, resolvers);
+    gatherSup(entity, resolvers);
+    // add the root as the last
+    Set<SubClassResolver> r = subClassResolvers.get(null);
+    if (r != null)
+      resolvers.addAll(r);
+    return resolvers;
+  }
+
+  private void gatherSub(String entity, LinkedHashSet<SubClassResolver> resolvers) {
+    Set<ClassMetadata> subs = subClasses.get(entity);
+    if (subs != null)
+      for (ClassMetadata cm : subClasses.get(entity))
+        gatherSub(cm.getName(), resolvers);
+
+    Set<SubClassResolver> r = subClassResolvers.get(entity);
+    if (r != null)
+      resolvers.addAll(r);
+  }
+
+  private void gatherSup(String entity, LinkedHashSet<SubClassResolver> resolvers) {
+    ClassMetadata cm = getClassMetadata(entity);
+    Set<String> sups = null;
+    if (cm != null)
+      sups = cm.getSuperEntities();
+
+    if (sups != null) {
+      // breadth first
+      for (String s : sups) {
+        Set<SubClassResolver> r = subClassResolvers.get(s);
+        if (r != null)
+          resolvers.addAll(r);
+      }
+      // now depth
+      for (String s : sups)
+        gatherSup(s, resolvers);
+    }
+  }
+
+  public Collection<SubClassResolver> listRegisteredSubClassResolvers(String entity) {
+    Set<SubClassResolver> resolvers = subClassResolvers.get(entity);
+    if (resolvers == null)
+      return Collections.emptySet();
+
+    return Collections.unmodifiableSet(resolvers);
+  }
+
+  public void removeSubClassResolver(SubClassResolver resolver) {
+    for (Set<SubClassResolver> resolvers : subClassResolvers.values())
+      resolvers.remove(resolver);
+  }
 
   private class SFClassBindings extends ClassBindings {
     public SFClassBindings(ClassDefinition def) {

@@ -21,12 +21,14 @@ package org.topazproject.otm;
 import java.net.URI;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.TransactionManager;
 
+import org.topazproject.otm.TripleStore.Result;
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.metadata.ClassBindings;
@@ -140,22 +142,41 @@ public interface SessionFactory {
   public  ClassBindings getClassBindings(String name);
 
   /**
-   * Return the most specific instantiable subclass metadata for the given class metadata that 
-   * is mapped to one of the given rdf types. We assume that we don't have two subclasses that 
-   * are associated with the same rdf type. If this is not the case then the returned class will 
-   * be randomly selected from one of the available ones.
+   * Return the most specific instantiable subclass metadata for the given class metadata that
+   * is mapped to one of the given rdf types. If there are multiple candidates all matching
+   * the given set of rdf:type values, other rdf statements are looked into for resolving
+   * a subclass. For this to work, a {@link SubClassResolver} must be registered using the
+   * {@link #addSubClassResolver} method. The registered SubClassResolvers are called in the
+   * following order:
+   * <ul>
+   *   <li> resolvers registered for the sub-classes of potential candidates </li>
+   *   <li> resolvers registered for the potential candidates </li>
+   *   <li> resolvers registered for the super-classes of potential candidates </li>
+   * </ul>
+   * <p>
+   * If any one of the resolvers returns a non-null sub-class, the scan is halted and no other
+   * resolvers are consulted. For this reason resolvers at the leaf node levels are expected to
+   * be as thorough as possible in positively identifying a sub-class and leave the guessing to
+   * super-class resolvers. A resolver at a super-class level is may have a fall-back
+   * default.
+   * <p>
+   * Note: There is no need to register a SubClassResolver for entities if all entities are
+   * uniquely identifiable with rdf:type alone. Conversely, if there are multiple entities
+   * for the same set of rdf:types, it is recommended that the application register
+   * SubClassResolver(s) rather than relying on the random selection by OTM.
    *
-   * @param clazz    the super class to start the search from or null
-   * @param mode     the EntityMode in which the sub-class must be instantiable
-   * @param typeUris collection of type uris
-   *
+   * @param clazz      the super class to start the search from or null
+   * @param mode       the EntityMode in which the sub-class must be instantiable
+   * @param typeUris   collection of type uris
+   * @param statements rdf statements to further disambiguate. If null and multiple classes
+   *                   qualify, then a candidate is randomly selected.
    * @return the most specific sub class
    */
-  public ClassMetadata getSubClassMetadata(ClassMetadata clazz, EntityMode mode, 
-                                         Collection<String> typeUris);
+  public ClassMetadata getSubClassMetadata(ClassMetadata clazz, EntityMode mode,
+                                     Collection<String> typeUris, TripleStore.Result statements);
 
   /**
-   * Returns the most specific subclass metadata. Similar to {@link #getSubClassMetadata}, 
+   * Returns the most specific subclass metadata. Similar to {@link #getSubClassMetadata},
    * except the class returned may not be instantiable in a given EntityMode.
    *
    * @param clazz    the super class to start the search from or null
@@ -313,89 +334,127 @@ public interface SessionFactory {
    */
   public SerializerFactory getSerializerFactory();
 
-  /** 
+  /**
    * Add a new filter definition. If one has already been registered with the same name it is
-   * replaced. 
-   * 
-   * @param fd the filter definition to register 
+   * replaced.
+   *
+   * @param fd the filter definition to register
    */
   public void addFilterDefinition(FilterDefinition fd);
 
-  /** 
+  /**
    * Remove the filter definition with the given name. Does nothing if none was registered with
-   * that name. 
-   * 
+   * that name.
+   *
    * @param filterName the filter name
    */
   public void removeFilterDefinition(String filterName);
 
-  /** 
-   * List all registered filter definitions. 
-   * 
+  /**
+   * List all registered filter definitions.
+   *
    * @return the list of registered filter definitions; will be empty if no filter definitions have
    *         been registered.
    */
   public Collection<FilterDefinition> listFilterDefinitions();
 
-  /** 
+  /**
    * Register a new query-function-factory. The factory is registered for each function name it
    * exports, replacing any previous factory defined for each name.
-   * 
+   *
    * @param qff the query-function-factory to register
    */
   public void addQueryFunctionFactory(QueryFunctionFactory qff);
 
-  /** 
+  /**
    * Unregister a query-function-factory. The factory is unregistered for each function name it
    * exports.
-   * 
+   *
    * @param qff the query-function-factory to unregister
    */
   public void removeQueryFunctionFactory(QueryFunctionFactory qff);
 
-  /** 
-   * List all registered query-function-factories. 
-   * 
+  /**
+   * List all registered query-function-factories.
+   *
    * @return the set of registered query-function-factories
    */
   public Set<QueryFunctionFactory> listQueryFunctionFactories();
 
-  /** 
-   * Get the query-function-factory for the given function. 
-   * 
+  /**
+   * Get the query-function-factory for the given function.
+   *
    * @param funcName the name of the function for which to return the function-factory
    * @return the function-factory, or null if not found
    */
   public QueryFunctionFactory getQueryFunctionFactory(String funcName);
 
-  /** 
-   * Add an alias to the list. 
-   * 
+  /**
+   * Add an alias to the list.
+   *
    * @param alias       the alias to add
    * @param replacement the string being aliased
    */
   public void addAlias(String alias, String replacement);
 
-  /** 
-   * Remove an alias from the list. 
-   * 
+  /**
+   * Remove an alias from the list.
+   *
    * @param alias the alias to remove
    */
   public void removeAlias(String alias);
 
-  /** 
-   * Get the current list of aliases. 
-   * 
+  /**
+   * Get the current list of aliases.
+   *
    * @return a map where the keys are the aliases and the values are the replacement strings
    */
   public Map<String, String> listAliases();
 
-  /** 
+  /**
    * Perform alias expansion on the uri. The uri must start with '&lt;alias&gt;:' (e.g. 'rdf:')
    * in order for expansion to occur. Expansion is not recursive.
-   * 
+   *
    * @param uri the uri on which to perform alias expansion
    * @return the uri with the alias (if any) expanded
    */
   public String expandAlias(String uri);
+
+  /**
+   * Registers a conflict resolver to help with the most-specific-subclass determination.
+   * The resolver may be called to resolve conflicts for any entity in the class-hierarchy
+   * that this entity belongs to. (both up and down).
+   *
+   * @param entity the canonical name of an entity.
+   *
+   * @param resolver the resolver that may be called to resolve
+   *
+   * @see #getSubClassMetadata
+   */
+  public void addSubClassResolver(String entity, SubClassResolver resolver);
+
+  /**
+   * Removes a registered resolver.
+   *
+   * @param resolver the resolver to remove
+   */
+  public void removeSubClassResolver(SubClassResolver resolver);
+
+  /**
+   * Lists registered resolvers for an entity.
+   *
+   * @param entity the canonical name of an entity
+   *
+   * @return the collection of resolvers all registered with the same entity. Could be empty.
+   */
+  public Collection<SubClassResolver> listRegisteredSubClassResolvers(String entity);
+
+  /**
+   * Returns an ordered list of resolvers to be polled to resolve the most-specific-subclass.
+   *
+   * @param entity the canonical name of an entity
+   *
+   * @return the list of resolvers. Could be empty.
+   */
+  public LinkedHashSet<SubClassResolver> listEffectiveSubClassResolvers(String entity);
 }
