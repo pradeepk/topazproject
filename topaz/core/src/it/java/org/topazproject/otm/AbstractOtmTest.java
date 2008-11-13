@@ -100,8 +100,20 @@ public abstract class AbstractOtmTest {
     for (GraphConfig graph : graphs)
       factory.addGraph(graph);
 
-    tripleStore.createGraph(factory.getGraph("str"));
-    tripleStore.createGraph(factory.getGraph("prefix"));
+    Session session = null;
+    Transaction txn = null;
+    try {
+      session = factory.openSession();
+      txn = session.beginTransaction();
+      session.createGraph(factory.getGraph("str"));
+      session.createGraph(factory.getGraph("prefix"));
+      txn.commit();
+    } catch (OtmException e) {
+      if (txn != null) txn.rollback();
+      throw e;
+    } finally {
+      if (session != null) session.close();
+    }
 
     Class classes [] = new Class[] {Article.class, PublicAnnotation.class, PrivateAnnotation.class,
                                     ReplyThread.class, Grants.class, Revokes.class,
@@ -126,15 +138,31 @@ public abstract class AbstractOtmTest {
     log.info("initializing mulgara test graphs ...");
     String names[] = new String[] {"ri", "grants", "revokes", "criteria"};
 
-    for (String name : names) {
-      GraphConfig graph = factory.getGraph(name);
-      try {
-        factory.getTripleStore().dropGraph(graph);
-      } catch (Throwable t) {
-        if (log.isDebugEnabled())
-          log.debug("Failed to drop graph '" + name + "'", t);
+    Session s = null;
+    Transaction txn = null;
+    try {
+      s = factory.openSession();
+      for (String name : names) {
+        GraphConfig graph = factory.getGraph(name);
+        txn = s.beginTransaction();
+        try {
+          s.dropGraph(graph);
+          txn.commit();
+        } catch (Throwable t) {
+          if (log.isDebugEnabled())
+            log.debug("Failed to drop graph '" + name + "'", t);
+          txn.rollback();
+        }
+        txn = null;
+        txn = s.beginTransaction();
+        s.createGraph(graph);
+        txn.commit();
       }
-      factory.getTripleStore().createGraph(graph);
+    } catch (OtmException e) {
+      if (txn != null) txn.rollback();
+      throw e;
+    } finally {
+      if (s != null) s.close();
     }
   }
 

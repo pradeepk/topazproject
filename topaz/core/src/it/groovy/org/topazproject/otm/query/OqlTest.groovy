@@ -26,6 +26,7 @@ import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.criterion.Conjunction;
@@ -1017,8 +1018,10 @@ public class OqlTest extends AbstractTest {
       def m = new GraphConfig("m${num}", "local:///topazproject#otmtest_m${num}".toURI(), null)
       rdf.sessFactory.addGraph(m);
 
-      try { store.dropGraph(m); } catch (OtmException oe) { }
-      store.createGraph(m)
+      Session session = rdf.sessFactory.openSession();
+      try { session.dropGraphInTx(m); } catch (OtmException oe) { }
+      session.createGraphInTx(m);
+      session.close();
     }
 
     // predicate stored with child graph

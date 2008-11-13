@@ -25,7 +25,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.GraphConfig;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.Transaction;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.stores.ItqlStore;
@@ -119,9 +121,21 @@ public class OtmConfiguration {
   public void setGraphs(GraphConfig[] graphs) {
     this.graphs = graphs;
 
-    for (GraphConfig graph : graphs) {
-      factory.addGraph(graph);
-      factory.getTripleStore().createGraph(graph);
+    Session session = null;
+    Transaction txn = null;
+    try {
+      session = factory.openSession();
+      txn = session.beginTransaction();
+      for (GraphConfig graph : graphs) {
+        factory.addGraph(graph);
+        session.createGraph(graph);
+      }
+      txn.commit();
+    } catch (Exception e) {
+      if (txn != null) txn.rollback();
+      throw new RuntimeException(e.getMessage(), e);
+    } finally {
+      session.close();
     }
   }
 

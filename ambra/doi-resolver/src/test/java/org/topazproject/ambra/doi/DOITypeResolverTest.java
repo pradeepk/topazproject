@@ -83,17 +83,16 @@ public class DOITypeResolverTest {
     GraphConfig mc = new GraphConfig("ri", URI.create(graph), null);
     factory.addGraph(mc);
 
+    Session session = null;
     try {
-      tripleStore.dropGraph(mc);
-    } catch (OtmException e) {
-    }
+      session = factory.openSession();
 
-    tripleStore.createGraph(mc);
-
-    Session session = factory.openSession();
-
-    try {
+      try {
+        session.dropGraphInTx(mc);
+      } catch (OtmException e) {
+      }
       Transaction tx = session.beginTransaction();
+      session.createGraph(mc);
 
       try {
         for (String doi : types.keySet())
@@ -121,7 +120,8 @@ public class DOITypeResolverTest {
         throw e;
       }
     } finally {
-      session.close();
+      if (session != null)
+        session.close();
     }
   }
 

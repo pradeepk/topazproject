@@ -192,16 +192,16 @@ public class MemStore extends AbstractTripleStore {
     throw new OtmException("Native updates not supported");
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * {@inheritDoc}
    */
-  public void createGraph(GraphConfig conf) throws OtmException {
+  public void createGraph(GraphConfig conf, Connection con) throws OtmException {
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * {@inheritDoc}
    */
-  public void dropGraph(GraphConfig conf) throws OtmException {
+  public void dropGraph(GraphConfig conf, Connection con) throws OtmException {
   }
 
   /*

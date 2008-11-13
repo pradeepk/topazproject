@@ -34,7 +34,9 @@ import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.Transaction;
 
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.io.RDFXMLOntologyFormat;
@@ -190,7 +192,19 @@ public class OwlGenerator {
    */
   public void save(GraphConfig graph) throws OtmException {
     otmFactory.addGraph(graph);
-    otmFactory.getTripleStore().createGraph(graph);
+    Session session = null;
+    Transaction txn = null;
+    try {
+      session = otmFactory.openSession();
+      txn = session.beginTransaction();
+      session.createGraph(graph);
+      txn.commit();
+    } catch (OtmException e) {
+      if (txn != null) txn.rollback();
+      throw e;
+    } finally {
+      session.close();
+    }
   }
 
   /**

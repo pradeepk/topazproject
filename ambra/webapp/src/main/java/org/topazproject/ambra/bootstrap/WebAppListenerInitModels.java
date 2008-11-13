@@ -34,6 +34,10 @@ import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.configuration.WebappItqlClientFactory;
 import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.stores.ItqlStore;
 
 /**
@@ -63,14 +67,21 @@ public class WebAppListenerInitModels implements ServletContextListener {
   }
 
   private void initGraphs() {
+    Session session = null;
+    Transaction txn = null;
     try {
       Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
       URI           service = new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql.uri"));
 
       ItqlStore     store   = new ItqlStore(service, WebappItqlClientFactory.getInstance());
 
-      dropObsoleteGraphs(conf, store);
+      SessionFactory sessionFactory = new SessionFactoryImpl();
+      sessionFactory.setTripleStore(store);
+      session = sessionFactory.openSession();
 
+      dropObsoleteGraphs(conf, session);
+
+      txn = session.beginTransaction();
       conf                  = conf.subset("ambra.graphs");
 
       Iterator it           = conf.getKeys();
@@ -84,27 +95,32 @@ public class WebAppListenerInitModels implements ServletContextListener {
         String graph  = conf.getString(key);
         String type   = conf.getString(key + "[@type]", "mulgara:Model");
 
-        store.createGraph(new GraphConfig("", new URI(graph), new URI(type)));
+        session.createGraph(new GraphConfig("", new URI(graph), new URI(type)));
       }
+      txn.commit();
+      log.info("Successfully created all configured ITQL Graphs.");
     } catch (Exception e) {
       log.warn("bootstrap of graphs failed", e);
+      if (txn != null) txn.rollback();
+      log.error("Error creating all configured ITQL Graphs.", e);
+    } finally {
+      if (session != null) session.close();
     }
 
-    log.info("Successfully created all configured ITQL Graphs.");
   }
 
   /**
    * Have to do this to deal with change from "models" to "graphs"
    * @param conf Configuration
-   * @param store ItqlStore
+   * @param session A writable Session to access the store
    * @throws URISyntaxException
    *
    * TODO: Remove this after 0.9.2
    */
-  private void dropObsoleteGraphs(Configuration conf, ItqlStore store) throws URISyntaxException {
+  private void dropObsoleteGraphs(Configuration conf, Session session) throws URISyntaxException {
     String graphPrefix = conf.getString("ambra.topaz.tripleStore.mulgara.graphPrefix");
     try {
-      store.dropGraph(new GraphConfig("", new URI(graphPrefix + "str"), null));
+      session.dropGraphInTx(new GraphConfig("", new URI(graphPrefix + "str"), null));
     } catch (OtmException e) {
       log.warn("Could not drop graph " + graphPrefix + "str", e);
     }

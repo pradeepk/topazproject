@@ -150,18 +150,24 @@ public class FedoraBlobTest {
 
     String[] names = new String[] { "ri", "grants", "revokes", "criteria" };
 
-    for (String name : names) {
-      GraphConfig graph = factory.getGraph(name);
+    Session session = factory.openSession();
+    try {
+      for (String name : names) {
+        GraphConfig graph = factory.getGraph(name);
 
-      try {
-        factory.getTripleStore().dropGraph(graph);
-      } catch (Throwable t) {
-        if (log.isDebugEnabled())
-          log.debug("Failed to drop graph '" + name + "'", t);
+        try {
+          session.dropGraphInTx(graph);
+        } catch (Throwable t) {
+          if (log.isDebugEnabled())
+            log.debug("Failed to drop graph '" + name + "'", t);
+        }
+
+        session.createGraphInTx(graph);
       }
-
-      factory.getTripleStore().createGraph(graph);
+    } finally {
+      session.close();
     }
+
   }
 
   /**

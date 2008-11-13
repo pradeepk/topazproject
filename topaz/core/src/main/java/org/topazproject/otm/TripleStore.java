@@ -160,19 +160,21 @@ public interface TripleStore extends Store {
    * Creates a new graph in the persistence store.
    *
    * @param conf the configuration
-   *
+   * @param con a connection to the triplestore to send the request over
+   * 
    * @throws OtmException on an error
    */
-  public void createGraph(GraphConfig conf) throws OtmException;
+  public void createGraph(GraphConfig conf, Connection con) throws OtmException;
 
   /**
    * Drops a graph in the persistence store, deleting all triples.
    *
    * @param conf the configuration
+   * @param con a connection to the triplestore to send the request over
    *
    * @throws OtmException on an error
    */
-  public void dropGraph(GraphConfig conf) throws OtmException;
+  public void dropGraph(GraphConfig conf, Connection con) throws OtmException;
 
   /**
    * Gets a store specific criterion builder.

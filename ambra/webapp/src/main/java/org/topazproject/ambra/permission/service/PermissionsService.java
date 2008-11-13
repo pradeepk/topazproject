@@ -40,6 +40,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.Transaction;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.query.Results;
 
@@ -148,10 +149,22 @@ public class PermissionsService implements Permissions {
          || ((revokesCache != null) && (revokesCache.getSize() != 0)))
       return; // xxx: cache has entries perhaps from peers. so initialized is a good guess
 
-    TripleStore ts = s.getSessionFactory().getTripleStore();
-    ts.createGraph(new GraphConfig("grants",  toURI(GRANTS_GRAPH),  toURI(GRANTS_GRAPH_TYPE)));
-    ts.createGraph(new GraphConfig("revokes", toURI(REVOKES_GRAPH), toURI(REVOKES_GRAPH_TYPE)));
-    ts.createGraph(new GraphConfig("pp",      toURI(PP_GRAPH),      toURI(PP_GRAPH_TYPE)));
+    boolean localTxn = false;
+    Transaction txn = s.getTransaction();
+    if (txn == null) {
+      localTxn = true;
+      txn = s.beginTransaction();
+    }
+    try {
+      s.createGraph(new GraphConfig("grants",  toURI(GRANTS_GRAPH),  toURI(GRANTS_GRAPH_TYPE)));
+      s.createGraph(new GraphConfig("revokes", toURI(REVOKES_GRAPH), toURI(REVOKES_GRAPH_TYPE)));
+      s.createGraph(new GraphConfig("pp",      toURI(PP_GRAPH),      toURI(PP_GRAPH_TYPE)));
+      if (localTxn) txn.commit();
+    } catch (OtmException e) {
+      if (localTxn) txn.rollback();
+      throw e;
+    }
+
 
     Configuration conf        = CONF.subset("ambra.permissions.impliedPermissions");
 

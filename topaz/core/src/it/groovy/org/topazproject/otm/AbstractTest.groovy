@@ -23,6 +23,7 @@ import org.topazproject.mulgara.itql.DefaultItqlClientFactory;
 import org.topazproject.otm.metadata.RdfBuilder;
 import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.stores.SimpleBlobStore;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 
 import org.apache.commons.logging.Log;
@@ -52,8 +53,10 @@ public abstract class AbstractTest extends GroovyTestCase {
     for (c in graphs) {
       def g = new GraphConfig(c[0], "local:///topazproject#${c[1]}".toURI(), c[2])
       rdf.sessFactory.addGraph(g)
-      try { store.dropGraph(g); } catch (Throwable t) { }
-      store.createGraph(g)
+      Session sess = rdf.sessFactory.openSession();
+      try { sess.dropGraphInTx(g); } catch (Throwable t) { }
+      sess.createGraphInTx(g);
+      sess.close();
     }
   }
 

@@ -43,16 +43,18 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     def m2 = new GraphConfig("m2", "local:///topazproject#otmtest2".toURI(), null)
     rdf.sessFactory.addGraph(m2);
 
+    Session sess = rdf.sessFactory.openSession();
     try {
-      store.dropGraph(ri)
+      sess.dropGraphInTx(ri)
     } catch (Throwable t) {
     }
     try {
-      store.dropGraph(m2)
+      sess.dropGraphInTx(m2)
     } catch (Throwable t) {
     }
-    store.createGraph(ri)
-    store.createGraph(m2)
+    sess.createGraphInTx(ri)
+    sess.createGraphInTx(m2)
+    sess.close();
   }
 
   void testSimple() {
@@ -202,8 +204,10 @@ public class BuilderIntegrationTest extends GroovyTestCase {
       def m = new GraphConfig("m${num}", "local:///topazproject#otmtest_m${num}".toURI(), null)
       rdf.sessFactory.addGraph(m);
 
-      try { store.dropGraph(m); } catch (OtmException oe) { }
-      store.createGraph(m)
+      Session session = rdf.sessFactory.openSession();
+      try { session.dropGraphInTx(m); } catch (OtmException oe) { }
+      session.createGraphInTx(m);
+      session.close();
     }
 
     // predicate stored with child graph

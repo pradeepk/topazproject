@@ -937,16 +937,38 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     }
   }
 
-  // TODO: move this method into session so it can be part of a tx
-  public void createGraph(GraphConfig conf) throws OtmException {
+  /**
+   * Creates a new graph in the TQL store.
+   *
+   * @param conf the configuration
+   * @param con a TQL connection
+   * @throws OtmException on an error
+   */
+  public void createGraph(GraphConfig conf, Connection con) throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection)con;
     String type = (conf.getType() == null) ? "mulgara:Model" : conf.getType().toString();
-    runSingleCmd("create <" + conf.getUri() + "> <" + type + ">;",
-                 "Failed to create graph <" + conf.getUri() + ">");
+    try {
+      isc.getItqlClient().doUpdate("create <" + conf.getUri() + "> <" + type + ">;");
+    } catch (Exception e) {
+      throw new OtmException("Failed to create graph <" + conf.getUri() + ">", e);
+    }
   }
 
-  // TODO: move this method into session so it can be part of a tx
-  public void dropGraph(GraphConfig conf) throws OtmException {
-    runSingleCmd("drop <" + conf.getUri() + ">;", "Failed to drop graph <" + conf.getUri() + ">");
+  /**
+   * Drops a graph in the persistence store, deleting all triples.
+   *
+   * @param conf the configuration
+   * @param con a TQL connection
+   *
+   * @throws OtmException on an error
+   */
+  public void dropGraph(GraphConfig conf, Connection con) throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection)con;
+    try {
+      isc.getItqlClient().doUpdate("drop <" + conf.getUri() + ">;");
+    } catch (Exception e) {
+      throw new OtmException("Failed to remove graph <" + conf.getUri() + ">", e);
+    }
   }
 
   private void runSingleCmd(String itql, String errMsg) throws OtmException {

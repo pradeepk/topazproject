@@ -25,6 +25,8 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.stores.ItqlStore;
 
+import org.topazproject.otm.Session;
+import org.topazproject.otm.Transaction;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Entity;
@@ -240,20 +242,32 @@ public class IdGenTest {
     factory.addGraph(idtest);
     factory.addGraph(ri);
 
+    Session s = null;
+    Transaction txn = null;
     try {
-      factory.getTripleStore().dropGraph(idtest);
-    } catch (Throwable t) {
-      log.debug("Failed to drop graph 'idtest'", t);
-    }
+      s = factory.openSession();
+      try {
+        s.dropGraphInTx(idtest);
+      } catch (Throwable t) {
+        log.debug("Failed to drop graph 'idtest'", t);
+      }
 
-    try {
-      factory.getTripleStore().dropGraph(ri);
-    } catch (Throwable t) {
-      log.debug("Failed to drop graph 'ri'", t);
-    }
+      try {
+        s.dropGraphInTx(ri);
+      } catch (Throwable t) {
+        log.debug("Failed to drop graph 'ri'", t);
+      }
 
-    factory.getTripleStore().createGraph(idtest);
-    factory.getTripleStore().createGraph(ri);
+      txn = s.beginTransaction();
+      s.createGraph(idtest);
+      s.createGraph(ri);
+      txn.commit();
+    } catch (OtmException e) {
+      if (txn != null) txn.rollback();
+      throw e;
+    } finally {
+      if (s != null) s.close();
+    }
   }
 
   @BeforeClass(groups = { "tx" }, dependsOnMethods = { "setUpFactory" })
