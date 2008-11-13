@@ -81,7 +81,7 @@ class ItqlQuery extends QueryImplBase {
       cg.query(query.getResolvedQuery());
       checkMessages(cg, query);
 
-      ItqlRedux ir = new ItqlRedux();
+      ItqlRedux ir = new ItqlRedux(sess);
       curParser = ir;
       ir.query(cg.getAST());
       checkMessages(ir, query);
@@ -139,7 +139,7 @@ class ItqlQuery extends QueryImplBase {
       cg.query(fqry.getResolvedQuery());
       checkMessages(cg, fqry);
 
-      ItqlRedux ir = new ItqlRedux();
+      ItqlRedux ir = new ItqlRedux(sess);
       curParser = ir;
       ir.query(cg.getAST());
       checkMessages(ir, query);

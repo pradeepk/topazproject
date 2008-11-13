@@ -450,7 +450,7 @@ public class SessionFactoryImpl implements SessionFactory {
   private boolean isAcceptable(ClassMetadata cm, ClassMetadata clazz, EntityMode mode,
                                Collection<String> typeUris) {
     // assignable test
-    if ((clazz != null) && !clazz.isAssignableFrom(cm))
+    if ((clazz != null) && !clazz.isAssignableFrom(cm, mode))
       return false;
 
     // type membership test
@@ -477,7 +477,7 @@ public class SessionFactoryImpl implements SessionFactory {
     if (sub != null) {
       for (ClassMetadata s : sub) {
         ClassMetadata cm = getInstanceMetadata(s, mode, instance);
-        if ((cm != null) && ((candidate == null) || candidate.isAssignableFrom(cm)))
+        if ((cm != null) && ((candidate == null) || candidate.isAssignableFrom(cm, mode)))
           candidate = cm;
       }
     }

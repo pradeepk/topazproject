@@ -262,7 +262,7 @@ public class OtmInterceptor implements Interceptor {
         session.getSessionFactory()
                 .getClassMetadata(session.enableFilter(f).getFilterDefinition().getFilteredClass());
 
-      if ((cm != null) && cm.isAssignableFrom(test))
+      if ((cm != null) && cm.isAssignableFrom(test, session.getEntityMode()))
         return true;
     }
 

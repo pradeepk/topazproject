@@ -41,7 +41,6 @@ public class SubClassResolverTest extends TestCase {
     sf.preload(ExtBase.class);
     sf.preload(Spoiler.class);
     sf.validate();
-   // sf.addSubClassResolver("RightOne", new RightOneResolver())
 
     ClassMetadata nt = sf.getClassMetadata(NoType.class);
     ClassMetadata base = sf.getClassMetadata(Base.class);
@@ -49,18 +48,18 @@ public class SubClassResolverTest extends TestCase {
     ClassMetadata sub = sf.getClassMetadata(Sub.class);
     ClassMetadata spoiler = sf.getClassMetadata(Spoiler.class);
 
-    assertTrue(nt.isAssignableFrom(base));
-    assertTrue(nt.isAssignableFrom(sub));
-    assertTrue(nt.isAssignableFrom(ext));
-    assertTrue(base.isAssignableFrom(base));
-    assertTrue(base.isAssignableFrom(sub));
-    assertTrue(base.isAssignableFrom(ext));
-    assertTrue(sub.isAssignableFrom(sub));
-    assertFalse(sub.isAssignableFrom(ext));
-    assertFalse(sub.isAssignableFrom(base));
-    assertTrue(ext.isAssignableFrom(ext));
-    assertFalse(ext.isAssignableFrom(sub));
-    assertFalse(ext.isAssignableFrom(base));
+    assertTrue(nt.isAssignableFrom(base, EntityMode.POJO));
+    assertTrue(nt.isAssignableFrom(sub, EntityMode.POJO));
+    assertTrue(nt.isAssignableFrom(ext, EntityMode.POJO));
+    assertTrue(base.isAssignableFrom(base, EntityMode.POJO));
+    assertTrue(base.isAssignableFrom(sub, EntityMode.POJO));
+    assertTrue(base.isAssignableFrom(ext, EntityMode.POJO));
+    assertTrue(sub.isAssignableFrom(sub, EntityMode.POJO));
+    assertFalse(sub.isAssignableFrom(ext, EntityMode.POJO));
+    assertFalse(sub.isAssignableFrom(base, EntityMode.POJO));
+    assertTrue(ext.isAssignableFrom(ext, EntityMode.POJO));
+    assertFalse(ext.isAssignableFrom(sub, EntityMode.POJO));
+    assertFalse(ext.isAssignableFrom(base, EntityMode.POJO));
 
     TripleStore.Result r = new EmptyResult();
 

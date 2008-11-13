@@ -481,19 +481,19 @@ public class ClassMetadata {
 
   /**
    * Tests to see if instances of this ClassMetadata is assignment compatible from
-   * instances of another. Additionally this test will pass only if all binders
-   * are assignable from the corresponding binders from the other ClassMetadata.
-   * However this could later be made more EntityMode specific.
+   * instances of another. If an EntityMode is passed in, assignment compatibility
+   * in that mode is also checked.
    *
    * @param other the other ClassMetadata
+   * @param mode the entity mode or null
    *
    * @return true if instances of this is assignable from instances of the other
    */
-  public boolean isAssignableFrom(ClassMetadata other) {
+  public boolean isAssignableFrom(ClassMetadata other, EntityMode mode) {
     if (!other.allTypes.containsAll(this.allTypes))
       return false;
 
-    for (EntityMode mode : binders.keySet()) {
+    if (mode != null) {
       EntityBinder thisBinder = getEntityBinder(mode);
       EntityBinder otherBinder = other.getEntityBinder(mode);
       if (!thisBinder.isAssignableFrom(otherBinder))

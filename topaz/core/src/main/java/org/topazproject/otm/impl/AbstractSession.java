@@ -219,7 +219,7 @@ abstract class AbstractSession implements Session {
     }
 
     if (referrer != null &&
-        !checkClass(assocType).isAssignableFrom(parent.getClassMetadata()))
+        !checkClass(assocType).isAssignableFrom(parent.getClassMetadata(), getEntityMode()))
       throw new OtmException("'" + path + "' in " + cm + " does not point to '" +
                              parent.getClassMetadata().getName() + "'");
 

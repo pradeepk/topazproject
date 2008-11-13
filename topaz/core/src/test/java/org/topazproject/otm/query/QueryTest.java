@@ -244,7 +244,7 @@ public class QueryTest extends TestCase {
     cg.query(pr.getAST());
     printErrorsAndWarnings(cg, "transforming translated query");
 
-    ItqlRedux ir = new ItqlRedux();
+    ItqlRedux ir = new ItqlRedux(sess);
     ir.query(cg.getAST());
     printErrorsAndWarnings(cg, "reducing query");
 
@@ -331,7 +331,7 @@ public class QueryTest extends TestCase {
     t0 = System.currentTimeMillis();
     ItqlRedux ir = null;
     for (int idx = 0; idx < iter; idx++) {
-      ir = new ItqlRedux();
+      ir = new ItqlRedux(sess);
       ir.query(cg.getAST());
     }
     t1 = System.currentTimeMillis();

@@ -318,7 +318,7 @@ public class SessionImpl extends AbstractSession {
     if ((oid == null) || oid.equals(Rdf.rdf + "nil"))
       return null;
 
-    Id     id = new Id(cm, oid);
+    Id     id = new Id(cm, oid, getEntityMode());
     Object o  = deleteMap.get(id);
 
     if (o != null)
@@ -366,7 +366,7 @@ public class SessionImpl extends AbstractSession {
       return null;
 
     checkClass(cm, oid);
-    Id     id = new Id(cm, oid);
+    Id     id = new Id(cm, oid, getEntityMode());
     Object o  = deleteMap.get(id);
 
     if (o != null)
@@ -660,7 +660,7 @@ public class SessionImpl extends AbstractSession {
     }
 
     try {
-      w = new Wrapper(new Id(cm, id.getId()), instance);
+      w = new Wrapper(new Id(cm, id.getId(), getEntityMode()), instance);
       currentGets.put(w.getId(), w);
 
       if (!cm.isView() && (instance != null)) {
@@ -851,7 +851,7 @@ public class SessionImpl extends AbstractSession {
     ClassMetadata cm  = sessionFactory.getInstanceMetadata(id.getClassMetadata(),
                             getEntityMode(), o);
 
-    if (!cm.isAssignableFrom(ocm))
+    if (!cm.isAssignableFrom(ocm, getEntityMode()))
       throw new OtmException(cm.toString() + " is not assignable from " + ocm);
 
     if (log.isDebugEnabled())
@@ -1005,7 +1005,7 @@ public class SessionImpl extends AbstractSession {
       id = (String) ids.get(0);
     }
 
-    Id oid = new Id(cm, id);
+    Id oid = new Id(cm, id, getEntityMode());
     if (dupCheck) {
       for (Object ex : new Object[] {deleteMap.get(oid), cleanMap.get(oid), dirtyMap.get(oid)})
         if ((ex != null) && (ex != o))

@@ -645,21 +645,20 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
 
   private String buildGetSelect(ClassMetadata cm, String id, ItqlStoreConnection isc,
                                 List<Filter> filters, boolean filterObj) throws OtmException {
-    SessionFactory        sf     = isc.getSession().getSessionFactory();
-    String                graphs = getGraphsExpr(Collections.singleton(cm), isc);
+    String     graphs = getGraphsExpr(Collections.singleton(cm), isc);
     StringBuilder qry = new StringBuilder(500);
 
     qry.append("select $p $o from ").append(graphs).append(" where ");
     qry.append("<").append(id).append("> $p $o");
     if (filterObj) {
-      if (applyObjectFilters(qry, cm, "$s", filters, sf))
+      if (applyObjectFilters(qry, cm, "$s", filters, isc.getSession()))
         qry.append(" and $s <mulgara:is> <").append(id).append(">");
     }
 
     qry.append("; select $p $s from ").append(graphs).append(" where ");
     qry.append("$s $p <").append(id).append(">");
     if (filterObj) {
-      if (applyObjectFilters(qry, cm, "$o", filters, sf))
+      if (applyObjectFilters(qry, cm, "$o", filters, isc.getSession()))
         qry.append(" and $o <mulgara:is> <").append(id).append(">");
     }
     qry.append(";");
@@ -668,17 +667,18 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
   }
 
   private boolean applyObjectFilters(StringBuilder qry, ClassMetadata cm, String var,
-                                     List<Filter> filters, SessionFactory sf) throws OtmException {
+                                     List<Filter> filters, Session session) throws OtmException {
     // avoid work if possible
     if (filters == null || filters.size() == 0)
       return false;
 
     // find applicable filters
+    SessionFactory sf = session.getSessionFactory();
     filters = new ArrayList<Filter>(filters);
     for (Iterator<Filter> iter = filters.iterator(); iter.hasNext(); ) {
       Filter f = iter.next();
       ClassMetadata fcm = sf.getClassMetadata(f.getFilterDefinition().getFilteredClass());
-      if (!fcm.isAssignableFrom(cm))
+      if (!fcm.isAssignableFrom(cm, session.getEntityMode()))
         iter.remove();
     }
 

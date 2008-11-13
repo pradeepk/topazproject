@@ -264,7 +264,8 @@ public class ItqlCriteria {
         current.getSession().getSessionFactory()
                .getClassMetadata(f.getFilterDefinition().getFilteredClass());
 
-    return (cm != null && cm.isAssignableFrom(current.getClassMetadata()));
+    return (cm != null && cm.isAssignableFrom(current.getClassMetadata(),
+                                              current.getSession().getEntityMode()));
   }
 
   /**

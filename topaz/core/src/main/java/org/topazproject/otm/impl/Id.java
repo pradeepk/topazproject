@@ -19,6 +19,7 @@
 package org.topazproject.otm.impl;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.EntityMode;
 
 /**
  * A unique identifier for an Entity.
@@ -28,16 +29,19 @@ import org.topazproject.otm.ClassMetadata;
 class Id {
   private final String         id;
   private final ClassMetadata  cm;
+  private final EntityMode     mode;
 
   /**
    * Creates a new Id object.
    *
    * @param cm entity class
    * @param id entity id
+   * @param mode the entity mode
    */
-  public Id(ClassMetadata cm, String id) throws NullPointerException {
-    this.id      = id;
+  public Id(ClassMetadata cm, String id, EntityMode mode) throws NullPointerException {
+    this.id   = id;
     this.cm   = cm;
+    this.mode = mode;
     if (id == null)
       throw new NullPointerException("id cannot be null");
     if (cm == null)
@@ -81,7 +85,7 @@ class Id {
 
     Id o = (Id) other;
 
-    return id.equals(o.id) && (cm.isAssignableFrom(o.cm) || o.cm.isAssignableFrom(cm));
+    return id.equals(o.id) && (cm.isAssignableFrom(o.cm, mode) || o.cm.isAssignableFrom(cm, mode));
   }
 
   /*

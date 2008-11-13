@@ -49,6 +49,7 @@ import java.util.Stack;
 import antlr.collections.AST;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,6 +72,12 @@ options {
 {
     private static final Log log = LogFactory.getLog(ItqlRedux.class);
     private int tidx = 0;
+    private Session sess;
+
+    public ItqlRedux(Session sess) {
+      this();
+      this.sess = sess;
+    }
 
     /**
      * Simplifying a query works as follows. First, the where clause is simplified; then
@@ -377,7 +384,7 @@ options {
      * type which wins over unknown. In case of two classes, the superclass wins. These rules are
      * so filters get properly attached.
      */
-    private static ExprType getCommonType(ExprType t1, ExprType t2) {
+    private ExprType getCommonType(ExprType t1, ExprType t2) {
       // if either is unknown, the other wins
       if (t1 == null)
         return t2;
@@ -403,7 +410,7 @@ options {
       ClassMetadata c1 = t1.getExprClass();
       ClassMetadata c2 = t2.getExprClass();
 
-      if (c1.isAssignableFrom(c2))
+      if (c1.isAssignableFrom(c2, sess.getEntityMode()))
         return t1;
       else
         return t2;

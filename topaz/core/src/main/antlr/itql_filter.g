@@ -216,7 +216,7 @@ options {
       Collection<ItqlFilter> list = new ArrayList<ItqlFilter>();
       for (ItqlFilter f : filters) {
         ClassMetadata fcm = sess.getSessionFactory().getClassMetadata(f.getFilteredClass());
-        if (fcm != null && fcm.isAssignableFrom(cm))
+        if (fcm != null && fcm.isAssignableFrom(cm, sess.getEntityMode()))
           list.add(f);
       }
 
