@@ -586,8 +586,6 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
   public TripleStore.Result get(ClassMetadata cm, final String id, Connection con,
                    final List<Filter> filters, boolean filterObj) throws OtmException {
     final ItqlStoreConnection isc = (ItqlStoreConnection) con;
-    final SessionFactory      sf  = isc.getSession().getSessionFactory();
-
     // do query
     String get = buildGetSelect(cm, id, isc, filters, filterObj);
     if (log.isDebugEnabled())
@@ -648,11 +646,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
   private String buildGetSelect(ClassMetadata cm, String id, ItqlStoreConnection isc,
                                 List<Filter> filters, boolean filterObj) throws OtmException {
     SessionFactory        sf     = isc.getSession().getSessionFactory();
-    Set<ClassMetadata> fCls   = listFieldClasses(cm, sf);
     String                graphs = getGraphsExpr(Collections.singleton(cm), isc);
-    String                tmdls  = fCls.size() > 0 ? getGraphsExpr(fCls, isc) : graphs;
-    List<RdfMapper>          assoc  = listAssociations(cm, sf);
-
     StringBuilder qry = new StringBuilder(500);
 
     qry.append("select $p $o from ").append(graphs).append(" where ");
@@ -725,43 +719,6 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     mexpr.setLength(mexpr.length() - 4);
 
     return mexpr.toString();
-  }
-
-  private static Set<ClassMetadata> listFieldClasses(ClassMetadata cm, SessionFactory sf) {
-    Set<ClassMetadata> clss = new HashSet<ClassMetadata>();
-
-    for (RdfMapper p : cm.getRdfMappers()) {
-      ClassMetadata c = sf.getClassMetadata(p.getAssociatedEntity());
-      if ((c != null) && ((c.getAllTypes().size() + c.getRdfMappers().size()) > 0))
-        clss.add(c);
-    }
-
-    return clss;
-  }
-
-  private static List<RdfMapper> listAssociations(ClassMetadata cm, SessionFactory sf) {
-    List<RdfMapper> rdfMappers = new ArrayList<RdfMapper>();
-
-    for (ClassMetadata c : allSubClasses(cm, sf)) {
-      for (RdfMapper p : c.getRdfMappers()) {
-        if (p.isAssociation())
-          rdfMappers.add(p);
-      }
-    }
-
-    return rdfMappers;
-  }
-
-  private static Set<ClassMetadata> allSubClasses(ClassMetadata top, SessionFactory sf) {
-    Set<ClassMetadata> classes = new HashSet<ClassMetadata>();
-    classes.add(top);
-
-    for (ClassMetadata cm : sf.listClassMetadata()) {
-      if (cm.isAssignableFrom(top))
-        classes.add(cm);
-    }
-
-    return classes;
   }
 
   public List<String> getRdfList(String sub, String pred, String graphUri, Connection con)
@@ -852,11 +809,6 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
           res.set(i, assoc);
         }
       }
-      // XXX: Type map will contain rdf:Bag, rdf:List, rdf:Seq, rdf:Alt.
-      // XXX: These are left over from the rdf:type look-ahead in the main query.
-      // XXX: Ideally we should clean it up. But it does not affect the
-      // XXX: mostSepcificSubclass selection.
-
       qa.close();
     } catch (AnswerException ae) {
       throw new OtmException("Error parsing answer", ae);
