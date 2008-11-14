@@ -43,8 +43,6 @@
 
   <bean class="org.topazproject.ambra.annotation.action.CreateReplyAction"/>
 
-  <bean class="org.topazproject.ambra.annotation.action.BodyFetchAction"/>
-
   <bean class="org.topazproject.ambra.annotation.action.ListReplyAction"/>
 
   <bean class="org.topazproject.ambra.annotation.action.DeleteReplyAction"/>
