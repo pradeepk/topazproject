@@ -69,8 +69,6 @@
 
   <bean class="org.topazproject.ambra.annotation.action.DeleteFlagAction" />
 
-  <bean class="org.topazproject.ambra.annotation.action.UnflagAnnotationAction" />
-
   <bean class="org.topazproject.ambra.annotation.action.ListFlagAction" />
 
   <bean class="org.topazproject.ambra.search.action.SearchAction" />
