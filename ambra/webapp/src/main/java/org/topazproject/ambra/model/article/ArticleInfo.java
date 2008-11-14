@@ -46,8 +46,6 @@ public class ArticleInfo implements Serializable {
   public URI                     id;
   public Date                    date;
   private String                 title;
-  private CitationInfo           ci;
-  private Set<URI>               at;
   public Set<RelatedArticleInfo> relatedArticles = new HashSet<RelatedArticleInfo>();
   public List<String>            authors = new ArrayList<String>();
   public Set<ArticleType>        articleTypes = new HashSet<ArticleType>();
@@ -150,7 +148,6 @@ public class ArticleInfo implements Serializable {
 
   @Projection("ci")
   public void setCi(CitationInfo ci) {
-    this.ci = ci;
     authors.clear();
     for (UserProfileInfo upi : ci.getAuthors()) {
       authors.add(upi.getRealName());
@@ -159,7 +156,6 @@ public class ArticleInfo implements Serializable {
 
   @Projection("at")
   public void setAt(Set<URI> at) {
-    this.at = at;
     articleTypes.clear();
     for (URI a : at)
       articleTypes.add(ArticleType.getArticleTypeForURI(a, true));
