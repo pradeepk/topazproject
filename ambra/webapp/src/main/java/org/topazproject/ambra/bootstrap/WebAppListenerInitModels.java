@@ -77,11 +77,6 @@ public class WebAppListenerInitModels implements ServletContextListener {
 
       SessionFactory sessionFactory = new SessionFactoryImpl();
       sessionFactory.setTripleStore(store);
-      session = sessionFactory.openSession();
-
-      dropObsoleteGraphs(conf, session);
-
-      txn = session.beginTransaction();
       conf                  = conf.subset("ambra.graphs");
 
       Iterator it           = conf.getKeys();
@@ -95,8 +90,15 @@ public class WebAppListenerInitModels implements ServletContextListener {
         String graph  = conf.getString(key);
         String type   = conf.getString(key + "[@type]", "mulgara:Model");
 
-        session.createGraph(new GraphConfig("", new URI(graph), new URI(type)));
+        sessionFactory.addGraph(new GraphConfig(key, new URI(graph), new URI(type)));
       }
+
+
+      session = sessionFactory.openSession();
+      dropObsoleteGraphs(conf, session);
+      txn = session.beginTransaction();
+      for (GraphConfig graph: sessionFactory.listGraphs())
+        session.createGraph(graph.getId());
       txn.commit();
       log.info("Successfully created all configured ITQL Graphs.");
     } catch (Exception e) {
@@ -119,9 +121,13 @@ public class WebAppListenerInitModels implements ServletContextListener {
    */
   private void dropObsoleteGraphs(Configuration conf, Session session) throws URISyntaxException {
     String graphPrefix = conf.getString("ambra.topaz.tripleStore.mulgara.graphPrefix");
+    Transaction txn = null;
     try {
-      session.dropGraphInTx(new GraphConfig("", new URI(graphPrefix + "str"), null));
+      txn = session.beginTransaction();
+      session.doNativeUpdate("drop <" + graphPrefix + "str> ;");
+      txn.commit();
     } catch (OtmException e) {
+      if (txn != null) txn.rollback();
       log.warn("Could not drop graph " + graphPrefix + "str", e);
     }
   }

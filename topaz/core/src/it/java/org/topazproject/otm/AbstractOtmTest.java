@@ -105,8 +105,8 @@ public abstract class AbstractOtmTest {
     try {
       session = factory.openSession();
       txn = session.beginTransaction();
-      session.createGraph(factory.getGraph("str"));
-      session.createGraph(factory.getGraph("prefix"));
+      session.createGraph("str");
+      session.createGraph("prefix");
       txn.commit();
     } catch (OtmException e) {
       if (txn != null) txn.rollback();
@@ -146,7 +146,7 @@ public abstract class AbstractOtmTest {
         GraphConfig graph = factory.getGraph(name);
         txn = s.beginTransaction();
         try {
-          s.dropGraph(graph);
+          s.dropGraph(graph.getId());
           txn.commit();
         } catch (Throwable t) {
           if (log.isDebugEnabled())
@@ -155,7 +155,7 @@ public abstract class AbstractOtmTest {
         }
         txn = null;
         txn = s.beginTransaction();
-        s.createGraph(graph);
+        s.createGraph(graph.getId());
         txn.commit();
       }
     } catch (OtmException e) {

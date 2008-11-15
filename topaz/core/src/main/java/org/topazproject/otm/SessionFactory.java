@@ -257,6 +257,12 @@ public interface SessionFactory {
   public List<GraphConfig> getGraphs(URI graphType);
 
   /**
+   * Get all the graphs.
+   * @return The complete collection of graphs.
+   */
+  public Collection<GraphConfig> listGraphs();
+
+  /**
    * Adds a graph configuration.
    *
    * @param graph the graph configuration

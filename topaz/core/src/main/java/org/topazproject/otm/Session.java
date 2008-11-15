@@ -404,36 +404,18 @@ public interface Session {
   /**
    * Creates a graph in the underlying TripleStore. This is an idempotent operation.
    *
-   * @param graphConf The details of the graph to be created.
+   * @param graph The name of the graph to be created.
    * @throws OtmException on an error.
    */
-  public void createGraph(GraphConfig graphConf) throws OtmException;
+  public void createGraph(String graph) throws OtmException;
 
   /**
    * Removes a graph from the underlying TripleStore. This is an idempotent operation.
    *
-   * @param graphConf The details of the graph to be removed.
+   * @param graph The name of the graph to be removed.
    * @throws OtmException on an error.
    */
-  public void dropGraph(GraphConfig graphConf) throws OtmException;
-
-  /**
-   * Convenience method to create a graph in the underlying TripleStore,
-   * creating a transaction for the operation if necessary.
-   *
-   * @param graphConf The details of the graph to be created.
-   * @throws OtmException on an error.
-   */
-  public void createGraphInTx(GraphConfig graphConf) throws OtmException;
-
-  /**
-   * Convenience method to remove a graph from the underlying TripleStore,
-   * creating a transaction for the operation if necessary.
-   *
-   * @param graphConf The details of the graph to be removed.
-   * @throws OtmException on an error.
-   */
-  public void dropGraphInTx(GraphConfig graphConf) throws OtmException;
+  public void dropGraph(String graph) throws OtmException;
 
   /**
    * Gets the ids for a list of objects.

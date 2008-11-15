@@ -561,6 +561,13 @@ public class SessionFactoryImpl implements SessionFactory {
     return graphsByType.get(graphType);
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  public Collection<GraphConfig> listGraphs() {
+    return graphsByName.values();
+  }
+
   /*
    * inherited javadoc
    */

@@ -197,7 +197,7 @@ public class OwlGenerator {
     try {
       session = otmFactory.openSession();
       txn = session.beginTransaction();
-      session.createGraph(graph);
+      session.createGraph(graph.getId());
       txn.commit();
     } catch (OtmException e) {
       if (txn != null) txn.rollback();

@@ -274,81 +274,29 @@ abstract class AbstractSession implements Session {
   /**
    * Creates a graph in the underlying TripleStore. This is an idempotent operation.
    *
-   * @param graphConf The details of the graph to be created.
+   * @param graph The name of the graph to be created.
    * @throws OtmException on an error.
    */
-  public void createGraph(GraphConfig graphConf) throws OtmException {
+  public void createGraph(String graph) throws OtmException {
     if (flushMode.implies(FlushMode.always))
       flush(); // so that mods are visible to queries
 
     TripleStore store = sessionFactory.getTripleStore();
-    store.createGraph(graphConf, getTripleStoreCon());
+    store.createGraph(sessionFactory.getGraph(graph), getTripleStoreCon());
   }
 
   /**
    * Removes a graph from the underlying TripleStore.
    *
-   * @param graphConf The details of the graph to be removed.
+   * @param graph The name of the graph to be removed.
    * @throws OtmException on an error.
    */
-  public void dropGraph(GraphConfig graphConf) throws OtmException {
+  public void dropGraph(String graph) throws OtmException {
     if (flushMode.implies(FlushMode.always))
       flush(); // so that mods are visible to queries
 
     TripleStore store = sessionFactory.getTripleStore();
-    store.dropGraph(graphConf, getTripleStoreCon());
-  }
-
-  /**
-   * Creates a graph in the underlying TripleStore, creating a transaction if necessary.
-   *
-   * @param graphConf The details of the graph to be created.
-   * @throws OtmException on an error.
-   */
-  public void createGraphInTx(GraphConfig graphConf) throws OtmException {
-    boolean localTx = false;
-    Transaction tx = getTransaction();
-    if (tx == null) {
-      tx = beginTransaction();
-      localTx = true;
-    }
-    if (flushMode.implies(FlushMode.always))
-      flush(); // so that mods are visible to queries
-
-    TripleStore store = sessionFactory.getTripleStore();
-    try {
-      store.createGraph(graphConf, getTripleStoreCon());
-      if (localTx) tx.commit();
-    } catch (OtmException e) {
-      tx.rollback();
-      throw e;
-    }
-  }
-
-  /**
-   * Removes a graph from the underlying TripleStore, creating a transaction if necessary.
-   *
-   * @param graphConf The details of the graph to be removed.
-   * @throws OtmException on an error.
-   */
-  public void dropGraphInTx(GraphConfig graphConf) throws OtmException {
-    boolean localTx = false;
-    Transaction tx = getTransaction();
-    if (tx == null) {
-      tx = beginTransaction();
-      localTx = true;
-    }
-    if (flushMode.implies(FlushMode.always))
-      flush(); // so that mods are visible to queries
-
-    TripleStore store = sessionFactory.getTripleStore();
-    try {
-      store.dropGraph(graphConf, getTripleStoreCon());
-      if (localTx) tx.commit();
-    } catch (OtmException e) {
-      tx.rollback();
-      throw e;
-    }
+    store.dropGraph(sessionFactory.getGraph(graph), getTripleStoreCon());
   }
 
   /*

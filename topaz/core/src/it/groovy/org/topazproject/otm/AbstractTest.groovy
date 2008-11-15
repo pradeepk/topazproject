@@ -53,10 +53,8 @@ public abstract class AbstractTest extends GroovyTestCase {
     for (c in graphs) {
       def g = new GraphConfig(c[0], "local:///topazproject#${c[1]}".toURI(), c[2])
       rdf.sessFactory.addGraph(g)
-      Session sess = rdf.sessFactory.openSession();
-      try { sess.dropGraphInTx(g); } catch (Throwable t) { }
-      sess.createGraphInTx(g);
-      sess.close();
+      try { doInTx { s -> s.dropGraph(g.getId()) } } catch (OtmException e) { }
+      doInTx { s -> s.createGraph(g.getId()) }
     }
   }
 

@@ -128,7 +128,7 @@ public class OtmConfiguration {
       txn = session.beginTransaction();
       for (GraphConfig graph : graphs) {
         factory.addGraph(graph);
-        session.createGraph(graph);
+        session.createGraph(graph.getId());
       }
       txn.commit();
     } catch (Exception e) {

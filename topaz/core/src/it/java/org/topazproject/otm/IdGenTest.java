@@ -246,21 +246,12 @@ public class IdGenTest {
     Transaction txn = null;
     try {
       s = factory.openSession();
-      try {
-        s.dropGraphInTx(idtest);
-      } catch (Throwable t) {
-        log.debug("Failed to drop graph 'idtest'", t);
-      }
-
-      try {
-        s.dropGraphInTx(ri);
-      } catch (Throwable t) {
-        log.debug("Failed to drop graph 'ri'", t);
-      }
+      dropGraph(s, idtest.getId());
+      dropGraph(s, ri.getId());
 
       txn = s.beginTransaction();
-      s.createGraph(idtest);
-      s.createGraph(ri);
+      s.createGraph(idtest.getId());
+      s.createGraph(ri.getId());
       txn.commit();
     } catch (OtmException e) {
       if (txn != null) txn.rollback();
@@ -368,5 +359,17 @@ public class IdGenTest {
     E e = new E();
     session.saveOrUpdate(e);
     assert e.getId().startsWith(Rdf.topaz + E.class.getName() + "/id#") : e.getId();
+  }
+
+  private void dropGraph(Session session, String name) {
+    assert session.getTransaction() == null;
+    Transaction tx = session.beginTransaction();
+    try {
+      session.dropGraph(name);
+      tx.commit();
+    } catch (Throwable t) {
+      log.debug("Failed to drop graph 'idtest'", t);
+      tx.rollback();
+    }
   }
 }

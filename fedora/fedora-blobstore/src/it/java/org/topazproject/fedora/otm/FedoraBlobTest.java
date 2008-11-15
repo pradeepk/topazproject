@@ -150,22 +150,15 @@ public class FedoraBlobTest {
 
     String[] names = new String[] { "ri", "grants", "revokes", "criteria" };
 
-    Session session = factory.openSession();
-    try {
-      for (String name : names) {
-        GraphConfig graph = factory.getGraph(name);
-
-        try {
-          session.dropGraphInTx(graph);
-        } catch (Throwable t) {
-          if (log.isDebugEnabled())
-            log.debug("Failed to drop graph '" + name + "'", t);
-        }
-
-        session.createGraphInTx(graph);
+    for (final String name : names) {
+      try {
+        doInSession(new Action() { public void run(Session s) throws OtmException { s.dropGraph(name); } });
+      } catch (Throwable t) {
+        if (log.isDebugEnabled())
+          log.debug("Failed to drop graph '" + name + "'", t);
       }
-    } finally {
-      session.close();
+
+      doInSession(new Action() { public void run(Session s) throws OtmException { s.createGraph(name); } });
     }
 
   }

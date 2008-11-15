@@ -40,6 +40,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.query.Results;
@@ -156,9 +157,16 @@ public class PermissionsService implements Permissions {
       txn = s.beginTransaction();
     }
     try {
-      s.createGraph(new GraphConfig("grants",  toURI(GRANTS_GRAPH),  toURI(GRANTS_GRAPH_TYPE)));
-      s.createGraph(new GraphConfig("revokes", toURI(REVOKES_GRAPH), toURI(REVOKES_GRAPH_TYPE)));
-      s.createGraph(new GraphConfig("pp",      toURI(PP_GRAPH),      toURI(PP_GRAPH_TYPE)));
+      SessionFactory sf   = s.getSessionFactory();
+      GraphConfig grants  = new GraphConfig("grants",  toURI(GRANTS_GRAPH),  toURI(GRANTS_GRAPH_TYPE));
+      GraphConfig revokes = new GraphConfig("revokes", toURI(REVOKES_GRAPH), toURI(REVOKES_GRAPH_TYPE));
+      GraphConfig pp      = new GraphConfig("pp",      toURI(PP_GRAPH),      toURI(PP_GRAPH_TYPE));
+      sf.addGraph(grants);
+      sf.addGraph(revokes);
+      sf.addGraph(pp);
+      s.createGraph(grants.getId());
+      s.createGraph(revokes.getId());
+      s.createGraph(pp.getId());
       if (localTxn) txn.commit();
     } catch (OtmException e) {
       if (localTxn) txn.rollback();

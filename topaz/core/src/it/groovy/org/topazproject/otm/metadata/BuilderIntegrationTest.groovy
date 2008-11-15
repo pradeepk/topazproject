@@ -43,18 +43,10 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     def m2 = new GraphConfig("m2", "local:///topazproject#otmtest2".toURI(), null)
     rdf.sessFactory.addGraph(m2);
 
-    Session sess = rdf.sessFactory.openSession();
-    try {
-      sess.dropGraphInTx(ri)
-    } catch (Throwable t) {
-    }
-    try {
-      sess.dropGraphInTx(m2)
-    } catch (Throwable t) {
-    }
-    sess.createGraphInTx(ri)
-    sess.createGraphInTx(m2)
-    sess.close();
+    try { doInTx{ s -> s.dropGraph(ri.getId()) } } catch (OtmException e) { }
+    try { doInTx{ s -> s.dropGraph(m2.getId()) } } catch (OtmException e) { }
+    doInTx{ s -> s.createGraph(ri.getId()) }
+    doInTx{ s -> s.createGraph(m2.getId()) }
   }
 
   void testSimple() {
@@ -204,10 +196,8 @@ public class BuilderIntegrationTest extends GroovyTestCase {
       def m = new GraphConfig("m${num}", "local:///topazproject#otmtest_m${num}".toURI(), null)
       rdf.sessFactory.addGraph(m);
 
-      Session session = rdf.sessFactory.openSession();
-      try { session.dropGraphInTx(m); } catch (OtmException oe) { }
-      session.createGraphInTx(m);
-      session.close();
+      try { doInTx{ s -> s.dropGraph(m.getId()) } } catch (OtmException oe) { }
+      doInTx{ s -> s.createGraph(m.getId()) }
     }
 
     // predicate stored with child graph

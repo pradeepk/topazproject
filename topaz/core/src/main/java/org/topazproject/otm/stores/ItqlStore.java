@@ -971,21 +971,6 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     }
   }
 
-  private void runSingleCmd(String itql, String errMsg) throws OtmException {
-    /* can't use cached clients because mulgara disallows using a session with both internal
-     * (begin/commit) and external (getXAResource) transactions. When we move the graph operations
-     * into session and hence make them part of transaction then we won't have this problem.
-     */
-    ItqlClient con = getItqlClient(null, false);
-    try {
-      con.doUpdate(itql);
-    } catch (Exception e) {
-      throw new OtmException(errMsg, e);
-    } finally {
-      con.close();
-    }
-  }
-
   private class ItqlStoreConnection extends AbstractConnection {
     private ItqlClient   itql;
     private Map<String, StringBuilder> inserts = new HashMap<String, StringBuilder>();

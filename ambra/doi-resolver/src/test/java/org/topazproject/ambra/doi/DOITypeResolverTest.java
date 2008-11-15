@@ -87,12 +87,15 @@ public class DOITypeResolverTest {
     try {
       session = factory.openSession();
 
-      try {
-        session.dropGraphInTx(mc);
-      } catch (OtmException e) {
-      }
       Transaction tx = session.beginTransaction();
-      session.createGraph(mc);
+      try {
+        session.dropGraph(mc.getId());
+        tx.commit();
+      } catch (OtmException e) {
+        tx.rollback();
+      }
+      tx = session.beginTransaction();
+      session.createGraph(mc.getId());
 
       try {
         for (String doi : types.keySet())

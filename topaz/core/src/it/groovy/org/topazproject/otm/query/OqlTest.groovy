@@ -1018,10 +1018,8 @@ public class OqlTest extends AbstractTest {
       def m = new GraphConfig("m${num}", "local:///topazproject#otmtest_m${num}".toURI(), null)
       rdf.sessFactory.addGraph(m);
 
-      Session session = rdf.sessFactory.openSession();
-      try { session.dropGraphInTx(m); } catch (OtmException oe) { }
-      session.createGraphInTx(m);
-      session.close();
+      try { doInTx{ s -> s.dropGraph(m.getId()) } } catch (OtmException oe) { }
+      doInTx{ s -> s.createGraph(m.getId()) }
     }
 
     // predicate stored with child graph
