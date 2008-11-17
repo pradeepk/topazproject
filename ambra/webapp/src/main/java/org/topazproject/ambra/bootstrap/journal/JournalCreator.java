@@ -86,12 +86,10 @@ public class JournalCreator implements ServletContextListener {
    * @throws Error to abort
    */
   public void createJournals() {
-    Session             sess = null;
     final Configuration conf = ConfigurationStore.getInstance().getConfiguration();
 
     try {
-      URI            service =
-        new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql.uri"));
+      URI service = new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql.uri"));
 
       SessionFactory factory = new SessionFactoryImpl();
       factory.setTripleStore(new ItqlStore(service, WebappItqlClientFactory.getInstance()));
@@ -124,24 +122,14 @@ public class JournalCreator implements ServletContextListener {
 
       factory.validate();
 
-      sess = factory.openSession();
-
       Integer count =
-        TransactionHelper.doInTxE(sess,
-                                  new TransactionHelper.ActionE<Integer, Exception>() {
-            public Integer run(Transaction tx) throws Exception {
+        TransactionHelper.doInTxE(factory, new TransactionHelper.ActionE<Integer, OtmException>() {
+            public Integer run(Transaction tx) throws OtmException {
               return createJournals(tx.getSession(), conf);
             }
-          });
+        });
     } catch (Exception e) {
       throw new Error("A journal creation operation failed. Aborting ...", e);
-    } finally {
-      try {
-        if (sess != null)
-          sess.close();
-      } catch (Throwable t) {
-        log.warn("Error closing session", t);
-      }
     }
   }
 

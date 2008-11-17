@@ -20,6 +20,7 @@ package org.topazproject.otm.util;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 
 import org.apache.commons.logging.Log;
@@ -51,6 +52,22 @@ public class TransactionHelper {
    * Not meant to be instantiated.
    */
   private TransactionHelper() {
+  }
+
+  /**
+   * Run the given action in a transaction in a new session.
+   *
+   * @param sf     the otm session-factory to use
+   * @param action the action to run
+   * @return the value returned by the action
+   */
+  public static <T> T doInTx(SessionFactory sf, Action<T> action) {
+    Session session = sf.openSession();
+    try {
+      return doInTx(session, action);
+    } finally {
+      session.close();
+    }
   }
 
   /**
@@ -86,6 +103,23 @@ public class TransactionHelper {
       } catch (OtmException oe) {
         log.warn("rollback failed", oe);
       }
+    }
+  }
+
+  /**
+   * Run the given action in a transaction in a new session.
+   *
+   * @param sf     the otm session-factory to use
+   * @param action the action to run
+   * @return the value returned by the action
+   */
+  public static <T, E extends Throwable> T doInTxE(SessionFactory sf, ActionE<T, E> action)
+      throws E {
+    Session session = sf.openSession();
+    try {
+      return doInTxE(session, action);
+    } finally {
+      session.close();
     }
   }
 
