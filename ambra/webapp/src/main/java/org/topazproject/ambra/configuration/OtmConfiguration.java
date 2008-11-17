@@ -121,18 +121,20 @@ public class OtmConfiguration {
   public void setGraphs(GraphConfig[] graphs) {
     this.graphs = graphs;
 
+    for (GraphConfig graph : graphs)
+      factory.addGraph(graph);
+
     Session session = null;
     Transaction txn = null;
     try {
       session = factory.openSession();
       txn = session.beginTransaction();
-      for (GraphConfig graph : graphs) {
-        factory.addGraph(graph);
+      for (GraphConfig graph : graphs)
         session.createGraph(graph.getId());
-      }
       txn.commit();
     } catch (Exception e) {
-      if (txn != null) txn.rollback();
+      if (txn != null)
+        txn.rollback();
       throw new RuntimeException(e.getMessage(), e);
     } finally {
       session.close();
