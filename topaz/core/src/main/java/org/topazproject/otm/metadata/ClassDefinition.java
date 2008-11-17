@@ -28,7 +28,7 @@ import org.topazproject.otm.SessionFactory;
  * @author Pradeep Krishnan
  */
 public abstract class ClassDefinition extends Definition {
-/**
+  /**
    * Creates a new ClassDefinition object.
    *
    * @param name   The name of this definition.
