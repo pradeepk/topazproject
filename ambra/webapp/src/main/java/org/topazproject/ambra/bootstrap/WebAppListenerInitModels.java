@@ -76,9 +76,9 @@ public class WebAppListenerInitModels implements ServletContextListener {
 
       SessionFactory sessionFactory = new SessionFactoryImpl();
       sessionFactory.setTripleStore(store);
-      conf                  = conf.subset("ambra.graphs");
 
-      Iterator it           = conf.getKeys();
+      Configuration gconf = conf.subset("ambra.graphs");
+      Iterator      it    = gconf.getKeys();
 
       while (it.hasNext()) {
         String key = (String) it.next();
@@ -86,8 +86,8 @@ public class WebAppListenerInitModels implements ServletContextListener {
         if ((key.indexOf("[") >= 0) || (key.indexOf(".") >= 0))
           continue;
 
-        String graph  = conf.getString(key);
-        String type   = conf.getString(key + "[@type]", "mulgara:Model");
+        String graph  = gconf.getString(key);
+        String type   = gconf.getString(key + "[@type]", "mulgara:Model");
 
         sessionFactory.addGraph(new GraphConfig(key, new URI(graph), new URI(type)));
       }
