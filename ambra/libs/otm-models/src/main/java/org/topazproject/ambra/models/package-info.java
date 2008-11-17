@@ -30,6 +30,7 @@
   , @Alias(alias = "annotea", value = Annotea.W3C_NS)
   , @Alias(alias = "bio",     value = UserProfile.BIO_URI)
   , @Alias(alias = "address", value = UserProfile.ADDR_URI)
+  , @Alias(alias = "contact", value = UserProfile.contact)
 })
 package org.topazproject.ambra.models;
 

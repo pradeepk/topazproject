@@ -40,20 +40,12 @@
     <property name="articleService" ref="articleOtmService"/>
   </bean>
 
-  <bean id="citationService" class="org.topazproject.ambra.util.ArticleXMLUtils" init-method="init">
-    <property name="articleRep" value="XML"/>
-    <property name="xslTemplate" value="/citation.xsl"/>
-    <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
-    <property name="articleService" ref="articleOtmService"/>
-  </bean>
-
   <bean id="secondaryObjectService" class="org.topazproject.ambra.util.ArticleXMLUtils" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/objInfo.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleOtmService"/>
   </bean>
-
 
   <util:map id="xmlFactoryProperties">
 <!--       <entry key="javax.xml.transform.TransformerFactory"

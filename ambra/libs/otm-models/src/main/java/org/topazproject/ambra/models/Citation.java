@@ -56,11 +56,13 @@ public class Citation implements Serializable {
   private String publisherLocation;
   private String publisherName;
   private String pages;
+  private String eLocationId;
   private String journal;
   private String note;
   private List<UserProfile> editors = new ArrayList<UserProfile>();
   private List<UserProfile> authors = new ArrayList<UserProfile>();
   private String url;
+  private String doi;
   private String summary;
   private String citationType;
 
@@ -284,6 +286,25 @@ public class Citation implements Serializable {
   }
 
   /**
+   * Return the start page
+   *
+   * @return the citation start page
+   */
+  public String getELocationId() {
+    return eLocationId;
+  }
+
+  /**
+   * Set the citation start page.
+   *
+   * @param eLocationId the start page
+   */
+  @Predicate
+  public void setELocationId(String eLocationId) {
+    this.eLocationId = eLocationId;
+  }
+
+  /**
    * The journal name. Abbreviations are provided for many journals; see the Local Guide.
    *
    * @return journal the source of the citation
@@ -367,6 +388,21 @@ public class Citation implements Serializable {
   @Predicate(uri = "bibtex:hasURL", dataType = "xsd:string")
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  /**
+   * @return DOI for the citation
+   */
+  public String getDoi() {
+    return doi;
+  }
+
+  /**
+   * @param doi the DOI of the citation
+   */
+  @Predicate(uri = "dc:identifier")
+  public void setDoi(String doi) {
+    this.doi = doi;
   }
 
   /**

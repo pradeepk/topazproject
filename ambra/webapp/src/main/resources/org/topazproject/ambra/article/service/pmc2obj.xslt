@@ -278,8 +278,12 @@
         <xsl:with-param name="pages"
             select="if ($meta/counts/page-count) then concat('1-', $meta/counts/page-count/@count)
                     else ()"/>
+        <xsl:with-param name="elocation-id"
+            select="$meta/elocation-id"/>
         <xsl:with-param name="journal"
-            select="$meta/journal-meta/journal-title"/>
+             select="if ($jnl-meta/journal-id[@journal-id-type='nlm-ta']) then
+             $jnl-meta/journal-id[@journal-id-type='nlm-ta']
+             else $jnl-meta/journal-title"/>
         <xsl:with-param name="note"
             select="$meta/author-notes/fn[1]"/>
         <xsl:with-param name="editors"
@@ -288,6 +292,8 @@
             select="$meta/contrib-group/contrib[@contrib-type = 'author']/name"/>
         <xsl:with-param name="url"
             select="xs:anyURI(concat($doi-url-prefix, encode-for-uri($article-doi)))"/>
+        <xsl:with-param name="doi"
+            select="$article-doi"/>
         <xsl:with-param name="summary"
             select="if ($meta/abstract) then my:select-abstract($meta/abstract) else ()"/>
       </xsl:call-template>
@@ -318,6 +324,7 @@
               select="if (citation/page-range) then citation/page-range[1]
                       else if (citation/lpage) then concat(citation/fpage, '-', citation/lpage)
                       else citation/fpage"/>
+          <xsl:with-param name="elocation-id" select="citation/fpage"/>
           <xsl:with-param name="journal"
               select="if (citation/@citation-type = 'journal' or
                           citation/@citation-type = 'confproc')
@@ -335,23 +342,25 @@
   </xsl:template>
 
   <xsl:template name="gen-citation">
-    <xsl:param name="type"     as="xs:anyURI?"/>
-    <xsl:param name="key"      as="xs:string?"/>
-    <xsl:param name="year"     as="xs:integer?"/>
-    <xsl:param name="dispYear" as="xs:string?"/>
-    <xsl:param name="month"    as="xs:string?"/>
-    <xsl:param name="volume"   as="xs:string?"/>
-    <xsl:param name="volNum"   as="xs:integer?"/>
-    <xsl:param name="issue"    as="xs:string?"/>
+    <xsl:param name="type"         as="xs:anyURI?"/>
+    <xsl:param name="key"          as="xs:string?"/>
+    <xsl:param name="year"         as="xs:integer?"/>
+    <xsl:param name="dispYear"     as="xs:string?"/>
+    <xsl:param name="month"        as="xs:string?"/>
+    <xsl:param name="volume"       as="xs:string?"/>
+    <xsl:param name="volNum"       as="xs:integer?"/>
+    <xsl:param name="issue"        as="xs:string?"/>
     <xsl:param name="title"/>
-    <xsl:param name="pub-loc"  as="xs:string?"/>
-    <xsl:param name="pub-name" as="xs:string?"/>
-    <xsl:param name="pages"    as="xs:string?"/>
-    <xsl:param name="journal"  as="xs:string?"/>
-    <xsl:param name="note"     as="xs:string?"/>
-    <xsl:param name="editors"  as="element(name)*"/>
-    <xsl:param name="authors"  as="element(name)*"/>
-    <xsl:param name="url"      as="xs:anyURI?"/>
+    <xsl:param name="pub-loc"      as="xs:string?"/>
+    <xsl:param name="pub-name"     as="xs:string?"/>
+    <xsl:param name="pages"        as="xs:string?"/>
+    <xsl:param name="elocation-id" as="xs:string?"/>
+    <xsl:param name="journal"      as="xs:string?"/>
+    <xsl:param name="note"         as="xs:string?"/>
+    <xsl:param name="editors"      as="element(name)*"/>
+    <xsl:param name="authors"      as="element(name)*"/>
+    <xsl:param name="url"          as="xs:anyURI?"/>
+    <xsl:param name="doi"          as="xs:string?"/>
     <xsl:param name="summary"/>
 
     <xsl:if test="$type">
@@ -394,6 +403,9 @@
     <xsl:if test="$pages">
       <pages><xsl:value-of select="$pages"/></pages>
     </xsl:if>
+    <xsl:if test="$elocation-id">
+      <eLocationId><xsl:value-of select="$elocation-id"/></eLocationId>
+    </xsl:if>
     <xsl:if test="$journal">
       <journal><xsl:value-of select="$journal"/></journal>
     </xsl:if>
@@ -405,6 +417,9 @@
     </xsl:if>
     <xsl:if test="$url">
       <url><xsl:value-of select="$url"/></url>
+    </xsl:if>
+    <xsl:if test="$doi">
+      <doi><xsl:value-of select="$doi"/></doi>
     </xsl:if>
 
     <xsl:for-each select="$editors">
@@ -437,6 +452,9 @@
     </xsl:if>
     <xsl:if test="surname">
       <surnames><xsl:value-of select="surname"/></surnames>
+    </xsl:if>
+    <xsl:if test="suffix">
+      <suffix><xsl:value-of select="suffix"/></suffix>
     </xsl:if>
   </xsl:template>
 
@@ -496,11 +514,20 @@
     <xsl:value-of select="
       if ($name/given-names) then
         if ($name/@name-style = 'eastern') then
-          concat($name/surname, ' ', $name/given-names)
+          if ($name/suffix) then
+            concat($name/surname, ' ', $name/given-names, ' ', $name/suffix)
+          else
+            concat($name/surname, ' ', $name/given-names)
         else
-          concat($name/given-names, ' ', $name/surname)
+          if ($name/suffix) then
+            concat($name/given-names, ' ', $name/surname, ' ', $name/suffix)
+          else
+            concat($name/given-names, ' ', $name/surname)
       else
-        $name/surname
+        if ($name/suffix) then
+           concat($name/surname, ' ', $name/suffix)
+        else
+           $name/surname
       "/>
   </xsl:function>
 

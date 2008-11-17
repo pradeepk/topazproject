@@ -48,8 +48,11 @@ public class UserProfile extends FoafPerson {
 
   public static final String BIO_URI  = "http://purl.org/vocab/bio/0.1/";
   public static final String ADDR_URI = "http://wymiwyg.org/ontologies/foaf/postaddress#";
+  /** PIM namespace */
+  public static final String contact = "http://www.w3.org/2000/10/swap/pim/contact#";
 
   private String displayName;
+  private String suffix;
   private String positionType;
   private String organizationName;
   private String organizationType;
@@ -82,6 +85,25 @@ public class UserProfile extends FoafPerson {
   @Predicate
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
+  }
+
+  /**
+   * Get the name suffix ("Jr", "Sr" etc.)
+   *
+   * @return the suffix or null
+   */
+  public String getSuffix() {
+    return suffix;
+  }
+
+  /**
+   * Set the name suffix ("Jr", "Sr" etc)
+   *
+   * @param suffix the suffix name; may be null
+   */
+  @Predicate(uri = "contact:personalSuffix")
+  public void setSuffix(String suffix) {
+    this.suffix = suffix;
   }
 
   /**

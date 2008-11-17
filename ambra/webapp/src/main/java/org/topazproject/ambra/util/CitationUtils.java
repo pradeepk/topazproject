@@ -18,14 +18,13 @@
  */
 package org.topazproject.ambra.util;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
-import org.topazproject.ambra.article.service.Author;
-import org.topazproject.ambra.article.service.CitationInfo;
 import org.topazproject.ambra.configuration.ConfigurationStore;
+import org.topazproject.ambra.models.Citation;
+import org.topazproject.ambra.models.UserProfile;
 
 /**
  * CitationUtils - General citation related utility methods.
@@ -36,58 +35,32 @@ public abstract class CitationUtils {
   private static final int MAX_AUTHORS_TO_DISPLAY = 5;
 
   /**
-   * Date format used in citation strings.
-   */
-  private static final DateFormat dateFormat = new SimpleDateFormat("yyyy");
-
-  /**
    * Appends to the given {@link StringBuffer} the article authors in a prescribed format.
-   * @param ci CitationInfo
+   * @param ci Citation
    * @param sb StringBuffer to which the authors String is appended
    * @param correction Is this for an article correction citation?
    */
-  private static void handleAuthors(CitationInfo ci, StringBuilder sb, boolean correction) {
+  private static void handleAuthors(Citation ci, StringBuilder sb, boolean correction) {
     // obtain a list of all author names
-    Author[] authors = ci.getAuthors();
+    List<UserProfile> authors = ci.getAuthors();
     if(authors != null) {
       int i = 0;
-      for(Author a : authors) {
+      for(UserProfile a : authors) {
 
-        sb.append(a.getSurname());
+        sb.append(a.getSurnames());
         sb.append(' ');
+
+        String gns = a.getGivenNames();
+        if(gns != null) {
+          toShortFormat(sb, gns, correction);
+        }
 
         if(a.getSuffix() != null) {
           sb.append(a.getSuffix());
           sb.append(' ');
         }
 
-        String gns = a.getGivenNames();
-        if(gns != null) {
-          // for formal corrections, we want the initial of the last given name followed by a period (.)
-          // whereas for article citations, we want each the initial of each given name concatenated with no periods
-          String[] givenNames = gns.split(" ");
-          int gnc = 0;
-          for(String gn :givenNames) {
-            if (gn.length() > 0 && ((correction && gnc++ == givenNames.length - 1) || !correction)) {
-              // Handle dashes in name
-              if(gn.matches(".*\\p{Pd}\\p{Lu}.*")) {
-                String[] sarr = gn.split("\\p{Pd}");
-
-                for (int j = 0; j < sarr.length; j++) {
-                  if (j>0)
-                    sb.append('-');
-                  sb.append(sarr[j].charAt(0));
-                }
-              }
-              else {
-                sb.append(gn.charAt(0));
-              }
-              if(correction) sb.append('.');
-            }
-          }
-        }
-
-        if(i < authors.length - 1) sb.append(", ");
+        if(i < authors.size() - 1) sb.append(", ");
 
         if(++i == MAX_AUTHORS_TO_DISPLAY) {
           break;
@@ -95,10 +68,36 @@ public abstract class CitationUtils {
 
       }//authors
 
-      if(authors.length > MAX_AUTHORS_TO_DISPLAY) {
+      if(authors.size() > MAX_AUTHORS_TO_DISPLAY) {
         sb.append(" et al.");
       }
       sb.append(' ');
+    }
+  }
+
+  private static void toShortFormat(StringBuilder sb, String gns, boolean correction) {
+    // for formal corrections, we want the initial of the last given name followed by a period (.)
+    // whereas for article citations, we want each the initial of each given name concatenated with no periods
+    String[] givenNames = gns.split(" ");
+    int gnc = 0;
+    for(String gn :givenNames) {
+      // TODO: (dragisa) similar code like in AuthorNameAbbreviationDirective, should be moved together
+      if (gn.length() > 0 && ((correction && gnc++ == givenNames.length - 1) || !correction)) {
+        // Handle dashes in name
+        if(gn.matches(".*\\p{Pd}\\p{Lu}.*")) {
+          String[] sarr = gn.split("\\p{Pd}");
+
+          for (int j = 0; j < sarr.length; j++) {
+            if (j>0)
+              sb.append('-');
+            sb.append(sarr[j].charAt(0));
+          }
+        }
+        else {
+          sb.append(gn.charAt(0));
+        }
+        if(correction) sb.append('.');
+      }
     }
   }
 
@@ -111,14 +110,14 @@ public abstract class CitationUtils {
    * {article title}. {journal abbreviated name} {annotation URL}
    *
    * @param ci
-   *          The {@link CitationInfo} pertaining to the article.
+   *          The {@link Citation} pertaining to the article.
    * @param wa
    *          The {@link WebAnnotation}.
    * @return A newly created article annotation citation String. <br>
    *         Refer to: <a href="http://wiki.plos.org/pmwiki.php/Topaz/Corrections"
    *         >http://wiki.plos.org/pmwiki.php/Topaz/Corrections</a> for the format specification.
    */
-  public static String generateArticleCorrectionCitationString(CitationInfo ci, WebAnnotation wa) {
+  public static String generateArticleCorrectionCitationString(Citation ci, WebAnnotation wa) {
     assert ci != null;
     assert wa != null;
 
@@ -129,19 +128,17 @@ public abstract class CitationUtils {
 
     // comment post date
     sb.append(" (");
-    synchronized (dateFormat) {
-      sb.append(dateFormat.format(wa.getCreatedAsDate()));
-    }
+    sb.append(ci.getYear().toString());
     sb.append(") ");
 
     sb.append("Correction: ");
 
     // article title
-    sb.append(ci.getArticleTitle());
+    sb.append(ArticleFormattingDirective.format(ci.getTitle()));
     sb.append(". ");
 
     // journal title
-    sb.append(ci.getJournalTitle());
+    sb.append(ci.getJournal());
     sb.append(": ");
 
     // annotation URI

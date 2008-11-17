@@ -69,7 +69,7 @@ public class AuthorNameAbbreviationDirective implements TemplateDirectiveModel {
     }
 
     public void write(char[] chars, int off, int len) throws IOException {
-      out.write(getShortName(new String(chars, off, len)));
+      out.write(toShortFormat(new String(chars, off, len)));
     }
 
     public void flush() throws IOException {
@@ -80,7 +80,7 @@ public class AuthorNameAbbreviationDirective implements TemplateDirectiveModel {
       out.close();
     }
 
-    private String getShortName(String name) {
+    private String toShortFormat(String name) {
       if (name == null)
         return null;
 

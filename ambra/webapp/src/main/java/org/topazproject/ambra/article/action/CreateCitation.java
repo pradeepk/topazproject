@@ -19,30 +19,16 @@
 
 package org.topazproject.ambra.article.action;
 
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
+import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-import org.xml.sax.SAXException;
 
-import com.thoughtworks.xstream.XStream;
-
-import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.action.BaseActionSupport;
-import org.topazproject.ambra.article.service.CitationInfo;
-import org.topazproject.ambra.article.service.FetchArticleService;
-import org.topazproject.ambra.article.service.NoSuchArticleIdException;
-import org.topazproject.ambra.cache.AbstractObjectListener;
-import org.topazproject.ambra.cache.Cache;
-import org.topazproject.ambra.models.Article;
-import org.topazproject.ambra.util.ArticleXMLUtils;
-import org.topazproject.otm.ClassMetadata;
-import org.topazproject.otm.Interceptor.Updates;
-import org.topazproject.otm.Session;
+import org.topazproject.ambra.article.service.ArticleOtmService;
+import org.topazproject.ambra.models.Citation;
 
 
 /**
@@ -56,55 +42,34 @@ public class CreateCitation extends BaseActionSupport {
 
   public static final String CITATION_KEY = "ArticleAnnotationCache-Citation-";
 
-  // private ArticleOtmService articleOtmService;
+  private ArticleOtmService articleOtmService;     // OTM service Spring injected.
+
   private String articleURI;
-  private ArticleXMLUtils citationService;
-  private CitationInfo citation;
-  private Cache articleAnnotationCache;
+  private Citation citation;
 
   private static final Log log = LogFactory.getLog(CreateCitation.class);
-  private static Invalidator invalidator;
 
   /**
-   * Generate citation information by first attempting to get from cache.  If not present,
-   * will create a CitationInfo object.
+   * Get Citation object from database
    */
   @Override
   @Transactional(readOnly = true)
   public String execute () throws Exception {
 
-    /* lock @ Article level
-       Using intern() to ensure lock object is always the same for same articleURI
-       so that synchronization is done properly.
-     */
-    final String lock = (FetchArticleService.ARTICLE_LOCK + articleURI).intern();
-
-    citation = articleAnnotationCache.get(CITATION_KEY + articleURI, -1,
-            new Cache.SynchronizedLookup<CitationInfo, ApplicationException>(lock) {
-              public CitationInfo lookup() throws ApplicationException {
-                XStream xstream = new XStream();
-                try {
-                  return (CitationInfo) xstream.fromXML(citationService.getTransformedArticle(articleURI));
-                } catch (IOException ioe) {
-                  throw new ApplicationException(ioe);
-                } catch (NoSuchArticleIdException nsaie) {
-                  throw new ApplicationException(nsaie);
-                } catch (ParserConfigurationException pce) {
-                  throw new ApplicationException(pce);
-                } catch (SAXException se) {
-                  throw new ApplicationException(se);
-                }
-              }
-    });
+    citation = articleOtmService.getArticle(URI.create(articleURI))
+      .getDublinCore()
+      .getBibliographicCitation();
+    citation.getAuthors(); // Load authors from db
 
     return SUCCESS;
   }
 
   /**
-   * @param citationService The citationService to set.
+   * @param articleOtmService ArticleOtmService Spring Injected
    */
-  public void setCitationService(ArticleXMLUtils citationService) {
-    this.citationService = citationService;
+  @Required
+  public void setArticleOtmService(ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   /**
@@ -124,41 +89,7 @@ public class CreateCitation extends BaseActionSupport {
   /**
    * @return Returns the citation.
    */
-  public CitationInfo getCitation() {
+  public Citation getCitation() {
     return citation;
-  }
-
-  /**
-   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
-   *   to use.
-   */
-  @Required
-  public void setArticleAnnotationCache(Cache articleAnnotationCache) {
-    this.articleAnnotationCache = articleAnnotationCache;
-    synchronized (this.articleAnnotationCache) {
-      if (invalidator == null)
-        invalidator = new Invalidator(articleAnnotationCache);
-    }
-  }
-
-  private static class Invalidator extends AbstractObjectListener {
-    private Cache articleAnnotationCache;
-
-    public Invalidator(Cache articleAnnotationCache) {
-      this.articleAnnotationCache = articleAnnotationCache;
-      articleAnnotationCache.getCacheManager().registerListener(this);
-    }
-
-    public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
-        Updates updates) {
-    }
-
-    public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
-      if (o instanceof Article) {
-        if (log.isDebugEnabled())
-          log.debug("Invalidating citation for the article that was deleted.");
-        articleAnnotationCache.remove(CITATION_KEY + id);
-      }
-    }
   }
 }

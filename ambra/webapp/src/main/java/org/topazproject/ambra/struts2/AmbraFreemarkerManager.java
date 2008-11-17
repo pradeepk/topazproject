@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts2.views.freemarker.FreemarkerManager;
 import org.apache.struts2.views.freemarker.ScopesHashModel;
 import org.topazproject.ambra.util.AuthorNameAbbreviationDirective;
+import org.topazproject.ambra.util.ArticleFormattingDirective;
 
 import com.opensymphony.xwork2.util.ValueStack;
 
@@ -134,6 +135,7 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
   protected Configuration createConfiguration(ServletContext servletContext) throws TemplateException {
     Configuration configuration = super.createConfiguration(servletContext);
     configuration.setSharedVariable("abbreviation", new AuthorNameAbbreviationDirective());
+    configuration.setSharedVariable("articleFormat", new ArticleFormattingDirective());
     return configuration;
   }
 }

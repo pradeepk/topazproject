@@ -27,14 +27,14 @@
         <span class="citation_author">et al. </span>
         <#break>
       </#if>
-      <span class="citation_author">${author.surname!} <@abbreviation>${author.givenNames!}</@abbreviation> ${author.suffix!}, </span>
+      <span class="citation_author">${author.surnames!} <@abbreviation>${author.givenNames!}</@abbreviation> ${author.suffix!}, </span>
     </#list>
-    <span class="citation_date">${citation.publicationDate?string("yyyy")}</span>
-    <span class="citation_article_title">${citation.articleTitle}. </span>
-    <span class="citation_journal_title">${citation.journalName!citation.journalTitle} </span>
+    <span class="citation_date">${citation.year?string('0000')}</span>
+    <span class="citation_article_title"><@articleFormat>${citation.title}</@articleFormat>. </span>
+    <span class="citation_journal_title">${citation.journal!} </span>
     <span class="citation_issue">${citation.volume}(${citation.issue}):</span>
-    <span class="citation_start_page">${citation.startPage}.</span>
-    <span class="citation_doi">doi:${citation.DOI}</span>
+    <span class="citation_start_page">${citation.ELocationId}.</span>
+    <span class="citation_doi">doi:${citation.doi}</span>
   </p>
   <h2>Download the article citation in the following formats:</h2>
   <ul>
