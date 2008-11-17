@@ -46,7 +46,9 @@ import org.topazproject.otm.annotations.UriPrefix;
 public class UserProfile extends FoafPerson {
   static final long serialVersionUID = -1224761277569005857L;
 
+  /** Biography namespace */
   public static final String BIO_URI  = "http://purl.org/vocab/bio/0.1/";
+  /** FOAF namespace */
   public static final String ADDR_URI = "http://wymiwyg.org/ontologies/foaf/postaddress#";
   /** PIM namespace */
   public static final String contact = "http://www.w3.org/2000/10/swap/pim/contact#";

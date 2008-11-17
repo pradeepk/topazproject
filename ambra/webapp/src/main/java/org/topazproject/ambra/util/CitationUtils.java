@@ -28,10 +28,10 @@ import org.topazproject.ambra.models.UserProfile;
 
 /**
  * CitationUtils - General citation related utility methods.
+ *
  * @author jkirton
  */
 public abstract class CitationUtils {
-
   private static final int MAX_AUTHORS_TO_DISPLAY = 5;
 
   /**
@@ -43,32 +43,32 @@ public abstract class CitationUtils {
   private static void handleAuthors(Citation ci, StringBuilder sb, boolean correction) {
     // obtain a list of all author names
     List<UserProfile> authors = ci.getAuthors();
-    if(authors != null) {
+    if (authors != null) {
       int i = 0;
-      for(UserProfile a : authors) {
-
+      for (UserProfile a : authors) {
         sb.append(a.getSurnames());
         sb.append(' ');
 
         String gns = a.getGivenNames();
-        if(gns != null) {
+        if (gns != null) {
           toShortFormat(sb, gns, correction);
         }
 
-        if(a.getSuffix() != null) {
+        if (a.getSuffix() != null) {
           sb.append(a.getSuffix());
           sb.append(' ');
         }
 
-        if(i < authors.size() - 1) sb.append(", ");
+        if (i < authors.size() - 1)
+          sb.append(", ");
 
-        if(++i == MAX_AUTHORS_TO_DISPLAY) {
+        if (++i == MAX_AUTHORS_TO_DISPLAY) {
           break;
         }
 
-      }//authors
+      }
 
-      if(authors.size() > MAX_AUTHORS_TO_DISPLAY) {
+      if (authors.size() > MAX_AUTHORS_TO_DISPLAY) {
         sb.append(" et al.");
       }
       sb.append(' ');
@@ -76,15 +76,17 @@ public abstract class CitationUtils {
   }
 
   private static void toShortFormat(StringBuilder sb, String gns, boolean correction) {
-    // for formal corrections, we want the initial of the last given name followed by a period (.)
-    // whereas for article citations, we want each the initial of each given name concatenated with no periods
+    /* for formal corrections, we want the initial of the last given name followed by a period (.)
+     * whereas for article citations, we want each the initial of each given name concatenated with
+     * no periods
+     */
     String[] givenNames = gns.split(" ");
     int gnc = 0;
-    for(String gn :givenNames) {
-      // TODO: (dragisa) similar code like in AuthorNameAbbreviationDirective, should be moved together
+    for (String gn :givenNames) {
+      // TODO: similar code like in AuthorNameAbbreviationDirective, should be moved together
       if (gn.length() > 0 && ((correction && gnc++ == givenNames.length - 1) || !correction)) {
         // Handle dashes in name
-        if(gn.matches(".*\\p{Pd}\\p{Lu}.*")) {
+        if (gn.matches(".*\\p{Pd}\\p{Lu}.*")) {
           String[] sarr = gn.split("\\p{Pd}");
 
           for (int j = 0; j < sarr.length; j++) {
@@ -92,11 +94,11 @@ public abstract class CitationUtils {
               sb.append('-');
             sb.append(sarr[j].charAt(0));
           }
-        }
-        else {
+        } else {
           sb.append(gn.charAt(0));
         }
-        if(correction) sb.append('.');
+        if (correction)
+          sb.append('.');
       }
     }
   }
@@ -109,10 +111,8 @@ public abstract class CitationUtils {
    * {first five authors of the article}, et al. (<Year the annotation was created>) Correction:
    * {article title}. {journal abbreviated name} {annotation URL}
    *
-   * @param ci
-   *          The {@link Citation} pertaining to the article.
-   * @param wa
-   *          The {@link WebAnnotation}.
+   * @param ci The {@link Citation} pertaining to the article.
+   * @param wa The {@link WebAnnotation}.
    * @return A newly created article annotation citation String. <br>
    *         Refer to: <a href="http://wiki.plos.org/pmwiki.php/Topaz/Corrections"
    *         >http://wiki.plos.org/pmwiki.php/Topaz/Corrections</a> for the format specification.
@@ -142,12 +142,10 @@ public abstract class CitationUtils {
     sb.append(": ");
 
     // annotation URI
-    sb.append(ConfigurationStore.getInstance().getConfiguration().getString(
-        "ambra.platform.doiUrlPrefix"));
+    sb.append(ConfigurationStore.getInstance().getConfiguration().getString("ambra.platform.doiUrlPrefix"));
     sb.append(StringUtils.replace(wa.getId(), ConfigurationStore.getInstance().getConfiguration()
                                                       .getString("ambra.aliases.doiPrefix"), ""));
 
     return sb.toString();
   }
-
 }
