@@ -137,8 +137,8 @@ public class SearchableDefinition extends PropertyDefinition {
   }
 
   public String toString() {
-    return getClass().getName() + "[pred=" + uri + ", index=" + index + ", tokenize=" + tokenize +
-           ", analyzer=" + analyzer + ", boost=" + boost + ", preProcessor=" +
-           ((preProcessor != null) ? preProcessor.getClass() : "-null-") + "]";
+    return getClass().getName() + "[name=" + getName() + ", pred=" + uri + ", index=" + index +
+           ", tokenize=" + tokenize + ", analyzer=" + analyzer + ", boost=" + boost +
+           ", preProcessor=" + ((preProcessor != null) ? preProcessor.getClass() : "-null-") + "]";
   }
 }

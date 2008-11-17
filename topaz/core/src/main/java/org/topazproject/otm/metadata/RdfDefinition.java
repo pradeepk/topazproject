@@ -311,8 +311,9 @@ public class RdfDefinition extends PropertyDefinition {
    * inherited javadoc
    */
   public String toString() {
-    return getClass().getName() + "[pred=" + uri + ", dataType=" + dataType + ", colType="
-           + colType + ", inverse=" + inverse + ", fetchType=" + fetchType + ", cascade=" + cascade
+    return getClass().getName() + "[name=" + getName() + ", pred=" + uri + ", dataType="
+           + dataType + ", colType=" + colType + ", inverse=" + inverse + ", fetchType=" + fetchType
+           + ", cascade=" + cascade
            + ", generator=" + ((generator != null) ? generator.getClass() : "-null-")
            + ", association=" + associatedEntity + ", objectProperty=" + objectProperty
            + ", graph=" + graph + ",entityOwned=" + entityOwned + "]";
