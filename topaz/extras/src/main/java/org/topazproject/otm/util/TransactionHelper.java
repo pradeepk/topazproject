@@ -47,16 +47,16 @@ import org.apache.commons.logging.LogFactory;
 public class TransactionHelper {
   private static Log log = LogFactory.getLog(TransactionHelper.class);
 
-  /** 
-   * Not meant to be instantiated. 
+  /**
+   * Not meant to be instantiated.
    */
   private TransactionHelper() {
   }
 
-  /** 
+  /**
    * Run the given action within a transaction.
-   * 
-   * @param s      the otm session to use    
+   *
+   * @param s      the otm session to use
    * @param action the action to run
    * @return the value returned by the action
    */
@@ -89,10 +89,10 @@ public class TransactionHelper {
     }
   }
 
-  /** 
+  /**
    * Run the given action within a transaction.
-   * 
-   * @param s      the otm session to use    
+   *
+   * @param s      the otm session to use
    * @param action the action to run
    * @return the value returned by the action
    */
@@ -129,9 +129,9 @@ public class TransactionHelper {
    * The interface actions must implement.
    */
   public static interface Action<T> {
-    /** 
+    /**
      * This is run within the context of a transaction.
-     * 
+     *
      * @param tx the current transaction
      * @return anything you want
      */
@@ -142,9 +142,9 @@ public class TransactionHelper {
    * The interface actions which throw an exception must implement.
    */
   public static interface ActionE<T, E extends Throwable> {
-    /** 
+    /**
      * This is run within the context of a transaction.
-     * 
+     *
      * @param tx the current transaction
      * @return anything you want
      */
