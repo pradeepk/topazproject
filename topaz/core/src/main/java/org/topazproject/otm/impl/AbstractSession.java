@@ -45,7 +45,6 @@ import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
-import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Query;
