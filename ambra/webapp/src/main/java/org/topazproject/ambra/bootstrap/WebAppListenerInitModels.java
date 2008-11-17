@@ -19,7 +19,6 @@
 package org.topazproject.ambra.bootstrap;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 
 import javax.servlet.ServletContextEvent;
@@ -103,10 +102,12 @@ public class WebAppListenerInitModels implements ServletContextListener {
       log.info("Successfully created all configured ITQL Graphs.");
     } catch (Exception e) {
       log.warn("bootstrap of graphs failed", e);
-      if (txn != null) txn.rollback();
+      if (txn != null)
+        txn.rollback();
       log.error("Error creating all configured ITQL Graphs.", e);
     } finally {
-      if (session != null) session.close();
+      if (session != null)
+        session.close();
     }
 
   }
@@ -115,11 +116,10 @@ public class WebAppListenerInitModels implements ServletContextListener {
    * Have to do this to deal with change from "models" to "graphs"
    * @param conf Configuration
    * @param session A writable Session to access the store
-   * @throws URISyntaxException
    *
    * TODO: Remove this after 0.9.2
    */
-  private void dropObsoleteGraphs(Configuration conf, Session session) throws URISyntaxException {
+  private void dropObsoleteGraphs(Configuration conf, Session session) {
     String graphPrefix = conf.getString("ambra.topaz.tripleStore.mulgara.graphPrefix");
     Transaction txn = null;
     try {
@@ -127,7 +127,8 @@ public class WebAppListenerInitModels implements ServletContextListener {
       session.doNativeUpdate("drop <" + graphPrefix + "str> ;");
       txn.commit();
     } catch (OtmException e) {
-      if (txn != null) txn.rollback();
+      if (txn != null)
+        txn.rollback();
       log.warn("Could not drop graph " + graphPrefix + "str", e);
     }
   }
