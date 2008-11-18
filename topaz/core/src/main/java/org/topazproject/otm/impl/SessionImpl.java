@@ -480,7 +480,7 @@ public class SessionImpl extends AbstractSession {
     }
   }
 
-  private <T> boolean isPristineProxy(Id id, T o) {
+  private <T> boolean isPristineProxy(Id id, T o) throws OtmException {
     if (!(o instanceof LazyLoaded))
       return false;
     LazyLoaded ll  = (LazyLoaded) o;
@@ -737,7 +737,7 @@ public class SessionImpl extends AbstractSession {
     return instance;
   }
 
-  private void startTracking(Wrapper w) {
+  private void startTracking(Wrapper w) throws OtmException {
     ClassMetadata cm = w.getId().getClassMetadata();
     if (!cm.isView()) {
       states.update(w.get(), cm, this);

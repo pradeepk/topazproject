@@ -179,7 +179,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
 
     // FIXME: this has too many assumptions...
     return new AbstractFieldBinder(null, null) {
-      public List get(Object o) {
+      public List get(Object o) throws OtmException {
         byte[] b = (byte[]) origBinder.getRawValue(o, false);
         try {
           return Collections.singletonList(new String(b, "UTF-8"));
