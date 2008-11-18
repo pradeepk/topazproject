@@ -48,5 +48,4 @@ public abstract class ArticleAnnotation extends Annotation<AnnotationBlob> {
   public AnnotationBlob getBody() {
     return super.getBody();
   }
-
- }
+}
