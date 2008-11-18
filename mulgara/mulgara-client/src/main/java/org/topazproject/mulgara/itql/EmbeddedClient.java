@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.apache.commons.io.FileCleaner;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FileCleaningTracker;
 
 import org.mulgara.config.MulgaraConfig;
 import org.mulgara.connection.Connection;
@@ -53,6 +53,7 @@ public class EmbeddedClient extends TIClient {
                                     new WeakHashMap<ItqlClientFactory, Map<URI, SessionFactory>>();
   private static final Set<File> tempFiles = new HashSet<File>();
   private static final Thread    shutdownHook;
+  private static final FileCleaningTracker fileCleaningTracker = new FileCleaningTracker();
 
   static {
     shutdownHook = new Thread() {
@@ -61,7 +62,7 @@ public class EmbeddedClient extends TIClient {
         synchronized (EmbeddedClient.class) {
           // Note: need to make a copy of the values here so we don't get values removed
           // from out under us; we also need to make sure the copy is "atomic"
-          for (Map<URI, SessionFactory> fl : allFactories.values().toArray(new Map[0])) {
+          for (Map<URI, SessionFactory> fl : allFactories.values().toArray(new Map[allFactories.values().size()])) {
             for (SessionFactory sf : fl.values()) {
               try {
                 sf.close();
@@ -98,7 +99,7 @@ public class EmbeddedClient extends TIClient {
   public static void releaseResources() {
     Runtime.getRuntime().removeShutdownHook(shutdownHook);
     shutdownHook.run();
-    FileCleaner.exitWhenFinished();
+    fileCleaningTracker.exitWhenFinished();
   }
 
   /**
@@ -160,7 +161,7 @@ public class EmbeddedClient extends TIClient {
     SessionFactory sf = newSessionFactory(uri, dir, conf);
 
     if (dbDir == null) {
-      FileCleaner.track(dir, sf, FileDeleteStrategy.FORCE);
+      fileCleaningTracker.track(dir, sf, FileDeleteStrategy.FORCE);
       tempFiles.add(dir);
     }
 
