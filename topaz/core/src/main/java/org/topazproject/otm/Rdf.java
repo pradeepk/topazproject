@@ -38,6 +38,9 @@ public interface Rdf {
   /** help compose dc_terms defined URIs */
   public static final String dc_terms = "http://purl.org/dc/terms/";
 
+  /** help compose dcmi type defined URIs */
+  public static final String dcmi = "http://purl.org/dc/dcmitype/";
+
   /** help compose topaz defined URIs */
   public static final String topaz    = "http://rdf.topazproject.org/RDF/";
 

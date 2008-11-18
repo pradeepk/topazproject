@@ -21,6 +21,7 @@
     @Alias(alias = "foaf",    value = Rdf.foaf)
   , @Alias(alias = "dc",      value = Rdf.dc)
   , @Alias(alias = "dcterms", value = Rdf.dc_terms)
+  , @Alias(alias = "dcmi",    value = Rdf.dcmi)
   , @Alias(alias = "topaz",   value = Rdf.topaz)
   , @Alias(alias = "plos",    value = Ambra.plos)
   , @Alias(alias = "cc",      value = Ambra.creativeCommons)
