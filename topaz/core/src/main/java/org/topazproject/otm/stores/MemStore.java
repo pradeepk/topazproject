@@ -39,6 +39,7 @@ import org.topazproject.otm.Filter;
 import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.SearchStore;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.Conjunction;
@@ -50,6 +51,7 @@ import org.topazproject.otm.criterion.PredicateCriterion;
 import org.topazproject.otm.criterion.SubjectCriterion;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.RdfMapper;
+import org.topazproject.otm.metadata.SearchableDefinition;
 import org.topazproject.otm.query.GenericQuery;
 import org.topazproject.otm.query.Results;
 
@@ -58,7 +60,7 @@ import org.topazproject.otm.query.Results;
  *
  * @author Pradeep Krishnan
  */
-public class MemStore extends AbstractTripleStore {
+public class MemStore extends AbstractTripleStore implements SearchStore {
   private Storage storage = new Storage();
 
   /*
@@ -233,6 +235,22 @@ public class MemStore extends AbstractTripleStore {
   public List<String> getRdfBag(String id, String pUri, String mUri, Connection isc)
                                   throws OtmException {
     throw new OtmException("Not implemented yet");
+  }
+
+  public <T> void index(ClassMetadata cm, Collection<SearchableDefinition> fields, String id, T o,
+                        Connection con) throws OtmException {
+    // no-op
+   }
+
+  public <T> void remove(ClassMetadata cm, Collection<SearchableDefinition> fields, String id, T o,
+                         Connection con) throws OtmException {
+    // no-op
+
+  }
+
+  public <T> void remove(ClassMetadata cm, SearchableDefinition field, String id, T o,
+                         Connection con) throws OtmException {
+    // no-op
   }
 
   private Set<String> conjunction(List<Criterion> criterions, Criteria criteria, Storage storage)
