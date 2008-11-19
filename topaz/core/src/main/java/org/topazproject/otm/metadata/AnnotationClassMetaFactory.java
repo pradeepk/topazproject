@@ -480,20 +480,9 @@ public class AnnotationClassMetaFactory {
       String pre = sf.expandAlias(gv.uriPrefix());
 
       if (pre.equals("")) {
-        pre   = ((uriPrefix == null) || uriPrefix.equals("")) ? Rdf.topaz : uriPrefix;
+        pre = ((uriPrefix == null) || uriPrefix.equals("")) ? Rdf.topaz : uriPrefix;
         // Compute default uriPrefix: Rdf.topaz/clazz/generatorClass#
-        pre   = Rdf.topaz + property.getContainingClass().getName() + '/' + property.getName()
-                + '#';
-
-        //pre = pre + cd.getName() + '/' + property.getName() + '/';
-      } else {
-        try {
-          // Validate that we have a valid uri
-          URI.create(pre);
-        } catch (IllegalArgumentException iae) {
-          throw new OtmException("Illegal uriPrefix '" + pre + "' in @GeneratedValue for " + this,
-                                 iae);
-        }
+        pre = Rdf.topaz + property.getContainingClass().getName() + '/' + property.getName() + '#';
       }
 
       generator.setUriPrefix(pre);

@@ -22,6 +22,8 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -32,14 +34,14 @@ import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.mapping.RdfMapper;
-import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.Transaction;
 
 import org.semanticweb.owl.apibinding.OWLManager;
+
 import org.semanticweb.owl.io.RDFXMLOntologyFormat;
+import org.semanticweb.owl.io.OWLXMLOntologyFormat;
+
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
@@ -48,9 +50,13 @@ import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDataRange;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLException;
+import org.semanticweb.owl.model.OWLObjectIntersectionOf;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
+
+import org.semanticweb.owl.util.CollectionFactory;
+
 import org.semanticweb.owl.vocab.XSDVocabulary;
 
 /**
@@ -64,10 +70,10 @@ public class OwlGenerator {
   private static final Log log = LogFactory.getLog(OwlGenerator.class);
 
   // Map of created OWL classes
-  HashMap classMap;
+  HashMap<String, OWLClass> classMap;
 
   // Map of created OWL properties
-  HashMap propertyMap;
+  HashMap<String, OWLObjectProperty> propertyMap;
 
   // Logical URI for generated ontology
   String logicalURI;
@@ -79,6 +85,16 @@ public class OwlGenerator {
   OWLOntologyManager ontologyManager;
   OWLOntology ontology;
   OWLDataFactory factory;
+
+  /**
+   * Return the set of of RDF types for the class (null for none)
+   */
+  private Set<String> getRdfType(RdfMapper m) {
+    ClassMetadata cm = otmFactory.getClassMetadata(m.getAssociatedEntity());
+    if (cm != null)
+      return cm.getTypes();
+    return Collections.emptySet();
+  }
 
   /**
    * Return true if the class metadata is a typed entity
@@ -113,25 +129,35 @@ public class OwlGenerator {
   }
 
   /**
-   * Return the OWLClass associated with this metadata information
+   * Generate and add the OWLClass axioms for the class meta data
    *
-   * @param type the type for the metadata
-   * @param name the name for the class
-   *
-   * @return the OWLClass either from cache or newly created
+   * @param cm the class meta data
    */
-  private OWLClass getOWLClass(Set<String> types, String name) {
-    if (types.size() > 1)
-      throw new OtmException("fix me");
-    String type = types.iterator().next();
-    OWLClass owlClass = (OWLClass)classMap.get(type);
-    if (owlClass == null) {
-      owlClass = factory.getOWLClass(URI.create(type));
-      classMap.put(type, owlClass);
-      log.debug("Cached OWL Class " + owlClass.getURI() + " created for " + name);
+  private OWLClass generateOWLClassAxiom(ClassMetadata cm) throws OWLException {
+    OWLClass owlClass = null;
+    Set<OWLClass> allClasses = CollectionFactory.createSet();
+    if (cm.getTypes() == null)
+      return factory.getOWLThing();
+    Iterator<String> typeIter = cm.getTypes().iterator();
+
+    while (typeIter.hasNext()) {
+      String type = typeIter.next();
+      owlClass = classMap.get(type);
+      if (owlClass == null) {
+        owlClass = factory.getOWLClass(URI.create(type));
+        classMap.put(type, owlClass);
+        ontologyManager.applyChange(new AddAxiom(ontology, factory.getOWLDeclarationAxiom(owlClass)));
+      }
+      allClasses.add(owlClass);
     }
 
-    return owlClass;
+    if (allClasses.size() > 1) {
+      OWLObjectIntersectionOf intersection = factory.getOWLObjectIntersectionOf(allClasses);
+      owlClass = intersection.asOWLClass();
+      ontologyManager.applyChange(new AddAxiom(ontology, factory.getOWLDeclarationAxiom(owlClass)));
+    }
+
+    return (owlClass == null) ? factory.getOWLThing() : owlClass;
   }
 
   /**
@@ -143,7 +169,7 @@ public class OwlGenerator {
    * @return the ObjectProperty either from cache or newly created
    */
   private OWLObjectProperty getOWLObjectProperty(String type, String name) {
-    OWLObjectProperty objectProperty = (OWLObjectProperty)propertyMap.get(type);
+    OWLObjectProperty objectProperty = propertyMap.get(type);
     if (objectProperty == null) {
       objectProperty = factory.getOWLObjectProperty(URI.create(type));
       propertyMap.put(type, objectProperty);
@@ -164,7 +190,20 @@ public class OwlGenerator {
     OtmException, OWLException {
       this.logicalURI = logicalURI;
       initialize(metaFactory);
+  }
+
+  /**
+   * Add namespace prefixes to make the generated OWL file little more readable.
+   *
+   * @param namespaces the namespace map
+   */
+  public void addNamespaces(Map<String, String> namespaces) {
+    RDFXMLOntologyFormat format = new RDFXMLOntologyFormat();
+    for (String name:namespaces.keySet()) {
+      format.addPrefixNamespaceMapping(name, namespaces.get(name));
     }
+    ontologyManager.setOntologyFormat(ontology, format);
+  }
 
   /**
    * Initialize the OWL generator with the information needed.
@@ -173,8 +212,8 @@ public class OwlGenerator {
    */
   public void initialize(SessionFactory metaFactory) throws OtmException,OWLException {
     log.debug("Initialising OwlGenerator...\n");
-    classMap = new HashMap();
-    propertyMap = new HashMap();
+    classMap = new HashMap<String, OWLClass>();
+    propertyMap = new HashMap<String, OWLObjectProperty>();
 
     // Initialize input (OTM) side of things
     otmFactory = metaFactory;
@@ -186,38 +225,11 @@ public class OwlGenerator {
   }
 
   /**
-   * Try and save the OWL triples to a name graph
-   *
-   * @param graph the named graph where the OWL metadata is to be stored
-   */
-  public void save(GraphConfig graph) throws OtmException {
-    otmFactory.addGraph(graph);
-    Session session = null;
-    Transaction txn = null;
-    try {
-      session = otmFactory.openSession();
-      txn = session.beginTransaction();
-      session.createGraph(graph.getId());
-      txn.commit();
-    } catch (OtmException e) {
-      if (txn != null) txn.rollback();
-      throw e;
-    } finally {
-      session.close();
-    }
-  }
-
-  /**
    * Save the OWL triples to named physical URI
    *
    * @param physicalURI the physical URI for storing the generated ontology
    */
   public void save(String physicalURI) throws OWLException {
-    RDFXMLOntologyFormat format = new RDFXMLOntologyFormat();
-    format.addPrefixNamespaceMapping("topaz", "http://rdf.topazproject.org/RDF/");
-    format.addPrefixNamespaceMapping("plos", "http://rdf.plos.org/RDF/");
-    format.addPrefixNamespaceMapping("annotea", "http://www.w3.org/2000/10/annotation-ns#");
-    ontologyManager.setOntologyFormat(ontology, format);
     ontologyManager.saveOntology(ontology, URI.create(physicalURI));
   }
 
@@ -230,10 +242,9 @@ public class OwlGenerator {
     // Loop over all classes in factory
     for (ClassMetadata cm: otmFactory.listClassMetadata()) {
       log.debug("Parsing OTM Class metadata: " + cm.getName());
-      Set<String> types = cm.getTypes();
-      if (types.isEmpty())
+      if (cm.getTypes().isEmpty())
         continue;
-      OWLClass domain = getOWLClass(types, cm.getName());
+      OWLClass domain = generateOWLClassAxiom(cm);
 
       // Now let's iterate over the fields to define 'restrictions' on properties
       for (RdfMapper m: cm.getRdfMappers()) {
@@ -253,7 +264,7 @@ public class OwlGenerator {
           OWLObjectProperty objectProperty = getOWLObjectProperty(m.getUri(), m.getName());
           OWLClass range = null;
           if (getRdfType(m) != null)
-            range = getOWLClass(getRdfType(m), m.getAssociatedEntity());
+            range = generateOWLClassAxiom(otmFactory.getClassMetadata(m.getAssociatedEntity()));
           else
             range = factory.getOWLThing();
           OWLAxiom domainRestriction = null;
@@ -298,31 +309,28 @@ public class OwlGenerator {
     // Loop over all classes in factory
     for (ClassMetadata cm: otmFactory.listClassMetadata()) {
       log.debug("Parsing OTM Class metadata: " + cm.getName());
-      Set<String> types = cm.getTypes();
       // Ignore anonymous classes
-      if (types.isEmpty()) {
+      if (cm.getTypes().isEmpty())
         continue;
-      }
 
       // Get the corresponding OWL class
-      OWLClass owlClass = getOWLClass(types, cm.getName());
-      ontologyManager.applyChange(new AddAxiom(ontology, factory.getOWLDeclarationAxiom(owlClass)));
-      HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
+      OWLClass owlClass = generateOWLClassAxiom(cm);
 
       // Create sub-class relationships
+      HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
       for (Class c: superClasses.values()) {
         ClassMetadata scm = otmFactory.getClassMetadata(c);
         if (!isTypedEntity(scm))
           continue;
         log.debug("Processing super-class: " + scm.getName());
-        OWLClass superOwlClass = getOWLClass(scm.getTypes(), scm.getName());
+        OWLClass superOwlClass = generateOWLClassAxiom(scm);
 
         // Because of pre-computed types.
         if (superOwlClass == owlClass)
           continue;
 
         ontologyManager.applyChange(new AddAxiom(ontology,
-              factory.getOWLSubClassAxiom(owlClass, superOwlClass)));
+                                                 factory.getOWLSubClassAxiom(owlClass, superOwlClass)));
         log.debug("Making " + owlClass.getURI() + " subClass of " + superOwlClass.getURI());
       }
     }
@@ -336,14 +344,12 @@ public class OwlGenerator {
     // Loop over all classes in factory
     for (ClassMetadata cm: otmFactory.listClassMetadata()) {
       log.debug("Parsing OTM Class metadata: " + cm.getName());
-      Set<String> types = cm.getTypes();
       // Ignore anonymous classes
-      if (types.isEmpty()) {
+      if (cm.getTypes().isEmpty())
         continue;
-      }
 
       // Get the corresponding OWL class
-      OWLClass domain = getOWLClass(types, cm.getName());
+      OWLClass domain = generateOWLClassAxiom(cm);
       HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
@@ -372,10 +378,11 @@ public class OwlGenerator {
         log.debug("Processing association field: " + m.getName());
         OWLObjectProperty objectProperty = getOWLObjectProperty(m.getUri(), m.getName());
         OWLClass range = null;
-        if (getRdfType(m) != null)
-          range = getOWLClass(getRdfType(m), m.getAssociatedEntity());
-        else
+        if (getRdfType(m) != null) {
+          range = generateOWLClassAxiom(otmFactory.getClassMetadata(m.getAssociatedEntity()));
+        } else {
           range = factory.getOWLThing();
+        }
 
         if (!m.hasInverseUri()) {
           OWLDescription rangeRestriction = factory.getOWLObjectAllRestriction(objectProperty, range);
@@ -398,14 +405,12 @@ public class OwlGenerator {
     // Loop over all classes in factory
     for (ClassMetadata cm: otmFactory.listClassMetadata()) {
       log.debug("Parsing OTM Class metadata: " + cm.getName());
-      Set<String> types = cm.getTypes();
       // Ignore anonymous classes
-      if (types.isEmpty()) {
+      if (cm.getTypes().isEmpty())
         continue;
-      }
 
       // Get the corresponding OWL class
-      OWLClass domain = getOWLClass(types, cm.getName());
+      OWLClass domain = generateOWLClassAxiom(cm);
       HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
@@ -448,12 +453,5 @@ public class OwlGenerator {
   private static Class getSourceClass(ClassMetadata cm) {
     // XXX: temporary
     return ((ClassBinder)cm.getEntityBinder(EntityMode.POJO)).getSourceClass();
-  }
-
-  private Set<String> getRdfType(RdfMapper m) {
-    ClassMetadata cm = otmFactory.getClassMetadata(m.getAssociatedEntity());
-    if (cm != null)
-      return cm.getTypes();
-    return Collections.emptySet();
   }
 }
