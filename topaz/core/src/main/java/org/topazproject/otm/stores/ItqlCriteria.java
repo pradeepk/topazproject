@@ -176,9 +176,9 @@ public class ItqlCriteria {
     }
   }
 
-  /** 
-   * Build a where-clause fragment for the given filter. 
-   * 
+  /**
+   * Build a where-clause fragment for the given filter.
+   *
    * @param f       the filter
    * @param qry     the query to which to attach the fragment
    * @param subject the query variable being filtered

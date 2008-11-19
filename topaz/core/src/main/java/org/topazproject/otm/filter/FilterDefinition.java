@@ -31,19 +31,19 @@ import org.topazproject.otm.OtmException;
  * @author Ronald Tschalär
  */
 public interface FilterDefinition {
-  /** 
+  /**
    * Get the name of the filter. Filters are referred to by name when enabling and disabling them.
-   * 
+   *
    * @return the name associated with the filter
    */
   String getFilterName();
 
-  /** 
+  /**
    * Get the class this filter is applied to. This may be either the entity name associated with
    * the class or the fully qualified class name - see also {@link
    * org.topazproject.otm.SessionFactory#getClassMetadata(java.lang.String)
    * SessionFactory.getClassMetadata()}.
-   * 
+   *
    * @return the class name
    */
   String getFilteredClass();
@@ -55,9 +55,9 @@ public interface FilterDefinition {
    */
   Set<String> getParameterNames();
 
-  /** 
-   * Create a filter from this definition. For use by {@link Session Session} only. 
-   * 
+  /**
+   * Create a filter from this definition. For use by {@link Session Session} only.
+   *
    * @param sess  the session the filter is attached to
    * @return the new filter
    * @throws OtmException if an error occurred creating the filter

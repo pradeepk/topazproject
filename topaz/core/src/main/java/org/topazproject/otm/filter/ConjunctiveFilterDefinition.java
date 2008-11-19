@@ -30,9 +30,9 @@ import org.topazproject.otm.Session;
  * @author Ronald Tschalär
  */
 public class ConjunctiveFilterDefinition extends JunctionFilterDefinition {
-  /** 
-   * Create a new conjunctive-filter-definition. 
-   * 
+  /**
+   * Create a new conjunctive-filter-definition.
+   *
    * @param filterName    the name of the filter
    * @param filteredClass the class being filtered; either an alias or a fully-qualified class name
    */

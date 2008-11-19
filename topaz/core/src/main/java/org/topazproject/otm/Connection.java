@@ -25,7 +25,7 @@ package org.topazproject.otm;
  * @author Pradeep Krishnan
   */
 public interface Connection {
-  /** 
+  /**
    * Signals that we're done with the connection.
    */
   void close();

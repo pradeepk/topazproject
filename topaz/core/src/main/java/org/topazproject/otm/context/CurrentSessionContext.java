@@ -24,7 +24,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 
 /**
- * Defines the contract for implementations which know how to scope the notion of a 
+ * Defines the contract for implementations which know how to scope the notion of a
  * {@link org.topazproject.otm.SessionFactory#getCurrentSession() current session}.
  * <p/>
  * Implementations should adhere to the following:
@@ -41,7 +41,7 @@ import org.topazproject.otm.Session;
  * Note that there will be exactly one instance of the configured
  * CurrentSessionContext implementation per {@link org.topazproject.otm.SessionFactory}.
  *
- * @author Pradeep Krishnan (borrowed from Hibernate) 
+ * @author Pradeep Krishnan (borrowed from Hibernate)
  */
 public interface CurrentSessionContext extends Serializable {
   /**

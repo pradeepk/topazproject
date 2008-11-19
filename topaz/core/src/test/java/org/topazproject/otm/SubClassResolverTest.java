@@ -85,7 +85,7 @@ public class SubClassResolverTest extends TestCase {
           String m3 = m2 + ", types = " + types;
           for (ClassMetadata cm : new ClassMetadata[] {base, nt, null}) {
             String m4 = m3 + ", cm = " + ((cm == null) ? "null" : cm.getName());
-            assertEquals(m4, sf.getClassMetadata(sel), 
+            assertEquals(m4, sf.getClassMetadata(sel),
                              sf.getSubClassMetadata(cm, EntityMode.POJO, types, r));
           }
           assertEquals(m3, sub, sf.getSubClassMetadata(sub, EntityMode.POJO, types, r));
@@ -164,7 +164,7 @@ public class SubClassResolverTest extends TestCase {
     }
 
     public ClassMetadata resolve(ClassMetadata superEntity, EntityMode instantiatableIn,
-                                 SessionFactory sf, Collection<String> typeUris, 
+                                 SessionFactory sf, Collection<String> typeUris,
                                  TripleStore.Result statements) {
       if (typeUris.contains("sub:type"))
         return sf.getClassMetadata(selection);

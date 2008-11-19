@@ -29,7 +29,7 @@ import antlr.collections.AST;
 import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.SessionFactory;
 
-/** 
+/**
  * A collection of utilities related to query parsing and handling.
  *
  * @author Ronald Tschalär

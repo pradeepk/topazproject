@@ -39,7 +39,7 @@ import org.topazproject.otm.criterion.CriterionBuilder;
 public abstract class AbstractTripleStore extends AbstractStore implements TripleStore {
   private static final Log log = LogFactory.getLog(AbstractTripleStore.class);
   /**
-   * Map of Criterion Builders for store specific functions. 
+   * Map of Criterion Builders for store specific functions.
    */
   protected Map<String, CriterionBuilder> critBuilders = new HashMap<String, CriterionBuilder>();
 

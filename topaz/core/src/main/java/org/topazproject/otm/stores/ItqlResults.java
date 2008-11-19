@@ -28,10 +28,10 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.query.QueryException;
 import org.topazproject.otm.query.Results;
 
-/** 
+/**
  * This processes the Itql results into an OTM Results object. Indivual result objects in each row
  * are loaded on-demand.
- * 
+ *
  * @author Ronald Tschalär
  */
 abstract class ItqlResults extends Results {
@@ -39,9 +39,9 @@ abstract class ItqlResults extends Results {
   protected final Session sess;
   protected final Type[]  origTypes;
 
-  /** 
+  /**
    * Create a new itql-results instance.
-   * 
+   *
    * @param vars     the list of variables in the result
    * @param types    the type of each variable
    * @param qa       the query-answer to build the results from
@@ -116,16 +116,16 @@ abstract class ItqlResults extends Results {
     return curRow[idx];
   }
 
-  /** 
+  /**
    * Get a single result object. This handles LITERAL, URI, BLANK_NODE, and UNKNOWN only.
-   * 
+   *
    * @param idx   which object to get
    * @param type  the object's type
    * @param eager true if the object should be fetched eagerly, false if lazily; only relevant
    *              for CLASS objects
    * @return the object
-   * @throws OtmException 
-   * @throws AnswerException 
+   * @throws OtmException
+   * @throws AnswerException
    */
   protected Object getResult(int idx, Type type, boolean eager)
       throws OtmException, AnswerException {

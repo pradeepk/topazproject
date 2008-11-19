@@ -85,7 +85,7 @@ public class ProxyCriterion extends Criterion {
    *
    * @param criteria the criteria context
    *
-   * @return the Criterion builder that is registerd with the 
+   * @return the Criterion builder that is registerd with the
    *         {@link org.topazproject.otm.TripleStore}
    */
   protected CriterionBuilder getCriterionBuilder(Criteria criteria) throws OtmException {

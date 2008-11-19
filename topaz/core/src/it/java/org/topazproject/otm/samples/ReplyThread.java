@@ -62,7 +62,7 @@ public class ReplyThread extends Reply {
    *
    * @param replies DOCUMENT ME!
    */
-  @Predicate(ref="Reply:inReplyTo", inverse=Predicate.BT.TRUE, notOwned=Predicate.BT.TRUE, 
+  @Predicate(ref="Reply:inReplyTo", inverse=Predicate.BT.TRUE, notOwned=Predicate.BT.TRUE,
       cascade={CascadeType.child})
   public void setReplies(List<ReplyThread> replies) {
     this.replies = replies;

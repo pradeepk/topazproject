@@ -23,7 +23,7 @@ import java.util.List;
 import antlr.RecognitionException;
 import org.topazproject.otm.SessionFactory;
 
-/** 
+/**
  * The default query function factory. This currently provides the following functions:
  * <var>count</var>, <var>index</var>, <var>gt</var>, <var>ge</var>, <var>lt</var>, and
  * <var>le</var>.

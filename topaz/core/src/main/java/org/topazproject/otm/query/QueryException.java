@@ -25,17 +25,17 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.topazproject.otm.OtmException;
 
-/** 
+/**
  * Signals an exception while processing an OQL query.
- * 
+ *
  * @author Ronald Tschalär
  */
 public class QueryException extends OtmException {
   private final List<String> errors;
 
-  /** 
-   * Create a new exception instance with a message. 
-   * 
+  /**
+   * Create a new exception instance with a message.
+   *
    * @param msg the details about the exception
    */
   public QueryException(String msg) {
@@ -43,9 +43,9 @@ public class QueryException extends OtmException {
     errors = null;
   }
 
-  /** 
-   * Create a new chained exception instance with a message. 
-   * 
+  /**
+   * Create a new chained exception instance with a message.
+   *
    * @param msg   the details about the exception
    * @param cause the underlying exception that caused this exception
    */
@@ -54,9 +54,9 @@ public class QueryException extends OtmException {
     errors = null;
   }
 
-  /** 
-   * Create a exception instance with a message and given list of errors. 
-   * 
+  /**
+   * Create a exception instance with a message and given list of errors.
+   *
    * @param msg    the details about the exception
    * @param errors the underlying errors that caused this exception
    */
@@ -65,9 +65,9 @@ public class QueryException extends OtmException {
     this.errors = Collections.unmodifiableList(errors);
   }
 
-  /** 
-   * Create a exception instance with a message and given list of errors. 
-   * 
+  /**
+   * Create a exception instance with a message and given list of errors.
+   *
    * @param msg    the details about the exception
    * @param errors the underlying errors that caused this exception
    * @param cause  the underlying exception that caused this exception
@@ -77,9 +77,9 @@ public class QueryException extends OtmException {
     this.errors = Collections.unmodifiableList(errors);
   }
 
-  /** 
-   * Get the list of underlying errors that caused this exception. 
-   * 
+  /**
+   * Get the list of underlying errors that caused this exception.
+   *
    * @return the errors, or null
    */
   public List<String> getErrors() {

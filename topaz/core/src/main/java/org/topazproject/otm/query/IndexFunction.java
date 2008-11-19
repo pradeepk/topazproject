@@ -34,7 +34,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.CollectionType;
 
-/** 
+/**
  * This implements the OQL index() function. The single argument to the function must be an alias.
  *
  * @author Ronald Tschalär
@@ -227,7 +227,7 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
   }
 
   /**
-   * For multiple-predicate collections we just return the current row number; for RdfSeq/Bag/Alt 
+   * For multiple-predicate collections we just return the current row number; for RdfSeq/Bag/Alt
    * we extract the index n directly from the predicate rdf:_&lt;n&gt;; for RdfList ...
    */
   public Object getItqlResult(Answer qa, int row, int col, Results.Type type, boolean eager)

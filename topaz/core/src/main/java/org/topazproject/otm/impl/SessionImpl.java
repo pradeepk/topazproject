@@ -172,7 +172,7 @@ public class SessionImpl extends AbstractSession {
         return;
     }
     throw new OtmException("Flush is unable to converge. An Interceptor or PreInsertListener " +
-        "is updating the Session. Looped " + flushLoopLimit + " times and still have " + 
+        "is updating the Session. Looped " + flushLoopLimit + " times and still have " +
         "deleteMap=" + deleteMap.keySet() + " dirtyMap=" + dirtyMap.keySet());
   }
 
@@ -389,7 +389,7 @@ public class SessionImpl extends AbstractSession {
           o = w.get();
         else {
           o = sync(w.get(), w.getId(), true, false, null, true);
-          if (w.get() == o)    // only track if we are going to use this 
+          if (w.get() == o)    // only track if we are going to use this
             startTracking(w);
           else
             log.warn("Discarding loaded instance in favor of one already in session");
@@ -416,7 +416,7 @@ public class SessionImpl extends AbstractSession {
     }
 
     if (log.isDebugEnabled())
-      log.debug("delayedLoadComplete for '" + field.getName() + "' on " + id, 
+      log.debug("delayedLoadComplete for '" + field.getName() + "' on " + id,
           trimStackTrace(new Throwable("trimmed-stack-trace"), 3, 8));
 
     if (interceptor != null)
@@ -489,7 +489,7 @@ public class SessionImpl extends AbstractSession {
   }
 
   private <T> void write(Id id, T o, boolean delete) throws OtmException {
-    ClassMetadata         cm            = sessionFactory.getInstanceMetadata(id.getClassMetadata(), 
+    ClassMetadata         cm            = sessionFactory.getInstanceMetadata(id.getClassMetadata(),
                                                                                getEntityMode(), o);
     TripleStore           store         = sessionFactory.getTripleStore();
     BlobStore             bs            = sessionFactory.getBlobStore();
@@ -649,7 +649,7 @@ public class SessionImpl extends AbstractSession {
         instance = loadView(cm, id.getId(), instance);
       else {
         if ((cm.getAllTypes().size() + cm.getRdfMappers().size()) > 0) {
-          instance = instantiate(instance, id, store.get(cm, id.getId(), getTripleStoreCon(), 
+          instance = instantiate(instance, id, store.get(cm, id.getId(), getTripleStoreCon(),
                                   new ArrayList<Filter>(filters.values()), filterObj));
           if (instance != null)
             cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
@@ -706,7 +706,7 @@ public class SessionImpl extends AbstractSession {
     if (cm == null) {
       HashSet<String> props = new HashSet<String>(fvalues.keySet());
       props.addAll(rvalues.keySet());
-      log.warn("Properties " + props + " on '" + id 
+      log.warn("Properties " + props + " on '" + id
           + "' does not satisfy the restrictions imposed by " + id.getClassMetadata()
           + ". No object will be instantiated.");
       return null;
@@ -750,12 +750,12 @@ public class SessionImpl extends AbstractSession {
    * Synchronize the Session Cache entries with the current state of the object; either
    * loaded from the database or supplied by the application.
    *
-   * @param other an object that may or may not be known to the session and may even be 
+   * @param other an object that may or may not be known to the session and may even be
    *              a duplicate instance (same Id, different instance)
    * @param id    the object id
-   * @param merge the 'other' object needs to be merged to existing instance in Session 
+   * @param merge the 'other' object needs to be merged to existing instance in Session
    * @param update this operation is performed because of an update by the application
-   *               (as opposed to a load from the store) 
+   *               (as opposed to a load from the store)
    * @param cascade the applicable cascade control (or 'null' for certain internal operations)
    * @param skipProxy whether to avoid the force-loading of proxy object
    *
@@ -773,7 +773,7 @@ public class SessionImpl extends AbstractSession {
       o = deleteMap.get(id);
 
       if (o != null)
-        throw new OtmException("Attempt to use a deleted object. Remove all references to <" 
+        throw new OtmException("Attempt to use a deleted object. Remove all references to <"
                                 + id + "> from all 'Persisted' objects");
 
       o = dirtyMap.get(id);
@@ -1009,7 +1009,7 @@ public class SessionImpl extends AbstractSession {
     if (dupCheck) {
       for (Object ex : new Object[] {deleteMap.get(oid), cleanMap.get(oid), dirtyMap.get(oid)})
         if ((ex != null) && (ex != o))
-          throw new OtmException("Session already contains another object instance with id <" 
+          throw new OtmException("Session already contains another object instance with id <"
             + id + ">");
     }
     return oid;

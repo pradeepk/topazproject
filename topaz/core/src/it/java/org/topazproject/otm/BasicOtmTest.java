@@ -589,7 +589,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           Annotation a = session.get(Annotation.class, "http://localhost/annotation/2");
 
           assertNotNull(a);
-          
+
           List<ReplyThread> replies = a.getReplies();
           assertNotNull(replies);
           assertEquals(1, replies.size());

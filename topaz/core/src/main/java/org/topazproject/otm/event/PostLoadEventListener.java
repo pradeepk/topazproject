@@ -23,7 +23,7 @@ import org.topazproject.otm.mapping.Mapper;
 
 /**
  * Called after loading from the datastore
- * 
+ *
  * @author Pradeep Krishnan
  */
 public interface PostLoadEventListener {

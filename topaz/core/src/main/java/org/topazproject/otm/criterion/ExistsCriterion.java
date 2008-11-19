@@ -23,7 +23,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Entity;
 
 /**
- * A criterion for an "exists" operation on a field. A field exists if statements with 
+ * A criterion for an "exists" operation on a field. A field exists if statements with
  * the fields's predicate URI exists in the triplestore.
  *
  * @author Pradeep Krishnan

@@ -45,7 +45,7 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
   }
 
   /**
-   * Creates a new PredicateCriterion object where the predicate is known and object is 
+   * Creates a new PredicateCriterion object where the predicate is known and object is
    * a wild-card.
    *
    * @param name field/predicate name
@@ -99,7 +99,7 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
       graph = "";
 
     if (m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
-          throw new OtmException("Can't query across a " + m.getColType() 
+          throw new OtmException("Can't query across a " + m.getColType()
               + " for an inverse mapped field '" + getFieldName() + "' in " + cm);
 
     String query;
@@ -129,7 +129,7 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
            + ") and " + rest +  " <rdf:first> " + val + graph + ")))";
         break;
       default:
-         throw new OtmException(m.getColType() + " not supported; field = " 
+         throw new OtmException(m.getColType() + " not supported; field = "
              + getFieldName() + " in " + cm);
     }
 

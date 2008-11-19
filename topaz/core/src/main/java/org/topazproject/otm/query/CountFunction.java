@@ -28,7 +28,7 @@ import antlr.collections.AST;
 import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.otm.Rdf;
 
-/** 
+/**
  * @author Ronald Tschalär
  */
 class CountFunction implements ProjectionFunction, ConstraintsTokenTypes {

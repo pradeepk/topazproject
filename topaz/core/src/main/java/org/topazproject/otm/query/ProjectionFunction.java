@@ -25,7 +25,7 @@ import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.otm.OtmException;
 
-/** 
+/**
  * Indicates an OQL query function that's valid in a projection expression.
  *
  * @author Ronald Tschalär

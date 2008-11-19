@@ -23,7 +23,7 @@ import java.util.List;
 import antlr.RecognitionException;
 import org.topazproject.otm.SessionFactory;
 
-/** 
+/**
  * The interface a factory for OQL query function instances must implement.
  *
  * @author Ronald Tschalär

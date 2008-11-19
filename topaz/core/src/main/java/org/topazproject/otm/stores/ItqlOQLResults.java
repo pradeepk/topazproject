@@ -30,22 +30,22 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.query.ProjectionFunction;
 import org.topazproject.otm.query.QueryInfo;
 
-/** 
+/**
  * This processes the Itql results from an OQL query into an OTM Results object.
- * 
+ *
  * @author Ronald Tschalär
  */
 class ItqlOQLResults extends ItqlResults {
   private final QueryInfo qi;
 
-  /** 
-   * Create a new oql-itql-query results object. 
-   * 
+  /**
+   * Create a new oql-itql-query results object.
+   *
    * @param qa       the query answer
    * @param qi       the query-info
    * @param warnings the list of warnings generated during the query processing, or null
    * @param sess     the session this is attached to
-   * @throws OtmException 
+   * @throws OtmException
    */
   public ItqlOQLResults(Answer qa, QueryInfo qi, String[] warnings, Session sess)
       throws OtmException {

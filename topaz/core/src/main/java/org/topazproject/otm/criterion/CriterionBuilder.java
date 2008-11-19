@@ -24,7 +24,7 @@ import org.topazproject.otm.OtmException;
  * An interface for a builder/factory of Criterions.
  *
  * @author Pradeep Krishnan
- * @see org.topazproject.otm.TripleStore#setCriterionBuilder 
+ * @see org.topazproject.otm.TripleStore#setCriterionBuilder
   */
 public interface CriterionBuilder {
   /**

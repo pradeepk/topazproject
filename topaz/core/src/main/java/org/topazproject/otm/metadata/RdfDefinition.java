@@ -64,7 +64,7 @@ public class RdfDefinition extends PropertyDefinition {
    * @param inverse if this field is persisted with an inverse predicate. Null to resolve from reference
    * @param graph  the graph where this field is persisted or null to resolve from reference
    * @param colType the collection type of this field or null to resolve from reference
-   * @param entityOwned if the triples for this field is owned by the containing entity. 
+   * @param entityOwned if the triples for this field is owned by the containing entity.
    *                    Null to resolve from reference.
    * @param generator if there is a generator for this field. Null to resolve from reference (if any)
    * @param cascade cascade options for this field. Null to resolve from reference.
@@ -72,7 +72,7 @@ public class RdfDefinition extends PropertyDefinition {
    * @param associatedEntity the entity name for associations. Null to resolve from reference.
    * @param objectProperty if this is an object property. Null to resolve from reference.
    */
-  public RdfDefinition(String name, String reference, String supersedes, String uri, 
+  public RdfDefinition(String name, String reference, String supersedes, String uri,
                        String dataType, Boolean inverse, String graph, CollectionType colType,
                        Boolean entityOwned, IdentifierGenerator generator, CascadeType[] cascade,
                        FetchType fetchType, String associatedEntity, Boolean objectProperty) {

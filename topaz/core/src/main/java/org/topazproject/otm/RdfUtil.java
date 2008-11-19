@@ -27,9 +27,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** 
- * Some simple utilities when dealing with RDF and queries/updates. 
- * 
+/**
+ * Some simple utilities when dealing with RDF and queries/updates.
+ *
  * @author Ronald Tschalär
  */
 public class RdfUtil {
@@ -131,7 +131,7 @@ public class RdfUtil {
    * Inserts escapes in a literal so that it is suitable for binding to an ITQL/OQL/SPARQL
    * statement, or any other language where Literals are bracketted with single-quotes. This
    * function inserts backslash-escapes for backslashes and single-quotes into the literal.
-   * 
+   *
    * @param val the literal value that is to be escaped
    * @return Returns the escaped literal
    */

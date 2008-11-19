@@ -106,12 +106,12 @@ public class ClassMetadata {
       else if (isDuplicateMapping(rdfMappers, m))
         throw new OtmException("Duplicate predicate uri for " + m.getName() + " in " + name);
       else if (rdfMappers.get(0).getColType() != m.getColType())
-        throw new OtmException("The colType for " + m.getName() + " in " + name + 
-            ", must be " + rdfMappers.get(0).getColType() + " as defined by " 
+        throw new OtmException("The colType for " + m.getName() + " in " + name +
+            ", must be " + rdfMappers.get(0).getColType() + " as defined by "
             + rdfMappers.get(0).getName() + " since they both share the same predicate uri");
       else if (!sameGraph(rdfMappers.get(0), m, graph))
-        throw new OtmException("The graph for " + m.getName() + " in " + name + 
-            ", must be " + rdfMappers.get(0).getGraph() + " as defined by " 
+        throw new OtmException("The graph for " + m.getName() + " in " + name +
+            ", must be " + rdfMappers.get(0).getGraph() + " as defined by "
             + rdfMappers.get(0).getName() + " since they both share the same predicate uri");
 
       rdfMappers.add(m);
@@ -411,9 +411,9 @@ public class ClassMetadata {
   }
 
 
-  /** 
+  /**
    * Get the OQL query string if this is for a View.
-   * 
+   *
    * @return the OQL query string, or null if this is not a View
    */
   public String getQuery() {

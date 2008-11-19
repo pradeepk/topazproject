@@ -135,10 +135,10 @@ public class GenericQueryImpl extends QueryImplBase implements GenericQuery, Clo
     return preparedQuery.getParameters();
   }
 
-  /** 
+  /**
    * Get the AST of the query with all parameters resolved. This is only valid after invoking
    * {@link #applyParameterValues applyParameterValues()}.
-   * 
+   *
    * @return the query AST
    */
   public AST getResolvedQuery() {

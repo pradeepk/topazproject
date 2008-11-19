@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * An annotation to mark an embedded class field. All members of the embedded class 
+ * An annotation to mark an embedded class field. All members of the embedded class
  * will have the same subject as the embedding class.
  *
  * @author Pradeep Krishnan

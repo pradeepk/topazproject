@@ -42,9 +42,9 @@ public abstract class JunctionFilterDefinition extends AbstractFilterDefinition 
   /** the list of filter-definitions in this junction */
   protected final List<FilterDefinition> filterDefList = new ArrayList<FilterDefinition>();
 
-  /** 
+  /**
    * Create junction-filter-definition.
-   * 
+   *
    * @param filterName    the name of the filter
    * @param filteredClass the class being filtered; either an alias or a fully-qualified class name
    */
@@ -56,9 +56,9 @@ public abstract class JunctionFilterDefinition extends AbstractFilterDefinition 
     return Collections.<String>emptySet();
   }
 
-  /** 
-   * Add a filter-definition to the list of component filter-definitions. 
-   * 
+  /**
+   * Add a filter-definition to the list of component filter-definitions.
+   *
    * @param fd the filter-definition to add
    * @return this
    * @throws OtmException if the filter-definition's filtered-class is not the same as this
@@ -85,7 +85,7 @@ public abstract class JunctionFilterDefinition extends AbstractFilterDefinition 
     return sb.toString();
   }
 
-  /** 
+  /**
    * Common filter implementation for junction filters. The {@link #getCriteria getCriteria()} and
    * {@link #getQuery getQuery()} methods must not be invoked, and throw an
    * {@link java.lang.UnsupportedOperationException UnsupportedOperationException}. Instead, {@link
@@ -109,18 +109,18 @@ public abstract class JunctionFilterDefinition extends AbstractFilterDefinition 
       throw new UnsupportedOperationException("not supported on junction filters");
     }
 
-    /** 
+    /**
      * Get the list of component filters making up this junction filter.
-     * 
+     *
      * @return the filters
      */
     public List<AbstractFilterImpl> getFilters() {
       return filters;
     }
 
-    /** 
+    /**
      * Get the component filters with the given filter name.
-     * 
+     *
      * @param name the name of the filters to retrieve
      * @return the filters, or the empty list if none found
      */

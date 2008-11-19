@@ -32,10 +32,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** 
+/**
  * This holds some common stuff for Oql parsers, such as collecting error and warning
  * messages.
- * 
+ *
  * @author Ronald Tschalär
  */
 abstract class OqlParser extends LLkParser implements ErrorCollector {
@@ -44,9 +44,9 @@ abstract class OqlParser extends LLkParser implements ErrorCollector {
   private final List<String> errs = new ArrayList<String>();
   private final List<String> wrns = new ArrayList<String>();
 
-  /** 
-   * Create a new parser instance. 
-   * 
+  /**
+   * Create a new parser instance.
+   *
    * @param state the parser state to read from
    * @param k     how far to look ahead
    */
@@ -54,9 +54,9 @@ abstract class OqlParser extends LLkParser implements ErrorCollector {
     super(state, k);
   }
 
-  /** 
-   * Create a new parser instance. 
-   * 
+  /**
+   * Create a new parser instance.
+   *
    * @param tokenBuf the token buffer to read from
    * @param k        how far to look ahead
    */
@@ -64,9 +64,9 @@ abstract class OqlParser extends LLkParser implements ErrorCollector {
     super(tokenBuf, k);
   }
 
-  /** 
-   * Create a new parser instance. 
-   * 
+  /**
+   * Create a new parser instance.
+   *
    * @param lexer the lexer to read from
    * @param k     how far to look ahead
    */

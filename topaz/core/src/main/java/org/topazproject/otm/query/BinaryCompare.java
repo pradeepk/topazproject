@@ -29,7 +29,7 @@ import antlr.RecognitionException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
 
-/** 
+/**
  * Binary compare functions. This currently implements gt, ge, lt, and le.
  *
  * @author Ronald Tschalär
@@ -60,9 +60,9 @@ class BinaryCompare implements BooleanConditionFunction, ConstraintsTokenTypes {
   /** the current session-factory */
   protected final SessionFactory sf;
 
-  /** 
-   * Create a new binary-compare function instance. 
-   * 
+  /**
+   * Create a new binary-compare function instance.
+   *
    * @param name  the function name
    * @param args  the arguments to the function
    * @param types the argument types

@@ -99,7 +99,7 @@ public interface Binder {
    *
    * @throws OtmException if a field's value cannot be set
    */
-  public void load(Object instance, List<String> values, 
+  public void load(Object instance, List<String> values,
                    RdfMapper mapper, Session session) throws OtmException;
 
   /**
@@ -115,7 +115,7 @@ public interface Binder {
   public boolean isLoaded(Object instance) throws OtmException;
 
   /**
-   * Gets the raw field data from which this field was loaded. Usually this information is only 
+   * Gets the raw field data from which this field was loaded. Usually this information is only
    * available for proxy fields that are yet to be loaded. Implementations are not expected to
    * retain this information once a field has been fully loaded and instantiated.
    *

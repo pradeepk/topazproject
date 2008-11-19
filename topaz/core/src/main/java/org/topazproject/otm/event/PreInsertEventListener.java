@@ -22,7 +22,7 @@ import org.topazproject.otm.Session;
 
 /**
  * Called before inserting into the datastore
- * 
+ *
  * @author Pradeep Krishnan
  */
 public interface PreInsertEventListener {

@@ -457,7 +457,7 @@ abstract class AbstractSession implements Session {
 
   protected ClassMetadata checkClass(Class<?> clazz) throws OtmException {
     if (getEntityMode() != EntityMode.POJO)
-      throw new UnsupportedOperationException("Only supported when EntityMode is " 
+      throw new UnsupportedOperationException("Only supported when EntityMode is "
           + EntityMode.POJO);
     return checkClass(sessionFactory.getClassMetadata(clazz), clazz.getName());
   }

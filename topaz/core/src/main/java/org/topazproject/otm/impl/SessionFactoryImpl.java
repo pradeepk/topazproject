@@ -699,9 +699,9 @@ public class SessionFactoryImpl implements SessionFactory {
     return new ArrayList<FilterDefinition>(filterDefs.values());
   }
 
-  /** 
-   * Get the filter definition for the named filter. 
-   * 
+  /**
+   * Get the filter definition for the named filter.
+   *
    * @param name the name of the filter
    * @return the filter definition, or null
    */
@@ -848,7 +848,7 @@ public class SessionFactoryImpl implements SessionFactory {
         PropertyDefinition pd = (PropertyDefinition) d;
         m  = cm.getMapperByName(pd.getLocalName());
         if (m == null)
-          throw new OtmException("Cannot add a new property to " + getName() 
+          throw new OtmException("Cannot add a new property to " + getName()
              + " since a ClassMetadata is already created for this Class");
       }
       super.addBinderFactory(bf);

@@ -42,10 +42,10 @@ import org.topazproject.otm.query.Results;
  * <i>persistent:</i> associated with a unique <tt>Session</tt><br>
  * <i>detached:</i> previously persistent, not associated with any <tt>Session</tt><br>
  * <br>
- * Transient instances may be made persistent by calling <tt>saveOrUpdate()</tt>. 
- * Persistent instances may be made transient by calling<tt> delete()</tt>. Any instance returned 
- * by a <tt>get()</tt> or <tt>load()</tt> method is persistent. Detached instances may be made 
- * persistent by calling <tt>saveOrUpdate()</tt>. The state of a transient or detached instance 
+ * Transient instances may be made persistent by calling <tt>saveOrUpdate()</tt>.
+ * Persistent instances may be made transient by calling<tt> delete()</tt>. Any instance returned
+ * by a <tt>get()</tt> or <tt>load()</tt> method is persistent. Detached instances may be made
+ * persistent by calling <tt>saveOrUpdate()</tt>. The state of a transient or detached instance
  * may also be made persistent as a new persistent instance by calling <tt>merge()</tt>.<br>
  * <br>
  * Changes to <i>persistent</i> instances are detected at flush time and also result in a database
@@ -212,7 +212,7 @@ public interface Session {
   public String evict(Object o) throws OtmException;
 
   /**
-   * Check if the object is contained in the Session. Only tests for 
+   * Check if the object is contained in the Session. Only tests for
    * objects in 'Persistent' state. Does not contain objects in the
    * 'Removed' state.
    *
@@ -428,23 +428,23 @@ public interface Session {
    */
   public List<String> getIds(List objs) throws OtmException;
 
-  /** 
+  /**
    * Enable the named filter. This does not affect existing queries or criteria.
-   * 
+   *
    * @param name the name of the filter to enable
    * @return the enabled filter, or null if no filter definition can be found.
    * @throws OtmException on an error
    */
   public Filter enableFilter(String name) throws OtmException;
 
-  /** 
+  /**
    * Enable the filter defined by the specified filter-definition. Unlike {@link
    * #enableFilter(java.lang.String) enableFilter(String)} this filter-definition does not have to
    * be pre-registered on the session-factory. The filter can be disabled by name, just like with
    * filters from pre-registered filter-definitions.
    *
    * <p>This does not affect existing queries or criteria.
-   * 
+   *
    * @param fd the filter-definition whose filter to enable
    * @return the enabled filter
    * @throws OtmException if a filter-definition with the same name has been registered with the
@@ -452,51 +452,51 @@ public interface Session {
    */
   public Filter enableFilter(FilterDefinition fd) throws OtmException;
 
-  /** 
+  /**
    * Disable the named filter. This does nothing if no filter by the given name has been enabled.
    * This does not affect existing queries or criteria.
-   * 
+   *
    * @param name the name of the filter to disable
    */
   public void disableFilter(String name) throws OtmException;
 
-  /** 
-   * Get the set of enabled filters' names. 
-   * 
+  /**
+   * Get the set of enabled filters' names.
+   *
    * @return the names of the enabled filters
    */
   public Set<String> listFilters();
 
-  /** 
-   * Get the entity mode of this Session. 
-   * 
+  /**
+   * Get the entity mode of this Session.
+   *
    * @return the entity mode
    */
   public EntityMode getEntityMode();
 
-  /** 
-   * Internal method. DO NOT USE. Called by field loaders to notify when a 
+  /**
+   * Internal method. DO NOT USE. Called by field loaders to notify when a
    * lazy loaded field is loaded completely. The session can now start
-   * doing change-track monitoring and orphan-delete tracking on this field 
+   * doing change-track monitoring and orphan-delete tracking on this field
    * too.
-   * 
+   *
    * @param o the object whose field was lazy loaded
    * @param field the field that is lazy loaded
    */
   public void delayedLoadComplete(Object o, Mapper field) throws OtmException;
 
-  /** 
-   * Internal method. DO NOT USE. Get the connection to the triple-store. 
-   * If the connection does not exist yet it is created; otherwise the existing one is returned. 
-   * 
+  /**
+   * Internal method. DO NOT USE. Get the connection to the triple-store.
+   * If the connection does not exist yet it is created; otherwise the existing one is returned.
+   *
    * @return the triple-store connection
    */
   public Connection getTripleStoreCon() throws OtmException;
 
-  /** 
-   * Internal method. DO NOT USE. Get the connection to the blob-store. 
-   * If the connection does not exist yet it is created; otherwise the existing one is returned. 
-   * 
+  /**
+   * Internal method. DO NOT USE. Get the connection to the blob-store.
+   * If the connection does not exist yet it is created; otherwise the existing one is returned.
+   *
    * @return the blob-store connection
    */
   public Connection getBlobStoreCon() throws OtmException;

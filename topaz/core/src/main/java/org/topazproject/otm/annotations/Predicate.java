@@ -40,8 +40,8 @@ public @interface Predicate {
   /**
    * References another property configuration defined elsewhere. For example
    * an external config file can be used to define the predicate-uri and other attributes
-   * so that they need not be defined here. If this attribute is defined, then rest of the 
-   * attributes in this annotation is treated as an override to the values defined in the 
+   * so that they need not be defined here. If this attribute is defined, then rest of the
+   * attributes in this annotation is treated as an override to the values defined in the
    * reference.
    */
   String ref() default "";
@@ -87,19 +87,19 @@ public @interface Predicate {
   }
 
   /**
-   * The property type of this predicate uri. Defaults to the value specified in the 
+   * The property type of this predicate uri. Defaults to the value specified in the
    * {@link #ref reference}. If no reference is supplied, it defaults to <value>OBJECT</value>
-   * for associations and {@link java.net.URI} or {@link java.net.URL} fields when the 
-   * {@link #dataType} value is unspecified. Otherwise it defaults to <value>DATA</value>. 
-   * Normally there is no need to configure this. The only place this is needed is to specify 
+   * for associations and {@link java.net.URI} or {@link java.net.URL} fields when the
+   * {@link #dataType} value is unspecified. Otherwise it defaults to <value>DATA</value>.
+   * Normally there is no need to configure this. The only place this is needed is to specify
    * an <value>OBJECT</value> type for a field that is serializable.
    */
   PropType type() default PropType.UNDEFINED;
 
   /**
-   * Data type for literals. Defaults to the value specified in the {@link #ref reference}. 
-   * If no reference is supplied, a default value is guessed based on this property's data 
-   * type. Use {@link #UNTYPED} for explicitly defining untyped literals. 
+   * Data type for literals. Defaults to the value specified in the {@link #ref reference}.
+   * If no reference is supplied, a default value is guessed based on this property's data
+   * type. Use {@link #UNTYPED} for explicitly defining untyped literals.
    */
   String dataType() default "";
 
@@ -109,13 +109,13 @@ public @interface Predicate {
   String UNTYPED = RdfDefinition.UNTYPED;
 
   /**
-   * The graph where this predicate is stored. Defaults to value defined in the containing 
+   * The graph where this predicate is stored. Defaults to value defined in the containing
    * Entity.
    */
   String graph() default "";
 
   /**
-   * Marks an inverse association. Instead of s p o, load/save as o p s where 
+   * Marks an inverse association. Instead of s p o, load/save as o p s where
    * s is the Id for the containing Entity and p is the uri for this predicate and o the
    * value of this field. Defaults to 'false' if no {@link #ref reference} attribute is configured.
    */
@@ -124,7 +124,7 @@ public @interface Predicate {
   /**
    * Marks the backing triples for this field as not owned by this entity and is therefore used
    * only for load. Updates of the entity will skip the rdf statements corresponding to this
-   * property. By default all triples for a property are owned by the entity if no 
+   * property. By default all triples for a property are owned by the entity if no
    * {@link #ref reference} attribute is configured.
    */
   BT notOwned() default BT.UNDEFINED;
@@ -138,14 +138,14 @@ public @interface Predicate {
 
   /**
    * Cascading preferences for this field. Applicable only for associations. Default is
-   * {@link org.topazproject.otm.CascadeType#peer} when there is no {@link #ref reference} 
+   * {@link org.topazproject.otm.CascadeType#peer} when there is no {@link #ref reference}
    * configured.
    */
   CascadeType[] cascade() default {CascadeType.undefined};
 
   /**
-   * Fetch preferences for this field. Default is {@link org.topazproject.otm.FetchType#lazy} 
-   * when there is no {@link #ref reference} configured for associations and fields with 
+   * Fetch preferences for this field. Default is {@link org.topazproject.otm.FetchType#lazy}
+   * when there is no {@link #ref reference} configured for associations and fields with
    * {@link #collectionType} value of {@link org.topazproject.otm.CollectionType#PREDICATE}.
    * For all others this attribute is ignored and the effect is equivalent to specifying
    * {@link.org.topazproject.otm.FetchType#eager}.

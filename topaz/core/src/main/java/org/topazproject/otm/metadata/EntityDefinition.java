@@ -134,7 +134,7 @@ public class EntityDefinition extends ClassDefinition {
     if (this.graph != null)
       graph = this.graph;
     else if (superGraphs.size() > 1)
-      throw new OtmException(superGraphs + " are all possible candidates for graph for '" 
+      throw new OtmException(superGraphs + " are all possible candidates for graph for '"
           + getName() + "'. Need an explicit graph definition to disambiguate");
     else if (superGraphs.size() == 1)
       graph = superGraphs.iterator().next();

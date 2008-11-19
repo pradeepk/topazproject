@@ -22,18 +22,18 @@ package org.topazproject.otm.query;
 import java.util.ArrayList;
 import java.util.List;
 
-/** 
+/**
  * Common code for query handlers.
- * 
+ *
  * @author Ronald Tschalär
  */
 public abstract class QueryImplBase {
   protected List<String> warnings = new ArrayList<String>();
 
-  /** 
+  /**
    * Check the errors and warnings. If there were any errors, generate an exception; else if there
    * were any warnings add them to the list.
-   * 
+   *
    * @param ec    the error-collector with the list of warnings and errors to check
    * @param query the query that was being parsed
    * @throws QueryException if <var>ec.getErrors()</var> is non empty
@@ -46,16 +46,16 @@ public abstract class QueryImplBase {
       this.warnings.addAll(ec.getWarnings());
   }
 
-  /** 
-   * Get all warnings emitted while parsing query. 
-   * 
+  /**
+   * Get all warnings emitted while parsing query.
+   *
    * @return the warnings; may be empty
    */
   public List<String> getWarnings() {
     return warnings;
   }
 
-  /** 
+  /**
    * Clear the current list of warnings.
    */
   public void clearWarnings() {

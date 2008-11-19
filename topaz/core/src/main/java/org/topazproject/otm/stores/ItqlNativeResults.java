@@ -26,18 +26,18 @@ import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 
-/** 
+/**
  * This processes the Itql results from a native query into a Results object.
- * 
+ *
  * @author Pradeep Krishnan
  */
 class ItqlNativeResults extends ItqlResults {
-  /** 
-   * Create a new native-itql-query results object. 
-   * 
+  /**
+   * Create a new native-itql-query results object.
+   *
    * @param qa   the query answer
    * @param sess the session this is attached to
-   * @throws OtmException 
+   * @throws OtmException
    */
   public ItqlNativeResults(Answer qa, Session sess) throws OtmException {
     super(qa.getVariables(), getTypes(qa.getVariables()), qa, null, sess);

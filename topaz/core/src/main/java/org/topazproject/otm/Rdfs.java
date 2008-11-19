@@ -36,7 +36,7 @@ public interface Rdfs {
    * */
   public static final String Resource  = base + "Resource";
 
-  /** 
+  /**
    * This is the class of resources that are RDF classes. rdfs:Class is an
    * instance of rdfs:Class.
    */

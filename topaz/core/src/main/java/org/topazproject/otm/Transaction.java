@@ -54,14 +54,14 @@ public interface Transaction {
    */
   public javax.transaction.Transaction getJtaTransaction();
 
-  /** 
-   * Mark the transaction for rollback. 
+  /**
+   * Mark the transaction for rollback.
    */
   public void setRollbackOnly() throws OtmException;
 
-  /** 
-   * Test whether this transaction has been marked for rollback only. 
-   * 
+  /**
+   * Test whether this transaction has been marked for rollback only.
+   *
    * @return true if this transaction will be rolled back
    */
   public boolean isRollbackOnly() throws OtmException;

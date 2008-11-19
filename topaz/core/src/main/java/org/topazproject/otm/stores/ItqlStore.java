@@ -71,9 +71,9 @@ import org.topazproject.otm.query.QueryException;
 import org.topazproject.otm.query.QueryInfo;
 import org.topazproject.otm.query.Results;
 
-/** 
+/**
  * An iTQL based store.
- * 
+ *
  * @author Ronald Tschalär
  */
 public class ItqlStore extends AbstractTripleStore implements SearchStore {
@@ -85,7 +85,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
   // temporary hack for problems with mulgara's blank-nodes (must be unique for whole tx)
   private              int               bnCtr = 0;
 
-  /** 
+  /**
    * Create a new itql-store instance.
    * The server URI will take one of two forms:
    * <ul>
@@ -98,13 +98,13 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
    * that TQL store is providing. By default, Mulgara servers are run with a
    * name of "server1". So to access a server on the local machine, the URI
    * might be: <code>rmi://localhost/server1</code>
-   * 
+   *
    * The <code>LOCAL</code> scheme is used to access an embedded Mulgara
    * database in the current JVM. The host name is <code>null</code> which
    * leads to the root of the path coming immediately after the "//"
    * characters. The server name is defined here in order to create the
    * database, so it can be anything.
-   * 
+   *
    * Graphs created on this store should use the server URI with an added
    * fragment. For instance:
    * <ul>
@@ -118,9 +118,9 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     this(server, new DefaultItqlClientFactory());
   }
 
-  /** 
+  /**
    * Create a new itql-store instance.
-   * 
+   *
    * @param server  the uri of the iTQL server.
    * @param icf     the itql-client-factory to use
    */
@@ -140,7 +140,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     return new ItqlStoreConnection(sess, readOnly);
   }
 
-  public <T> void insert(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o, 
+  public <T> void insert(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o,
                          Connection con) throws OtmException {
     insertInternal(cm, fields, id, o, con);
   }
@@ -384,7 +384,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     }
   }
 
-  public <T> void delete(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o, 
+  public <T> void delete(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o,
                          Connection con) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
@@ -561,7 +561,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
 
     col = null;
     for (RdfMapper p : rdfMappers) {
-      if ((p.getColType() == CollectionType.RDFBAG) || 
+      if ((p.getColType() == CollectionType.RDFBAG) ||
           (p.getColType() == CollectionType.RDFSEQ) ||
           (p.getColType() == CollectionType.RDFALT)) {
         if (col == null)

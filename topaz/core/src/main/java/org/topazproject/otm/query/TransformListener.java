@@ -21,7 +21,7 @@ package org.topazproject.otm.query;
 
 import antlr.RecognitionException;
 
-/** 
+/**
  * A listener for OQL transform events.
  *
  * @author Ronald Tschalär

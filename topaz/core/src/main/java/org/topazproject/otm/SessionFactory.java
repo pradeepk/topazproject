@@ -93,7 +93,7 @@ public interface SessionFactory {
   /**
    * Validate the registered definitions and bindings and build the {@link ClassMetadata}
    * for all entities. Could be called incrementally as new definitions are added. But
-   * the added definitions must all have resolvable references. eg. referece to an undefined 
+   * the added definitions must all have resolvable references. eg. referece to an undefined
    * association or an undefined property definition could result in a failure here.
    *
    * @throws OtmException on an error
@@ -110,7 +110,7 @@ public interface SessionFactory {
   public Definition getDefinition(String name);
 
   /**
-   * Adds a new definition. 
+   * Adds a new definition.
    *
    * @param def the definition to add
    *
@@ -304,16 +304,16 @@ public interface SessionFactory {
    */
   public void setBlobStore(BlobStore store);
 
-  /** 
-   * Set the JTA transaction-manager to use. If not set, a default (internal) tm will be used. 
-   * 
+  /**
+   * Set the JTA transaction-manager to use. If not set, a default (internal) tm will be used.
+   *
    * @param tm  the transaction-manager to use
    */
   public void setTransactionManager(TransactionManager tm);
 
-  /** 
+  /**
    * Get the current JTA transaction-manager.
-   * 
+   *
    * @return the transaction manager
    * @throws OtmException if an error occurred initializing the default transaction manager
    */

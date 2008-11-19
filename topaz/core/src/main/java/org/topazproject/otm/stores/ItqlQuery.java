@@ -42,9 +42,9 @@ import org.topazproject.otm.query.QueryException;
 import org.topazproject.otm.query.QueryImplBase;
 import org.topazproject.otm.query.QueryInfo;
 
-/** 
+/**
  * Common code for query handlers.
- * 
+ *
  * @author Ronald Tschalär
  */
 class ItqlQuery extends QueryImplBase {
@@ -53,8 +53,8 @@ class ItqlQuery extends QueryImplBase {
   private final Collection<Filter> filters;
   private final Session            sess;
 
-  /** 
-   * Create a new itql-query instance. 
+  /**
+   * Create a new itql-query instance.
    */
   public ItqlQuery(GenericQuery query, Collection<Filter> filters, Session sess) {
     this.query   = query;

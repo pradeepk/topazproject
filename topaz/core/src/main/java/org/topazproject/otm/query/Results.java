@@ -24,9 +24,9 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.serializer.Serializer;
 
-/** 
+/**
  * This holds the results from a query. It is structured similar to a jdbc ResultSet.
- * 
+ *
  * @author Ronald Tschalär
  */
 public abstract class Results {
@@ -49,9 +49,9 @@ public abstract class Results {
     private final String lang;
     private final URI    dtype;
 
-    /** 
-     * Create a new literal instance. 
-     * 
+    /**
+     * Create a new literal instance.
+     *
      * @param value  the literal's value
      * @param lang   the literal's language tag; may be null
      * @param dtype   the literal's datatype; may be null
@@ -69,27 +69,27 @@ public abstract class Results {
       this.dtype = dtype;
     }
 
-    /** 
-     * Get the literal's value. 
-     * 
+    /**
+     * Get the literal's value.
+     *
      * @return the literal's value
      */
     public String getValue() {
       return value;
     }
 
-    /** 
-     * Get the literal's language tag. 
-     * 
+    /**
+     * Get the literal's language tag.
+     *
      * @return the literal's language tag, or null if there is none
      */
     public String getLanguage() {
       return lang;
     }
 
-    /** 
-     * Get the literal's datatype. 
-     * 
+    /**
+     * Get the literal's datatype.
+     *
      * @return the literal's datatype, or null if this is an untyped literal
      */
     public URI getDatatype() {
@@ -113,7 +113,7 @@ public abstract class Results {
     this.curRow    = new Object[variables.length];
   }
 
-  /** 
+  /**
    * Subclasses must do the work of loading a new row of results here. They are expected to
    * <ul>
    *   <li>Advance to the next row, or set <var>eor</var> if no more rows are available.</li>
@@ -121,8 +121,8 @@ public abstract class Results {
    *       override {@link #getRow getRow()} and {@link #get(int, boolean) get(idx, eager)} and
    *       provide the results at that time instead.</li>
    * </ul>
-   * 
-   * @throws OtmException 
+   *
+   * @throws OtmException
    */
   protected abstract void loadRow() throws OtmException;
 
@@ -135,9 +135,9 @@ public abstract class Results {
     return (warnings != null) ? warnings.clone() : null;
   }
 
-  /** 
+  /**
    * Set the auto-close flag. This flag is true by default.
-   * 
+   *
    * @param flag true if this result should be closed automatically upon reaching the end of the
    *             results; false if the result should be left open.
    */
@@ -145,19 +145,19 @@ public abstract class Results {
     autoClose = flag;
   }
 
-  /** 
-   * Position cursor before the first row. 
-   * 
-   * @throws OtmException 
+  /**
+   * Position cursor before the first row.
+   *
+   * @throws OtmException
    */
   public void beforeFirst() throws OtmException {
     pos = -1;
     eor = false;
   }
 
-  /** 
-   * Move the cursor to the next row. 
-   * 
+  /**
+   * Move the cursor to the next row.
+   *
    * @return true if the cursor is on a valid row; false if we just hit the end
    * @throws OtmException if this is called after having returned false
    */
@@ -174,16 +174,16 @@ public abstract class Results {
     return !eor;
   }
 
-  /** 
+  /**
    * Close the results. No other methods may be invoked once the result has been closed, and in
    * particular {@link #beforeFirst} cannot be used to restart the results after this.
    */
   public void close() {
   }
 
-  /** 
-   * Return the current row number. The number is zero based. 
-   * 
+  /**
+   * Return the current row number. The number is zero based.
+   *
    * @return the current row number, or -1 if not on a valid row
    */
   public int getRowNumber() {
@@ -192,21 +192,21 @@ public abstract class Results {
     return pos;
   }
 
-  /** 
-   * Get the list of variables (columns) in the answer. 
-   * 
+  /**
+   * Get the list of variables (columns) in the answer.
+   *
    * @return the list of variables
    */
   public String[] getVariables() {
     return variables;
   }
 
-  /** 
-   * Return in the index of the given variable. 
-   * 
+  /**
+   * Return in the index of the given variable.
+   *
    * @param var the variable
    * @return the index
-   * @throws OtmException if <var>var</var> is not a variable in this result 
+   * @throws OtmException if <var>var</var> is not a variable in this result
    */
   public int findVariable(String var) throws OtmException {
     for (int idx = 0; idx < variables.length; idx++) {
@@ -217,10 +217,10 @@ public abstract class Results {
     throw new QueryException("no variable named '" + var + "' in the result");
   }
 
-  /** 
+  /**
    * Get the column type of the current row. The value is undefined
    * if the cursor is not on a valid row.
-   * 
+   *
    * @param var  the variable identifying the column
    * @return the type
    * @throws OtmException if the variable does not exist
@@ -229,10 +229,10 @@ public abstract class Results {
     return getType(findVariable(var));
   }
 
-  /** 
+  /**
    * Get the column type of the current row. The value is undefined
    * if the cursor is not on a valid row.
-   * 
+   *
    * @param idx  the column for which to get the type
    * @return the type
    */

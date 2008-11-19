@@ -82,7 +82,7 @@ public interface TripleStore extends Store {
    *
    * @throws OtmException on an error
    */
-  public <T> void delete(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o, 
+  public <T> void delete(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o,
                          Connection con) throws OtmException;
 
   /**
@@ -161,7 +161,7 @@ public interface TripleStore extends Store {
    *
    * @param conf the configuration
    * @param con a connection to the triplestore to send the request over
-   * 
+   *
    * @throws OtmException on an error
    */
   public void createGraph(GraphConfig conf, Connection con) throws OtmException;

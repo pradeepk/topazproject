@@ -37,10 +37,10 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.TripleStore;
 
 
-/** 
+/**
  * This represents an OQL query. Instances are obtained via {@link Session#createQuery
  * Session.createQuery()}.
- * 
+ *
  * @author Ronald Tschalär
  */
 class QueryImpl extends Query {
@@ -51,9 +51,9 @@ class QueryImpl extends Query {
   private final Collection<Filter> filters;
   private final Set<String>        paramNames;
 
-  /** 
-   * Create a new query instance. 
-   * 
+  /**
+   * Create a new query instance.
+   *
    * @param sess    the session this is attached to
    * @param query   the oql query string
    * @param filters the filters that should be applied to this query
@@ -67,9 +67,9 @@ class QueryImpl extends Query {
     this.paramNames = Collections.unmodifiableSet(this.query.getParameterNames());
   }
 
-  /** 
-   * Execute this query. 
-   * 
+  /**
+   * Execute this query.
+   *
    * @return the query results
    * @throws OtmException
    */

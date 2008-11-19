@@ -34,9 +34,9 @@ public interface Filter extends Parameterizable<Filter> {
    */
   FilterDefinition getFilterDefinition();
 
-  /** 
+  /**
    * Get the name of this filter.
-   * 
+   *
    * @return the name of with this filter
    */
   String getName();

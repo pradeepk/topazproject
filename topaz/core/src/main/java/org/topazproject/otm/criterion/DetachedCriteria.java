@@ -84,7 +84,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   private URI criteriaId;
 
   /**
-   * Creates a new DetachedCriteria object. 
+   * Creates a new DetachedCriteria object.
    *
    */
   public DetachedCriteria() {
@@ -94,7 +94,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    * Creates a new DetachedCriteria object.
    *
    * @param entity the entity for which the criteria is created. It could be an entity name or the
-   * class name. 
+   * class name.
    */
   public DetachedCriteria(String entity) {
     this.alias         = entity;

@@ -101,12 +101,12 @@ class StateCache {
     return states.get(new ObjectReference(o)).digestUpdate(o, cm.getBlobField().getBinder(sess));
   }
 
-  /** 
+  /**
    * Start doing change-track monitoring on this field too.
-   * 
+   *
    * @param o the object whose field was lazy loaded
    * @param field the field that is lazy loaded
-   * @param session the session that is notifying this 
+   * @param session the session that is notifying this
    *
    * @throws OtmException on an error
    */

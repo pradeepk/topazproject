@@ -73,7 +73,7 @@ public class MemStore extends AbstractTripleStore implements SearchStore {
   /*
    * inherited javadoc
    */
-  public <T> void insert(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o, 
+  public <T> void insert(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o,
                          Connection con) throws OtmException {
     MemStoreConnection msc     = (MemStoreConnection) con;
     Storage            storage = msc.getStorage();

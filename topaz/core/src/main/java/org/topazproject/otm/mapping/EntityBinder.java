@@ -25,7 +25,7 @@ import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.query.Results;
 
 /**
- * Binds an entity to an {@link org.topazproject.otm.EntityMode} specific implementation. 
+ * Binds an entity to an {@link org.topazproject.otm.EntityMode} specific implementation.
  *
  * @author Pradeep Krishnan
  */
@@ -128,7 +128,7 @@ public interface EntityBinder {
   public String[] getNames();
 
   /**
-   * The lazy loader for an instance. 
+   * The lazy loader for an instance.
    */
   public static interface LazyLoader {
     /**
@@ -172,7 +172,7 @@ public interface EntityBinder {
      * Stash/Clear the raw-data for a lazy-loaded field.
      *
      * @param b the binder to set the raw-data for
-     * 
+     *
      * @param d the raw-data to set or null to clear
      */
     void setRawFieldData(Binder b, Binder.RawFieldData d);
@@ -181,7 +181,7 @@ public interface EntityBinder {
      * Get the raw-data for a field.
      *
      * @param b the binder to get the raw-data for
-     * 
+     *
      * @return the raw-data or null if the field is loaded
      */
     Binder.RawFieldData getRawFieldData(Binder b);

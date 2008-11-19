@@ -25,17 +25,17 @@ import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 
 /**
- * Allows user code to inspect and/or change property values. 
+ * Allows user code to inspect and/or change property values.
  * <p>
  * <i>This is similar to a Hibernate Interceptor and most of the Hibernate documentation
  * is applicable here too. The following description is mostly copied from Hibernate.</i>
  * <p>
  * Inspection occurs before property values are written and after they are read from the database.
  * <p>
- * There might be a single instance of Interceptor for a SessionFactory, or a new instance might 
- * be specified for each Session. 
+ * There might be a single instance of Interceptor for a SessionFactory, or a new instance might
+ * be specified for each Session.
  * <p>
- * The Session may not be invoked from a callback (nor may a callback cause a collection or proxy 
+ * The Session may not be invoked from a callback (nor may a callback cause a collection or proxy
  * to be lazily initialized).
  *
  * @author Pradeep Krishnan
@@ -51,7 +51,7 @@ public interface Interceptor {
    * @param id the id of the instance
    * @param instance an instance object to refresh or null
    *
-   * @return a cached instance or null if not in cache or @link{#NULL} 
+   * @return a cached instance or null if not in cache or @link{#NULL}
    *         if an instance does not exist.
    */
   public Object getEntity(Session session, ClassMetadata cm, String id, Object instance);
@@ -88,7 +88,7 @@ public interface Interceptor {
    * @param instance the instance that was written out
    * @param update the updates that we detected or null if the instance just got attached
    */
-  public void onPostWrite(Session session, ClassMetadata cm, String id, Object instance, 
+  public void onPostWrite(Session session, ClassMetadata cm, String id, Object instance,
                            Updates update);
 
   /**

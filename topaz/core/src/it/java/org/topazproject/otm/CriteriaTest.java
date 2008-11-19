@@ -147,9 +147,9 @@ public class CriteriaTest extends AbstractOtmTest {
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           final List<Annotation> al = new ArrayList();
-      
+
           al.addAll(session.createCriteria(Annotation.class).list());
-          
+
           assertNotNull(al);
           assertEquals(4, al.size());
 
@@ -1262,7 +1262,7 @@ public class CriteriaTest extends AbstractOtmTest {
     }
   }
 
-  private void doCollectionsTest(final String op, final String field, final String val, 
+  private void doCollectionsTest(final String op, final String field, final String val,
       final String[] results) throws OtmException {
     doInSession(new Action() {
         public void run(Session session) throws OtmException {

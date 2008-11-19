@@ -24,10 +24,10 @@ import java.util.List;
 import antlr.RecognitionException;
 import antlr.ASTFactory;
 
-/** 
+/**
  * Implement an OQL query function. This interface must never be implemented directly, but
  * instead one (or more) of the sub-interfaces must be implemented.
- * 
+ *
  * @author Ronald Tschalär
  */
 public interface QueryFunction {
@@ -38,25 +38,25 @@ public interface QueryFunction {
    */
   String getName();
 
-  /** 
+  /**
    * Get the return type of the function. This is ignored for boolean condition functions.
-   * 
+   *
    * @return the return type, or null if unknown
    */
   ExprType getReturnType();
 
-  /** 
+  /**
    * Post-predicate processing hook. This is invoked after all field-to-predicate translation has
    * occurred, but before the parameter replacement has taken place.
-   * 
+   *
    * @param pre  the query before the field-to-predicates translation
    * @param post the query after the field-to-predicates translation
    */
   void postPredicatesHook(OqlAST pre, OqlAST post) throws RecognitionException;
 
-  /**   
+  /**
    * Generate the ITQL statements for this function.
-   *  
+   *
    * @param args   the arguments to the function; these are ITQL statements
    * @param vars   the variables holding the result of each argument (where the i-th variable
    *               is for the i-th argument)

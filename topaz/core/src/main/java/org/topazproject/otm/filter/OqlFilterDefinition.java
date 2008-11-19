@@ -42,7 +42,7 @@ public class OqlFilterDefinition extends AbstractFilterDefinition {
 
   private final GenericQueryImpl query;
 
-  /** 
+  /**
    * Create a new filter-definition based on the given OQL query. The query must conform to the
    * following restrictions:
    * <ul>
@@ -68,14 +68,14 @@ public class OqlFilterDefinition extends AbstractFilterDefinition {
    *       </pre>
    *   </li>
    * </ul>
-   * 
+   *
    * <p>Example: the query
    * <pre>
    *   select a from Article a where a.title = 'foo';
    * </pre>
    * together with a <var>filteredClass</var> of <var>Article</var> would create a filter that only
    * accepts articles with the title 'foo'.
-   * 
+   *
    * @param filterName    the name of the filter
    * @param filteredClass the entity-name or fully-qualified class name of the class being filtered;
    *                      this must match the type of the projection expression.

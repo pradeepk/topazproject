@@ -25,11 +25,11 @@ import java.util.Map;
 
 import org.topazproject.otm.query.Results;
 
-/** 
+/**
  * This implements the basic functionality of a parameterizable entity. The parameters are stored
  * in the {@link #paramValues paramValues} map, where the values are either a {@link URI URI}, a
  * {@link org.topazproject.otm.query.Results.Literal Literal}, or the specific object.
- * 
+ *
  * <p>Implementation note: subclasses must also implement <var>T</var> - this can't be expressed in
  * the type parameters, unfortunately.
  *

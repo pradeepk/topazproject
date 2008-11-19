@@ -52,7 +52,7 @@ public class EmbeddedDefinition extends PropertyDefinition {
   @Override
   protected void resolve(SessionFactory sf, Definition def)
                   throws OtmException {
-    // validate 
+    // validate
     if (!(sf.getDefinition(embedded) instanceof EntityDefinition))
       throw new OtmException("Undefined embedded entity '" + embedded + "' in '" + getName()
                              + "'");

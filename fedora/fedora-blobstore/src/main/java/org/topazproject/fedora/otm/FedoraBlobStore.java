@@ -42,7 +42,7 @@ import org.topazproject.otm.Session;
  * Uses Fedora as a BlobStore. The current version of fedora is not
  * transactional. Therefore the transactional aspects of this store
  * is only "best-effort" and may not behave well in a cluster. Use
- * it only in cases where the higher level app logic can work 
+ * it only in cases where the higher level app logic can work
  * without having locking/exclusive-access to the blobs.
  *
  * @author Pradeep Krishnan

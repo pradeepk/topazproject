@@ -44,7 +44,7 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
   /**
    * Creates a new CollectionFieldBinder object.
    *
-   * @param property the bean property 
+   * @param property the bean property
    * @param serializer the serializer or null
    */
   public CollectionFieldBinder(Property property, Serializer serializer) {
@@ -109,7 +109,7 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
    *   <dt>AbstractSequentialList<dd>LinkedList
    *   <dt>anything else<dd>assumed to be a concrete implementation and instantiated directly
    * </dl>
-   * 
+   *
    * <p>Override this method in order to fine tune the instance creation.</p>
    *
    * @return an empty collection instance

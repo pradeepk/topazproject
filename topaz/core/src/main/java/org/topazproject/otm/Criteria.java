@@ -38,7 +38,7 @@ import org.topazproject.otm.query.Results;
 
 /**
  * An API for retrieving objects based on filtering and ordering conditions specified  using
- * {@link org.topazproject.otm.criterion.Criterion}. This is convenient in situations where 
+ * {@link org.topazproject.otm.criterion.Criterion}. This is convenient in situations where
  * the query that needs to be run is only constructed at run time. An example is an advanced
  * search functionality where a user is selecting the conditions that need to be placed on
  * the result set.
@@ -441,7 +441,7 @@ public class Criteria implements Parameterizable<Criteria> {
     RdfMapper m = (RdfMapper) r;
     Object val = getRoot().paramValues.get(name);
     if (val == null)
-      throw new OtmException("No value specified for parameter '" + name + "': field '" 
+      throw new OtmException("No value specified for parameter '" + name + "': field '"
           + field + "'");
 
     if (val instanceof UriParam) {
@@ -459,18 +459,18 @@ public class Criteria implements Parameterizable<Criteria> {
       Results.Literal lit = (Results.Literal) val;
       String type = m.getDataType();
       if (lit.getDatatype() == null && type != null)
-        throw new OtmException("type mismatch in parameter '" + name + "': field '" + 
+        throw new OtmException("type mismatch in parameter '" + name + "': field '" +
                         field + "' is a typed literal with data type '" +
                         type + "' but parameter value is a plain literal");
 
       if (lit.getDatatype() != null) {
         if (type  == null)
-          throw new OtmException("type mismatch in parameter '" + name + "': field '" + 
-                        field + 
+          throw new OtmException("type mismatch in parameter '" + name + "': field '" +
+                        field +
                         "' is a plain literal but parameter value is a typed literal with type '" +
                         type + "'");
         else if (!lit.getDatatype().equals(type))
-          throw new OtmException("type mismatch in parameter '" + name + "': field '" + 
+          throw new OtmException("type mismatch in parameter '" + name + "': field '" +
                           field + "' is a typed literal with data type '" +
                           type + "' but parameter value is a typed literal with datatype '" +
                           lit.getDatatype() + "'");
@@ -484,7 +484,7 @@ public class Criteria implements Parameterizable<Criteria> {
       Serializer ser = l.getSerializer();
       return (ser != null) ? ser.serialize(val) : val.toString();
     } catch (Exception e) {
-      throw new OtmException("Error serializing the value for parameter '" + name + ": field '" + 
+      throw new OtmException("Error serializing the value for parameter '" + name + ": field '" +
           field + "' and value is '" + val + "'", e);
     }
   }

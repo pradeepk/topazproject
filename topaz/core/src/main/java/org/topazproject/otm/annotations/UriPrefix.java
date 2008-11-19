@@ -25,7 +25,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * An annotation for configuring the default uri-prefix for predicate uris that are 
+ * An annotation for configuring the default uri-prefix for predicate uris that are
  * auto-generated from the field name.
  *
  * @author Pradeep Krishnan

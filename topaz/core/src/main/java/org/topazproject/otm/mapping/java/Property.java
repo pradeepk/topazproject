@@ -138,7 +138,7 @@ public class Property {
         getter = getMethod(clazz, "get" + capitalized);
 
       // Note that if there are multiple methods with the same name, the
-      // one with the return type that is more specific than others is 
+      // one with the return type that is more specific than others is
       // returned. So the only check we do is to ensure that the set
       // method's type is assignable from the return type of the get method.
       if ((getter != null) && !type.isAssignableFrom(getter.getReturnType()))

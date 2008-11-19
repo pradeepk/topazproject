@@ -302,7 +302,7 @@ public class ObjectInfo {
   }
 
   /**
-   * The state of this article (or its parts). 
+   * The state of this article (or its parts).
    * @param state the state to set
    */
   @Predicate(uri = Rdf.topaz + "articleState")

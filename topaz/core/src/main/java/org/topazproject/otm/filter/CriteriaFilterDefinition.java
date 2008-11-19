@@ -44,9 +44,9 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
 
   private final DetachedCriteria crit;
 
-  /** 
+  /**
    * Create a new filter-definition based on the given criteria.
-   * 
+   *
    * @param filterName    the name of the filter
    * @param crit          the criteria defining this filter
    */

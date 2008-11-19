@@ -28,27 +28,27 @@ import javax.transaction.xa.XAResource;
 public abstract class AbstractConnection implements Connection {
   private final Session sess;
 
-  /** 
-   * Create a new connection. 
-   * 
+  /**
+   * Create a new connection.
+   *
    * @param sess the session this connection belongs to
    */
   protected AbstractConnection(Session sess) {
     this.sess = sess;
   }
 
-  /** 
-   * Get the owning session. 
-   * 
+  /**
+   * Get the owning session.
+   *
    * @return the session
    */
   public Session getSession() {
     return sess;
   }
 
-  /** 
+  /**
    * Enlist the given xa-resource with the session's transaction.
-   * 
+   *
    * @param xaRes the xa-resource to enlist
    * @throws OtmException if an error occurred enlisting <var>xaRes</var>
    */

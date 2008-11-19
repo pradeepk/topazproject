@@ -29,10 +29,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** 
+/**
  * This holds some common stuff for Oql tree parsers, such as collecting error and warning
  * messages and setting up the default AST node class.
- * 
+ *
  * @author Ronald Tschalär
  */
 abstract class OqlTreeParser extends TreeParser implements ErrorCollector {
@@ -41,8 +41,8 @@ abstract class OqlTreeParser extends TreeParser implements ErrorCollector {
   private final List<String> errs = new ArrayList<String>();
   private final List<String> wrns = new ArrayList<String>();
 
-  /** 
-   * Create a new tree-parser instance. 
+  /**
+   * Create a new tree-parser instance.
    */
   protected OqlTreeParser() {
     astFactory.setASTNodeClass(OqlAST.class);

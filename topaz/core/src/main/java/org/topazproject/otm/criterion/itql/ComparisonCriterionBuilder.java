@@ -126,7 +126,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
       String resolverGraph = "<" + resolverGraphs.get(0).getUri() + ">";
 
       if (m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
-            throw new OtmException("Can't query across a " + m.getColType() 
+            throw new OtmException("Can't query across a " + m.getColType()
                 + " for an inverse mapped field '" + name + "' in " + cm);
 
       String query;
@@ -157,7 +157,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
              + ") and " + rest +  " <rdf:first> " + varPrefix + graph + "))";
           break;
         default:
-          throw new OtmException(m.getColType() + " not supported; field = " 
+          throw new OtmException(m.getColType() + " not supported; field = "
              + name + " in " + cm);
       }
 

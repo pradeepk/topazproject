@@ -191,7 +191,7 @@ public class SerializerFactory {
    * @return true if this class must be serialized
    */
   public boolean mustSerialize(Class clazz) {
-    // XXX: may be the apps would like to control this. 
+    // XXX: may be the apps would like to control this.
     // XXX: for now piggy-back on the typeMap
     return typeMap.containsKey(clazz) || Enum.class.isAssignableFrom(clazz);
   }

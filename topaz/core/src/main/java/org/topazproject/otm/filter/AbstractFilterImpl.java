@@ -54,16 +54,16 @@ public abstract class AbstractFilterImpl extends AbstractParameterizable<Filter>
     return fd.getParameterNames();
   }
 
-  /** 
+  /**
    * Get the filter as a Critieria.
-   * 
+   *
    * @return the criteria representing this filter
    */
   public abstract Criteria getCriteria() throws OtmException;
 
-  /** 
+  /**
    * Get the filter as an OQL query.
-   * 
+   *
    * @return the query representing this filter
    */
   public abstract GenericQuery getQuery() throws OtmException;

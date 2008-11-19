@@ -62,10 +62,10 @@ public class OtmInterceptor implements Interceptor {
   /**
    * Creates a new OtmInterceptor object.
    *
-   * @param objCache the object cache 
-   * @param journalService the journal service  
+   * @param objCache the object cache
+   * @param journalService the journal service
    */
-  public OtmInterceptor(CacheManager cacheManager, Cache objCache, Cache repCache, 
+  public OtmInterceptor(CacheManager cacheManager, Cache objCache, Cache repCache,
                         JournalService journalService) {
     this.cacheManager                         = cacheManager;
     this.objCache                             = objCache;
@@ -378,7 +378,7 @@ public class OtmInterceptor implements Interceptor {
         blob = copy((byte[]) blobField.getBinder(sess).getRawValue(instance, false));
 
       if (fields.size() != cm.getRdfMappers().size()) {
-        // Get other fields to create the spliced 
+        // Get other fields to create the spliced
         Collection<RdfMapper> l = new ArrayList<RdfMapper>();
         for (RdfMapper m : fields) {
           if (!m.isPredicateMap())

@@ -74,6 +74,6 @@ public interface FieldBinder extends Binder {
    *
    * @throws OtmException if a field's value cannot be set
    */
-  public void load(Object root, Object instance, List<String> values, 
+  public void load(Object root, Object instance, List<String> values,
           RdfMapper mapper, Session session) throws OtmException;
 }

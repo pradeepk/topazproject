@@ -84,9 +84,9 @@ public class FedoraConnection extends AbstractConnection {
     enlistResource(new FedoraXAResource());
   }
 
-  /** 
-   * Get the underlying fedora blob-store. 
-   * 
+  /**
+   * Get the underlying fedora blob-store.
+   *
    * @return the blob-store, or null if this connection has been closed
    */
   FedoraBlobStore getBlobStore() {
