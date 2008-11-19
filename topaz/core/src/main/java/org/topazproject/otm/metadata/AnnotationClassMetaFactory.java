@@ -179,7 +179,7 @@ public class AnnotationClassMetaFactory {
                    throws OtmException {
     sf.addDefinition(def);
 
-    ClassBindings bin = sf.getClassBindings(def.getName());
+    ClassBinding bin = sf.getClassBinding(def.getName());
     bin.bind(EntityMode.POJO, new ClassBinder(clazz));
 
     Map<String, PropertyDefFactory> factories = new HashMap<String, PropertyDefFactory>();
@@ -251,7 +251,7 @@ public class AnnotationClassMetaFactory {
         buildSupersedes(sdef, supersedes);
     }
 
-    ClassBindings b = sf.getClassBindings(def.getName());
+    ClassBinding b = sf.getClassBinding(def.getName());
 
     if (b != null) {
       for (String prop : b.getProperties()) {

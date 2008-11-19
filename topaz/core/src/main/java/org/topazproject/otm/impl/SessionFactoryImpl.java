@@ -62,7 +62,7 @@ import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
 import org.topazproject.otm.metadata.Definition;
 import org.topazproject.otm.metadata.ClassDefinition;
 import org.topazproject.otm.metadata.PropertyDefinition;
-import org.topazproject.otm.metadata.ClassBindings;
+import org.topazproject.otm.metadata.ClassBinding;
 import org.topazproject.otm.metadata.EmbeddedDefinition;
 import org.topazproject.otm.metadata.EntityDefinition;
 import org.topazproject.otm.metadata.ViewDefinition;
@@ -218,7 +218,7 @@ public class SessionFactoryImpl implements SessionFactory {
    */
   public void preload(Class<?> c) throws OtmException {
     // Check if already preloaded
-    ClassBindings cb = getClassBindings(cmf.getEntityName(c));
+    ClassBinding cb = getClassBinding(cmf.getEntityName(c));
 
     if (cb != null) {
       EntityBinder b = cb.getBinders().get(EntityMode.POJO);
@@ -277,7 +277,7 @@ public class SessionFactoryImpl implements SessionFactory {
       buildClassMetadata((EntityDefinition) d);
     }
 
-    for (String prop : getClassBindings(def.getName()).getProperties()) {
+    for (String prop : getClassBinding(def.getName()).getProperties()) {
       Definition d = defs.get(prop);
       if (d instanceof EmbeddedDefinition)
         buildClassMetadata((EntityDefinition) defs.get(((EmbeddedDefinition) d).getEmbedded()));
@@ -322,18 +322,22 @@ public class SessionFactoryImpl implements SessionFactory {
       log.debug("Removed definition : " + name);
   }
 
+  public Collection<Definition> listDefinitions() {
+    return Collections.unmodifiableCollection(defs.values());
+  }
+
   /*
    * inherited javadoc
    */
-  public Collection<String> listClassDefinitions() {
-    return classDefs.keySet();
+  public Collection<? extends ClassBinding> listClassBindings() {
+    return Collections.unmodifiableCollection(classDefs.values());
   }
 
 
   /*
    * inherited javadoc
    */
-  public  ClassBindings getClassBindings(String name) {
+  public  ClassBinding getClassBinding(String name) {
     return classDefs.get(name);
   }
 
@@ -812,7 +816,7 @@ public class SessionFactoryImpl implements SessionFactory {
       resolvers.remove(resolver);
   }
 
-  private class SFClassBindings extends ClassBindings {
+  private class SFClassBindings extends ClassBinding {
     public SFClassBindings(ClassDefinition def) {
       super(def);
     }

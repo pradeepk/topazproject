@@ -67,7 +67,7 @@ public class ViewDefinition extends ClassDefinition {
     IdMapper              idField = null;
     Collection<VarMapper> fields  = new ArrayList<VarMapper>();
 
-    ClassBindings         bin     = sf.getClassBindings(getName());
+    ClassBinding         bin     = sf.getClassBinding(getName());
 
     for (String prop : bin.getProperties()) {
       Definition def = sf.getDefinition(prop);

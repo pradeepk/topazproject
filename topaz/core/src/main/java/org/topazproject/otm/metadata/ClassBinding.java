@@ -36,7 +36,7 @@ import org.topazproject.otm.mapping.EntityBinder;
  *
  * @author Pradeep Krishnan
  */
-public abstract class ClassBindings {
+public abstract class ClassBinding {
   private final ClassDefinition                             def;
   private final Map<EntityMode, EntityBinder>               entityBinders =
     Collections.synchronizedMap(new HashMap<EntityMode, EntityBinder>());
@@ -44,11 +44,11 @@ public abstract class ClassBindings {
     new HashMap<String, Set<BinderFactory>>();
 
   /**
-   * Creates a new ClassBindings object.
+   * Creates a new ClassBinding object.
    *
    * @param def   The class definition.
    */
-  protected ClassBindings(ClassDefinition def) {
+  protected ClassBinding(ClassDefinition def) {
     this.def = def;
   }
 

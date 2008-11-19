@@ -31,7 +31,8 @@ import javax.transaction.TransactionManager;
 import org.topazproject.otm.TripleStore.Result;
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
-import org.topazproject.otm.metadata.ClassBindings;
+import org.topazproject.otm.metadata.ClassBinding;
+import org.topazproject.otm.metadata.ClassDefinition;
 import org.topazproject.otm.metadata.Definition;
 import org.topazproject.otm.query.QueryFunctionFactory;
 import org.topazproject.otm.serializer.SerializerFactory;
@@ -128,18 +129,27 @@ public interface SessionFactory {
   public void removeDefinition(String name);
 
   /**
-   * Gets the list of all class definitions.
+   * List all definitions.
+   *
+   * @return the list of definitions
+   *
+   * @throws OtmException in case of an error
+   */
+  public Collection<Definition> listDefinitions();
+
+  /**
+   * Gets the list of all class bindings.
    *
    * @return all entity definitions
    */
-  public Collection<String> listClassDefinitions();
+  public Collection<? extends ClassBinding> listClassBindings();
 
   /**
    * Gets the binding for a class definition.
    *
    * @return the class bindings
    */
-  public  ClassBindings getClassBindings(String name);
+  public  ClassBinding getClassBinding(String name);
 
   /**
    * Return the most specific instantiable subclass metadata for the given class metadata that

@@ -151,7 +151,7 @@ public class EntityDefinition extends ClassDefinition {
     else if (superBlobs.size() == 1)
       blobField = superBlobs.iterator().next();
 
-    ClassBindings bin = sf.getClassBindings(getName());
+    ClassBinding bin = sf.getClassBinding(getName());
 
     for (String prop : bin.getProperties()) {
       Definition def = sf.getDefinition(prop);
