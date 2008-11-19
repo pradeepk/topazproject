@@ -143,10 +143,7 @@
     <entry key="countries" value-ref="countries"/>
   </util:map>
 
-  <bean id="searchService" class="org.topazproject.ambra.search.service.SearchService">
-    <property name="searchWebService" ref="searchWebService"/>
-    <property name="searchCache" ref="searchCache"/>
-  </bean>
+  <bean id="searchService" class="org.topazproject.ambra.search.service.SearchService"/>
 
   <bean id="searchWebService" class="org.topazproject.ambra.search.service.SearchWebService"/>
 
