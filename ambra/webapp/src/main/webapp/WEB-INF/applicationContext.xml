@@ -30,7 +30,6 @@
   <!--Ambra developer beans here -->
   <bean id="fetchArticleService" class="org.topazproject.ambra.article.service.FetchArticleService">
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
-    <property name="articleXmlUtils" ref="articleXmlUtils"/>
   </bean>
 
   <bean id="articleXmlUtils" class="org.topazproject.ambra.util.ArticleXMLUtils" init-method="init">

@@ -20,7 +20,6 @@
 package org.topazproject.ambra.article.service;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -233,6 +232,7 @@ public class FetchArticleService {
   /**
    * @param articleXmlUtils The articleXmlUtils to set.
    */
+  @Required
   public void setArticleXmlUtils(ArticleXMLUtils articleXmlUtils) {
     this.articleXmlUtils = articleXmlUtils;
   }
