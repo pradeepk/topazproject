@@ -70,7 +70,6 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
 
   private static final String TEXT = "text";
   private static final String HTML = "html";
-  private static final String URL = "url";
   private static final String SUBJECT = "subject";
 
   public static final String TO_EMAIL_ADDRESS = "toEmailAddress";
@@ -161,10 +160,10 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
 
   /**
    * Set the free marker configurer
-   * @param freeMarkerConfigurer freeMarkerConfigurer
+   * @param freemarkerConfig freeMarkerConfigurer
    */
-  public void setFreeMarkerConfigurer(final FreeMarkerConfigurer freeMarkerConfigurer) {
-    this.configuration = freeMarkerConfigurer.getConfiguration();
+  public void setFreemarkerConfig(final FreeMarkerConfigurer freemarkerConfig) {
+    this.configuration = freemarkerConfig.getConfiguration();
   }
 
   protected String getFromEmailName() {
