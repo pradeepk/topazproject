@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.RatingContent;
 import org.topazproject.ambra.models.RatingSummary;
@@ -106,7 +105,7 @@ public class RateAction extends AbstractRatingAction {
 
     try {
       isResearchArticle = isResearchArticle(articleURI);
-    } catch (ApplicationException ae) {
+    } catch (Exception ae) {
       log.info("Could not get article info for: " + articleURI, ae);
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;

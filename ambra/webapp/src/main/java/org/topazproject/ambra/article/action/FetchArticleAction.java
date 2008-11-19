@@ -31,6 +31,7 @@ import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.article.service.BrowseService;
 import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
+import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.model.article.ArticleInfo;
 import org.topazproject.ambra.model.article.ArticleType;
@@ -54,6 +55,7 @@ public class FetchArticleAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(FetchArticleAction.class);
   private BrowseService browseService;
   private FetchArticleService fetchArticleService;
+  private ArticleOtmService articleOtmService;
   private JournalService journalService;
   private Set<Journal> journalList;
   private Article articleInfo;
@@ -92,7 +94,7 @@ public class FetchArticleAction extends BaseActionSupport {
         }
       }
 
-      Article artInfo = fetchArticleService.getArticleInfo(articleURI);
+      Article artInfo = articleOtmService.getArticle(URI.create(articleURI));
 
       setArticleInfo(artInfo);
 
@@ -151,8 +153,17 @@ public class FetchArticleAction extends BaseActionSupport {
   /** Set the fetch article service
    * @param fetchArticleService fetchArticleService
    */
+  @Required
   public void setFetchArticleService(final FetchArticleService fetchArticleService) {
     this.fetchArticleService = fetchArticleService;
+  }
+
+  /** Set the fetch article service
+   * @param articleOtmService ArticleOtmService
+   */
+  @Required
+  public void setArticleOtmService(ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   /**
@@ -286,6 +297,7 @@ public class FetchArticleAction extends BaseActionSupport {
   /**
    * @param journalService The journalService to set.
    */
+  @Required
   public void setJournalService(JournalService journalService) {
     this.journalService = journalService;
   }

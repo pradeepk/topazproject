@@ -30,7 +30,6 @@ import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.annotation.service.WebReply;
-import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Citation;
@@ -50,7 +49,6 @@ public class ListReplyAction extends BaseActionSupport {
   private WebAnnotation baseAnnotation;
   private Article article;
   private ArticleOtmService articleOtmService;     // OTM service Spring injected.
-  private FetchArticleService fetchArticleService;
   private String citation;
   protected ReplyService replyService;
   protected AnnotationConverter converter;
@@ -94,14 +92,14 @@ public class ListReplyAction extends BaseActionSupport {
       baseAnnotation = converter.convert(annotationService.getAnnotation(root), true, true);
       replies = converter.convert(replyService.listAllReplies(root, inReplyTo), true, true);
       final String articleId = baseAnnotation.getAnnotates();
-      article = fetchArticleService.getArticleInfo(articleId);
+      article = articleOtmService.getArticle(URI.create(articleId));
 
       // construct citation string
       // we're only showing annotation citations for formal corrections
       if(baseAnnotation.isFormalCorrection()) {
         // lock @ Article level
 
-        Citation citationObject = articleOtmService.getArticle(URI.create(articleId)).getDublinCore().getBibliographicCitation();
+        Citation citationObject = article.getDublinCore().getBibliographicCitation();
 
         citation = CitationUtils.generateArticleCorrectionCitationString(citationObject, baseAnnotation);
       }
@@ -163,13 +161,6 @@ public class ListReplyAction extends BaseActionSupport {
    */
   public void setBaseAnnotation(WebAnnotation baseAnnotation) {
     this.baseAnnotation = baseAnnotation;
-  }
-
-  /**
-   * @param fetchArticleService The fetchArticleService to set.
-   */
-  public void setFetchArticleService(FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
   }
 
   /**

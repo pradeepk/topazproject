@@ -25,7 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.action.BaseActionSupport;
-import org.topazproject.ambra.article.service.FetchArticleService;
+import org.topazproject.ambra.article.service.ArticleOtmService;
+import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.model.article.ArticleType;
 import org.topazproject.ambra.models.Article;
 
@@ -39,14 +40,14 @@ public abstract class AbstractRatingAction extends BaseActionSupport {
 
   protected static final Log log = LogFactory.getLog(AbstractRatingAction.class);
 
-  protected FetchArticleService fetchArticleService;
+  protected ArticleOtmService articleOtmService;
 
   /**
-   * @param fetchArticleService the fetchArticleService to set
+   * @param articleOtmService the ArticleOtmService to set
    */
   @Required
-  public void setFetchArticleService(FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
+  public void setArticleOtmService(ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   /**
@@ -54,15 +55,12 @@ public abstract class AbstractRatingAction extends BaseActionSupport {
    *
    * @param articleURI The URI of the article.
    * @return true/false
-   * @throws ApplicationException When the articleURI is not resolvable to an article or when no
-   *                              article type is resolvable for the article.
+   * @throws NoSuchArticleIdException When no article resolvable for the articleURI. 
+   * @throws ApplicationException When no article type is resolvable for the article.
    */
-  protected final boolean isResearchArticle(String articleURI) throws ApplicationException {
-    assert fetchArticleService != null;
+  protected final boolean isResearchArticle(String articleURI) throws ApplicationException, NoSuchArticleIdException {
     // resolve article type and supported properties
-    Article artInfo = fetchArticleService.getArticleInfo(articleURI);
-    if (artInfo == null)
-      throw new ApplicationException("Unable to resolve article: " + articleURI);
+    Article artInfo = articleOtmService.getArticle(URI.create(articleURI));
     ArticleType articleType = ArticleType.getDefaultArticleType();
     for (URI artTypeUri : artInfo.getArticleType()) {
       if (ArticleType.getKnownArticleTypeForURI(artTypeUri) != null) {

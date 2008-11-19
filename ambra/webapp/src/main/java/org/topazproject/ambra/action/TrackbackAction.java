@@ -39,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.topazproject.ambra.article.service.FetchArticleService;
+import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.models.ObjectInfo;
@@ -49,7 +49,6 @@ import org.topazproject.ambra.web.VirtualJournalContext;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.Results;
-import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 
 import org.apache.roller.util.LinkbackExtractor;
@@ -78,7 +77,7 @@ public class TrackbackAction extends BaseActionSupport {
   private ObjectInfo articleObj;
   private Cache articleAnnotationCache;
 
-  private FetchArticleService fetchArticleService;
+  private ArticleOtmService articleOtmService;
   private static final Configuration myConfig = ConfigurationStore.getInstance().getConfiguration();
 
   private Session          session;
@@ -202,7 +201,7 @@ public class TrackbackAction extends BaseActionSupport {
   public String getTrackbacksForArticle() throws Exception {
     if (trackbackId == null)
       trackbackId = articleURI;
-    articleObj = fetchArticleService.getArticleInfo(trackbackId);
+    articleObj = articleOtmService.getArticle(URI.create(trackbackId));
 
     return getTrackbacks(true);
   }
@@ -391,7 +390,7 @@ public class TrackbackAction extends BaseActionSupport {
   }
 
   private String getArticleUrl (String baseURL, String articleURI) {
-    String escapedURI = null;
+    String escapedURI;
     try {
       escapedURI = URLEncoder.encode(articleURI, "UTF-8");
     } catch (UnsupportedEncodingException ue) {
@@ -409,10 +408,11 @@ public class TrackbackAction extends BaseActionSupport {
   }
 
   /**
-   * @param fetchArticleService The fetchArticleService to set.
+   * @param articleOtmService The ArticleOtmService to set.
    */
-  public void setFetchArticleService(FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
+  @Required
+  public void setArticleOtmService(ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   /**

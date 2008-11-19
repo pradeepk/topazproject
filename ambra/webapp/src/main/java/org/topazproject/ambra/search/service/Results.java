@@ -37,8 +37,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
+import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.search.SearchResultPage;
@@ -59,7 +59,7 @@ public class Results {
 
   private SearchPEP                  pep;
   private SearchWebService           service;
-  private FetchArticleService        fetchArticleService;
+  private ArticleOtmService          articleOtmService;
   private CachingIterator            cache;
   private String                     query;
   private int                        totalHits = 0;
@@ -70,11 +70,11 @@ public class Results {
    *
    * @param query               the lucene query to build the search results for.
    * @param service             the fedoragsearch service
-   * @param fetchArticleService the FetchArticleService.
+   * @param articleOtmService the FetchArticleService.
    */
-  public Results(String query, SearchWebService service, FetchArticleService fetchArticleService) {
+  public Results(String query, SearchWebService service, ArticleOtmService articleOtmService) {
     this.service  = service;
-    this.fetchArticleService = fetchArticleService;
+    this.articleOtmService = articleOtmService;
     this.query    = query;
     this.cache    = new CachingIterator(new GuardedIterator(new HitIterator(), new HitGuard()));
     try {
@@ -202,23 +202,16 @@ public class Results {
   private class HitGuard implements Guard {
     public void checkGuard(Object object) throws SecurityException {
       SearchHit hit = (SearchHit) object;
-      final String uri = hit.getPid();
+      URI articleId = URI.create(hit.getPid());
 
       // Verify xacml allows (initially used for <topaz:articleState> ... but may be more)
-      pep.checkAccess(SearchPEP.READ_METADATA, URI.create(uri));
+      pep.checkAccess(SearchPEP.READ_METADATA, articleId);
 
       // verify that Aricle exists, is accessible by user, is in Journal, etc., be cache aware
       try {
-        Article article = fetchArticleService.getArticleInfo(uri);
-        if (article == null) {
-          throw new SecurityException(new NoSuchArticleIdException(uri));
-        }
-      } catch (ApplicationException ae) {
-        if (ae.getCause() instanceof NoSuchArticleIdException) {
-          throw new SecurityException(ae.getCause());
-        } else {
-          throw new SecurityException(ae);
-        }
+        Article article = articleOtmService.getArticle(articleId);
+      } catch (NoSuchArticleIdException na) {
+        throw new SecurityException(na);
       }
     }
   }

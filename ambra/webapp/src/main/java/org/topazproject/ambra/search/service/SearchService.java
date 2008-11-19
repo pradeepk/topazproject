@@ -20,7 +20,6 @@ package org.topazproject.ambra.search.service;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -28,9 +27,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.article.service.FetchArticleService;
+import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.cache.Cache;
-import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.search.SearchResultPage;
 import org.topazproject.ambra.user.AmbraUser;
 
@@ -42,11 +40,10 @@ import org.topazproject.ambra.user.AmbraUser;
  */
 public class SearchService {
   private static final Log           log   = LogFactory.getLog(SearchService.class);
-  private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
   private Cache cache;
 
-  private SearchWebService           searchWebService;
-  private FetchArticleService        fetchArticleService;
+  private SearchWebService  searchWebService;
+  private ArticleOtmService articleOtmService;
 
   /**
    * Find the results for a given query.
@@ -67,7 +64,7 @@ public class SearchService {
       Results results = cache.get(cacheKey, -1,
           new Cache.SynchronizedLookup<Results, ApplicationException>(cacheKey.intern()) {
             public Results lookup() throws ApplicationException {
-              return new Results(query, searchWebService, fetchArticleService);
+              return new Results(query, searchWebService, articleOtmService);
             }
           });
 
@@ -75,7 +72,7 @@ public class SearchService {
       if (!results.getLock().tryLock(10L, TimeUnit.SECONDS)) { // XXX: tune
         log.warn("Failed to acquire lock for cache entry with '" + cacheKey 
             + "'. Creating a temporary uncached instance.");
-        results = new Results(query, searchWebService, fetchArticleService);
+        results = new Results(query, searchWebService, articleOtmService);
         results.getLock().lock();
       }
 
@@ -93,19 +90,24 @@ public class SearchService {
    * Setter for property 'searchWebService'.
    * @param searchWebService Value to set for property 'searchWebService'.
    */
+  @Required
   public void setSearchWebService(final SearchWebService searchWebService) {
     this.searchWebService = searchWebService;
   }
 
   /**
-   * Set FetchArticleService.  Enable Spring autowiring.
-   *
-   * @param fetchArticleService to use.
+   * Set ArticleOtmService.  Enable Spring autowiring.
+   * @param articleOtmService to use.
    */
-  public void setFetchArticleService(final FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
+  @Required
+  public void setArticleOtmService(ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
+  /**
+   * Set search cache.  Enable Spring autowiring.
+   * @param cache to use.
+   */
   @Required
   public void setSearchCache(Cache cache) {
     this.cache = cache;

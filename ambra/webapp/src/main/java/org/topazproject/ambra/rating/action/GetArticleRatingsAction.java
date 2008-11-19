@@ -79,9 +79,10 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
   @SuppressWarnings("unchecked")
   public String execute() throws Exception {
     assert articleURI != null : "An article URI must be specified";
-    getPEP().checkAccess(RatingsPEP.GET_RATINGS, URI.create(articleURI));
+    URI articleId = URI.create(articleURI);
+    getPEP().checkAccess(RatingsPEP.GET_RATINGS, articleId);
 
-    final Article article = fetchArticleService.getArticleInfo(articleURI);
+    final Article article = articleOtmService.getArticle(articleId);
     assert article != null : "article of URI: " + articleURI + " not found.";
 
     articleTitle = article.getDublinCore().getTitle();
@@ -114,9 +115,7 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
     }
 
     // create ArticleRatingSummary(s)
-    Iterator<Rating> iter = articleRatings.iterator();
-    while(iter.hasNext()) {
-      Rating rating = iter.next();
+    for (Rating rating : articleRatings) {
       ArticleRatingSummary summary = new ArticleRatingSummary(
           getArticleURI(), getArticleTitle());
       summary.setRating(rating);
@@ -126,11 +125,11 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
       summary.setCreatorURI(rating.getCreator());
       // get public 'name' for user
       UserAccount ua = session.get(UserAccount.class, rating.getCreator());
-      if(ua != null) {
+      if (ua != null) {
         summary.setCreatorName(ua.getProfile().getDisplayName());
       } else {
         summary.setCreatorName("Unknown");
-      log.error("Unable to look up UserAccount for " + rating.getCreator() + " for Rating " + rating.getId());
+        log.error("Unable to look up UserAccount for " + rating.getCreator() + " for Rating " + rating.getId());
       }
       articleRatingSummaries.add(summary);
     }

@@ -23,8 +23,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.EmailValidator;
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.article.service.FetchArticleService;
+import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.ambra.article.service.ArticleOtmService;
+import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.email.impl.FreemarkerTemplateMailer;
 import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.service.AmbraMailer;
@@ -37,6 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.net.URI;
 
 /**
  * Email the article to another user.
@@ -51,7 +53,7 @@ public class EmailArticleAction extends UserActionSupport {
   private String description;
   private String journalName;
   private AmbraMailer ambraMailer;
-  private FetchArticleService fetchArticleService;
+  private ArticleOtmService articleOtmService;
   private static final Log log = LogFactory.getLog(EmailArticleAction.class);
   private static final int MAX_TO_EMAIL = 5;
 
@@ -94,8 +96,8 @@ public class EmailArticleAction extends UserActionSupport {
     return SUCCESS;
   }
 
-  private void setArticleTitleAndDesc(final String articleURI) throws ApplicationException {
-    final ObjectInfo articleInfo = fetchArticleService.getArticleInfo(articleURI);
+  private void setArticleTitleAndDesc(final String articleURI) throws NoSuchArticleIdException {
+    final ObjectInfo articleInfo = articleOtmService.getArticle(URI.create(articleURI));
     title = articleInfo.getDublinCore().getTitle();
     description = articleInfo.getDublinCore().getDescription();
   }
@@ -246,16 +248,18 @@ public class EmailArticleAction extends UserActionSupport {
    * Setter for ambraMailer.
    * @param ambraMailer Value to set for ambraMailer.
    */
+  @Required
   public void setAmbraMailer(final AmbraMailer ambraMailer) {
     this.ambraMailer = ambraMailer;
   }
 
   /**
    * Setter for fetchArticleService.
-   * @param fetchArticleService Value to set for fetchArticleService.
+   * @param articleOtmService Value to set for ArticleOtmService.
    */
-  public void setFetchArticleService(final FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
+  @Required
+  public void setArticleOtmService(ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   /**

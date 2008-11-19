@@ -237,26 +237,6 @@ public class FetchArticleService {
     this.articleXmlUtils = articleXmlUtils;
   }
 
-  /**
-   * @param articleURI articleURI
-   * @return Article
-   * @throws ApplicationException ApplicationException
-   * @see ArticleOtmService#getArticle(java.net.URI)
-   */
-  public Article getArticleInfo(final String articleURI) throws ApplicationException {
-    try {
-      Article article = articleXmlUtils.getArticleService().getArticle(new URI(articleURI));
-      if (article == null) {
-        throw new ApplicationException("null Article for: " + articleURI);
-      }
-      return article;
-    } catch (NoSuchArticleIdException nsaie) {
-       throw new ApplicationException(nsaie);
-    } catch (URISyntaxException use) {
-       throw new ApplicationException(use);
-    }
-  }
-
   private class Invalidator extends AbstractObjectListener {
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
         Updates updates) {

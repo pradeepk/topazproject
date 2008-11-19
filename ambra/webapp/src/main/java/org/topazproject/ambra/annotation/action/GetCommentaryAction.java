@@ -21,6 +21,7 @@ package org.topazproject.ambra.annotation.action;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,7 +33,7 @@ import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
-import org.topazproject.ambra.article.service.FetchArticleService;
+import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.ArticleAnnotation;
 
@@ -53,7 +54,7 @@ public class GetCommentaryAction extends BaseActionSupport {
   protected String target;
   private Commentary[] commentary;
   private Article article;
-  private FetchArticleService fetchArticleService;
+  private ArticleOtmService articleOtmService;
   protected ReplyService replyService;
   protected AnnotationConverter converter;
   protected AnnotationService annotationService;
@@ -83,7 +84,7 @@ public class GetCommentaryAction extends BaseActionSupport {
    */
   private String list(Set<Class<? extends ArticleAnnotation>> set) {
     try {
-      article = fetchArticleService.getArticleInfo(target);
+      article = articleOtmService.getArticle(URI.create(target));
       WebAnnotation[] annotations = converter.convert(annotationService.listAnnotations(target, set), true, false);
       commentary = new Commentary[annotations.length];
       Commentary com = null;
@@ -112,7 +113,7 @@ public class GetCommentaryAction extends BaseActionSupport {
 
   @Transactional(readOnly = true)
   public String getArticleMetaInfo () throws Exception {
-    article = fetchArticleService.getArticleInfo(target);
+    article = articleOtmService.getArticle(URI.create(target));
     return SUCCESS;
   }
 
@@ -133,10 +134,11 @@ public class GetCommentaryAction extends BaseActionSupport {
   }
 
   /**
-   * @param service The fetchArticleService to set.
+   * @param articleOtmService The ArticleOtmService to set.
    */
-  public void setFetchArticleService(FetchArticleService service) {
-    this.fetchArticleService = service;
+  @Required
+  public void setArticleOtmService(ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   /**
