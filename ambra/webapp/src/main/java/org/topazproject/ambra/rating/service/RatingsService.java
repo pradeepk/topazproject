@@ -102,22 +102,20 @@ public class RatingsService {
     final int single = articleRating.getBody().getSingleRatingValue();
 
     articleRatingSummary.getBody().setNumUsersThatRated(newNumberOfRatings);
-    if (insight > 0) {
-      articleRatingSummary.getBody().removeRating(Rating.INSIGHT_TYPE,insight);
-    }
-    if (reliability > 0) {
-      articleRatingSummary.getBody().removeRating(Rating.RELIABILITY_TYPE,reliability);
-    }
-    if (style > 0) {
-      articleRatingSummary.getBody().removeRating(Rating.STYLE_TYPE,style);
-    }
-    if (single > 0) {
-      articleRatingSummary.getBody().removeRating(Rating.SINGLE_RATING_TYPE,single);
-    }
+    removeRating(articleRatingSummary, Rating.INSIGHT_TYPE, insight);
+    removeRating(articleRatingSummary, Rating.RELIABILITY_TYPE, reliability);
+    removeRating(articleRatingSummary, Rating.STYLE_TYPE, style);
+    removeRating(articleRatingSummary, Rating.SINGLE_RATING_TYPE, single);
 
     articleAnnotationCache.put(AVG_RATINGS_KEY + articleURI,
         new AverageRatings(articleRatingSummary));
     session.delete(articleRating);
+  }
+
+  private void removeRating(RatingSummary articleRatingSummary, String type, int rating) {
+    if (rating > 0) {
+      articleRatingSummary.getBody().removeRating(type, rating);
+    }
   }
 
   /**
@@ -163,7 +161,7 @@ public class RatingsService {
       c.add(Restrictions.eq("state", "" + state));
     }
 
-    return (Rating[]) c.list().toArray(new Rating[0]);
+    return (Rating[]) c.list().toArray(new Rating[c.list().size()]);
   }
 
   @Transactional(readOnly = true)
@@ -189,23 +187,21 @@ public class RatingsService {
   @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public boolean hasRated(String articleURI) {
-    final AmbraUser   user               = AmbraUser.getCurrentUser();
+    final AmbraUser user = AmbraUser.getCurrentUser();
 
-    if (user != null) {
-      if (log.isDebugEnabled()) {
-        log.debug("retrieving list of user ratings for article: " + articleURI + " and user: "
-                + user.getUserId());
-      }
+    if (user == null)
+      return false;
 
-      List<Rating> ratingsList =
-        session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
-              .add(Restrictions.eq("creator", user.getUserId())).list();
-
-      if (ratingsList.size() > 0) {
-        return true;
-      }
+    if (log.isDebugEnabled()) {
+      log.debug("retrieving list of user ratings for article: " + articleURI + " and user: "
+        + user.getUserId());
     }
-    return false;
+
+    List<Rating> ratingsList =
+      session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
+        .add(Restrictions.eq("creator", user.getUserId())).list();
+
+    return ratingsList.size() > 0;
   }
 
 
@@ -299,7 +295,7 @@ public class RatingsService {
       single = new Average(ratingSummary.getBody().getSingleRatingTotal(),
          ratingSummary.getBody().getSingleRatingNumRatings());
 
-      numUsersThatRated     = ratingSummary.getBody().getNumUsersThatRated();
+      numUsersThatRated = ratingSummary.getBody().getNumUsersThatRated();
       overall = RatingContent.calculateOverall(insight.average, reliability.average, style.average);
       roundedOverall = RatingContent.roundTo(overall, 0.5);
     }
