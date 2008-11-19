@@ -113,11 +113,6 @@ public class SessionFactoryImpl implements SessionFactory {
   private final Map<String, SFClassBindings> classDefs = new HashMap<String, SFClassBindings>();
 
   /**
-   * rdf:type to entity mapping
-   */
-  private final Map<String, Set<ClassMetadata>> typemap = new HashMap<String, Set<ClassMetadata>>();
-
-  /**
    * Name to metadata mapping.
    */
   private final Map<String, ClassMetadata> entitymap = new HashMap<String, ClassMetadata>();
@@ -355,30 +350,14 @@ public class SessionFactoryImpl implements SessionFactory {
                                 Collection<String> typeUris, TripleStore.Result result) {
     Set<ClassMetadata> candidates = new HashSet<ClassMetadata>();
 
-    if (clazz != null)
-      candidates.add(clazz);
-    else
-      candidates.addAll(subClasses.get(null));
-
     if (typeUris == null)
       typeUris = Collections.emptySet();
 
-    for (String uri : typeUris) {
-      Set<ClassMetadata> classes = typemap.get(uri);
-      if (classes != null)
-        candidates.addAll(classes);
-    }
+    buildCandidates(candidates, clazz, clazz, mode, typeUris);
 
-    Set<ClassMetadata> solutions = new HashSet<ClassMetadata>();
-
-    // Eliminate candidates that are not sub-classes
-    for (ClassMetadata cl : candidates) {
-      if (isAcceptable(cl, clazz, mode, typeUris))
-        solutions.add(cl);
-    }
+    Set<ClassMetadata> solutions = new HashSet<ClassMetadata>(candidates);
 
     // Eliminate super classes from an rdf:type perspective
-    candidates = new HashSet<ClassMetadata>(solutions);
     for (ClassMetadata sup : candidates) {
       for (ClassMetadata cm : candidates) {
         if ((sup != cm) && cm.getAllTypes().size() > sup.getAllTypes().size()
@@ -451,6 +430,18 @@ public class SessionFactoryImpl implements SessionFactory {
     return solution;
   }
 
+  private void buildCandidates(Collection<ClassMetadata> candidates, ClassMetadata cm,
+                               ClassMetadata clazz, EntityMode mode, Collection<String> typeUris) {
+    String key = (cm == null) ? null : cm.getName();
+    Set<ClassMetadata> subs = subClasses.get(key);
+    if (subs != null)
+      for (ClassMetadata cl : subs)
+        buildCandidates(candidates, cl, clazz, mode, typeUris);
+
+    if ((cm != null) && isAcceptable(cm, clazz, mode, typeUris))
+        candidates.add(cm);
+  }
+
   private boolean isAcceptable(ClassMetadata cm, ClassMetadata clazz, EntityMode mode,
                                Collection<String> typeUris) {
     // assignable test
@@ -502,17 +493,6 @@ public class SessionFactoryImpl implements SessionFactory {
       entitymap.put(name, cm);
       if (log.isDebugEnabled())
         log.info("Registered: " + name + " as " + cm);
-    }
-
-    for (String type : cm.getAllTypes()) {
-      Set<ClassMetadata> set = typemap.get(type);
-
-      if (set == null) {
-        set = new HashSet<ClassMetadata>();
-        typemap.put(type, set);
-      }
-
-      set.add(cm);
     }
 
     Set<ClassMetadata> set = null;
