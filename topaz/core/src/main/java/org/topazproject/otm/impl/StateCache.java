@@ -35,7 +35,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Interceptor.Updates;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.RdfMapper;
 
 /**
@@ -157,7 +157,7 @@ class StateCache {
         log.debug("--Starting to read object state(initial)--");
 
       for (RdfMapper m : cm.getRdfMappers()) {
-        Binder b = m.getBinder(session);
+        PropertyBinder b = m.getBinder(session);
         if (m.isPredicateMap())
           pmap = (Map<String, List<String>>) b.getRawValue(instance, true);
         else if (b.isLoaded(instance)) {
@@ -173,7 +173,7 @@ class StateCache {
     public void delayedLoadComplete(Object o, RdfMapper m, Session session) throws OtmException {
       if (log.isDebugEnabled())
         log.debug("--Starting to read object state(delayed field only)--");
-      Binder b = m.getBinder(session);
+      PropertyBinder b = m.getBinder(session);
       vmap.put(m, !m.isAssociation() ? b.get(o) : session.getIds(b.get(o)));
       if (log.isDebugEnabled())
         log.debug("--Finished reading object state(delayed field only)--");
@@ -186,7 +186,7 @@ class StateCache {
       if (log.isDebugEnabled())
         log.debug("--Starting to read object state(update)--");
       for (RdfMapper m : cm.getRdfMappers()) {
-        Binder b = m.getBinder(session);
+        PropertyBinder b = m.getBinder(session);
         if (m.isPredicateMap()) {
           Map<String, List<String>> nv = (Map<String, List<String>>) b.getRawValue(instance, true);
           boolean                   eq = (pmap == null) ? (nv == null) : pmap.equals(nv);
@@ -214,7 +214,7 @@ class StateCache {
       return u;
     }
 
-    public BlobChange digestUpdate(Object instance, Binder blobField) throws OtmException {
+    public BlobChange digestUpdate(Object instance, PropertyBinder blobField) throws OtmException {
       byte[] blob = (byte[]) blobField.getRawValue(instance, false);
       int len = 0;
       byte[] digest = null;

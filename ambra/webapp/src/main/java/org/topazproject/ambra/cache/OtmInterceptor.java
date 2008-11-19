@@ -39,8 +39,8 @@ import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.TripleStore;
-import org.topazproject.otm.mapping.Binder;
-import org.topazproject.otm.mapping.Binder.RawFieldData;
+import org.topazproject.otm.mapping.PropertyBinder;
+import org.topazproject.otm.mapping.PropertyBinder.RawFieldData;
 import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
@@ -398,7 +398,7 @@ public class OtmInterceptor implements Interceptor {
         if (m.isPredicateMap()) {
           predMap = m;
           fvalues.clear();    // predicate-map + fields indicates complete set. Clear everything.
-          Binder       b = m.getBinder(sess);
+          PropertyBinder       b = m.getBinder(sess);
           // cache predicate-map values
           Map<String, List<String>> pmap = (Map<String, List<String>>) b.getRawValue(instance, true);
           for (String uri : pmap.keySet())
@@ -419,7 +419,7 @@ public class OtmInterceptor implements Interceptor {
       for (RdfMapper m : fields) {
         if (m.isPredicateMap())
           continue;
-        Binder       b = m.getBinder(sess);
+        PropertyBinder       b = m.getBinder(sess);
         RawFieldData data   = b.getRawFieldData(instance);
         List<String> nv;
 

@@ -27,7 +27,7 @@ import java.util.Set;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.BinderFactory;
 import org.topazproject.otm.mapping.EntityBinder;
 
@@ -142,18 +142,18 @@ public abstract class ClassBindings {
    *
    * @throws OtmException if the property is undefined
    */
-  public Map<EntityMode, Binder> resolveBinders(String prop, SessionFactory sf)
+  public Map<EntityMode, PropertyBinder> resolveBinders(String prop, SessionFactory sf)
                                          throws OtmException {
     Set<BinderFactory> bfs = propBinders.get(prop);
 
     if (bfs == null)
       throw new OtmException("No such property '" + prop + "' in '" + getName() + "'");
 
-    Map<EntityMode, Binder> binders = new HashMap<EntityMode, Binder>();
+    Map<EntityMode, PropertyBinder> propertyBinders = new HashMap<EntityMode, PropertyBinder>();
 
     for (BinderFactory bf : bfs)
-      binders.put(bf.getEntityMode(), bf.createBinder(sf));
+      propertyBinders.put(bf.getEntityMode(), bf.createBinder(sf));
 
-    return Collections.synchronizedMap(binders);
+    return Collections.synchronizedMap(propertyBinders);
   }
 }

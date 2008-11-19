@@ -24,7 +24,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
 import org.topazproject.otm.mapping.EmbeddedBinder;
@@ -115,7 +115,7 @@ public class EmbeddedClassFieldBinder extends AbstractFieldBinder implements Emb
   /*
    * inherited javadoc
    */
-  public Binder promote(Binder binder) {
-    return new EmbeddedClassMemberFieldBinder(this, (FieldBinder) binder);
+  public PropertyBinder promote(PropertyBinder propertyBinder) {
+    return new EmbeddedClassMemberFieldBinder(this, (FieldBinder) propertyBinder);
   }
 }

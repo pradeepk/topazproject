@@ -123,7 +123,7 @@ public interface EntityBinder {
    * Gets all unique alias names by which this entity is known. For java classes this is the
    * class name.
    *
-   * @return the alternate unique names for this entity published by this Binder.
+   * @return the alternate unique names for this entity published by this PropertyBinder.
    */
   public String[] getNames();
 
@@ -166,7 +166,7 @@ public interface EntityBinder {
      *
      * @return true if a load was performed
      */
-    boolean isLoaded(Binder b);
+    boolean isLoaded(PropertyBinder b);
 
     /**
      * Stash/Clear the raw-data for a lazy-loaded field.
@@ -175,7 +175,7 @@ public interface EntityBinder {
      *
      * @param d the raw-data to set or null to clear
      */
-    void setRawFieldData(Binder b, Binder.RawFieldData d);
+    void setRawFieldData(PropertyBinder b, PropertyBinder.RawFieldData d);
 
     /**
      * Get the raw-data for a field.
@@ -184,7 +184,7 @@ public interface EntityBinder {
      *
      * @return the raw-data or null if the field is loaded
      */
-    Binder.RawFieldData getRawFieldData(Binder b);
+    PropertyBinder.RawFieldData getRawFieldData(PropertyBinder b);
 
     /**
      * Load the data from Store.

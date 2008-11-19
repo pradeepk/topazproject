@@ -32,7 +32,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import org.topazproject.otm.criterion.Restrictions;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;
@@ -136,7 +136,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertEquals("BAR", a.getFoobar().getBar());
 
 
-          Binder b = session.getSessionFactory().getClassMetadata(Annotation.class)
+          PropertyBinder b = session.getSessionFactory().getClassMetadata(Annotation.class)
                                      .getMapperByName("foobar.set").getBinder(session);
           assertFalse(b.isLoaded(a));
           assertNotNull(b.getRawFieldData(a));

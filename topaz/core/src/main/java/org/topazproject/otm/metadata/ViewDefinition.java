@@ -26,7 +26,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.IdMapper;
 import org.topazproject.otm.mapping.IdMapperImpl;
 import org.topazproject.otm.mapping.VarMapper;
@@ -77,15 +77,15 @@ public class ViewDefinition extends ClassDefinition {
 
       def.resolveReference(sf);
 
-      Map<EntityMode, Binder> binders = bin.resolveBinders(prop, sf);
+      Map<EntityMode, PropertyBinder> propertyBinders = bin.resolveBinders(prop, sf);
 
       if (def instanceof VarDefinition)
-        fields.add(new VarMapperImpl((VarDefinition) def, binders));
+        fields.add(new VarMapperImpl((VarDefinition) def, propertyBinders));
       else if (def instanceof IdDefinition) {
         if (idField != null)
           throw new OtmException("Duplicate Id field " + def.getName());
 
-        idField = new IdMapperImpl((IdDefinition) def, binders);
+        idField = new IdMapperImpl((IdDefinition) def, propertyBinders);
       } else {
         throw new OtmException("Invalid definition type '" + def.getClass() + "' for property "
                                + def.getName() + " in " + getName());

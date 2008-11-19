@@ -23,7 +23,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 
 /**
- * A binder factory that can create a Binder for a given property.
+ * A binder factory that can create a PropertyBinder for a given property.
  *
  * @author Pradeep Krishnan
  */
@@ -43,13 +43,13 @@ public interface BinderFactory {
   EntityMode getEntityMode();
 
   /**
-   * The factory method to create a Binder.
+   * The factory method to create a PropertyBinder.
    *
    * @param sf the session factory
    *
-   * @return the newly created Binder
+   * @return the newly created PropertyBinder
    *
    * @throws OtmException on an error
    */
-  Binder createBinder(SessionFactory sf) throws OtmException;
+  PropertyBinder createBinder(SessionFactory sf) throws OtmException;
 }

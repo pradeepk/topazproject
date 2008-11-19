@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.event.PreInsertEventListener;
 import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.id.IdentifierGenerator;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.IdMapper;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
@@ -219,7 +219,7 @@ public class SessionImpl extends AbstractSession {
         if (!m.isCascadable(CascadeType.delete))
           continue;
 
-        Binder b = m.getBinder(getEntityMode());
+        PropertyBinder b = m.getBinder(getEntityMode());
         for (Object ao : b.get(o))
           assocs.add(new Wrapper(checkObject(m, ao, true, true), ao));
       }
@@ -268,7 +268,7 @@ public class SessionImpl extends AbstractSession {
         if (!m.isCascadable(CascadeType.evict))
           continue;
 
-        Binder b = m.getBinder(getEntityMode());
+        PropertyBinder b = m.getBinder(getEntityMode());
         for (Object ao : b.get(o))
           assocs.add(new Wrapper(checkObject(m, ao, true, true), ao));
       }
@@ -436,7 +436,7 @@ public class SessionImpl extends AbstractSession {
         if (assocs == null)
           orphanTrack.put(id, assocs = new HashSet<Wrapper>());
 
-        Binder b = m.getBinder(getEntityMode());
+        PropertyBinder b = m.getBinder(getEntityMode());
         for (Object ao : b.get(o)) {
           Id aid = checkObject(m, ao, true, false);
           assocs.add(new Wrapper(aid, ao));
@@ -804,7 +804,7 @@ public class SessionImpl extends AbstractSession {
       Set<Wrapper> assocs = new HashSet<Wrapper>();
 
       for (RdfMapper m : cm.getRdfMappers()) {
-        Binder b = m.getBinder(getEntityMode());
+        PropertyBinder b = m.getBinder(getEntityMode());
         if (!m.isAssociation() || (m.getUri() == null))
           continue;
 
@@ -864,8 +864,8 @@ public class SessionImpl extends AbstractSession {
         continue;
 
       RdfMapper om = (RdfMapper) p;
-      Binder b  = m.getBinder(getEntityMode());
-      Binder ob = om.getBinder(getEntityMode());
+      PropertyBinder b  = m.getBinder(getEntityMode());
+      PropertyBinder ob = om.getBinder(getEntityMode());
       if ((loopDetect == null) || !m.isAssociation())
         b.set(o, ob.get(other));
       else {
@@ -907,7 +907,7 @@ public class SessionImpl extends AbstractSession {
       new LazyLoader() {
         private boolean loading = false;
         private boolean loaded = false;
-        private Map<Binder, Binder.RawFieldData> rawData = new HashMap<Binder, Binder.RawFieldData>();
+        private Map<PropertyBinder, PropertyBinder.RawFieldData> rawData = new HashMap<PropertyBinder, PropertyBinder.RawFieldData>();
 
         public void ensureDataLoad(LazyLoaded self, String operation) throws OtmException {
           if (!loaded && !loading) {
@@ -931,18 +931,18 @@ public class SessionImpl extends AbstractSession {
           return loaded;
         }
 
-        public boolean isLoaded(Binder b) {
+        public boolean isLoaded(PropertyBinder b) {
           return loaded && !rawData.containsKey(b);
         }
 
-        public void setRawFieldData(Binder b, Binder.RawFieldData d) {
+        public void setRawFieldData(PropertyBinder b, PropertyBinder.RawFieldData d) {
           if (d == null)
             rawData.remove(b);
           else
             rawData.put(b, d);
         }
 
-        public Binder.RawFieldData getRawFieldData(Binder b) {
+        public PropertyBinder.RawFieldData getRawFieldData(PropertyBinder b) {
           return rawData.get(b);
         }
 
@@ -985,7 +985,7 @@ public class SessionImpl extends AbstractSession {
     if (idField == null)
       throw new OtmException("Must have an id field for " + cm);
 
-    Binder        b       = idField.getBinder(getEntityMode());
+    PropertyBinder        b       = idField.getBinder(getEntityMode());
     List          ids     = b.get(o);
     String        id      = null;
 

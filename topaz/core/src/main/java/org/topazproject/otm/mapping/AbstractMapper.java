@@ -29,29 +29,29 @@ import org.topazproject.otm.Session;
  * @author Pradeep krishnan
  */
 public abstract class AbstractMapper implements Mapper {
-  private final Map<EntityMode, Binder> binders;
+  private final Map<EntityMode, PropertyBinder> propertyBinders;
 
   /**
    * Creates a new AbstractMapper object.
    *
-   * @param binders the binders for this property
+   * @param propertyBinders the propertyBinders for this property
    */
-  public AbstractMapper(Map<EntityMode, Binder> binders) {
-    this.binders = binders;
+  public AbstractMapper(Map<EntityMode, PropertyBinder> propertyBinders) {
+    this.propertyBinders = propertyBinders;
   }
 
   /*
    * inherited javadoc
    */
-  public Binder getBinder(Session session) {
+  public PropertyBinder getBinder(Session session) {
     return getBinder(session.getEntityMode());
   }
 
   /*
    * inherited javadoc
    */
-  public Binder getBinder(EntityMode mode) {
-    return binders.get(mode);
+  public PropertyBinder getBinder(EntityMode mode) {
+    return propertyBinders.get(mode);
   }
 
   /*
@@ -64,14 +64,14 @@ public abstract class AbstractMapper implements Mapper {
   /*
    * inherited javadoc
    */
-  public Map<EntityMode, Binder> getBinders() {
-    return binders;
+  public Map<EntityMode, PropertyBinder> getBinders() {
+    return propertyBinders;
   }
 
   /*
    * inherited javadoc
    */
   public String toString() {
-    return getClass().getName() + "[def=" + getDefinition() + ", binders =" + binders + "]";
+    return getClass().getName() + "[def=" + getDefinition() + ", propertyBinders =" + propertyBinders + "]";
   }
 }

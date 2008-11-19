@@ -31,22 +31,22 @@ import org.topazproject.otm.metadata.PropertyDefinition;
  */
 public interface Mapper {
   /**
-   * Get the Binder for this field.
+   * Get the PropertyBinder for this field.
    *
    * @param session the session
    *
    * @return the binder for this field
    */
-  public Binder getBinder(Session session);
+  public PropertyBinder getBinder(Session session);
 
   /**
-   * Get the Binder for this field.
+   * Get the PropertyBinder for this field.
    *
    * @param mode the entity mode
    *
    * @return the binder for this field
    */
-  public Binder getBinder(EntityMode mode);
+  public PropertyBinder getBinder(EntityMode mode);
 
   /**
    * Gets the name of the field.
@@ -60,7 +60,7 @@ public interface Mapper {
    *
    * @return the name
    */
-  public Map<EntityMode, Binder> getBinders();
+  public Map<EntityMode, PropertyBinder> getBinders();
 
   /**
    * Gets the property definition for this mapper.

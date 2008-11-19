@@ -258,7 +258,7 @@ public abstract class AbstractFieldBinder implements FieldBinder {
   }
 
   /**
-   * Create a Binder for the given Property.
+   * Create a PropertyBinder for the given Property.
    *
    * @param property the property
    * @param serializer the serializer to use

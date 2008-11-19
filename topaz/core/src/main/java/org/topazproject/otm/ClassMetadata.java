@@ -313,7 +313,7 @@ public class ClassMetadata {
   }
 
   /**
-   * Gets the Binder for the blob field.
+   * Gets the PropertyBinder for the blob field.
    *
    * @return the blob field or null
    */

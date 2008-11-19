@@ -51,7 +51,7 @@ import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.EmbeddedMapper;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 

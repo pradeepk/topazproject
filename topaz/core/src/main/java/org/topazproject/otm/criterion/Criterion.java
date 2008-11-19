@@ -35,7 +35,7 @@ import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.UriPrefix;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.serializer.Serializer;
@@ -166,7 +166,7 @@ public abstract class Criterion {
       val = criteria.resolveParameter(((Parameter) value).getParameterName(), field);
     else {
       try {
-        Binder     l                 = m.getBinder(criteria.getSession());
+        PropertyBinder     l                 = m.getBinder(criteria.getSession());
         Serializer ser               = l.getSerializer();
 
         val                          = (ser != null) ? ser.serialize(value) : value.toString();

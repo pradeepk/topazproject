@@ -21,7 +21,7 @@ package org.topazproject.otm.mapping.java;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.BinderFactory;
 import org.topazproject.otm.metadata.BlobDefinition;
 import org.topazproject.otm.metadata.Definition;
@@ -31,7 +31,7 @@ import org.topazproject.otm.metadata.VarDefinition;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
- * A binder factory that can create a Binder for a given property.
+ * A binder factory that can create a PropertyBinder for a given property.
  *
  * @author Pradeep Krishnan
  */
@@ -67,7 +67,7 @@ public class PropertyBinderFactory implements BinderFactory {
   /*
    * inherited javadoc
    */
-  public Binder createBinder(SessionFactory sf) throws OtmException {
+  public PropertyBinder createBinder(SessionFactory sf) throws OtmException {
     Definition pd = sf.getDefinition(propertyName);
 
     if (pd instanceof EmbeddedDefinition)

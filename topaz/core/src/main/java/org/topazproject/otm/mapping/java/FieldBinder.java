@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.RdfMapper;
 
 /**
@@ -32,7 +32,7 @@ import org.topazproject.otm.mapping.RdfMapper;
  *
  * @author Pradeep Krishnan
  */
-public interface FieldBinder extends Binder {
+public interface FieldBinder extends PropertyBinder {
   /**
    * Gets the get method used.
    *

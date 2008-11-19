@@ -35,10 +35,10 @@ public class BlobMapperImpl extends AbstractMapper implements BlobMapper {
    * Creates a new BlobMapperImpl object.
    *
    * @param def     the property definition
-   * @param binders the binders
+   * @param propertyBinders the binders
    */
-  public BlobMapperImpl(BlobDefinition def, Map<EntityMode, Binder> binders) {
-    super(binders);
+  public BlobMapperImpl(BlobDefinition def, Map<EntityMode, PropertyBinder> propertyBinders) {
+    super(propertyBinders);
     this.def = def;
   }
 

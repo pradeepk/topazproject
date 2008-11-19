@@ -44,12 +44,12 @@ public class EmbeddedMapperImpl extends AbstractMapper implements EmbeddedMapper
    * Creates a new EmbeddedMapperImpl object.
    *
    * @param def     the property definition
-   * @param binders the binders
+   * @param propertyBinders the binders
    * @param embedded the embedded class metadata
    */
-  public EmbeddedMapperImpl(EmbeddedDefinition def, Map<EntityMode, Binder> binders,
+  public EmbeddedMapperImpl(EmbeddedDefinition def, Map<EntityMode, PropertyBinder> propertyBinders,
                             ClassMetadata embedded) {
-    super(binders);
+    super(propertyBinders);
     this.embedded   = embedded;
     this.def        = def;
   }
@@ -65,7 +65,7 @@ public class EmbeddedMapperImpl extends AbstractMapper implements EmbeddedMapper
    * inherited javadoc
    */
   public Mapper promote(Mapper m) throws OtmException {
-    Map<EntityMode, Binder> fb = new HashMap<EntityMode, Binder>();
+    Map<EntityMode, PropertyBinder> fb = new HashMap<EntityMode, PropertyBinder>();
 
     for (EntityMode mode : getBinders().keySet()) {
       EmbeddedBinder binder = (EmbeddedBinder) getBinder(mode);
@@ -80,7 +80,7 @@ public class EmbeddedMapperImpl extends AbstractMapper implements EmbeddedMapper
   }
 
   private static Mapper buildProxy(final Mapper m, final String name,
-                                   final Map<EntityMode, Binder> fb)
+                                   final Map<EntityMode, PropertyBinder> fb)
                             throws Exception {
     // ensure these methods exist
     m.getClass().getMethod("getName");

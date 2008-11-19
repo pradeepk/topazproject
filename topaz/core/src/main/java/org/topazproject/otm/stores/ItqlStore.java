@@ -58,7 +58,7 @@ import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
 import org.topazproject.otm.filter.AbstractFilterImpl;
 import org.topazproject.otm.mapping.AbstractMapper;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.mapping.java.AbstractFieldBinder;
@@ -150,18 +150,18 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     Collection<Mapper> mappers = new ArrayList<Mapper>();
 
     for (SearchableDefinition sd : fields) {
-      final Map<EntityMode, Binder> binders = new HashMap<EntityMode, Binder>();
+      final Map<EntityMode, PropertyBinder> propertyBinders = new HashMap<EntityMode, PropertyBinder>();
       final SearchableDefinition def = sd;
 
       Mapper m = cm.getMapperByName(sd.getLocalName());
       if (m instanceof RdfMapper) {
-        binders.putAll(m.getBinders());
+        propertyBinders.putAll(m.getBinders());
       } else {
         Session sess = ((ItqlStoreConnection) con).getSession();
-        binders.put(sess.getEntityMode(), getBlobBinder(cm, sess));
+        propertyBinders.put(sess.getEntityMode(), getBlobBinder(cm, sess));
       }
 
-      m = new AbstractMapper(binders) {
+      m = new AbstractMapper(propertyBinders) {
         public PropertyDefinition getDefinition() {
           return def;
         }
@@ -172,8 +172,8 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     insertInternal(cm, mappers, id, o, con);
   }
 
-  private static Binder getBlobBinder(ClassMetadata cm, Session sess) {
-    final Binder origBinder = cm.getBlobField().getBinder(sess);
+  private static PropertyBinder getBlobBinder(ClassMetadata cm, Session sess) {
+    final PropertyBinder origBinder = cm.getBlobField().getBinder(sess);
     if (origBinder.getSerializer() != null)
       return origBinder;
 
@@ -281,7 +281,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
       throws OtmException {
     for (Mapper p : pList) {
       Definition def = p.getDefinition();
-      Binder     b   = p.getBinder(sess);
+      PropertyBinder     b   = p.getBinder(sess);
 
       if (def instanceof SearchableDefinition) {
         SearchableDefinition sd = (SearchableDefinition) def;

@@ -51,7 +51,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.EmbeddedMapper;
 import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
@@ -180,8 +180,8 @@ public class ClassBinder<T> implements EntityBinder {
 
   private LazyLoader createLazyLoader(final Session session, final String id) {
     return new LazyLoader() {
-        private Map<Binder, Binder.RawFieldData> rawData =
-           new HashMap<Binder, Binder.RawFieldData>();
+        private Map<PropertyBinder, PropertyBinder.RawFieldData> rawData =
+           new HashMap<PropertyBinder, PropertyBinder.RawFieldData>();
 
         public void ensureDataLoad(LazyLoaded self, String operation)
                             throws OtmException {
@@ -192,18 +192,18 @@ public class ClassBinder<T> implements EntityBinder {
           return true;
         }
 
-        public boolean isLoaded(Binder b) {
+        public boolean isLoaded(PropertyBinder b) {
           return !rawData.containsKey(b);
         }
 
-        public void setRawFieldData(Binder b, Binder.RawFieldData d) {
+        public void setRawFieldData(PropertyBinder b, PropertyBinder.RawFieldData d) {
           if (d == null)
             rawData.remove(b);
           else
             rawData.put(b, d);
         }
 
-        public Binder.RawFieldData getRawFieldData(Binder b) {
+        public PropertyBinder.RawFieldData getRawFieldData(PropertyBinder b) {
           return rawData.get(b);
         }
 
@@ -263,7 +263,7 @@ public class ClassBinder<T> implements EntityBinder {
       if (!m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
         v = loadCollection(id, m, session);
 
-      Binder b = m.getBinder(EntityMode.POJO);
+      PropertyBinder b = m.getBinder(EntityMode.POJO);
 
       if ((lh == null) || !m.isAssociation())
         b.load(instance, v, m, session);
@@ -285,14 +285,14 @@ public class ClassBinder<T> implements EntityBinder {
     return instance;
   }
 
-  private Binder getLocal(Binder b) {
+  private PropertyBinder getLocal(PropertyBinder b) {
     if (b instanceof EmbeddedClassMemberFieldBinder)
       return getLocal(((EmbeddedClassMemberFieldBinder) b).getFieldBinder());
 
     return b;
   }
 
-  private RdfMapper getRootMapper(ClassMetadata cm, Binder b)
+  private RdfMapper getRootMapper(ClassMetadata cm, PropertyBinder b)
                            throws OtmException {
     // quick check for the most common case
     Mapper m = cm.getMapperByName(b.getName());
@@ -308,10 +308,10 @@ public class ClassBinder<T> implements EntityBinder {
     throw new OtmException("Cannot find binder " + b + " in " + cm);
   }
 
-  private Binder.RawFieldData newRawFieldData(final LazyLoaded instance, final List<String> values,
+  private PropertyBinder.RawFieldData newRawFieldData(final LazyLoaded instance, final List<String> values,
                                               final TripleStore.Result r)
                                        throws OtmException {
-    return new Binder.RawFieldData() {
+    return new PropertyBinder.RawFieldData() {
         public List<String> getValues() {
           return values;
         }
@@ -378,7 +378,7 @@ public class ClassBinder<T> implements EntityBinder {
       Object val =
         getValue(r, idx, ((FieldBinder) m.getBinder(EntityMode.POJO)).getComponentType(),
                  m.getFetchType() == FetchType.eager, sqr, sess);
-      Binder b   = m.getBinder(EntityMode.POJO);
+      PropertyBinder b   = m.getBinder(EntityMode.POJO);
 
       if (val instanceof List)
         b.set(obj, (List) val);
@@ -522,10 +522,10 @@ public class ClassBinder<T> implements EntityBinder {
            && (self instanceof Serializable))
         return getReplacement(self);
 
-      Binder b = llInterceptors.get(thisMethod);
+      PropertyBinder b = llInterceptors.get(thisMethod);
 
       if (b != null) {
-        Binder.RawFieldData d = ll.getRawFieldData(b);
+        PropertyBinder.RawFieldData d = ll.getRawFieldData(b);
 
         if (d != null) {
           if (log.isDebugEnabled())
@@ -557,12 +557,12 @@ public class ClassBinder<T> implements EntityBinder {
 
       for (Mapper m : new Mapper[] { cm.getIdField(), cm.getBlobField() })
         if (m != null) {
-          Binder b = m.getBinder(em);
+          PropertyBinder b = m.getBinder(em);
           b.setRawValue(rep, b.getRawValue(o, false));
         }
 
       for (Mapper m : cm.getRdfMappers()) {
-        Binder b = m.getBinder(em);
+        PropertyBinder b = m.getBinder(em);
         b.setRawValue(rep, b.getRawValue(o, false));
       }
 

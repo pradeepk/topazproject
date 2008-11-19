@@ -36,10 +36,10 @@ public class IdMapperImpl extends AbstractMapper implements IdMapper {
    * Creates a new IdMapperImpl object.
    *
    * @param def     the property definition
-   * @param binders the binders
+   * @param propertyBinders the binders
    */
-  public IdMapperImpl(IdDefinition def, Map<EntityMode, Binder> binders) {
-    super(binders);
+  public IdMapperImpl(IdDefinition def, Map<EntityMode, PropertyBinder> propertyBinders) {
+    super(propertyBinders);
     this.def = def;
   }
 

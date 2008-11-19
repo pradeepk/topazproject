@@ -29,7 +29,7 @@ import org.topazproject.otm.serializer.Serializer;
  *
  * @author Pradeep Krishnan
  */
-public interface Binder {
+public interface PropertyBinder {
   /**
    * Gets the name of the field.
    *

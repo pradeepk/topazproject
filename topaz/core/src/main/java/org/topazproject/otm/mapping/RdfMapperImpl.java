@@ -40,10 +40,10 @@ public class RdfMapperImpl extends AbstractMapper implements RdfMapper {
    * Creates a new RdfMapperImpl object for a regular class field.
    *
    * @param def     the property definition
-   * @param binders the binders for this property
+   * @param propertyBinders the binders for this property
    */
-  public RdfMapperImpl(RdfDefinition def, Map<EntityMode, Binder> binders) {
-    super(binders);
+  public RdfMapperImpl(RdfDefinition def, Map<EntityMode, PropertyBinder> propertyBinders) {
+    super(propertyBinders);
     this.def = def;
   }
 

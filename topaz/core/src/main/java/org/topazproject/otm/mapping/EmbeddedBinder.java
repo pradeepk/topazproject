@@ -19,11 +19,11 @@
 package org.topazproject.otm.mapping;
 
 /**
- * Binder that binds an embedded entity.
+ * PropertyBinder that binds an embedded entity.
  *
  * @author Pradeep Krishnan
  */
-public interface EmbeddedBinder extends Binder {
+public interface EmbeddedBinder extends PropertyBinder {
   /**
    * Promote an embedded field binder up to the same level as this so that it can be added to
    * collections that contain mappers at the same level as this.
@@ -32,5 +32,5 @@ public interface EmbeddedBinder extends Binder {
    *
    * @return the promoted binder
    */
-  public Binder promote(Binder b);
+  public PropertyBinder promote(PropertyBinder b);
 }

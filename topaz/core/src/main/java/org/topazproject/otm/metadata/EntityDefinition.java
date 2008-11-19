@@ -29,7 +29,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.BlobMapperImpl;
 import org.topazproject.otm.mapping.EmbeddedMapper;
@@ -161,7 +161,7 @@ public class EntityDefinition extends ClassDefinition {
 
       def.resolveReference(sf);
 
-      Map<EntityMode, Binder> binders = bin.resolveBinders(prop, sf);
+      Map<EntityMode, PropertyBinder> propertyBinders = bin.resolveBinders(prop, sf);
 
       if (def instanceof RdfDefinition) {
         if (def.getSupersedes() != null) {
@@ -174,17 +174,17 @@ public class EntityDefinition extends ClassDefinition {
           }
         }
 
-        fields.add(new RdfMapperImpl((RdfDefinition) def, binders));
+        fields.add(new RdfMapperImpl((RdfDefinition) def, propertyBinders));
       } else if (def instanceof IdDefinition) {
         if (idField != null)
           throw new OtmException("Duplicate Id field " + def.getName() + " in " + getName());
 
-        idField = new IdMapperImpl((IdDefinition) def, binders);
+        idField = new IdMapperImpl((IdDefinition) def, propertyBinders);
       } else if (def instanceof BlobDefinition) {
         if (blobField != null)
           throw new OtmException("Duplicate Blob field " + def.getName() + " in " + getName());
 
-        blobField = new BlobMapperImpl((BlobDefinition) def, binders);
+        blobField = new BlobMapperImpl((BlobDefinition) def, propertyBinders);
       } else if (def instanceof EmbeddedDefinition) {
         EmbeddedDefinition edef = (EmbeddedDefinition) def;
         ClassMetadata      ecm  = sf.getClassMetadata(edef.getEmbedded());
@@ -192,7 +192,7 @@ public class EntityDefinition extends ClassDefinition {
         if (ecm == null)
           throw new OtmException("Can't find definition for embedded entity " + edef.getEmbedded());
 
-        EmbeddedMapperImpl em = new EmbeddedMapperImpl(edef, binders, ecm);
+        EmbeddedMapperImpl em = new EmbeddedMapperImpl(edef, propertyBinders, ecm);
         embeds.add(em);
 
         for (RdfMapper p : ecm.getRdfMappers())

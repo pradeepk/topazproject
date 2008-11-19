@@ -49,7 +49,7 @@ import org.topazproject.otm.criterion.Disjunction;
 import org.topazproject.otm.criterion.Junction;
 import org.topazproject.otm.criterion.PredicateCriterion;
 import org.topazproject.otm.criterion.SubjectCriterion;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.metadata.SearchableDefinition;
 import org.topazproject.otm.query.GenericQuery;
@@ -84,7 +84,7 @@ public class MemStore extends AbstractTripleStore implements SearchStore {
       if (m.hasInverseUri())
         continue;
 
-      Binder b = m.getBinder(msc.getSession());
+      PropertyBinder b = m.getBinder(msc.getSession());
       if (!m.isAssociation())
         storage.insert(cm.getGraph(), id, m.getUri(), (String[]) b.get(o).toArray(new String[0]));
       else

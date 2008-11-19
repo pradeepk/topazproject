@@ -36,10 +36,10 @@ public class VarMapperImpl extends AbstractMapper implements VarMapper {
    * Creates a new VarMapperImpl object.
    *
    * @param def     the property definition
-   * @param binders the list of binders
+   * @param propertyBinders the list of binders
    */
-  public VarMapperImpl(VarDefinition def, Map<EntityMode, Binder> binders) {
-    super(binders);
+  public VarMapperImpl(VarDefinition def, Map<EntityMode, PropertyBinder> propertyBinders) {
+    super(propertyBinders);
     this.def = def;
   }
 
