@@ -36,11 +36,9 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.configuration.ConfigurationStore;
-import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.search.SearchResultPage;
 import org.topazproject.ambra.search.SearchUtil;
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
@@ -209,7 +207,7 @@ public class Results {
 
       // verify that Aricle exists, is accessible by user, is in Journal, etc., be cache aware
       try {
-        Article article = articleOtmService.getArticle(articleId);
+        articleOtmService.getArticle(articleId);
       } catch (NoSuchArticleIdException na) {
         throw new SecurityException(na);
       }
