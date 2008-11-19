@@ -58,21 +58,13 @@
 
   <!-- TODO: Update the servicePort url's automatically using maven build process itself-->
   <bean id="articleOtmService" class="org.topazproject.ambra.article.service.ArticleOtmService">
-  <!--   <property name="smallImageRep" value="TIF"/>
+ <!--   <property name="smallImageRep" value="TIF"/>
     <property name="mediumImageRep" value="TIF"/>
     <property name="largeImageRep" value="TIF"/>
     -->
     <property name="smallImageRep" value="PNG_S"/>
     <property name="mediumImageRep" value="PNG_M"/>
     <property name="largeImageRep" value="PNG_L"/>
-   </bean>
-
-   <bean id="articleFeedService" class="org.topazproject.ambra.article.service.ArticleFeedService">
-    <property name="articleOtmService" ref="articleOtmService"/>
-    <property name="annotationService" ref="annotationService"/>
-    <property name="journalService" ref="journalService"/>
-    <property name="feedCache" ref="feedCache"/>
-    <property name="otmSession" ref="otmSession"/>  
    </bean>
 
    <bean id="crossRefPosterService" class="org.topazproject.ambra.admin.service.CrossRefPosterService">

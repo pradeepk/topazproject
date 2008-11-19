@@ -19,12 +19,7 @@
 package org.topazproject.ambra.annotation.service;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.InstantiationException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -33,7 +28,6 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
@@ -55,8 +49,6 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Query;
-import org.topazproject.otm.query.Results;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session.FlushMode;
 import org.topazproject.otm.criterion.Restrictions;
@@ -65,16 +57,15 @@ import org.topazproject.otm.criterion.Restrictions;
  * Wrapper over annotation(not the same as reply) web service
  */
 public class AnnotationService extends BaseAnnotationService {
+  public static final String ANNOTATED_KEY = "ArticleAnnotationCache-Annotation-";
 
   protected static final Set<Class<?extends ArticleAnnotation>> ALL_ANNOTATION_CLASSES =
     new HashSet<Class<?extends ArticleAnnotation>>();
-
-  public  static final String ANNOTATED_KEY = "ArticleAnnotationCache-Annotation-";
-  private static final Log    log  = LogFactory.getLog(AnnotationService.class);
-  private        final AnnotationsPEP pep;
-  private              Cache          articleAnnotationCache;
-  private              Invalidator    invalidator;
-  private        final SimpleDateFormat dateFrmt = new SimpleDateFormat("yyyy/MM/dd");
+  private static final Log     log                    =
+    LogFactory.getLog(AnnotationService.class);
+  private final AnnotationsPEP       pep;
+  private Cache              articleAnnotationCache;
+  private Invalidator        invalidator;
 
   static {
     ALL_ANNOTATION_CLASSES.add(ArticleAnnotation.class);
@@ -91,7 +82,8 @@ public class AnnotationService extends BaseAnnotationService {
     } catch (IOException e) {
       throw e;
     } catch (Exception e) {
-      IOException ioe = new IOException("Failed to create PEP", e);
+      IOException ioe = new IOException("Failed to create PEP");
+      ioe.initCause(e);
       throw ioe;
     }
   }
@@ -128,8 +120,8 @@ public class AnnotationService extends BaseAnnotationService {
     if (earlierAnnotation != null)
       throw new UnsupportedOperationException("supersedes is not supported");
 
-    String          user = AmbraUser.getCurrentUser().getUserId();
-    AnnotationBlob  blob =
+    String                  user       = AmbraUser.getCurrentUser().getUserId();
+    AnnotationBlob          blob       =
       new AnnotationBlob(contentType, body.getBytes(getEncodingCharset()));
 
     final ArticleAnnotation annotation = annotationClass.newInstance();
@@ -249,167 +241,6 @@ public class AnnotationService extends BaseAnnotationService {
   }
 
   /**
-   * Get all annotations satisfying the criteria.
-   *
-   * @param articleId  limits the list to annotations from a particular article.
-   * @param startDate  is the date to start searching from. If null, start from begining of time.
-   *                   Can be iso8601 formatted or string representation of Date object.
-   * @param endDate    is the date to search until. If null, search until present date
-   * @param mediator   the mediator of the annotation.
-   * @param annotType  a filter list of rdf types for the annotations.
-   * @param ascending  controls the sort order (by date).
-   * @param maxResults the maximum number of results to return, or 0 for no limit
-   *
-   * @return the (possibly empty) list of articles.
-   *
-   * @throws ParseException if any of the dates or query could not be parsed
-   * @throws URISyntaxException if an element of annotType cannot be parsed as a URI
-   */
-  @Transactional(readOnly = true)
-  public List<ArticleAnnotation> getAnnotations(String articleId, String startDate, String endDate,
-      String mediator, List<String> annotType,int[] states, String eIssn,  boolean ascending,
-      int maxResults) throws ParseException, URISyntaxException {
-    List<String> annotationIds = getAnnotationIds(articleId, startDate, endDate,
-                                   mediator, annotType, states, eIssn, ascending, maxResults);
-
-    List<ArticleAnnotation> annotationList = new ArrayList<ArticleAnnotation>();
-    for (String id : annotationIds) {
-      ArticleAnnotation a = session.get(ArticleAnnotation.class, id);
-      if (a != null)
-        annotationList.add(a);
-    }
-
-    return annotationList;
-  }
-
-  /**
-   * Get a list of all annotation Ids satifying the given criteria. All cache is done
-   * at the object level by the seesion.
-   *
-   * @param articleId  limits annotations to a particlualr article
-   * @param startDate  is the date to start searching from. If null, start from begining of time.
-   *                   Can be iso8601 formatted or string representation of Date object.
-   * @param endDate    is the date to search until. If null, search until present date
-   * @param mediator   annotation mediator
-   * @param annotType  a filter list of rdf types for the annotations.
-   * @param states     the list of annotation states to search for (all states if null or empty)
-   * @param ascending  controls the sort order (by date).
-   * @param maxResults the maximum number of results to return, or 0 for no limit
-   * @return the (possibly empty) list of article ids.
-   * @throws ParseException   if any of the dates or query could not be parsed
-   * @throws URISyntaxException  if an element of annotType cannot be parsed as a URI
-   */
-  @Transactional(readOnly = true)
-  public List<String> getAnnotationIds(String articleId, String startDate, String endDate,
-      String mediator, List<String> annotType, int[] states, String eIssn, boolean ascending,
-      int maxResults) throws ParseException, URISyntaxException {
-    StringBuilder qry = new StringBuilder();
-    qry.append("select a.id id, cr from Annotation a, Article ar ");
-    qry.append("where a.annotates = ar and cr := a.created and ");
-
-    if (eIssn != null)
-      qry.append("ar.eIssn = :ar and ");
-
-    if (articleId != null)
-      qry.append("a.annotates = :art and ");
-
-    if (mediator != null)
-      qry.append("a.mediator = :med and ");
-
-    // apply date constraints
-    if (startDate != null)
-      qry.append("ge(cr, :sd) and ");
-    if (endDate != null)
-      qry.append("le(cr, :ed) and ");
-
-    // match all states
-    if (states != null && states.length > 0) {
-      qry.append("(");
-      for (int idx = 0; idx < states.length; idx++)
-        qry.append("art.state = :st").append(idx).append(" or ");
-      qry.setLength(qry.length() - 4);
-      qry.append(") ");
-    }
-
-    // match all types
-    if (annotType != null && annotType.size() > 0) {
-      qry.append("(");
-      int idx = 0;
-      for (String type : annotType)
-        qry.append("a.<rdf:type> = :type").append(idx++).append(" or ");
-      qry.setLength(qry.length() - 4);
-      qry.append(") ");
-    }
-
-    // trim off trailing 'and'
-    if (qry.indexOf(" and ", qry.length() - 5) > 0)
-      qry.setLength(qry.length() - 4);
-
-    // add ordering and limit
-    qry.append("order by cr ").append(ascending ? "asc" : "desc").append(", id asc");
-
-    if (maxResults > 0)
-      qry.append(" limit ").append(maxResults);
-
-    qry.append(";");
-
-    // create the query, applying parameters
-    Query q = session.createQuery(qry.toString());
-
-    if (eIssn != null)
-     q.setParameter("ar", eIssn);
-    if (articleId != null)
-      q.setParameter("art", articleId);
-    if (mediator != null)
-      q.setParameter("med", mediator);
-    if (startDate != null)
-      q.setParameter("sd",  parseDateParam(startDate));
-    if (endDate != null)
-      q.setParameter("ed",  parseDateParam(endDate));
-    for (int idx = 0; states != null && idx < states.length; idx++)
-      q.setParameter("st" + idx, states[idx]);
-    for (int idx = 0; annotType != null && idx < annotType.size(); idx++)
-      q.setUri("type" + idx, new URI(annotType.get(idx)));
-
-    // run the query
-    List<URI> ids = new ArrayList<URI>();
-    Results r = q.execute();
-
-    while (r.next())
-      ids.add(r.getURI(0));
-
-    // apply access-controls
-    List<String> res = new ArrayList<String>();
-    for (URI id : ids) {
-      try {
-        pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, id);
-        res.add(id.toString());
-      } catch (SecurityException se) {
-        if (log.isDebugEnabled())
-          log.debug("Filtering URI " + id + " from Article list due to PEP SecurityException", se);
-      }
-    }
-    return res;
-  }
-
-  /**
-   * Get all annotations specified by the list of annotation ids.
-   *
-   * @parameter annotIds a list of annotations Ids to retrieve.
-   *
-   * @return the (possibly empty) list of annotations.
-   *
-   */
-  @Transactional(readOnly = true)
-  public List<ArticleAnnotation> getAnnotations(List<String> annotIds) {
-    List<ArticleAnnotation> annotationList = new ArrayList<ArticleAnnotation>();
-    for (String id : annotIds)
-      annotationList.add(session.get(ArticleAnnotation.class, id));
-
-    return annotationList;
-  }
-
-  /**
    * Helper method to set restrictions on the criteria used in listAnnotations()
    *
    * @param c the criteria
@@ -477,7 +308,9 @@ public class AnnotationService extends BaseAnnotationService {
    * Loads the article annotation with the given id.
    *
    * @param annotationId annotationId
+   *
    * @return an annotation
+   *
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    * @throws IllegalArgumentException if an annotation with this id does not exist
@@ -499,6 +332,7 @@ public class AnnotationService extends BaseAnnotationService {
    *
    * @param id the annotation id
    * @param context the context to set
+   *
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    * @throws IllegalArgumentException if an annotation with this id does not exist
@@ -522,8 +356,10 @@ public class AnnotationService extends BaseAnnotationService {
    * @param mediator if present only those annotations that match this mediator are returned
    * @param state the state to filter the list of annotations by or 0 to return annotations in any
    *              administrative state
+   *
    * @return an array of annotation metadata; if no matching annotations are found, an empty array
    *         is returned
+   *
    * @throws OtmException if some error occurred
    * @throws SecurityException if a security policy prevented this operation
    */
@@ -548,7 +384,9 @@ public class AnnotationService extends BaseAnnotationService {
    * @param srcAnnotationId the DOI of the annotation to convert
    * @param newAnnotationClassType the Class of the new annotation type. Should implement
    *                               ArticleAnnotation
+   *
    * @return the id of the new annotation
+   *
    * @throws Exception on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
@@ -595,6 +433,7 @@ public class AnnotationService extends BaseAnnotationService {
 
     cancelPublicPermissions(srcAnnotationId);
     setPublicPermissions(newId);
+
     return newId;
   }
 
@@ -654,6 +493,7 @@ public class AnnotationService extends BaseAnnotationService {
    * Set the annotation as public.
    *
    * @param annotationDoi annotationDoi
+   *
    * @throws OtmException if some error occurred
    * @throws SecurityException if a security policy prevented this operation
    */
@@ -688,7 +528,8 @@ public class AnnotationService extends BaseAnnotationService {
                     AnnotationsPEP.DELETE_ANNOTATION,
                     AnnotationsPEP.SUPERSEDE}, everyone);
   }
-               
+
+
   /**
    * Create a flag against an annotation or a reply
    *
@@ -700,8 +541,8 @@ public class AnnotationService extends BaseAnnotationService {
    * @throws Exception on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public String createFlag(final String target, final String reasonCode,
-      final String body, final String mimeType) throws Exception {
+  public String createFlag(final String target, final String reasonCode, final String body, final String mimeType)
+        throws Exception {
     final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
     return createComment(target, null, null, null, mimeType, flagBody, true);
   }
@@ -725,8 +566,7 @@ public class AnnotationService extends BaseAnnotationService {
         if (log.isDebugEnabled())
           log.debug("ArticleAnnotation changed/deleted. Invalidating annotation list " +
               " for the target this was annotating or is about to annotate.");
-        articleAnnotationCache.remove(ANNOTATED_KEY +
-            ((ArticleAnnotation)o).getAnnotates().toString());
+        articleAnnotationCache.remove(ANNOTATED_KEY + ((ArticleAnnotation)o).getAnnotates().toString());
         if ((updates != null) && updates.isChanged("annotates")) {
            List<String> v = updates.getOldValue("annotates");
            if (v.size() == 1)
@@ -736,40 +576,5 @@ public class AnnotationService extends BaseAnnotationService {
           articleAnnotationCache.remove(ANNOTATED_KEY + id);
       }
     }
-  }
-
-  /**
-   * Convert a date passed in as a string to a Date object. Support both string representations of
-   * the Date object and iso8601 formatted dates.
-   *
-   * @param date the string to convert to a Date object
-   * @return a date object (or null if date is null)
-   * @throws ParseException if unable to parse date
-   */
-  public static Date parseDateParam(String date) throws ParseException {
-    if (date == null)
-      return null;
-    try {
-      return new Date(date);
-    } catch (IllegalArgumentException iae) {
-      if (log.isDebugEnabled())
-        log.debug("failed to parse date '" + date + "' use Date - trying iso8601 format", iae);
-      return parseDate(date);
-    }
-  }
-
-  /**
-   * Parse an xsd date into a java Date object.
-   *
-   * @param iso8601date is the date string to parse.
-   * @return a java Date object.
-   * @throws ParseException if there is a problem parsing the string
-   */
-  private static Date parseDate(String iso8601date) throws ParseException {
-    final String[] defaultFormats = new String [] {
-      "yyyy-MM-dd", "y-M-d", "y-M-d'T'H:m:s", "y-M-d'T'H:m:s.S",
-      "y-M-d'T'H:m:s.Sz", "y-M-d'T'H:m:sz" };
-
-    return DateUtils.parseDate(iso8601date, defaultFormats);
   }
 }
