@@ -81,9 +81,9 @@ public class RateAction extends AbstractRatingAction {
   @SuppressWarnings("unchecked")
   @Transactional(rollbackFor = { Throwable.class })
   public String rateArticle() {
-    final AmbraUser       user               = AmbraUser.getCurrentUser();
-    final Date              now                = new Date(System.currentTimeMillis());
-    final URI               annotatedArticle;
+    final AmbraUser user = AmbraUser.getCurrentUser();
+    final Date      now  = new Date(System.currentTimeMillis());
+    final URI       annotatedArticle;
 
     try {
       annotatedArticle = new URI(articleURI);
@@ -138,9 +138,9 @@ public class RateAction extends AbstractRatingAction {
       return INPUT;
     }
 
-    Rating        articleRating        = null;
-    RatingSummary articleRatingSummary = null;
-    boolean       newRating            = false;
+    Rating        articleRating;
+    RatingSummary articleRatingSummary;
+    boolean       newRating = false;
 
     if (log.isDebugEnabled()) {
       log.debug("Retrieving user Ratings for article: " + articleURI + " and user: "
