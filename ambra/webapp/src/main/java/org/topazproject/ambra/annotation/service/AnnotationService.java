@@ -374,67 +374,41 @@ public class AnnotationService extends BaseAnnotationService {
   }
 
   /**
-   * Replaces the Annotation with DOI targetId with a new Annotation of type newAnnotationClassType.
-   * Converting requires that a new class type be used, so the old annotation properties are copied
-   * over to the new type. All annotations that referenced the old annotation are updated to
-   * reference the new annotation. The old annotation is deleted.  The given newAnnotationClassType
-   * should implement the interface ArticleAnnotation. Known annotation classes that implement this
-   * interface are Comment, FormalCorrection, MinorCorrection
+   * Replaces the Annotation (indicated by the <code>srcAnnotationId</code> DOI)
+   * with a new Annotation of type <code>newAnnotationClassType</code>.
+   * Convertion requires that a new class type be used, so the old annotation
+   * properties are copied over to the new type, even though the DOI remains the same.
+   * <p/>
+   * The given newAnnotationClassType should implement the interface ArticleAnnotation.
+   * Known annotation classes that implement this interface are Comment, FormalCorrection,
+   * MinorCorrection, and Retraction.
    *
    * @param srcAnnotationId the DOI of the annotation to convert
-   * @param newAnnotationClassType the Class of the new annotation type. Should implement
-   *                               ArticleAnnotation
+   * @param newAnnotationClassType the Class of the new annotation type.
+   * Should implement ArticleAnnotation
    *
-   * @return the id of the new annotation
+   * @return the id of the annotation, identical to <code>srcAnnotationId</code>
    *
    * @throws Exception on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String convertAnnotationToType(final String srcAnnotationId,
       final Class<? extends ArticleAnnotation> newAnnotationClassType) throws Exception {
+    
     ArticleAnnotation srcAnnotation = session.get(ArticleAnnotation.class, srcAnnotationId);
-
     if (srcAnnotation == null) {
       log.error("Annotation was null for id: " + srcAnnotationId);
-
       return null;
     }
 
-    ArticleAnnotation oldAn = srcAnnotation;
     ArticleAnnotation newAn = newAnnotationClassType.newInstance();
+    BeanUtils.copyProperties(newAn, srcAnnotation);
+    
+    srcAnnotation.setBody(null);
+    session.delete(srcAnnotation);
+    session.flush();
 
-    BeanUtils.copyProperties(newAn, oldAn);
-    /*
-     * This should not have been copied (original ArticleAnnotation interface did not have a setId()
-     * method..but somehow it is! Reset to null.
-     */
-    newAn.setId(null);
-
-    String newId    = session.saveOrUpdate(newAn);
-    URI    newIdUri = new URI(newId);
-    String pp[]     = new String[] { newAn.getBody().getId() };
-
-    permissionsService.propagatePermissions(newId, pp);
-    permissionsService.cancelPropagatePermissions(srcAnnotationId, pp);
-
-    /*
-     * Find all Annotations that refer to the old Annotation and update their target 'annotates'
-     * property to point to the new Annotation.
-     */
-    List<ArticleAnnotation> refAns = lookupAnnotations(oldAn.getId().toString());
-
-    for (ArticleAnnotation refAn : refAns) {
-      refAn.setAnnotates(newIdUri);
-    }
-
-    //Delete the original annotation (orphan-delete must be disabled for 'body')
-    oldAn.setBody(null);
-    session.delete(oldAn);
-
-    cancelPublicPermissions(srcAnnotationId);
-    setPublicPermissions(newId);
-
-    return newId;
+    return session.saveOrUpdate(newAn); // Should return value equal to srcAnnotationId
   }
 
   /**
