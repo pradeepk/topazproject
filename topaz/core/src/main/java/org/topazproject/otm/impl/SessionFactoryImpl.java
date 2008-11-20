@@ -114,7 +114,7 @@ public class SessionFactoryImpl implements SessionFactory {
   /**
    * The default marker resource to use when searching for Entity definitions on the classpath.
    */
-  private static final String DEFAULT_RES_MARKER = "otm.xml";
+  private static final String DEFAULT_RES_MARKER = "topaz.xml";
 
   /**
    * The filename extension given to class files.
