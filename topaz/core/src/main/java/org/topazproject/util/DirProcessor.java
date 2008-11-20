@@ -107,6 +107,7 @@ public class DirProcessor {
    * Process a directory by name and everything under it.
    *
    * @param dirName The name of the directory to process.
+   *
    * @return The number of items processed.
    *
    * @throws IOException If there was an error processing the file.
@@ -119,6 +120,7 @@ public class DirProcessor {
    * Process a directory and everything under it.
    *
    * @param dir The directory to process.
+   *
    * @return The number of items processed.
    *
    * @throws IOException If there was an error processing the file.

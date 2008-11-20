@@ -49,7 +49,9 @@ public class C {
    */
   public static <T1,T2,E extends Exception> List<T2> map(Collection<T1> args, Fn1E<T1,T2,E> op) throws E {
     List<T2> result = new LinkedList<T2>();
-    for (T1 a: args) result.add(op.fn(a));
+    for (T1 a: args)
+      result.add(op.fn(a));
+
     return result;
   }
 
@@ -58,7 +60,9 @@ public class C {
    */
   public static <T1,T2,E extends Exception> List<T2> map(T1[] args, Fn1E<T1,T2,E> op) throws E {
     List<T2> result = new ArrayList<T2>(args.length);
-    for (T1 a: args) result.add(op.fn(a));
+    for (T1 a: args)
+      result.add(op.fn(a));
+
     return result;
   }
 

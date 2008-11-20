@@ -25,6 +25,7 @@ public interface Fn2E<T1,T2,T3,E extends Exception> {
   /**
    * Declares a function template that takes two arguments and returns a value of
    * another type.
+   *
    * @param arg1 The first argument.
    * @param arg2 The first argument.
    *

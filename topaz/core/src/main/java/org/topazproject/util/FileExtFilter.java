@@ -49,6 +49,7 @@ public class FileExtFilter implements FileFilter {
    * Test is a file should be returned from this filter.
    *
    * @param file The file to be tested.
+   *
    * @return <code>true</code> if the file has the required extension.
    */
   public boolean accept(File file) {
