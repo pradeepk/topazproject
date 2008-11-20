@@ -92,6 +92,22 @@ public interface SessionFactory {
   public void preload(Class<?> c) throws OtmException;
 
   /**
+   * Preload all classes that can be found with the default resource marker.
+   *
+   * @throws OtmException on an error
+   */
+  public void preloadFromSearch() throws OtmException;
+
+  /**
+   * Preload all classes that can be found with a given resource marker.
+   *
+   * @param res The name of a resource to use when searching the class path.
+   *
+   * @throws OtmException on an error
+   */
+  public void preloadFromSearch(String res) throws OtmException;
+
+  /**
    * Validate the registered definitions and bindings and build the {@link ClassMetadata}
    * for all entities. Could be called incrementally as new definitions are added. But
    * the added definitions must all have resolvable references. eg. referece to an undefined

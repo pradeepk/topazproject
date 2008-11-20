@@ -20,12 +20,17 @@ package org.topazproject.otm.impl;
 
 import java.lang.ref.WeakReference;
 
+import java.io.File;
+import java.io.IOException;
+
 import java.net.URI;
+import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -52,6 +57,7 @@ import bitronix.tm.resource.common.XAStatefulHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.mapping.BinderFactory;
@@ -84,6 +90,9 @@ import org.topazproject.otm.SearchStore;
 import org.topazproject.otm.SubClassResolver;
 import org.topazproject.otm.TripleStore;
 
+import org.topazproject.util.FileProcessor;
+import org.topazproject.util.DirProcessor;
+
 /**
  * A factory for otm sessions. It should be preloaded with the classes that would be persisted.
  * Also it holds the triple store and graph configurations. This class is multi-thread safe,
@@ -101,6 +110,21 @@ public class SessionFactoryImpl implements SessionFactory {
 
   private static BitronixTransactionManager defTxnMgr;
   private static Object                     txnMgrCleaner;
+
+  /**
+   * The default marker resource to use when searching for Entity definitions on the classpath.
+   */
+  private static final String DEFAULT_RES_MARKER = "otm.xml";
+
+  /**
+   * The filename extension given to class files.
+   */
+  private static final String CLASS_EXT = ".class";
+
+  /**
+   * The character used to separate packages in a class name.
+   */
+  private static final String DOT = ".";
 
   /**
    * definition name to definition map
@@ -279,6 +303,26 @@ public class SessionFactoryImpl implements SessionFactory {
     }
 
     setClassMetadata(def.buildClassMetadata(this));
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void preloadFromSearch() throws OtmException {
+    preloadFromSearch(DEFAULT_RES_MARKER);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void preloadFromSearch(String res) throws OtmException {
+    try {
+      Enumeration<URL> rs = SessionFactoryImpl.class.getClassLoader().getResources(res);
+      while (rs.hasMoreElements())
+        new ResourceProcessor(rs.nextElement()).run();
+    } catch (IOException e) {
+      throw new OtmException("Unable to load resources", e);
+    }
   }
 
   /*
@@ -741,6 +785,103 @@ public class SessionFactoryImpl implements SessionFactory {
     }
     resolvers.add(resolver);
   }
+
+  /**
+   * This class is used to take resources requested from the classpath,
+   * and use them as the basis for finding Entity classes that need to be
+   * registered with this SessionFactory.
+   */
+  private class ResourceProcessor implements Runnable {
+    private static final String JAR = "jar";
+    private static final String FILE = "file";
+    private static final String FILE_PROT = FILE + ":";
+    private static final String BANG = "!";
+    private URL resRoot;
+
+    /**
+     * Create a resource processor for handling resources in the same part of
+     * the classpath as a single resource identified by the given URL.
+     * @param resRoot A resource at the root of the classpath to scan.
+     */
+    public ResourceProcessor(URL resRoot) {
+      this.resRoot = resRoot;
+    }
+
+    /**
+     * Determine the type of resource to be processed, and send it to the appropriate processor type.
+     */
+    public void run() {
+      String protocol = resRoot.getProtocol();
+      String path = resRoot.getPath();
+      if (protocol.equals(JAR)) {
+        if (path.startsWith(FILE_PROT)) {
+          processJar(path.substring(FILE_PROT.length(), path.indexOf(BANG)));
+        } else {
+          processUnknown(path);
+        }
+      } else if (protocol.equals(FILE)){
+        processPath(new File(path).getParent());
+      } else {
+        processUnknown(resRoot.toString());
+      }
+    }
+
+    /**
+     * Deal with resources that we don't understand.
+     */
+    void processUnknown(String u) {
+      log.info("Unable to search <" + u + "> for Entity classes");
+    }
+
+    void processJar(String path) {
+      log.warn("Not yet handling resource: " + path);
+    }
+
+    /**
+     * Take a filesystem path, and process everything under it.
+     * @param path The filesystem path to process.
+     */
+    private void processPath(final String path) {
+      // create a processor that can test files and load them if we want them.
+      FileProcessor fp = new FileProcessor() {
+        public Integer fn(File f) {
+          try {
+            Class<?> c = Class.forName(toClassName(path, f));
+            if (c.isAnnotationPresent(Entity.class)) {
+              preload(c);
+              return 1;
+            }
+          } catch (ClassNotFoundException e) {
+            log.error("Unexpectedly lost class for file: " + f, e);
+          }
+          return 0;
+        }
+      };
+
+      // process the path for class files
+      try {
+        int fileCount = new DirProcessor(fp, CLASS_EXT).process(path);
+        log.info("Loaded " + fileCount + " Entities from the filesystem");
+      } catch (IOException e) {
+        log.error("Error while searching classpath for entities", e);
+      }
+    }
+
+  }
+
+  /**
+   * Take an absolute path to a class file, and convert it to a class name.
+   * @param root The path to the point where the class hierarchy starts.
+   * @param f The File for the class file.
+   */
+  private static String toClassName(String root, File f) {
+    String path = f.getPath();
+    if (!path.endsWith(CLASS_EXT)) throw new AssertionError("Conversion to class on: " + f);
+    int start = root.length() + (root.endsWith(File.separator) ? 0 : 1);
+    path = path.substring(start, path.length() - CLASS_EXT.length());
+    return path.replace(File.separator, DOT);
+  }
+
 
   public LinkedHashSet<SubClassResolver> listEffectiveSubClassResolvers(String entity) {
     LinkedHashSet<SubClassResolver> resolvers = new LinkedHashSet<SubClassResolver>();
