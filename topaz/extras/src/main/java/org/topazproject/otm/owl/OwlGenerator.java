@@ -32,6 +32,8 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
 
+import org.topazproject.otm.mapping.EntityBinder;
+
 import org.topazproject.otm.metadata.ClassBinding;
 import org.topazproject.otm.metadata.EntityDefinition;
 import org.topazproject.otm.metadata.RdfDefinition;
@@ -134,13 +136,15 @@ public class OwlGenerator {
     }
 
     // Add useful OWL class annotations
-    String[] names = cb.getBinders().get(EntityMode.POJO).getNames();
-    for (int i = 0; i < names.length; i++) {
-      OWLConstant cnst = factory.getOWLTypedConstant(names[i]);
-      log.debug("Adding OWL annotations to class axiom for " + cb.getName());
-      OWLEntityAnnotationAxiom entityAxiom = factory.getOWLEntityAnnotationAxiom(owlClass,
-                                             URI.create(JAVA_NS + "class"), cnst);
-      ontologyManager.applyChange(new AddAxiom(ontology, entityAxiom));
+    for (EntityBinder binder : cb.getBinders().values()) {
+      String[] names = binder.getNames();
+      for (int i = 0; i < names.length; i++) {
+        OWLConstant cnst = factory.getOWLTypedConstant(names[i]);
+        log.debug("Adding OWL annotations to class axiom for " + cb.getName());
+        OWLEntityAnnotationAxiom entityAxiom = factory.getOWLEntityAnnotationAxiom(owlClass,
+            URI.create(JAVA_NS + "class"), cnst);
+        ontologyManager.applyChange(new AddAxiom(ontology, entityAxiom));
+      }
     }
 
     cbMap.put(cb.getName(), owlClass);
