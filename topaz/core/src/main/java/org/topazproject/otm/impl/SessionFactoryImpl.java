@@ -876,9 +876,11 @@ public class SessionFactoryImpl implements SessionFactory {
    */
   private static String toClassName(String root, File f) {
     String path = f.getPath();
-    if (!path.endsWith(CLASS_EXT)) throw new AssertionError("Conversion to class on: " + f);
+    if (!path.endsWith(CLASS_EXT))
+      throw new AssertionError("Conversion to class on: " + f);
     int start = root.length() + (root.endsWith(File.separator) ? 0 : 1);
     path = path.substring(start, path.length() - CLASS_EXT.length());
+
     return path.replace(File.separator, DOT);
   }
 
@@ -987,14 +989,27 @@ public class SessionFactoryImpl implements SessionFactory {
     private final Map<XAResource, WeakReference<XAResourceHolder>> xaresHolders =
                                     new WeakHashMap<XAResource, WeakReference<XAResourceHolder>>();
 
-    public void init()                           { }
-    public void close()                          { }
-    public String getUniqueName()                { return "OTM-Simple-Resource-Producer"; }
+    public void init() {
+    }
+
+    public void close() {
+    }
+
+    public String getUniqueName() {
+      return "OTM-Simple-Resource-Producer";
+    }
+
     public XAResourceHolderState startRecovery() {
       return createResHolder(new RecoveryXAResource()).getXAResourceHolderState();
     }
-    public void endRecovery()                    { }
-    public Reference getReference()              { return null; }
+
+    public void endRecovery() {
+    }
+
+    public Reference getReference() {
+      return null;
+    }
+
     public XAStatefulHolder createPooledConnection(Object xaFactory, ResourceBean bean) {
       return null;
     }
@@ -1004,7 +1019,8 @@ public class SessionFactoryImpl implements SessionFactory {
       XAResourceHolder resHolder = (resHolderRef != null) ? resHolderRef.get() : null;
 
       if (resHolder == null)
-        xaresHolders.put(xaResource, new WeakReference<XAResourceHolder>(resHolder = createResHolder(xaResource)));
+        xaresHolders.put(xaResource,
+                         new WeakReference<XAResourceHolder>(resHolder = createResHolder(xaResource)));
 
       return resHolder;
     }
@@ -1025,27 +1041,70 @@ public class SessionFactoryImpl implements SessionFactory {
     private static class SimpleXAResourceHolder extends AbstractXAResourceHolder {
       private final XAResource xares;
 
-      SimpleXAResourceHolder(XAResource xares) { this.xares = xares; }
+      SimpleXAResourceHolder(XAResource xares) {
+        this.xares = xares;
+      }
 
-      public void       close()                { }
-      public Object     getConnectionHandle()  { return null; }
-      public Date       getLastReleaseDate()   { return null; }
-      public List       getXAResourceHolders() { return null; }
-      public boolean    isEmulatingXA()        { return false; }
-      public XAResource getXAResource()        { return xares; }
+      public void close() {
+      }
+
+      public Object getConnectionHandle() {
+        return null;
+      }
+
+      public Date getLastReleaseDate() {
+        return null;
+      }
+
+      public List getXAResourceHolders() {
+        return null;
+      }
+
+      public boolean isEmulatingXA() {
+        return false;
+      }
+
+      public XAResource getXAResource() {
+        return xares;
+      }
     }
 
     private static class RecoveryXAResource implements XAResource {
-      public void start(Xid xid, int flags) { }
-      public void end(Xid xid, int flags) { }
-      public int prepare(Xid xid) { return XA_OK; }
-      public void commit(Xid xid, boolean onePhase) { }
-      public void rollback(Xid xid) { }
-      public Xid[] recover(int flag) { return null; /* recovery not supported (yet) */ }
-      public void forget(Xid xid) { }
-      public int getTransactionTimeout() { return 10; }
-      public boolean setTransactionTimeout(int transactionTimeout) { return false; }
-      public boolean isSameRM(XAResource xaResource) { return xaResource == this; }
+      public void start(Xid xid, int flags) {
+      }
+
+      public void end(Xid xid, int flags) {
+      }
+
+      public int prepare(Xid xid) {
+        return XA_OK;
+      }
+
+      public void commit(Xid xid, boolean onePhase) {
+      }
+
+      public void rollback(Xid xid) {
+      }
+
+      public Xid[] recover(int flag) {
+        // recovery not supported (yet)
+        return null;
+      }
+
+      public void forget(Xid xid) {
+      }
+
+      public int getTransactionTimeout() {
+        return 10;
+      }
+
+      public boolean setTransactionTimeout(int transactionTimeout) {
+        return false;
+      }
+
+      public boolean isSameRM(XAResource xaResource) {
+        return xaResource == this;
+      }
     }
   }
 }
