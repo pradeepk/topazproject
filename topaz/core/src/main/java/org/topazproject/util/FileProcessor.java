@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.util;
 
 import java.io.File;
@@ -26,5 +25,4 @@ import org.topazproject.util.functional.Fn1E;
  * On being called, returns 0 or 1 to indicate the number of files processed.
  */
 public interface FileProcessor extends Fn1E<File,Integer,IOException> {
-
 }

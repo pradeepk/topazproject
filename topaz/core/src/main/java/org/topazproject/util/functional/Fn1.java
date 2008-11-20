@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.util.functional;
 
 /**
  * Functor template for a function that takes one type and returns another without
  * throwing an exception.
  *
- * @created Aug 4, 2008
  * @author Paul Gearon
  */
 public interface Fn1<T1,T2> extends Fn1E<T1,T2,RuntimeException> {
-
 }

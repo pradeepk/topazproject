@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.util.functional;
 
 /**
  * Functor template for a function that takes no arguments and returns a value,
  * without throwing an exception.
  *
- * @created Aug 4, 2008
  * @author Paul Gearon
  */
 public interface Fn<T1> extends FnE<T1,RuntimeException> {
-
 }

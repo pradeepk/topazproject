@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.util.functional;
 
 /**
  * Utility functions for currying functors with N arguments down to functors with N-1 arguments
  * These methods remove the LAST parameter.
  *
- * @created Aug 16, 2008
  * @author Paul Gearon
  */
 public class F {
-
   static final <T1,R> Fn<R> curry(final Fn1<T1,R> fna, final T1 arg) {
     return new Fn<R>() { public R fn() { return fna.fn(arg); } };
   }
@@ -40,5 +37,4 @@ public class F {
   static final <T1,T2,R,E extends Exception> Fn1E<T1,R,E> curry(final Fn2E<T1,T2,R,E> fna, final T2 arg) {
     return new Fn1E<T1,R,E>() { public R fn(T1 a) throws E { return fna.fn(a, arg); } };
   }
-
 }

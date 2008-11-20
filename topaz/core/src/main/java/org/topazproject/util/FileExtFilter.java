@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.util;
 
 import java.io.File;
@@ -21,37 +20,38 @@ import java.io.FileFilter;
 
 /**
  * A File filter that indicates if a file has a given extension.
+ *
+ * @author Paul Gearon
  */
 public class FileExtFilter implements FileFilter {
-
   /** The filter being looked for. */
   private String ext;
 
   /**
    * Creates a new filter based on a fiven extension.
+   *
    * @param ext The extension to filter on.
    */
   public FileExtFilter(String ext) {
     this.ext = ext.startsWith(".") ? ext : "." + ext;
   }
 
-
   /**
    * Gets the extension being filtered for.
+   *
    * @return The extention, including the . character.
    */
   public String getExt() {
     return ext;
   }
 
-
   /**
    * Test is a file should be returned from this filter.
+   *
    * @param file The file to be tested.
    * @return <code>true</code> if the file has the required extension.
    */
   public boolean accept(File file) {
     return file.getName().endsWith(ext);
   }
-
 }

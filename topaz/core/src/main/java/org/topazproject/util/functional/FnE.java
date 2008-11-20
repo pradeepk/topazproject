@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.util.functional;
 
 /**
  * Functor template for a function that accepts no parameters, and has a return type.
  * An exception may be thrown.
  *
- * @created Aug 4, 2008
  * @author Paul Gearon
  */
 public interface FnE<T1,E extends Exception> {
-
   /**
    * Declares a function template that takes no arguments and returns a value.
+   *
    * @return A calculated value.
+   *
    * @throws E Can throw an exception of this type.
    */
   T1 fn() throws E;
-
 }

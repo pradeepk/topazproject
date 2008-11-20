@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.util.functional;
 
 /**
  * Functor template for a function that takes arguments of two different types
  * and returns a value of a third type, without throwing an exception.
  *
- * @created Aug 4, 2008
  * @author Paul Gearon
  */
 public interface Fn2<T1,T2,T3> extends Fn2E<T1,T2,T3,RuntimeException>{
-
 }
