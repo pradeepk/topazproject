@@ -1,3 +1,22 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007-2008 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.topazproject.otm.stores;
 
 import java.io.ByteArrayOutputStream;
@@ -30,6 +49,14 @@ import org.topazproject.otm.Connection;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 
+/**
+ * A common base class for BlobStores that keep a local txn scoped copy
+ * in the file-system. This is not required for a proper txn supported
+ * BlobStores (like the Akubra project).
+ *
+ * @author Pradeep Krishnan
+ *
+ */
 public abstract class FileBackedBlobStore implements BlobStore {
   protected static char[] hex = "01234567890abcdef".toCharArray();
   protected File root;
@@ -37,6 +64,13 @@ public abstract class FileBackedBlobStore implements BlobStore {
   private List<File> txns = new ArrayList<File>();
   protected ReadWriteLock storeLock = new ReentrantReadWriteLock();
 
+  /**
+   * Construct a FileBackedBlobStore instance.
+   *
+   * @param root the root of the file-system scratch area.
+   *
+   * @throws OtmException on an error
+   */
   protected FileBackedBlobStore(File root) throws OtmException {
     try {
       if (!root.exists())
@@ -53,12 +87,17 @@ public abstract class FileBackedBlobStore implements BlobStore {
     this.root = root;
   }
 
-
+  /**
+   * Allocate a txn specific directory root.
+   *
+   * @return the root of the file-system scratch area for this txn
+   *
+   * @throws OtmException on an error
+   */
   protected File allocateTxn() {
     synchronized (txns) {
       return (txns.size() > 0) ? txns.remove(0) : new File(root, "txn" + nextId++);
     }
-
   }
 
   /**
@@ -72,21 +111,33 @@ public abstract class FileBackedBlobStore implements BlobStore {
     }
   }
 
-
   public void flush(Connection con) throws OtmException {
   }
-
 
   public Blob getBlob(ClassMetadata cm, String id, Object blob, Connection con) throws OtmException {
     FileBackedBlobStoreConnection ebsc = (FileBackedBlobStoreConnection) con;
     return ebsc.get(cm, id, blob);
   }
 
+  /**
+   * A convenient base class for file-backed blob-store implementations.
+   *
+   * @author Pradeep Krishnan
+   *
+   */
   public static abstract class FileBackedBlobStoreConnection extends AbstractConnection {
     protected final FileBackedBlobStore store;
     protected File                  txn;
     protected Map<String, FileBackedBlob> blobs = new HashMap<String, FileBackedBlob>();
 
+    /**
+     * Construct a FileBackedBlobStoreConnection object.
+     *
+     * @param store the blob-store
+     * @param sess the session for this connection
+     *
+     * @throws OtmException on an error
+     */
     public FileBackedBlobStoreConnection(FileBackedBlobStore store, Session sess) throws OtmException {
       super(sess);
       this.store = store;
@@ -95,6 +146,15 @@ public abstract class FileBackedBlobStore implements BlobStore {
       enlistResource(newXAResource());
     }
 
+    /**
+     * Normalize the given id URI.
+     *
+     * @param id the URI to normalize
+     *
+     * @return the normalized URI
+     *
+     * @throws OtmException on an error
+     */
     protected String normalize(String id) throws OtmException {
       try {
         URI uri = new URI(id);
@@ -105,6 +165,17 @@ public abstract class FileBackedBlobStore implements BlobStore {
       }
     }
 
+    /**
+     * Convert the id to a File.
+     *
+     * @param baseDir the base directory
+     * @param normalizedId the id
+     * @param suffix the suffix for the file
+     *
+     * @return the File corresponding to this id
+     *
+     * @throws OtmException on an error
+     */
     protected File toFile(File baseDir, String normalizedId, String suffix) throws OtmException {
       try {
         byte[] input = normalizedId.getBytes("UTF-8");
@@ -141,6 +212,17 @@ public abstract class FileBackedBlobStore implements BlobStore {
       }
     }
 
+    /**
+     * Get the Blob object for the given id. Actual creation is done by {@link #doGetBlob}.
+     *
+     * @param cm the metadata of the containing entity
+     * @param id the blob id
+     * @param instance the containing entity instance
+     *
+     * @return the Blob object
+     *
+     * @throws OtmException on an error
+     */
     public FileBackedBlob get(ClassMetadata cm, String id, Object instance) throws OtmException {
       if (txn == null)
         throw new OtmException("Attempt to use a connection that is closed");
@@ -167,6 +249,17 @@ public abstract class FileBackedBlobStore implements BlobStore {
       return blob;
     }
 
+    /**
+     * Hook into sub-classes for creation of new Blob instances.
+     *
+     * @param cm the metadata of the containing entity
+     * @param id the blob id
+     * @param instance the containing entity instance
+     *
+     * @return the Blob object
+     *
+     * @throws OtmException on an error
+     */
     protected abstract FileBackedBlob doGetBlob(ClassMetadata cm, String id, Object instance, File work) throws OtmException;
 
     private XAResource newXAResource() {
@@ -279,6 +372,13 @@ public abstract class FileBackedBlobStore implements BlobStore {
     }
   }
 
+  /**
+   * A Blob instance that is file backed. All operations in txn scope is
+   * done on a local File. Sub-classes only implements copying to and
+   * from the store to the txn scratch directory.
+   *
+   * @author Pradeep Krishnan
+   */
   public abstract static class FileBackedBlob extends AbstractBlob {
     protected Boolean exists = null;
     protected ChangeState state = ChangeState.NONE;
@@ -286,6 +386,13 @@ public abstract class FileBackedBlobStore implements BlobStore {
     protected final File tmp;
     protected final File bak;
 
+    /**
+     * Creates an instance of FileBackedBlob.
+     *
+     * @param id the blob id
+     * @param tmp the txn tmp file
+     * @param bak the back-up file to use before modifying the value in store
+     */
     public FileBackedBlob(String id, File tmp, File bak) {
       super(id);
       this.tmp = tmp;
@@ -414,9 +521,45 @@ public abstract class FileBackedBlobStore implements BlobStore {
       return false;
     }
 
+    /**
+     * Implement in sub-classes to actually create an instance of this blob in store.
+     *
+     * @return true only if a new instance was created.
+     *
+     * @throws OtmException on an error
+     */
     protected abstract boolean createInStore() throws OtmException;
+
+    /**
+     * Implement in sub-classes to copy from the store to the txn scratch file.
+     *
+     * @param to the scratch file
+     * @param asBackup reason for the copy
+     *
+     * @return true only if the blob was copied over
+     *
+     * @throws OtmException on an error
+     */
     protected abstract boolean copyFromStore(File to, boolean asBackup) throws OtmException;
+
+    /**
+     * Implement in sub-classes to copy/move from the txn scratch file to the blob-store.
+     *
+     * @param from the scratch file
+     *
+     * @return true only if the blob was copied/moved
+     *
+     * @throws OtmException on an error
+     */
     protected abstract boolean moveToStore(File from) throws OtmException;
+
+    /**
+     * Implement in sub-classes to delete/purge this object.
+     *
+     * @return true only if the blob was deleted
+     *
+     * @throws OtmException on an error
+     */
     protected abstract boolean deleteFromStore() throws OtmException;
 
     public boolean exists() throws OtmException {
@@ -428,6 +571,13 @@ public abstract class FileBackedBlobStore implements BlobStore {
       return exists;
     }
 
+    /**
+     * Prepare for commit. Backup things etc.
+     *
+     * @return true only if there was something that needed committing
+     *
+     * @throws OtmException
+     */
     public boolean prepare() throws OtmException {
       if (log.isTraceEnabled())
         log.trace("Preparing to commit " + getId());
@@ -442,6 +592,11 @@ public abstract class FileBackedBlobStore implements BlobStore {
       return state != ChangeState.NONE;
     }
 
+    /**
+     * Commit changes.
+     *
+     * @throws OtmException on an error
+     */
     public void commit() throws OtmException {
       boolean success = true;
       String operation = "no-op";
@@ -471,6 +626,11 @@ public abstract class FileBackedBlobStore implements BlobStore {
       }
     }
 
+    /**
+     * Clean-up since the txn is now complete.
+     *
+     * @param abort if true, restore from the backup
+     */
     public void cleanup(boolean abort) {
       if (abort && ((undo == ChangeState.DELETED) || (undo == ChangeState.WRITTEN)))
         restore();
