@@ -36,7 +36,8 @@ import org.topazproject.ambra.user.service.UserService;
 import org.topazproject.otm.OtmException;
 
 /**
- * A kind of utility class to convert types between topaz and ambra types for Annotations and Replies
+ * A kind of utility class to convert types between topaz and ambra types for
+ * Annotations and Replies
  */
 public class AnnotationConverter {
   private static final Log log = LogFactory.getLog(WebAnnotation.class);
@@ -57,6 +58,26 @@ public class AnnotationConverter {
       wa[i] = convert(annotations[i], needCreatorName, needBody);
 
     return wa;
+  }
+
+  /**
+   * Converts and <code>ArticleAnnotation</code> to <code>List&lt;Webannotation&gt;</code>
+   *
+   * @param annotations an list of annotations
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
+   * @return an array of Annotation objects as required by the web layer
+   */
+  @Transactional(readOnly = true)
+  public List<WebAnnotation> convert(final List<ArticleAnnotation> annotations,
+      boolean needCreatorName,boolean needBody) {
+    final List<WebAnnotation> wa  = new ArrayList<WebAnnotation>();
+
+    for (ArticleAnnotation annotation : annotations) {
+      if (annotation != null)
+        wa.add(convert(annotation, needCreatorName, needBody));
+    }
+      return wa;
   }
 
   /**
@@ -114,9 +135,11 @@ public class AnnotationConverter {
    * @return the hierarchical replies
    */
   @Transactional(readOnly = true)
-  public WebReply[] convert(final Reply[] replies, Commentary com, boolean needCreatorName, boolean needBody) {
+  public WebReply[] convert(final Reply[] replies, Commentary com, boolean needCreatorName,
+      boolean needBody) {
     final List<WebReply> webReplies = new ArrayList<WebReply>();
-    final LinkedHashMap<String, WebReply> repliesMap = new LinkedHashMap<String, WebReply>(replies.length);
+    final LinkedHashMap<String, WebReply> repliesMap =
+      new LinkedHashMap<String, WebReply>(replies.length);
     int numReplies = replies.length;
     String latestReplyTime = null;
 
@@ -191,7 +214,7 @@ public class AnnotationConverter {
   }
 
   private String loadBody(final Annotea<? extends Blob> annotea) throws OtmException, Error {
-    String body = null;
+    String body;
     byte[] b = annotea.getBody().getBody(); // could throw OtmException (lazy loaded)
 
     try {

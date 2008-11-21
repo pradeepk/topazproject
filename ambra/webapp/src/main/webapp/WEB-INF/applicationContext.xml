@@ -2,7 +2,7 @@
 <!--
   Copyright (c) 2006-2008 by Topaz, Inc.
   http://topazproject.org
-  
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -58,6 +58,14 @@
     <property name="smallImageRep" value="PNG_S"/>
     <property name="mediumImageRep" value="PNG_M"/>
     <property name="largeImageRep" value="PNG_L"/>
+   </bean>
+
+  <bean id="articleFeedService" class="org.topazproject.ambra.article.service.ArticleFeedService">
+    <property name="articleOtmService" ref="articleOtmService"/>
+    <property name="annotationService" ref="annotationService"/>
+    <property name="journalService" ref="journalService"/>
+    <property name="feedCache" ref="feedCache"/>
+    <property name="otmSession" ref="otmSession"/>
    </bean>
 
    <bean id="crossRefPosterService" class="org.topazproject.ambra.admin.service.CrossRefPosterService">
@@ -142,12 +150,12 @@
     <constructor-arg index="1" ref="${ambra.topaz.blobStore.beanName}"/>
     <property name="fedoraBlobFactories">
       <list>
-        <bean name="annotationFedoraBlobFactory" 
+        <bean name="annotationFedoraBlobFactory"
             class="org.topazproject.ambra.models.support.fedora.AnnotationFedoraBlobFactory">
           <constructor-arg index="0" value="${ambra.topaz.blobStore.fedora.blobTypes.annotation.pidNs}"/>
           <constructor-arg index="1" value="${ambra.topaz.blobStore.fedora.blobTypes.annotation.uriPrefix}"/>
         </bean>
-        <bean name="representationFedoraBlobFactory" 
+        <bean name="representationFedoraBlobFactory"
             class="org.topazproject.ambra.models.support.fedora.RepresentationFedoraBlobFactory">
           <constructor-arg index="0" value="${ambra.topaz.blobStore.fedora.blobTypes.representation.pidNs}"/>
           <constructor-arg index="1" value="${ambra.topaz.blobStore.fedora.blobTypes.representation.uriPrefix}"/>
@@ -370,7 +378,7 @@
     <constructor-arg index="0" ref="txCacheManager"/>
     <constructor-arg index="1" ref="carrierEhcache"/>
   </bean>
-  
+
   <!-- freemarker configs -->
   <bean id="ambraFreemarkerManager" class="org.topazproject.ambra.struts2.AmbraFreemarkerManager">
     <constructor-arg index="0" ref="ambraFreemarkerConfig"/>
