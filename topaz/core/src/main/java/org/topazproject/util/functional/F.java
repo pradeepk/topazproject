@@ -1,11 +1,14 @@
-/*
- * Copyright 2008 Topaz Project, Inc.
+/* $HeadURL$
+ * $Id$
+ *
+ * Copyright (c) 2006-2008 by Topaz, Inc.
+ * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.topazproject.util.functional;
 
 /**
@@ -34,7 +38,8 @@ public class F {
     return new FnE<R,E>() { public R fn() throws E { return fna.fn(arg); } };
   }
 
-  static final <T1,T2,R,E extends Exception> Fn1E<T1,R,E> curry(final Fn2E<T1,T2,R,E> fna, final T2 arg) {
+  static final <T1,T2,R,E extends Exception> Fn1E<T1,R,E> curry(final Fn2E<T1,T2,R,E> fna,
+                                                                final T2 arg) {
     return new Fn1E<T1,R,E>() { public R fn(T1 a) throws E { return fna.fn(a, arg); } };
   }
 }
