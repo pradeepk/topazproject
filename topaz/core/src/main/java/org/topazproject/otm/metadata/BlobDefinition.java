@@ -28,8 +28,10 @@ public class BlobDefinition extends PropertyDefinition {
    * Creates a new BlobDefinition object.
    *
    * @param name   The name of this definition.
+   * @param reference The definition to refer to resolve undefined attribiutes or null.
+   * @param supersedes The definition that this supersedes or null.
    */
-  public BlobDefinition(String name) {
-    super(name);
+  public BlobDefinition(String name, String reference, String supersedes) {
+    super(name, reference, supersedes);
   }
 }

@@ -181,6 +181,9 @@ public class EntityDefinition extends ClassDefinition {
 
         idField = new IdMapperImpl((IdDefinition) def, propertyBinders);
       } else if (def instanceof BlobDefinition) {
+        if ((blobField != null) && (def.getSupersedes() != null)
+            && def.getSupersedes().equals(blobField.getDefinition().getName()))
+          blobField = null;
         if (blobField != null)
           throw new OtmException("Duplicate Blob field " + def.getName() + " in " + getName());
 

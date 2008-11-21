@@ -606,10 +606,7 @@ public class AnnotationClassMetaFactory {
 
     public BlobDefinition getBlobDefinition(SessionFactory sf, Blob blob)
                                      throws OtmException {
-      if (!property.isArray() || !property.getComponentType().equals(Byte.TYPE))
-        throw new OtmException("@Blob may only be applied to a 'byte[]' property : " + this);
-
-      return new BlobDefinition(getName());
+      return new BlobDefinition(getName(), supersedes.get(null), supersedes.get(null));
     }
 
     public RdfDefinition getPredicateMapDefinition(SessionFactory sf, PredicateMap pmap)
