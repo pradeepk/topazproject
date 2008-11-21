@@ -60,6 +60,14 @@
     <property name="largeImageRep" value="PNG_L"/>
    </bean>
 
+  <bean id="articleFeedService" class="org.topazproject.ambra.article.service.ArticleFeedService">
+    <property name="articleOtmService" ref="articleOtmService"/>
+    <property name="annotationService" ref="annotationService"/>
+    <property name="journalService" ref="journalService"/>
+    <property name="feedCache" ref="feedCache"/>
+    <property name="otmSession" ref="otmSession"/>
+   </bean>
+
    <bean id="crossRefPosterService" class="org.topazproject.ambra.admin.service.CrossRefPosterService">
     <!-- following is the URL for the CrossRef service. The three parameters which should be set are
         * area=  test or live. Decides if the cross ref is actually 'posted'. area=test for testing, area=live for deployment
