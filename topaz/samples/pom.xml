@@ -29,28 +29,74 @@
   <name>Topaz Sample Applications</name>
   <description>Simple sample applications using Topaz.</description>
 
+  <organization>
+    <name>Topaz</name>
+    <url>http://www.topazproject.org</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>Licensed under the Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      <comments>Copyright (c) 2006-2008 by Topaz, Inc.</comments>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <issueManagement>
+    <system>trac</system>
+    <url>http://www.topazproject.org/trac</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>continuum</system>
+    <url>http://www.topazproject.org/continuum</url>
+  </ciManagement>
+
+  <mailingLists>
+   <mailingList>
+    <name>Topaz project developer mailing
+     list</name>
+    <subscribe>topaz-dev-subscribe@topazproject.org</subscribe>
+    <unsubscribe>topaz-dev-unsubscribe@topazproject.org</unsubscribe>
+    <post>topaz-dev@topazproject.org</post>
+    <archive>http://lists.topazproject.org/pipermail/topaz-dev/</archive>
+   </mailingList>
+  </mailingLists>
+
+  <distributionManagement>
+   <repository>
+    <id>topaz</id>
+    <url>http://maven.topazproject.org/maven2/</url>
+   </repository>
+   <site>
+    <id>topaz-docs</id>
+    <url>${topazproject.site.url}</url>
+   </site>
+  </distributionManagement>
+
   <repositories>
-    <repository>
-      <id>topaz</id>
-      <name>Maven 2 Repository for Topaz</name>
-      <url>http://maven.topazproject.org/maven2/</url>
-    </repository>
+   <repository>
+    <id>topaz</id>
+    <name>Maven 2 Repository for Topaz</name>
+    <url>http://maven.topazproject.org/maven2/</url>
+   </repository>
 
-    <repository>
-      <id>central</id>
-      <name>Maven Repository Switchboard</name>
-      <layout>default</layout>
-      <url>http://repo1.maven.org/maven2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
+   <repository>
+    <id>central</id>
+    <name>Maven Repository Switchboard</name>
+    <layout>default</layout>
+    <url>http://repo1.maven.org/maven2</url>
+    <snapshots>
+     <enabled>false</enabled>
+    </snapshots>
+   </repository>
 
-    <repository>
-      <id>java.net</id>
-      <url>http://download.java.net/maven/1</url>
-      <layout>legacy</layout>
-    </repository>
+   <repository>
+    <id>java.net</id>
+    <url>http://download.java.net/maven/1</url>
+    <layout>legacy</layout>
+   </repository>
   </repositories>
  
   <properties>
