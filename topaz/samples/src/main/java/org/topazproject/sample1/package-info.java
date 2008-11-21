@@ -23,7 +23,7 @@
   , @Alias(alias = "dcterms",  value = Rdf.dc_terms)
   , @Alias(alias = "topaz",    value = Rdf.topaz)
 })
-package org.topazproject.samples;
+package org.topazproject.sample1;
 
 import org.topazproject.otm.annotations.Aliases;
 import org.topazproject.otm.annotations.Alias;
