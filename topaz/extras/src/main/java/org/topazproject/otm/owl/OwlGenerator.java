@@ -36,6 +36,8 @@ import org.topazproject.otm.metadata.ClassBinding;
 import org.topazproject.otm.metadata.EntityDefinition;
 import org.topazproject.otm.metadata.RdfDefinition;
 
+import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
+
 import org.semanticweb.owl.apibinding.OWLManager;
 
 import org.semanticweb.owl.io.RDFXMLOntologyFormat;
@@ -56,6 +58,7 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 
 import org.semanticweb.owl.util.CollectionFactory;
 
+import org.semanticweb.owl.vocab.NamespaceOWLOntologyFormat;
 import org.semanticweb.owl.vocab.XSDVocabulary;
 
 /**
@@ -162,10 +165,14 @@ public class OwlGenerator {
   /**
    * Add namespace prefixes to make the generated OWL file little more readable.
    *
+   * @param style      "text" for Manchester. null or otherwise maps to RDF/XML
    * @param namespaces the namespace map
    */
-  public void addNamespaces(Map<String, String> namespaces) {
-    RDFXMLOntologyFormat format = new RDFXMLOntologyFormat();
+  public void addNamespaces(String style, Map<String, String> namespaces) {
+    NamespaceOWLOntologyFormat format = new RDFXMLOntologyFormat();
+    if ((style != null) && (style.equals("text"))) {
+      format = new ManchesterOWLSyntaxOntologyFormat();
+    }
     for (String name:namespaces.keySet()) {
       format.addPrefixNamespaceMapping(name, namespaces.get(name));
     }
