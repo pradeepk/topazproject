@@ -158,6 +158,10 @@ class EmbeddedClassMemberFieldBinder implements FieldBinder {
     return field.getSerializer();
   }
 
+  public Streamer getStreamer() {
+    return field.getStreamer();
+  }
+
   /*
    * inherited javadoc
    */

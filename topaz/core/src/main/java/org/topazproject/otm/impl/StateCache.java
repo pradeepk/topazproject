@@ -37,6 +37,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.RdfMapper;
+import org.topazproject.otm.mapping.PropertyBinder.Streamer;
 
 /**
  * A cache used to track modificationsto an object instance.
@@ -150,7 +151,7 @@ class StateCache {
     private int blobLen = 0;
     private byte[] blobDigest;
 
-    public <T>InstanceState(T instance, ClassMetadata cm, Session session) throws OtmException {
+    public <T> InstanceState(T instance, ClassMetadata cm, Session session) throws OtmException {
       vmap                   = new HashMap<RdfMapper, List<String>>();
 
       if (log.isDebugEnabled())
@@ -215,7 +216,11 @@ class StateCache {
     }
 
     public BlobChange digestUpdate(Object instance, PropertyBinder blobField) throws OtmException {
-      byte[] blob = (byte[]) blobField.getRawValue(instance, false);
+      Streamer streamer = blobField.getStreamer();
+      if (streamer.isManaged())
+        return BlobChange.noChange;
+
+      byte[] blob = (byte[]) streamer.getBytes(blobField, instance);
       int len = 0;
       byte[] digest = null;
       if (blob != null) {

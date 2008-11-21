@@ -38,9 +38,10 @@ public class ArrayFieldBinder extends AbstractFieldBinder {
    *
    * @param property the java beans property
    * @param serializer the serializer or null
+   * @param streamer the streamer or null
    */
-  public ArrayFieldBinder(Property property, Serializer serializer) {
-    super(property, serializer);
+  public ArrayFieldBinder(Property property, Serializer serializer, Streamer streamer) {
+    super(property, serializer, streamer);
   }
 
   /**

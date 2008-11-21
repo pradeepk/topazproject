@@ -202,7 +202,7 @@ public class FieldDef {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
       ClassMetadata cm = (ser == null) ? getAssoc(rdf) : null;
       def property = new Property(cls, name, get, set, f.getType())
-      FieldBinder l = new ScalarFieldBinder(property, ser);
+      FieldBinder l = new ScalarFieldBinder(property, ser, null);
       if (ser != null)
         ft = null;
       if (isId)
@@ -220,7 +220,7 @@ ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [
       def property = new Property(cls, name, get, set, f.getType(), compType)
       FieldBinder l;
       if (collType.toLowerCase() == 'array')
-        l = new ArrayFieldBinder(property, ser);
+        l = new ArrayFieldBinder(property, ser, null);
       else
         l = new CollectionFieldBinder(property, ser);
 

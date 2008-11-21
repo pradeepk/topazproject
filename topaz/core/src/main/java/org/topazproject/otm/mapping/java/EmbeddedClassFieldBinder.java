@@ -47,7 +47,7 @@ public class EmbeddedClassFieldBinder extends AbstractFieldBinder implements Emb
    * @param ecm the embedded class metadata
    */
   public EmbeddedClassFieldBinder(Property property, ClassMetadata ecm) {
-    super(property, null);
+    super(property, null, null);
     this.ecm = ecm;
     this.eb = ecm.getEntityBinder(EntityMode.POJO);
   }

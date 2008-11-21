@@ -41,6 +41,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.PropertyBinder.RawFieldData;
+import org.topazproject.otm.mapping.PropertyBinder.Streamer;
 import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
@@ -350,8 +351,12 @@ public class OtmInterceptor implements Interceptor {
         return null;
 
       instance = cm.getEntityBinder(sess).loadInstance(instance, id, result, sess);
-      if (cm.getBlobField() != null)
-        cm.getBlobField().getBinder(sess).setRawValue(instance, copy(blob));
+      if (cm.getBlobField() != null) {
+        PropertyBinder binder = cm.getBlobField().getBinder(sess);
+        Streamer streamer = binder.getStreamer();
+        if (!streamer.isManaged())
+          streamer.setBytes(binder, instance, copy(blob));
+      }
 
       return instance;
     }
@@ -374,8 +379,12 @@ public class OtmInterceptor implements Interceptor {
                     Collection<RdfMapper> fields, BlobMapper blobField) {
       types.addAll(cm.getAllTypes());
 
-      if (blobField != null)
-        blob = copy((byte[]) blobField.getBinder(sess).getRawValue(instance, false));
+      if (blobField != null) {
+        PropertyBinder binder = blobField.getBinder(sess);
+        Streamer streamer = binder.getStreamer();
+        if (!streamer.isManaged())
+          blob = copy(streamer.getBytes(binder, instance));
+      }
 
       if (fields.size() != cm.getRdfMappers().size()) {
         // Get other fields to create the spliced

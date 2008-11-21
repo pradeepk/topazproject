@@ -71,6 +71,7 @@ import org.topazproject.ambra.models.support.fedora.AnnotationFedoraBlob;
 import org.topazproject.ambra.models.support.fedora.AnnotationFedoraBlobFactory;
 import org.topazproject.fedora.otm.FedoraBlob;
 import org.topazproject.fedora.otm.FedoraBlobStore;
+import org.topazproject.fedora.otm.FedoraBlobFactory;
 
 /**
  * Test the model definitions.
@@ -105,12 +106,13 @@ public class ModelsTest {
 
     factory.validate();
 
-    FedoraBlobStore  blobStore =
-      new FedoraBlobStore("http://localhost:9090/fedora/services/management", "fedoraAdmin", "fedoraAdmin");
+    FedoraBlob rb;
+    String fedoraUri = "http://localhost:9090/fedora/services/management";
+    FedoraBlobStore  blobStore = new FedoraBlobStore(fedoraUri, "fedoraAdmin", "fedoraAdmin");
+
     blobStore.addBlobFactory(new AnnotationFedoraBlobFactory("Ambra", "info:fedora/"));
 
-    FedoraBlob rb = blobStore.toBlob(factory.getClassMetadata(AnnotationBlob.class), 
-                                       "info:fedora/Ambra:42", null, null);
+    rb = toBlob(blobStore, factory.getClassMetadata(AnnotationBlob.class), "info:fedora/Ambra:42");
     assert rb instanceof AnnotationFedoraBlob;
     AnnotationFedoraBlob b = (AnnotationFedoraBlob) rb;
     assert "text/plain;UTF-8".equals(b.getContentType());
@@ -118,7 +120,7 @@ public class ModelsTest {
     assert "Annotation Body".equals(b.getDatastreamLabel());
     assert "Ambra:42".equals(b.getPid());
     assert "BODY".equals(b.getDsId());
-    rb = blobStore.toBlob(factory.getClassMetadata(ReplyBlob.class), "info:fedora/Ambra:42", null, null);
+    rb = toBlob(blobStore, factory.getClassMetadata(ReplyBlob.class), "info:fedora/Ambra:42");
     assert rb instanceof AnnotationFedoraBlob;
     b = (AnnotationFedoraBlob) rb;
     assert "text/plain;UTF-8".equals(b.getContentType());
@@ -132,6 +134,15 @@ public class ModelsTest {
     assert m != null;
     assert m.isAssociation();
     assert m.getAssociatedEntity().equals("RatingContent");
+  }
+
+  private FedoraBlob toBlob(FedoraBlobStore bs, ClassMetadata cm, String id) throws OtmException {
+    FedoraBlobFactory bf   = bs.mostSpecificBlobFactory(id);
+
+    if (bf == null)
+      throw new OtmException("Can't find a blob factory for " + id);
+
+    return bf.createBlob(cm, id, null, null);
   }
 
   /**

@@ -99,18 +99,11 @@ public class AnnotationFedoraBlob extends DefaultFedoraBlob {
                     + " only. Instead found " + c);
   }
 
-  protected INGEST_OP getFirstIngestOp() {
+  public INGEST_OP getFirstIngestOp() {
     return INGEST_OP.AddObj;
   }
 
-  /**
-   * Purge test. Always true.
-   * 
-   * @param con the fedora connection handle
-   * 
-   * @return true, because we only use a single datastream per object
-   */
-  protected Boolean canPurgeObject(FedoraConnection con) {
+  public boolean hasSingleDs() {
     return true;
   }
 }

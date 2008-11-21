@@ -18,8 +18,15 @@
  */
 package org.topazproject.fedora.otm;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
+import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,56 +39,40 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.fedora.client.Datastream;
 import org.topazproject.fedora.client.FedoraAPIA;
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedora.client.Uploader;
+import org.topazproject.fedora.otm.FedoraBlob.INGEST_OP;
 
 import org.topazproject.otm.AbstractConnection;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.stores.FileBackedBlobStore;
+import org.topazproject.otm.stores.FileBackedBlobStore.FileBackedBlob;
+import org.topazproject.otm.stores.FileBackedBlobStore.FileBackedBlobStoreConnection;
 
 /**
  * Acts as the client to Fedora and manages the transactional aspects of user operations.
  *
  * @author Pradeep Krishnan
  */
-public class FedoraConnection extends AbstractConnection {
-  private static final Log        log        = LogFactory.getLog(FedoraConnection.class);
-  private static final Map<Session, FedoraConnection> conMap =
-                    Collections.synchronizedMap(new WeakHashMap<Session, FedoraConnection>());
-
-  private FedoraBlobStore         bs;
-  private Map<String, FedoraBlob> undoI;
-  private Map<String, FedoraBlob> undoD;
-  private Map<String, FedoraBlob> insertMap  = new HashMap<String, FedoraBlob>();
-  private Map<String, FedoraBlob> deleteMap  = new HashMap<String, FedoraBlob>();
-  private Map<String, byte[]>     contentMap = new HashMap<String, byte[]>();
+public class FedoraConnection extends FileBackedBlobStoreConnection {
+  private static final Log    log    = LogFactory.getLog(FedoraConnection.class);
   private FedoraAPIM              apim;
   private FedoraAPIA              apia;
   private Uploader                upld;
-
-  /** 
-   * Get the fedora-connection for the given session. 
-   * 
-   * @param sess the session for which to look up the connection
-   * @return the fedora-connection, or null if none is active
-   */
-  static FedoraConnection getCon(Session sess) {
-    return conMap.get(sess);
-  }
 
   /**
    * Creates a new FedoraConnection object.
    *
    * @param bs   the FedoraBlobStore that this connects to
    * @param sess the session this connection is attached to
+   * @throws OtmException on an error
    */
   public FedoraConnection(FedoraBlobStore bs, Session sess) throws OtmException {
-    super(sess);
-    this.bs = bs;
-    conMap.put(sess, this);
-    enlistResource(new FedoraXAResource());
+    super(bs, sess);
   }
 
   /**
@@ -90,65 +81,17 @@ public class FedoraConnection extends AbstractConnection {
    * @return the blob-store, or null if this connection has been closed
    */
   FedoraBlobStore getBlobStore() {
-    return bs;
+    return (FedoraBlobStore) super.store;
   }
 
-  /*
-   * inherited javadoc
-   */
-  public void insert(ClassMetadata cm, String id, Object blob)
-              throws OtmException {
-    if (bs == null)
-      throw new OtmException("Attempt to use a connection that is closed");
-
-    insertMap.put(id, bs.toBlob(cm, id, blob, this));
-    deleteMap.remove(id);
-    contentMap.put(id, (byte[]) cm.getBlobField().getBinder(getSession()).getRawValue(blob, false));
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public void delete(ClassMetadata cm, String id, Object blob) throws OtmException {
-    if (bs == null)
-      throw new OtmException("Attempt to use a connection that is closed");
-
-    deleteMap.put(id, bs.toBlob(cm, id, blob, this));
-    insertMap.remove(id);
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public byte[] get(ClassMetadata cm, String id, Object blob) throws OtmException {
-    if (bs == null)
-      throw new OtmException("Attempt to use a connection that is closed");
-
-    if (deleteMap.get(id) != null)
-      return null;
-
-    byte[] b = contentMap.get(id);
-
-    if (b == null) {
-      FedoraBlob fb = bs.toBlob(cm, id, blob, this);
-      if (fb != null)
-        b = fb.get(this);
-
-      if (b != null)
-        contentMap.put(id, b);
-    }
-
-    return b;
-  }
-
-  /**
+    /**
    * Gets the API-A stub used by this connection.
    *
    * @return the API-A stub
    */
   public FedoraAPIA getAPIA() {
     if (apia == null)
-      apia = bs.createAPIA();
+      apia = getBlobStore().createAPIA();
 
     return apia;
   }
@@ -160,7 +103,7 @@ public class FedoraConnection extends AbstractConnection {
    */
   public FedoraAPIM getAPIM() {
     if (apim == null)
-      apim = bs.createAPIM();
+      apim = getBlobStore().createAPIM();
 
     return apim;
   }
@@ -172,7 +115,7 @@ public class FedoraConnection extends AbstractConnection {
    */
   public Uploader getUploader() {
     if (upld == null)
-      upld = bs.createUploader();
+      upld = getBlobStore().createUploader();
 
     return upld;
   }
@@ -190,194 +133,365 @@ public class FedoraConnection extends AbstractConnection {
   public URL getDatastreamLocation(String pid, String dsId)
                             throws OtmException {
     try {
-      return bs.getFedoraBaseUri().resolve("get/" + pid + "/" + dsId).toURL();
+      return getBlobStore().getFedoraBaseUri().resolve("get/" + pid + "/" + dsId).toURL();
     } catch (Exception e) {
       throw new OtmException("Failed to build a data-stream access URL", e);
     }
   }
 
+  @Override
+  protected FileBackedBlob doGetBlob(ClassMetadata cm, String id, Object instance, File work) throws OtmException {
+    FedoraBlobStore bs = getBlobStore();
+    FedoraBlobFactory bf   = bs.mostSpecificBlobFactory(id);
+
+    if (bf == null)
+      throw new OtmException("Can't find a blob factory for " + id);
+
+    FedoraBlob fb = bf.createBlob(cm, id, instance, this);
+    File bak = toFile(bs.getBackupRoot(), id, ".bak");
+
+    return new FileBackedFedoraBlob(fb, id, work, bak);
+  }
+
   /**
-   * A smple xa-resource wrapper around this connection's transaction operations. There's no
-   * recovery support, and this assumes only a single tx per instance.
+   * Ingest the contents into Fedora.
+   *
+   * @param blob the blob contents
+   * @throws OtmException on an error
    */
-  private class FedoraXAResource implements XAResource {
-    public void start(Xid xid, int flags) { }
-    public void end(Xid xid, int flags)   { }
+  private boolean ingest(FedoraBlob blob, File content) throws OtmException {
+    Uploader   upld   = getUploader();
+    FedoraAPIM apim   = getAPIM();
+    String[]   newPid = new String[] { blob.getPid() };
+    String[]   newDs  = new String[] { blob.getDsId() };
 
-    public int prepare(Xid xid) throws XAException {
-      // assumption: doPrepare only throws RMERR, which means this resource stays in S2
-      if (FedoraConnection.this.doPrepare()) {
-        return XA_OK;
-      } else {
-        FedoraConnection.this.close();
-        return XA_RDONLY;
-      }
-    }
+    try {
+      String ref = upld.upload(content);
 
-    public void commit(Xid xid, boolean onePhase) throws XAException {
-      if (onePhase) {
-        try {
-          FedoraConnection.this.doPrepare();
-        } catch (XAException xae) {
-          FedoraConnection.this.doRollback();
-          throw xae;
+      INGEST_OP op = blob.getFirstIngestOp();
+      int maxIter = 3;
+      while (op != null && maxIter-- > 0) {
+        switch (op) {
+          case AddObj:
+            op = addObject(blob, ref, newPid);
+            break;
+
+          case AddDs:
+            op = addDatastream(blob, ref, newDs);
+            break;
+
+          case ModDs:
+            op = modifyDatastream(blob, ref);
+            break;
+
+          default:
+            throw new Error("Internal error: unexpected op " + op);
         }
       }
 
-      FedoraConnection.this.doCommit();
+      if (op != null)
+        throw new OtmException("Loop detected: failed to ingest " + blob.getBlobId() + ", pid=" + blob.getPid() +
+                               ", dsId=" + blob.getDsId() + ", op=" + op);
+
+    } catch (Exception e) {
+      if (e instanceof OtmException)
+        throw (OtmException) e;
+
+      throw new OtmException("Write to Fedora failed", e);
     }
 
-    public void rollback(Xid xid) {
-      FedoraConnection.this.doRollback();
-    }
+    if (!blob.getPid().equals(newPid[0]))
+      throw new OtmException("PID mismatch in ingest. Expecting '" + blob.getPid() + "', got '" + newPid[0]
+                             + "'");
 
-    public Xid[]   recover(int flag)                 { return new Xid[0]; }
-    public void    forget(Xid xid)                   { }
-    public boolean isSameRM(XAResource xares)        { return xares == this; }
-    public int     getTransactionTimeout()           { return 0; }
-    public boolean setTransactionTimeout(int secs)   { return false; }
+    if (!blob.getDsId().equals(newDs[0]))
+      throw new OtmException("DS-ID mismatch in add-DS. Expecting '" + blob.getDsId() + "', got '" + newDs[0]
+                             + "'");
+
+    if (log.isDebugEnabled())
+      log.debug("Wrote " + blob.getBlobId() + " as " + blob.getPid() + "/" + blob.getDsId());
+
+    return true;
   }
 
-  private boolean doPrepare() throws XAException {
-    boolean haveMods = !insertMap.isEmpty() || !deleteMap.isEmpty();
-    undoI = new HashMap<String, FedoraBlob>();
+  private INGEST_OP addObject(FedoraBlob blob, String ref, String[] newPid) throws Exception {
+    INGEST_OP new_op;
+
     try {
-      ingest(insertMap, undoI);
-    } catch (OtmException oe) {
-      log.error("Error preparing", oe);
-      throw new XAException(XAException.XAER_RMERR);
+      if (log.isDebugEnabled())
+        log.debug("Ingesting '" + blob.getPid() + "' with data-stream '" + blob.getDsId() + "'");
+
+      newPid[0] = apim.ingest(blob.getFoxml(ref), "foxml1.0", "created");
+      new_op = null;
+    } catch (Exception e) {
+      if (log.isDebugEnabled())
+        log.debug("ingest failed: ", e);
+
+      if (isObjectExistsException(e))
+        new_op = INGEST_OP.AddDs;
+      else
+        throw e;
     }
-    insertMap = null;
-    return haveMods;
+
+    return new_op;
   }
 
-  private void doCommit() throws XAException {
+  private INGEST_OP addDatastream(FedoraBlob blob, String ref, String[] newDs) throws Exception {
+    INGEST_OP new_op;
+
     try {
-      undoD = new HashMap<String, FedoraBlob>();
-      purge(deleteMap, undoD);
-      undoD   = null;
-      undoI   = null;
-    } catch (OtmException oe) {
-      log.error("Error committing", oe);
-      throw new XAException(XAException.XAER_RMERR);
+      if (log.isDebugEnabled())
+        log.debug("Adding data-stream '" + blob.getDsId() + "' for '" + blob.getPid() + "'");
+
+      newDs[0] = apim.addDatastream(blob.getPid(), blob.getDsId(), new String[0], blob.getDatastreamLabel(), false,
+                                    blob.getContentType(), null, ref, "M", "A", "created");
+      new_op = null;
+    } catch (Exception e) {
+      if (log.isDebugEnabled())
+        log.debug("add datastream failed: ", e);
+
+      if (isNoSuchObjectException(e))
+        new_op = INGEST_OP.AddObj;
+      else if (isDatastreamExistsException(e))
+        new_op = INGEST_OP.ModDs;
+      else
+        throw e;
+    }
+
+    return new_op;
+  }
+
+  private INGEST_OP modifyDatastream(FedoraBlob blob, String ref) throws Exception {
+    INGEST_OP new_op;
+
+    try {
+      if (log.isDebugEnabled())
+        log.debug("Modifying data-stream(by reference) '" + blob.getDsId() + "' for '" + blob.getPid() + "'");
+
+      apim.modifyDatastreamByReference(blob.getPid(), blob.getDsId(), new String[0], blob.getDatastreamLabel(), false,
+                                       blob.getContentType(), null, ref, "A", "updated", false);
+      new_op = null;
+    } catch (Exception e) {
+      if (log.isDebugEnabled())
+        log.debug("ds-modify failed: ", e);
+
+      if (isNoSuchObjectException(e))
+        new_op = INGEST_OP.AddObj;
+      else if (isNoSuchDatastreamException(e))
+        new_op = INGEST_OP.AddDs;
+      else
+        throw e;
+    }
+
+    return new_op;
+   }
+
+
+  /* WARNING: this is fedora version specific! */
+  private static boolean isNoSuchObjectException(Exception e) {
+    return e instanceof RemoteException &&
+           e.getMessage().startsWith("fedora.server.errors.ObjectNotInLowlevelStorageException");
+  }
+
+  /* WARNING: this is fedora version specific! */
+  private static boolean isNoSuchDatastreamException(Exception e) {
+    return e instanceof RemoteException &&
+           e.getMessage().startsWith("java.lang.Exception: Uncaught exception from Fedora Server");
+  }
+
+  /* WARNING: this is fedora version specific! */
+  private static boolean isObjectExistsException(Exception e) {
+    return e instanceof RemoteException &&
+           e.getMessage().startsWith("fedora.server.errors.ObjectExistsException");
+  }
+
+  /* WARNING: this is fedora version specific! */
+  private static boolean isDatastreamExistsException(Exception e) {
+    return e instanceof RemoteException &&
+           e.getMessage().startsWith("fedora.server.errors.GeneralException: A datastream already exists");
+  }
+
+  /**
+   * Gets the data-stream meta object from Fedora.
+   *
+   * @param con the Fedora APIM stub to use
+   *
+   * @return the data-stream meta object
+   *
+   * @throws OtmException on an error
+   */
+  protected Datastream getDatastream(FedoraBlob blob) throws OtmException {
+    try {
+      return getAPIM().getDatastream(blob.getPid(), blob.getDsId(), null);
+    } catch (Exception e) {
+      if (isNoSuchObjectException(e) || isNoSuchDatastreamException(e))
+        return null;
+
+      throw new OtmException("Error while getting the data-stream for " + blob.getPid() + "/" + blob.getDsId(), e);
+    }
+  }
+
+  /**
+   * Checks if the Fedora object itself can be purged. In general an object can be purged if
+   * the remaining data-streams on it are not significant. Override it in sub-classes to handle
+   * app specific processing.
+   *
+   * @param con the connection handle
+   *
+   * @return true if it can be purged, false if only the datastream should be purged, or null
+   *         if nothing should be done (e.g. because the object doesn't exist in the first place)
+   *
+   * @throws OtmException on an error
+   */
+  protected Boolean canPurgeObject(FedoraBlob blob) throws OtmException {
+    try {
+      if (blob.hasSingleDs())
+        return true;
+      return blob.canPurgeObject(getAPIM().getDatastreams(blob.getPid(), null, null));
+    } catch (Exception e) {
+      if (isNoSuchObjectException(e)) {
+        if (log.isDebugEnabled())
+          log.debug("Object " + blob.getBlobId()+ " at " + blob.getPid() + " doesn't exist in blob-store", e);
+        return null;
+      }
+
+      throw new OtmException("Error in obtaining the list of data-streams on " + blob.getPid(), e);
+    }
+  }
+
+
+  /**
+   * Purge this Blob from Fedora.
+   *
+   * @throws OtmException on an error
+   */
+  private boolean purge(FedoraBlob blob) throws OtmException {
+    FedoraAPIM apim = getAPIM();
+
+    try {
+      Boolean canPurgeObject = canPurgeObject(blob);
+      if (canPurgeObject == null) {
+        if (log.isDebugEnabled())
+          log.debug("Not purging Object or datastram for " + blob.getBlobId() + " at " + blob.getPid()+ "/" + blob.getDsId());
+        return false;
+      }
+
+      if (canPurgeObject) {
+        if (log.isDebugEnabled())
+          log.debug("Purging Object " + blob.getBlobId() + " at " + blob.getPid() + "/" + blob.getDsId());
+
+        apim.purgeObject(blob.getPid(), "deleted", false);
+      } else {
+        if (log.isDebugEnabled())
+          log.debug("Purging Datastream " + blob.getBlobId() + " at " + blob.getPid() + "/" + blob.getDsId());
+
+        apim.purgeDatastream(blob.getPid(), blob.getDsId(), null, "deleted", false);
+      }
+
+      return true;
+    } catch (Exception e) {
+      if (!isNoSuchObjectException(e))
+        throw new OtmException("Purge failed", e);
+
+      if (log.isDebugEnabled())
+        log.debug("Datastream " + blob.getBlobId() + " at " + blob.getPid() + "/" + blob.getDsId() +
+                  " doesn't exist in blob-store", e);
+
+      return false;
+    }
+  }
+
+  /**
+   * Gets the blob content (if it exists) from Fedora.
+   *
+   * @return the blob content or null if the blob does not exist
+   *
+   * @throws OtmException on an error
+   */
+  private boolean readBlob(FedoraBlob blob, File to) throws OtmException {
+    Datastream stream = getDatastream(blob);
+
+    if (stream == null)
+      return false;
+
+    InputStream in       = null;
+    URL         location = null;
+
+    try {
+      location   = getDatastreamLocation(blob.getPid(), blob.getDsId());
+      in         = location.openStream();
+    } catch (Exception e) {
+      if (log.isDebugEnabled())
+        log.debug("Error while opening a stream to read from " + blob.getPid() + "/" + blob.getDsId()
+                  + ". According to Fedora the stream must exist - but most likeley was"
+                  + " purged recently. Treating this as if it was purged and does not exist.", e);
+
+      return false;
+    }
+
+    FileOutputStream out = null;
+    try {
+        out = new FileOutputStream(to);
+        byte[]buf = new byte[4096];
+
+        int c;
+        long len = 0;
+
+        while ((c = in.read(buf)) >= 0) {
+          out.write(buf, 0, c);
+          len += c;
+        }
+
+      if (log.isDebugEnabled())
+        log.debug("Got " + len + " bytes from " + location);
+
+      return true;
+    } catch (Exception e) {
+      throw new OtmException("Get failed on " + blob.getBlobId(), e);
     } finally {
-      close();
-    }
-  }
-
-  private void doRollback() {
-    close();
-  }
-
-  public void close() {
-    // undo deletes
-    if (undoD != null) {
-      if (undoD.size() > 0)
-        log.warn("Undoing purges for " + undoD.keySet());
-
-      ingest(undoD);
-      undoD = null;
-    }
-
-    // undo inserts
-    if (undoI != null) {
-      if (undoI.size() > 0)
-        log.warn("Undoing ingests for " + undoI.keySet());
-
-      purge(undoI);
-      undoI = null;
-    }
-
-    insertMap    = null;
-    contentMap   = null;
-    deleteMap    = null;
-    bs           = null;
-    conMap.values().remove(this);
-  }
-
-  private Map<String, FedoraBlob> ingest(Map<String, FedoraBlob> map, Map<String, FedoraBlob> undo)
-                                  throws OtmException {
-    OtmException error = null;
-
-    for (String id : map.keySet()) {
       try {
-        FedoraBlob blob = map.get(id);
-        blob.ingest(contentMap.get(id), this);
-
-        if (undo != null)
-          undo.put(id, blob);
+        if (in != null)
+          in.close();
       } catch (Throwable t) {
-        OtmException e;
-
-        if (t instanceof OtmException)
-          e = (OtmException) t;
-        else
-          e = new OtmException("Failed to ingest blob for " + id, t);
-
-        if (undo != null)
-          throw e;
-        else
-          log.warn("Failed to ingest blob for " + id, t);
-
-        if (error == null)
-          error = e;
+        if (log.isDebugEnabled())
+          log.debug("Failed to close connection to " + location, t);
+      }
+      try {
+        if (out != null)
+          out.close();
+      } catch (Throwable t) {
+        if (log.isDebugEnabled())
+          log.debug("Failed to close connection to " + to, t);
       }
     }
-
-    if (error != null)
-      throw error;
-
-    return undo;
   }
 
-  private Map<String, FedoraBlob> purge(Map<String, FedoraBlob> map, Map<String, FedoraBlob> undo)
-                                 throws OtmException {
-    OtmException error = null;
+  private class FileBackedFedoraBlob extends FileBackedBlobStore.FileBackedBlob {
+    private final FedoraBlob fb;
 
-    for (String id : map.keySet()) {
-      try {
-        FedoraBlob blob = map.get(id);
-        blob.purge(this);
-
-        if (undo != null)
-          undo.put(id, blob);
-      } catch (Throwable t) {
-        OtmException e;
-
-        if (t instanceof OtmException)
-          e = (OtmException) t;
-        else
-          e = new OtmException("Failed to purge blob for " + id, t);
-
-        if (undo != null)
-          throw e;
-        else
-          log.warn("Failed to purge blob for " + id, t);
-
-        if (error == null)
-          error = e;
-      }
+    public FileBackedFedoraBlob(FedoraBlob fb, String id, File tmp, File bak) {
+      super(id, tmp, bak);
+      this.fb = fb;
     }
 
-    if (error != null)
-      throw error;
-
-    return undo;
-  }
-
-  private void ingest(Map<String, FedoraBlob> map) {
-    try {
-      ingest(map, null);
-    } catch (Throwable t) {
-      log.error("Error undoing deletes - fedora-store will be in an inconsistent state", t);
+    @Override
+    protected boolean copyFromStore(File to, boolean asBackup) throws OtmException {
+      return readBlob(fb, to);
     }
-  }
 
-  private void purge(Map<String, FedoraBlob> map) {
-    try {
-      purge(map, null);
-    } catch (Throwable t) {
-      log.error("Error undoing inserts - fedora-store will be in an inconsistent state", t);
+    @Override
+    protected boolean createInStore() throws OtmException {
+      return true;
+    }
+
+    @Override
+    protected boolean deleteFromStore() throws OtmException {
+      return purge(fb);
+    }
+
+    @Override
+    protected boolean moveToStore(File from) throws OtmException {
+      return ingest(fb, from);
     }
   }
 }

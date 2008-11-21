@@ -35,7 +35,7 @@ public class PredicateMapFieldBinder extends AbstractFieldBinder {
    * @param property the java bean property
    */
   public PredicateMapFieldBinder(Property property) {
-    super(property, null);
+    super(property, null, null);
   }
 
   /**

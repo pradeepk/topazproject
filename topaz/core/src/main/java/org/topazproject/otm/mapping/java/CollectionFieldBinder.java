@@ -48,7 +48,7 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
    * @param serializer the serializer or null
    */
   public CollectionFieldBinder(Property property, Serializer serializer) {
-    super(property, serializer);
+    super(property, serializer, null);
   }
 
   /**

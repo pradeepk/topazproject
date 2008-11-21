@@ -25,33 +25,9 @@ package org.topazproject.otm;
  */
 public interface BlobStore extends Store {
   /**
-   * Persists an object in the blob store.
-   *
-   * @param cm the class metadata for the object
-   * @param id the id for the blob
-   * @param blob the blob to store
-   * @param con the connection to use
-   *
-   * @throws OtmException on an error
-   */
-  public void insert(ClassMetadata cm, String id, Object blob, Connection con) throws OtmException;
-
-  /**
-   * Removes an object from the blob store.
-   *
-   * @param cm the class metadata for the object
-   * @param id the id for the blob
-   * @param blob the blob to delete
-   * @param con the connection to use
-   *
-   * @throws OtmException on an error
-   */
-  public void delete(ClassMetadata cm, String id, Object blob, Connection con) throws OtmException;
-
-  /**
-   * Signals that the blob store should flush any buffered operations to the underlying store.
-   * This is useful for implementations that want to collect inserts and deletes and send them
-   * in one go for efficiency.
+   * Signals that the blob store should flush any buffered operations to the underlying store. This
+   * is useful for implementations that want to collect inserts and deletes and send them in one go
+   * for efficiency.
    *
    * @param con the connection to use
    * @throws OtmException on an error
@@ -59,17 +35,16 @@ public interface BlobStore extends Store {
   public void flush(Connection con) throws OtmException;
 
   /**
-   * Gets a blob from the blob store.
+   * Gets a Blob object with the given id. This will always return a Blob, regardless of whether
+   * it exists or not.
    *
-   * @param cm the class metadata for the object
-   * @param id the id for the blob
-   * @param blob the blob to refresh or null
+   * @param cm  the metadata of the containing entity
+   * @param id the id of the containing entity (same as blob)
+   * @param inst the instane of the containing entity or null
    * @param con the connection to use
-   *
-   * @return the blob or null if it does not exist
+   * @return a Blob object
    *
    * @throws OtmException on an error
    */
-  public Object get(ClassMetadata cm, String id, Object blob, Connection con) throws OtmException;
-
+  public Blob getBlob(ClassMetadata cm, String id, Object inst, Connection con) throws OtmException;
 }

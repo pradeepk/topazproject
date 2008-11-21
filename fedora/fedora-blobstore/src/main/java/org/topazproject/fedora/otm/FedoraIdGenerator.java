@@ -35,14 +35,10 @@ public class FedoraIdGenerator implements IdentifierGenerator {
    * inherited javadoc
    */
   public String generate(ClassMetadata cm, Session sess) throws OtmException {
-    FedoraConnection con = FedoraConnection.getCon(sess);
-    if (con == null) {
-      /* FIXME: using sf.getBlobStore() is a hack and will fail when a multi-blob store is used
-       * instead!
-       */
-      con = (FedoraConnection) sess.getSessionFactory().getBlobStore().openConnection(sess, false);
-    }
-
+    if (!(sess.getBlobStoreCon() instanceof FedoraConnection))
+      throw new OtmException(getClass().getName() + " requires a connection using "
+          + FedoraConnection.class);
+    FedoraConnection con = (FedoraConnection) sess.getBlobStoreCon();
     return con.getBlobStore().generateId(cm, prefix, con);
   }
 

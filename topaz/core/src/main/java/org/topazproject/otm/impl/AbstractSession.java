@@ -40,6 +40,7 @@ import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.query.Results;
 
+import org.topazproject.otm.Blob;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
@@ -332,6 +333,22 @@ abstract class AbstractSession implements Session {
       throw new OtmException("No id set for " + cm + " instance " + o);
 
     return (String) ids.get(0);
+  }
+
+  public Blob getBlob(Class<?> containingClass, String oid) throws OtmException {
+    return getBlob(checkClass(containingClass), oid);
+  }
+
+  public Blob getBlob(String containingEntity, String oid) throws OtmException {
+    return getBlob(checkClass(containingEntity), oid);
+  }
+
+  protected Blob getBlob(ClassMetadata cm, String oid) throws OtmException {
+    return getBlob(cm, oid, get(cm, oid, true));
+  }
+
+  protected Blob getBlob(ClassMetadata cm, String oid, Object instance) throws OtmException {
+    return getSessionFactory().getBlobStore().getBlob(cm, oid, instance, getBlobStoreCon());
   }
 
   /*

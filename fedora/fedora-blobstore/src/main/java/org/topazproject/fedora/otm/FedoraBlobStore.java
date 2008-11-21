@@ -18,6 +18,7 @@
  */
 package org.topazproject.fedora.otm;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -31,12 +32,11 @@ import org.topazproject.fedora.client.FedoraAPIA;
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedora.client.Uploader;
 
-import org.topazproject.otm.AbstractStore;
-import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.stores.FileBackedBlobStore;
 
 /**
  * Uses Fedora as a BlobStore. The current version of fedora is not
@@ -47,7 +47,8 @@ import org.topazproject.otm.Session;
  *
  * @author Pradeep Krishnan
  */
-public class FedoraBlobStore extends AbstractStore implements BlobStore {
+public class FedoraBlobStore extends FileBackedBlobStore {
+  private final File                                 bak;
   private final URI                                  fedoraBaseUri;
   private final String                               apimUri;
   private final String                               apiaUri;
@@ -66,8 +67,14 @@ public class FedoraBlobStore extends AbstractStore implements BlobStore {
    *
    * @throws OtmException on an error
    */
-  public FedoraBlobStore(String apimUri, String userName, String password)
-                  throws OtmException {
+  public FedoraBlobStore(String apimUri, String userName, String password) throws OtmException {
+    this(new File(new File(System.getProperty("user.dir")), "fedora-work"),
+         apimUri, userName, password);
+  }
+
+  public FedoraBlobStore(File root, String apimUri, String userName, String password) throws OtmException {
+    super(root);
+    this.bak        = new File(super.root, "bak");
     this.apimUri    = apimUri;
     this.userName   = userName;
     this.password   = password;
@@ -97,6 +104,10 @@ public class FedoraBlobStore extends AbstractStore implements BlobStore {
     apiaUri     = fedoraBaseUri.resolve("services/access").toString();
   }
 
+  public File getBackupRoot() {
+    return bak;
+  }
+
   /*
    * inherited javadoc
    */
@@ -104,41 +115,6 @@ public class FedoraBlobStore extends AbstractStore implements BlobStore {
     return new FedoraConnection(this, sess);
   }
 
-  /*
-   * inherited javadoc
-   */
-  public void insert(ClassMetadata cm, String id, Object blob, Connection con)
-              throws OtmException {
-    FedoraConnection fc = (FedoraConnection) con;
-    fc.insert(cm, id, blob);
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public void delete(ClassMetadata cm, String id, Object blob, Connection con)
-              throws OtmException {
-    FedoraConnection fc = (FedoraConnection) con;
-    fc.delete(cm, id, blob);
-  }
-
-  public void flush(Connection con) throws OtmException {
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public Object get(ClassMetadata cm, String id, Object blob, Connection con)
-             throws OtmException {
-    FedoraConnection fc = (FedoraConnection) con;
-
-    byte[] b = fc.get(cm, id, blob);
-    if (b != null) {
-      blob = createOrUpdateInstance(fc.getSession(), cm, id, blob);
-      cm.getBlobField().getBinder(fc.getSession()).setRawValue(blob, b);
-    }
-    return blob;
-  }
 
   /**
    * Adds a FedoraBlobFactory that can create blobs with the given uri prefix.
@@ -183,27 +159,6 @@ public class FedoraBlobStore extends AbstractStore implements BlobStore {
         return blobFactories.get(prefix);
 
     return null;
-  }
-
-  /**
-   * Converts the blob-id to a blob.
-   *
-   * @param cm The ClassMetadata of the blob
-   * @param blobId The blob id
-   * @param con the connection handle to Fedora
-   *
-   * @return the FedoraBlob object created by the 'most specific' factory
-   *
-   * @throws OtmException on an error
-   */
-  public FedoraBlob toBlob(ClassMetadata cm, String blobId, Object instance, FedoraConnection con)
-                    throws OtmException {
-    FedoraBlobFactory bf   = mostSpecificBlobFactory(blobId);
-
-    if (bf == null)
-      throw new OtmException("Can't find a blob factory for " + blobId);
-
-    return bf.createBlob(cm, blobId, instance, con);
   }
 
   /**

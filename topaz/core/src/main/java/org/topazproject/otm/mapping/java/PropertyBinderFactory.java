@@ -18,11 +18,22 @@
  */
 package org.topazproject.otm.mapping.java;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.activation.DataSource;
+
+import org.topazproject.otm.Blob;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.BinderFactory;
+import org.topazproject.otm.mapping.PropertyBinder;
+import org.topazproject.otm.mapping.PropertyBinder.ManagedStreamer;
+import org.topazproject.otm.mapping.PropertyBinder.SerializingStreamer;
+import org.topazproject.otm.mapping.PropertyBinder.Streamer;
+import org.topazproject.otm.mapping.PropertyBinder.UnManagedStreamer;
 import org.topazproject.otm.metadata.BlobDefinition;
 import org.topazproject.otm.metadata.Definition;
 import org.topazproject.otm.metadata.EmbeddedDefinition;
@@ -75,11 +86,10 @@ public class PropertyBinderFactory implements BinderFactory {
                                      sf.getClassMetadata(((EmbeddedDefinition) pd).getEmbedded()));
 
     Serializer serializer;
+    Streamer streamer  = null;
     Class<?>   type = property.getComponentType();
 
-    if (pd instanceof BlobDefinition)
-      serializer = null;
-    else if (pd instanceof RdfDefinition) {
+    if (pd instanceof RdfDefinition) {
       RdfDefinition rd = (RdfDefinition) pd;
       serializer = (rd.isAssociation()) ? null
                    : sf.getSerializerFactory().getSerializer(type, rd.getDataType());
@@ -94,6 +104,177 @@ public class PropertyBinderFactory implements BinderFactory {
     } else
       serializer = sf.getSerializerFactory().getSerializer(type, null);
 
-    return AbstractFieldBinder.getBinder(property, serializer);
+    if (pd instanceof BlobDefinition) {
+      if (property.isCollection())
+        throw new OtmException("Collections of Blobs not supported. Property: " + property);
+
+      if ((property.isArray() && !type.equals(Byte.TYPE)))
+        throw new OtmException("Arrays of Blobs not supported. Property: " + property);
+
+      streamer = getStreamer(type);
+
+      if (streamer == null) {
+        if (serializer == null)
+          throw new OtmException("Cannot create a Blob-Streamer for property : " + property);
+
+        streamer = new SerializingStreamer();
+      } else {
+        /*
+         * Remove serializer here otherwise serializer may create multiple
+         * values. (eg. one value for each byte in a byte[] field.) This
+         * will create issues for text-search etc.
+         *
+         * The only place where serializer is appropriate is when
+         * using a serializing-streamer.
+         */
+        serializer = null;
+      }
+    }
+
+    if (property.isArray())
+      return new ArrayFieldBinder(property, serializer, streamer);
+
+    if (property.isCollection())
+      return new CollectionFieldBinder(property, serializer);
+
+    return new ScalarFieldBinder(property, serializer, streamer);
+  }
+
+  private Streamer getStreamer(Class<?> type) throws OtmException {
+    // really need a factory here
+    if (type.equals(Byte.TYPE))
+      return getByteArrayStreamer();
+
+    if (type.equals(DataSource.class))
+      return getDataSourceStreamer();
+
+    if (type.equals(Blob.class))
+      return getBlobStreamer();
+
+    if (type.equals(InputStream.class))
+      return getInputStreamStreamer();
+
+    return null;
+  }
+
+  private static Streamer getBlobStreamer() {
+    return new ManagedStreamer() {
+      public void attach(PropertyBinder binder, Object instance, Blob blob) throws OtmException {
+        binder.setRawValue(instance, blob);
+      }
+    };
+  }
+
+  private static Streamer getByteArrayStreamer() {
+    return new UnManagedStreamer() {
+
+      public byte[] getBytes(PropertyBinder binder, Object instance) throws OtmException {
+        return (byte[]) binder.getRawValue(instance, false);
+      }
+
+      public void setBytes(PropertyBinder binder, Object instance, byte[] bytes)
+          throws OtmException {
+        binder.setRawValue(instance, bytes);
+      }
+    };
+  }
+
+  private static Streamer getDataSourceStreamer() {
+    return new ManagedStreamer() {
+
+      public void attach(PropertyBinder binder, Object instance, final Blob blob) throws OtmException {
+        binder.setRawValue(instance, new DataSource() {
+
+          public String getContentType() {
+            return "application/octet-stream";
+          }
+
+          public InputStream getInputStream() throws IOException {
+            return blob.getInputStream();
+          }
+
+          public String getName() {
+            return blob.getId();
+          }
+
+          public OutputStream getOutputStream() throws IOException {
+            return blob.getOutputStream();
+          }
+        });
+      }
+    };
+  }
+
+  private static Streamer getInputStreamStreamer() {
+    return new ManagedStreamer() {
+      public void attach(PropertyBinder binder, Object instance, final Blob blob) throws OtmException {
+        binder.setRawValue(instance, new InputStream() {
+          private InputStream in = null;
+
+          private InputStream ensureOpen() throws IOException {
+            if (in == null)
+              in = blob.getInputStream();
+
+            return in;
+          }
+
+          @Override
+          public int available() throws IOException {
+            return ensureOpen().available();
+          }
+
+          @Override
+          public void close() throws IOException {
+            if (in != null)
+              in.close();
+
+            in = null;
+          }
+
+          @Override
+          public synchronized void mark(int readlimit) {
+            try {
+              ensureOpen().mark(readlimit);
+            } catch (IOException e) {
+              throw new OtmException("Lost connection to Blob", e);
+            }
+          }
+
+          @Override
+          public boolean markSupported() {
+            try {
+              return ensureOpen().markSupported();
+            } catch (IOException e) {
+              throw new OtmException("Lost connection to Blob", e);
+            }
+          }
+
+          @Override
+          public int read(byte[] b, int off, int len) throws IOException {
+            return ensureOpen().read(b, off, len);
+          }
+
+          @Override
+          public int read(byte[] b) throws IOException {
+            return ensureOpen().read(b);
+          }
+
+          @Override
+          public int read() throws IOException {
+            return ensureOpen().read();
+          }
+
+          @Override
+          public synchronized void reset() throws IOException {
+            ensureOpen().reset();
+          }
+
+          @Override
+          public long skip(long n) throws IOException {
+            return ensureOpen().skip(n);
+          }
+        });
+      }
+    };
   }
 }

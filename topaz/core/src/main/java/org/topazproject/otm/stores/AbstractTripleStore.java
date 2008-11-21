@@ -24,7 +24,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.otm.AbstractStore;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.OtmException;
@@ -36,7 +35,7 @@ import org.topazproject.otm.criterion.CriterionBuilder;
  *
  * @author Pradeep Krishnan
  */
-public abstract class AbstractTripleStore extends AbstractStore implements TripleStore {
+public abstract class AbstractTripleStore implements TripleStore {
   private static final Log log = LogFactory.getLog(AbstractTripleStore.class);
   /**
    * Map of Criterion Builders for store specific functions.

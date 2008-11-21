@@ -38,11 +38,13 @@ import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.IdMapper;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoader;
+import org.topazproject.otm.mapping.PropertyBinder.Streamer;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.metadata.SearchableDefinition;
 import org.topazproject.otm.query.Results;
 
+import org.topazproject.otm.Blob;
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
@@ -133,10 +135,10 @@ public class SessionImpl extends AbstractSession {
       }
     }
 
-    if (tsCon != null)
-      sessionFactory.getTripleStore().flush(tsCon);
     if (bsCon != null)
       sessionFactory.getBlobStore().flush(bsCon);
+    if (tsCon != null)
+      sessionFactory.getTripleStore().flush(tsCon);
   }
 
   private void doFlush() throws OtmException {
@@ -505,8 +507,9 @@ public class SessionImpl extends AbstractSession {
        interceptor.onPreDelete(this, cm, id.getId(), o);
      states.remove(o);
      if (bf) {
-       updateBlobSearch(ss, bs, cm, id, o, true);
-       bs.delete(cm, id.getId(), o, getBlobStoreCon());
+       Blob blob = getBlob(cm, id.toString(), o);
+       blob.delete();
+       updateBlobSearch(ss, blob, cm, id, o);
      }
      if (tp) {
        updateTripleSearch(ss, cm, cm.getRdfMappers(), id, o, true);
@@ -556,23 +559,24 @@ public class SessionImpl extends AbstractSession {
         wroteSomething = true;
       }
       if (bf) {
+        Blob blob = getBlob(cm, id.toString(), o);
         switch (states.digestUpdate(o, cm, this)) {
           case delete:
-            updateBlobSearch(ss, bs, cm, id, o, true);
-            bs.delete(cm, id.getId(), o, getBlobStoreCon());
+            getBlob(cm, id.toString(), o).delete();
             break;
           case update:
-            updateBlobSearch(ss, bs, cm, id, o, true);
-            bs.delete(cm, id.getId(), o, getBlobStoreCon());
           case insert:
-            bs.insert(cm, id.getId(), o, getBlobStoreCon());
-            updateBlobSearch(ss, bs, cm, id, o, false);
-            break;
-          case noChange:
-          default:
-            bf = false;
+            PropertyBinder binder = cm.getBlobField().getBinder(getEntityMode());
+            byte[] b = binder.getStreamer().getBytes(binder, o);
+            blob.writeAll(b);
             break;
         }
+
+        if (blob.getChangeState() == Blob.ChangeState.NONE)
+          bf = false;
+        else
+         updateBlobSearch(ss, blob, cm, id, o);
+
         if (updates != null)
           updates.blobChanged = bf;
         if (bf)
@@ -605,19 +609,20 @@ public class SessionImpl extends AbstractSession {
      store.index(cm, sdList, id.getId(), o, getSearchStoreCon());
   }
 
-  private <T> void updateBlobSearch(SearchStore store, BlobStore bs, ClassMetadata cm, Id id, T o,
-                                    boolean delete)
+  private <T> void updateBlobSearch(SearchStore store, Blob blob, ClassMetadata cm, Id id, T o)
       throws OtmException {
    SearchableDefinition sd = getSearchableDef(cm, cm.getBlobField());
    if (sd == null)
      return;
 
-   if (delete) {
-     o = (T) bs.get(cm, id.getId(), null, getBlobStoreCon());
-     if (o != null)
+   switch (blob.getChangeState()) {
+     case DELETED:
        store.remove(cm, sd, id.getId(), o, getSearchStoreCon());
-   } else {
-     store.index(cm, Collections.singleton(sd), id.getId(), o, getSearchStoreCon());
+       break;
+     case WRITTEN:
+       store.remove(cm, sd, id.getId(), o, getSearchStoreCon());
+     case CREATED:
+       store.index(cm, Collections.singleton(sd), id.getId(), o, getSearchStoreCon());
    }
   }
 
@@ -654,8 +659,10 @@ public class SessionImpl extends AbstractSession {
           if (instance != null)
             cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
         }
-        if (cm.getBlobField() != null)
-          instance = sessionFactory.getBlobStore().get(cm, id.getId(), instance, getBlobStoreCon());
+        if (cm.getBlobField() != null) {
+          Blob blob = getBlob(cm, id.getId(), instance);
+          instance = instantiate(instance, cm, id.getId(), blob);
+        }
       }
     }
 
@@ -686,6 +693,31 @@ public class SessionImpl extends AbstractSession {
     } finally {
       currentGets.remove(id);
     }
+  }
+
+  private Object instantiate(Object instance, ClassMetadata cm, String id, Blob blob)
+             throws OtmException {
+    boolean blobOnly = cm.getAllTypes().isEmpty() && cm.getRdfMappers().isEmpty();
+    if (!blobOnly && (instance == null))
+      return null;
+
+    PropertyBinder binder = cm.getBlobField().getBinder(getEntityMode());
+    Streamer streamer = binder.getStreamer();
+
+    // avoid exists() test if possible
+    boolean testExists = !streamer.isManaged() || (instance == null);
+
+    if (!testExists || blob.exists()) {
+      if (instance == null)
+        instance = cm.getEntityBinder(getEntityMode()).newInstance();
+      cm.getIdField().getBinder(getEntityMode()).set(instance, Collections.singletonList(id));
+
+      if (streamer.isManaged())
+        streamer.attach(binder, instance, blob);
+      else
+        streamer.setBytes(binder, instance, blob.readAll());
+    }
+    return instance;
   }
 
   private Object instantiate(Object instance, Id id, TripleStore.Result result)
@@ -801,6 +833,17 @@ public class SessionImpl extends AbstractSession {
 
       ClassMetadata cm    = sessionFactory.getInstanceMetadata(id.getClassMetadata(),
                                               getEntityMode(), o);
+
+      if (update && (cm.getBlobField() != null)) {
+        PropertyBinder binder = cm.getBlobField().getBinder(getEntityMode());
+        Streamer streamer = binder.getStreamer();
+        // attach the Blob
+        if (streamer.isManaged()) {
+          Blob blob = getBlob(cm, id.getId(), o);
+          streamer.attach(binder, o, blob);
+        }
+      }
+
       Set<Wrapper> assocs = new HashSet<Wrapper>();
 
       for (RdfMapper m : cm.getRdfMappers()) {

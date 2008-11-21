@@ -61,6 +61,7 @@ import org.topazproject.otm.mapping.AbstractMapper;
 import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
+import org.topazproject.otm.mapping.PropertyBinder.Streamer;
 import org.topazproject.otm.mapping.java.AbstractFieldBinder;
 import org.topazproject.otm.metadata.Definition;
 import org.topazproject.otm.metadata.PropertyDefinition;
@@ -158,7 +159,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
         propertyBinders.putAll(m.getBinders());
       } else {
         Session sess = ((ItqlStoreConnection) con).getSession();
-        propertyBinders.put(sess.getEntityMode(), getBlobBinder(cm, sess));
+        propertyBinders.put(sess.getEntityMode(), getBlobBinder(cm, sess, id, false));
       }
 
       m = new AbstractMapper(propertyBinders) {
@@ -172,15 +173,24 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     insertInternal(cm, mappers, id, o, con);
   }
 
-  private static PropertyBinder getBlobBinder(ClassMetadata cm, Session sess) {
+  private static PropertyBinder getBlobBinder(final ClassMetadata cm, final Session sess,
+                                              final String id, final boolean deleting) {
     final PropertyBinder origBinder = cm.getBlobField().getBinder(sess);
-    if (origBinder.getSerializer() != null)
+    if (!deleting && (origBinder.getSerializer() != null))
       return origBinder;
 
+    final Streamer streamer = origBinder.getStreamer();
     // FIXME: this has too many assumptions...
-    return new AbstractFieldBinder(null, null) {
+    return new AbstractFieldBinder(null, null, null) {
       public List get(Object o) throws OtmException {
-        byte[] b = (byte[]) origBinder.getRawValue(o, false);
+
+        byte[] b = sess.getSessionFactory().getBlobStore()
+                                           .getBlob(cm, id, o, sess.getBlobStoreCon())
+                                           .readAll(deleting);
+
+        if ((b == null) || (b.length == 0))
+          return Collections.emptyList();
+
         try {
           return Collections.singletonList(new String(b, "UTF-8"));
         } catch (UnsupportedEncodingException uee) {
@@ -452,20 +462,19 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
                          Connection con) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
-    byte[] b = (byte[]) cm.getBlobField().getBinder(isc.getSession()).getRawValue(o, false);
-    String text;
-    try {
-      text = new String(b, "UTF-8");
-    } catch (UnsupportedEncodingException uee) {
-      throw new OtmException("Unexpected error", uee);
+    PropertyBinder binder = getBlobBinder(cm, isc.getSession(), id, true);
+
+    List vals = binder.get(o);
+
+    String text = (vals.size() == 1) ? (String) vals.get(0) : null;
+    if (text != null) {
+      if (field.getPreProcessor() != null)
+        text = field.getPreProcessor().process(text);
+
+      String tql = "delete <" + id + "> <" + field.getUri() + "> '" + RdfUtil.escapeLiteral(text) +
+                   "' from <" + getGraphUri(field.getIndex(), isc) + ">;";
+      doDelete(isc, tql);
     }
-
-    if (field.getPreProcessor() != null)
-      text = field.getPreProcessor().process(text);
-
-    String tql = "delete <" + id + "> <" + field.getUri() + "> '" + RdfUtil.escapeLiteral(text) +
-                 "' from <" + getGraphUri(field.getIndex(), isc) + ">;";
-    doDelete(isc, tql);
   }
 
   private void doDelete(ItqlStoreConnection isc, String delete) throws OtmException {

@@ -40,6 +40,7 @@ import org.topazproject.otm.serializer.Serializer;
  */
 public abstract class AbstractFieldBinder implements FieldBinder {
   private final Serializer serializer;
+  private final Streamer   streamer;
   private final Property   property;
 
   /**
@@ -47,10 +48,12 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    *
    * @param property the java beans property
    * @param serializer the serializer or null
+   * @param streamer the streamer or null
    */
-  public AbstractFieldBinder(Property property, Serializer serializer) {
+  public AbstractFieldBinder(Property property, Serializer serializer, Streamer streamer) {
     this.property     = property;
     this.serializer   = serializer;
+    this.streamer     = streamer;
   }
 
   /*
@@ -128,6 +131,13 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    */
   public Serializer getSerializer() {
     return serializer;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Streamer getStreamer() {
+    return streamer;
   }
 
   /**
@@ -255,23 +265,5 @@ public abstract class AbstractFieldBinder implements FieldBinder {
            + ((type != null) ? type.getName() : "-null-") + ", componentType="
            + ((componentType != null) ? componentType.getName() : "-null-") + ", serializer="
            + serializer + "]";
-  }
-
-  /**
-   * Create a PropertyBinder for the given Property.
-   *
-   * @param property the property
-   * @param serializer the serializer to use
-   *
-   * @return a newly created binder instance
-   */
-  public static FieldBinder getBinder(Property property, Serializer serializer) {
-    if (property.isArray())
-      return new ArrayFieldBinder(property, serializer);
-
-    if (property.isCollection())
-      return new CollectionFieldBinder(property, serializer);
-
-    return new ScalarFieldBinder(property, serializer);
   }
 }

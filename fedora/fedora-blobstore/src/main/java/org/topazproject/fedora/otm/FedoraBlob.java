@@ -18,6 +18,7 @@
  */
 package org.topazproject.fedora.otm;
 
+import org.topazproject.fedora.client.Datastream;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 
@@ -56,33 +57,65 @@ public interface FedoraBlob {
   public ClassMetadata getClassMetadata();
 
   /**
-   * Ingest the contents into Fedora.
+   * Gets the datastream label to use in the FOXML. eg. "Annotation content".
    *
-   * @param blob the blob contents
-   * @param con the Fedora connection handle
-   *
-   * @throws OtmException on an error
+   * @return the label to use
    */
-  public void ingest(byte[] blob, FedoraConnection con)
-              throws OtmException;
+  public String getDatastreamLabel();
 
   /**
-   * Purge this Blob from Fedora.
+   * Gets the content model to use in the FOXML. eg. "Annotation".
    *
-   * @param con the Fedora connection handle
-   *
-   * @throws OtmException on an error
+   * @return the content model
    */
-  public void purge(FedoraConnection con) throws OtmException;
+  public String getContentModel();
 
   /**
-   * Gets the blob content (if it exists) from Fedora.
+   * Gets the contentType for use in the FOXML. eg. "application/octet-stream".
    *
-   * @param con the Fedora connection handle
+   * @return the content type
+   */
+  public String getContentType();
+
+  /**
+   * Get the first operation to try when ingesting blob. Subclasses that know something of
+   * their use can override this to reduce the number of calls made to fedora. E.g. if some class
+   * never has it's contents updated and only ever has one datastream per object, then it would
+   * return <var>AddObj</var> here.
    *
-   * @return the blob content or null if the blob does not exist
+   * <p>By default this returns <var>AddDs</var>.
+   *
+   * @return the first operation to try
+   */
+  public INGEST_OP getFirstIngestOp();
+
+  enum INGEST_OP { AddObj, AddDs, ModDs }
+
+  /**
+   * Generate the FOXML used to create a new Fedora Object with the Blob DataStream.
+   *
+   * @param ref the location where blob content is uploaded to (returned by Fedora on upload)
+   *
+   * @return the FOXML ready for ingesting
+   */
+  public byte[] getFoxml(String ref);
+
+  public boolean hasSingleDs();
+
+  /**
+   * Checks if the data-streams on this object are significant enough so as not to purge
+   * this. In general, if the only data-stream remaining is the "DC", "RELS-EXT", or current
+   * datastream, then the whole object can be purged; otherwise only the datastream is purged.
+   * Override it in sub-classes to handle app specific processing.
+   *
+   * @param ds the current list of data-streams
+   *
+   * @return true if it can be purged, false if only the datastream should be purged, or null
+   *         if nothing should be done (e.g. because the object doesn't exist in the first place)
    *
    * @throws OtmException on an error
    */
-  public byte[] get(FedoraConnection con) throws OtmException;
+  public boolean canPurgeObject(Datastream[] ds) throws OtmException;
+
 }
+
