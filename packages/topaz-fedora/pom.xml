@@ -157,6 +157,12 @@
                   </sources>
                 </mapping>
                 <mapping>
+                  <directory>/var/log/topaz</directory>
+                  <filemode>755</filemode>
+                  <username>topaz</username>
+                  <groupname>topaz</groupname>
+                </mapping>
+                <mapping>
                   <directory>/var/log/topaz/fedora</directory>
                   <filemode>755</filemode>
                   <username>topaz</username>
