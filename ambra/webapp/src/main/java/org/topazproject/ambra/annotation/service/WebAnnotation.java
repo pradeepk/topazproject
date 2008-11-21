@@ -25,7 +25,7 @@ import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Correction;
 import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.MinorCorrection;
-import org.topazproject.ambra.models.Comment;
+
 
 /**
  *  View level wrapper for Annotations. It provides
@@ -98,10 +98,6 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
     return annotea instanceof Correction;
   }
 
-  public boolean isComment() {
-    return annotea instanceof Comment;
-  }
-
   /**
    * Creates a WebAnnotation object.
    *
@@ -113,22 +109,4 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
     super(annotation, creatorName, originalBodyContent);
   }
 
-  /**
-   * Provide a display name for the various types of annotations on articles.
-   *
-   * @return display name as String.
-   */
-  public String getDisplayName() {
-
-    if (isComment()) {
-      return (getContext() != null) ? "Note" : "Comment";
-    } else if (isFormalCorrection()) {
-      return "Formal Correction";
-    } else if (isMinorCorrection()) {
-      return "Minor Correction";
-    } else if (isCorrection()) {
-      return "Correction";
-    }
-    return null;
-  }
 }

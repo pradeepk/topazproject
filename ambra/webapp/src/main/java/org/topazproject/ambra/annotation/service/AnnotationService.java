@@ -20,9 +20,6 @@ package org.topazproject.ambra.annotation.service;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -31,7 +28,6 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
@@ -53,8 +49,6 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Query;
-import org.topazproject.otm.query.Results;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session.FlushMode;
 import org.topazproject.otm.criterion.Restrictions;
@@ -63,15 +57,15 @@ import org.topazproject.otm.criterion.Restrictions;
  * Wrapper over annotation(not the same as reply) web service
  */
 public class AnnotationService extends BaseAnnotationService {
+  public static final String ANNOTATED_KEY = "ArticleAnnotationCache-Annotation-";
 
   protected static final Set<Class<?extends ArticleAnnotation>> ALL_ANNOTATION_CLASSES =
     new HashSet<Class<?extends ArticleAnnotation>>();
-
-  public  static final String ANNOTATED_KEY = "ArticleAnnotationCache-Annotation-";
-  private static final Log    log  = LogFactory.getLog(AnnotationService.class);
-  private        final AnnotationsPEP pep;
-  private              Cache          articleAnnotationCache;
-  private              Invalidator    invalidator;
+  private static final Log     log                    =
+    LogFactory.getLog(AnnotationService.class);
+  private final AnnotationsPEP       pep;
+  private Cache              articleAnnotationCache;
+  private Invalidator        invalidator;
 
   static {
     ALL_ANNOTATION_CLASSES.add(ArticleAnnotation.class);
@@ -247,169 +241,6 @@ public class AnnotationService extends BaseAnnotationService {
   }
 
   /**
-   * Get all annotations satisfying the criteria.
-   *
-   * @param articleId  limits the list to annotations from a particular article.
-   * @param startDate  is the date to start searching from. If null, start from begining of time.
-   *                   Can be iso8601 formatted or string representation of Date object.
-   * @param endDate    is the date to search until. If null, search until present date
-   * @param mediator   the mediator of the annotation.
-   * @param annotType  a filter list of rdf types for the annotations.
-   * @param states     array of states to filter on
-   * @param ascending  controls the sort order (by date).
-   * @param maxResults the maximum number of results to return, or 0 for no limit
-   *
-   * @return the (possibly empty) list of articles.
-   *
-   * @throws ParseException if any of the dates or query could not be parsed
-   * @throws URISyntaxException if an element of annotType cannot be parsed as a URI
-   */
-  @Transactional(readOnly = true)
-  public List<ArticleAnnotation> getAnnotations(String articleId, Date startDate, Date endDate,
-      String mediator, List<String> annotType,int[] states, boolean ascending,
-      int maxResults) throws ParseException, URISyntaxException {
-
-    List<String> annotationIds = getAnnotationIds(articleId, startDate, endDate,
-                                   mediator, annotType, states, ascending, maxResults);
-
-    return getAnnotations(annotationIds);
-  }
-
-  /**
-   * Get a list of all annotation Ids satifying the given criteria. All caching is done
-   * at the object level by the session.
-   *
-   * @param targetId  limits annotations to a particlualr target id.
-   * @param startDate  search for annotation after start date.
-   * @param endDate    is the date to search until. If null, search until present date
-   * @param mediator   annotation mediator
-   * @param annotType  a filter list of rdf types for the annotations.
-   * @param states     the list of annotation states to search for (all states if null or empty)
-   * @param ascending  controls the sort order (by date).
-   * @param maxResults the maximum number of results to return, or 0 for no limit
-   *
-   * @return the (possibly empty) list of article ids.
-   *
-   * @throws ParseException   if any of the dates or query could not be parsed
-   * @throws URISyntaxException  if an element of annotType cannot be parsed as a URI
-   */
-  @Transactional(readOnly = true)
-  public List<String> getAnnotationIds(String targetId, Date startDate, Date endDate,
-      String mediator, List<String> annotType, int[] states, boolean ascending,
-      int maxResults) throws ParseException, URISyntaxException {
-
-    StringBuilder qry = new StringBuilder();
-
-    if (targetId != null) {
-      qry.append("select a.id id, cr from Annotation a ");
-      qry.append("where cr := a.created and ");
-      qry.append("a.annotates = :targ and ");
-    } else {
-      qry.append("select a.id id, cr from ArticleAnnotation a, Article ar ");
-      qry.append("where a.annotates = ar and cr := a.created and ");
-    }
-
-    if (mediator != null)
-      qry.append("a.mediator = :med and ");
-
-    // apply date constraints
-    if (startDate != null)
-      qry.append("ge(cr, :sd) and ");
-    if (endDate != null)
-      qry.append("le(cr, :ed) and ");
-
-    // match all states
-    if (states != null && states.length > 0) {
-      qry.append("(");
-      for (int idx = 0; idx < states.length; idx++)
-        qry.append("art.state = :st").append(idx).append(" or ");
-      qry.setLength(qry.length() - 4);
-      qry.append(") ");
-    }
-
-    // match all types
-    if (annotType != null && annotType.size() > 0) {
-      qry.append("(");
-      int idx = 0;
-      for (String type : annotType)
-        qry.append("a.<rdf:type> = :type").append(idx++).append(" or ");
-      qry.setLength(qry.length() - 4);
-      qry.append(") ");
-    }
-
-    // trim off trailing 'and'
-    if (qry.indexOf(" and ", qry.length() - 5) > 0)
-      qry.setLength(qry.length() - 4);
-
-    // add ordering and limit
-    qry.append("order by cr ").append(ascending ? "asc" : "desc").append(", id asc");
-
-    if (maxResults > 0)
-      qry.append(" limit ").append(maxResults);
-
-    qry.append(";");
-
-    // create the query, applying parameters
-    Query q = session.createQuery(qry.toString());
-
-    if (targetId != null)
-      q.setParameter("targ", targetId);
-    if (mediator != null)
-      q.setParameter("med", mediator);
-    if (startDate != null)
-      q.setParameter("sd",  startDate);
-    if (endDate != null)
-      q.setParameter("ed",  endDate);
-    for (int idx = 0; states != null && idx < states.length; idx++)
-      q.setParameter("st" + idx, states[idx]);
-    for (int idx = 0; annotType != null && idx < annotType.size(); idx++)
-      q.setUri("type" + idx, new URI(annotType.get(idx)));
-
-    Results r = q.execute();
-    // apply access-controls
-    List<String> res = new ArrayList<String>();
-    while (r.next()) {
-      URI id = r.getURI(0);
-      try {
-        pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, id);
-        res.add(id.toString());
-      } catch (SecurityException se) {
-        if (log.isDebugEnabled())
-          log.debug("Filtering URI " + id + " from Article list due to PEP SecurityException", se);
-      }
-    }
-    return res;
-  }
-
-  /**
-   * Get all annotations specified by the list of annotation ids.
-   *
-   * @paramet annotIds a list of annotations Ids to retrieve.
-   *
-   * @return the (possibly empty) list of annotations.
-   *
-   */
-  @Transactional(readOnly = true)
-  public List<ArticleAnnotation> getAnnotations(List<String> annotIds) {
-    List<ArticleAnnotation> annotationList = new ArrayList<ArticleAnnotation>();
-
-    for (String id : annotIds)  {
-      try {
-        pep.checkAccess(AnnotationsPEP.GET_ANNOTATION_INFO, URI.create(id));
-        ArticleAnnotation a = session.get(ArticleAnnotation.class, id);
-
-        if (a != null)
-          annotationList.add(a);
-
-      } catch (SecurityException se) {
-        if (log.isDebugEnabled())
-          log.debug("Filtering URI " + id + " from Article list due to PEP SecurityException", se);
-      }  
-    }
-    return annotationList;
-  }
-
-  /**
    * Helper method to set restrictions on the criteria used in listAnnotations()
    *
    * @param c the criteria
@@ -455,6 +286,7 @@ public class AnnotationService extends BaseAnnotationService {
       Set<Class<?extends ArticleAnnotation>> annotationClassTypes)
     throws OtmException, SecurityException {
     pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
+
 
     List<ArticleAnnotation> filtered = new ArrayList<ArticleAnnotation>();
 
@@ -670,7 +502,8 @@ public class AnnotationService extends BaseAnnotationService {
                     AnnotationsPEP.DELETE_ANNOTATION,
                     AnnotationsPEP.SUPERSEDE}, everyone);
   }
-               
+
+
   /**
    * Create a flag against an annotation or a reply
    *
@@ -682,8 +515,8 @@ public class AnnotationService extends BaseAnnotationService {
    * @throws Exception on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public String createFlag(final String target, final String reasonCode,
-      final String body, final String mimeType) throws Exception {
+  public String createFlag(final String target, final String reasonCode, final String body, final String mimeType)
+        throws Exception {
     final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
     return createComment(target, null, null, null, mimeType, flagBody, true);
   }
@@ -707,8 +540,7 @@ public class AnnotationService extends BaseAnnotationService {
         if (log.isDebugEnabled())
           log.debug("ArticleAnnotation changed/deleted. Invalidating annotation list " +
               " for the target this was annotating or is about to annotate.");
-        articleAnnotationCache.remove(ANNOTATED_KEY +
-            ((ArticleAnnotation)o).getAnnotates().toString());
+        articleAnnotationCache.remove(ANNOTATED_KEY + ((ArticleAnnotation)o).getAnnotates().toString());
         if ((updates != null) && updates.isChanged("annotates")) {
            List<String> v = updates.getOldValue("annotates");
            if (v.size() == 1)

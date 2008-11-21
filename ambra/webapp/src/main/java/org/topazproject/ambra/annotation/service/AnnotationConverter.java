@@ -60,26 +60,6 @@ public class AnnotationConverter {
   }
 
   /**
-   * Converts and <code>ArticleAnnotation</code> to <code>List&lt;Webannotation&gt;</code>
-   *
-   * @param annotations an list of annotations
-   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
-   * @param needBody indicates if the annotation body is required
-   * @return an array of Annotation objects as required by the web layer
-   */
-  @Transactional(readOnly = true)
-  public List<WebAnnotation> convert(final List<ArticleAnnotation> annotations, boolean needCreatorName,
-                                     boolean needBody) {
-    final List<WebAnnotation> wa  = new ArrayList<WebAnnotation>();
-
-    for (ArticleAnnotation annotation : annotations) {
-      if (annotation != null)
-        wa.add(convert(annotation, needCreatorName, needBody));
-    }
-      return wa;
-  }
-
-  /**
    * @param annotations an array of annotations
    * @param needCreatorName indicates if a display-name of the creator needs to be fetched
    * @param needBody indicates if the annotation body is required
@@ -211,7 +191,7 @@ public class AnnotationConverter {
   }
 
   private String loadBody(final Annotea<? extends Blob> annotea) throws OtmException, Error {
-    String body;
+    String body = null;
     byte[] b = annotea.getBody().getBody(); // could throw OtmException (lazy loaded)
 
     try {
