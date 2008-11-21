@@ -111,6 +111,9 @@
         <simple>
           <directory>${java.io.tmpdir}/blob-store</directory>
         </simple>
+        <fedora>
+          <tmpdir>${java.io.tmpdir}/fedora-work</tmpdir>
+        </fedora>
       </blobStore>
     </topaz>
 

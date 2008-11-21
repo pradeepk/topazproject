@@ -18,24 +18,12 @@
  */
 package org.topazproject.fedora.otm;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-
-import java.net.URL;
-
-import java.rmi.RemoteException;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.topazproject.fedora.client.Datastream;
-import org.topazproject.fedora.client.FedoraAPIM;
-import org.topazproject.fedora.client.Uploader;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
@@ -47,7 +35,6 @@ import org.topazproject.otm.RdfUtil;
  * @author Pradeep Krishnan
  */
 public class DefaultFedoraBlob implements FedoraBlob {
-  private static final Log    log    = LogFactory.getLog(DefaultFedoraBlob.class);
   private static final String FOXML  =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
     + "<foxml:digitalObject PID=\"${PID}\" xmlns:foxml=\"info:fedora/fedora-system:def/foxml#\">"
@@ -80,30 +67,18 @@ public class DefaultFedoraBlob implements FedoraBlob {
     this.dsId                        = dsId;
   }
 
-  /*
-   * inherited javadoc
-   */
   public final String getBlobId() {
     return blobId;
   }
 
-  /*
-   * inherited javadoc
-   */
   public final ClassMetadata getClassMetadata() {
     return cm;
   }
 
-  /*
-   * inherited javadoc
-   */
   public final String getPid() {
     return pid;
   }
 
-  /*
-   * inherited javadoc
-   */
   public final String getDsId() {
     return dsId;
   }
@@ -111,29 +86,15 @@ public class DefaultFedoraBlob implements FedoraBlob {
   public INGEST_OP getFirstIngestOp() {
     return INGEST_OP.AddDs;
   }
-  /**
-   * Gets the contentType for use in the FOXML. Defaults to "application/octet-stream".
-   *
-   * @return the content type
-   */
+
   public String getContentType() {
     return "application/octet-stream";
   }
 
-  /**
-   * Gets the content model to use in the FOXML. Defaults to "Blob".
-   *
-   * @return the content model
-   */
   public String getContentModel() {
     return "Blob";
   }
 
-  /**
-   * Gets the datastream label to use in the FOXML. Defaults to "Blob content".
-   *
-   * @return the label to use
-   */
   public String getDatastreamLabel() {
     return "Blob content";
   }

@@ -35,16 +35,10 @@ import org.topazproject.otm.OtmException;
 public class DefaultFedoraBlobFactory implements FedoraBlobFactory {
   private String pidNs;
 
-  /*
-   * inherited javadoc
-   */
   public String[] getSupportedUriPrefixes() {
     return new String[] { "info:fedora/" };
   }
 
-  /*
-   * inherited javadoc
-   */
   public FedoraBlob createBlob(ClassMetadata cm, String id, Object blob, FedoraConnection con)
                         throws OtmException {
     return new DefaultFedoraBlob(cm, id, getPid(cm, id, blob, con), getDsId(cm, id, blob, con));
@@ -80,9 +74,6 @@ public class DefaultFedoraBlobFactory implements FedoraBlobFactory {
     return "BODY";
   }
 
-  /*
-   * inherited javadoc
-   */
   public String generateId(ClassMetadata cm, FedoraConnection con)
                     throws OtmException {
     String ns = getPidNs(cm, con);

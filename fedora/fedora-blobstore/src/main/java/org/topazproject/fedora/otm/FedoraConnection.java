@@ -18,8 +18,6 @@
  */
 package org.topazproject.fedora.otm;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,14 +25,6 @@ import java.io.InputStream;
 import java.net.URL;
 
 import java.rmi.RemoteException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
-
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +35,6 @@ import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedora.client.Uploader;
 import org.topazproject.fedora.otm.FedoraBlob.INGEST_OP;
 
-import org.topazproject.otm.AbstractConnection;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -157,17 +146,15 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
    * Ingest the contents into Fedora.
    *
    * @param blob the blob contents
+   * @param ref the uploaded content reference
+   *
    * @throws OtmException on an error
    */
-  private boolean ingest(FedoraBlob blob, File content) throws OtmException {
-    Uploader   upld   = getUploader();
-    FedoraAPIM apim   = getAPIM();
+  private boolean ingest(FedoraBlob blob, String ref) throws OtmException {
     String[]   newPid = new String[] { blob.getPid() };
     String[]   newDs  = new String[] { blob.getDsId() };
 
     try {
-      String ref = upld.upload(content);
-
       INGEST_OP op = blob.getFirstIngestOp();
       int maxIter = 3;
       while (op != null && maxIter-- > 0) {
@@ -314,7 +301,7 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
   /**
    * Gets the data-stream meta object from Fedora.
    *
-   * @param con the Fedora APIM stub to use
+   * @param blob the fedora blob
    *
    * @return the data-stream meta object
    *
@@ -336,7 +323,7 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
    * the remaining data-streams on it are not significant. Override it in sub-classes to handle
    * app specific processing.
    *
-   * @param con the connection handle
+   * @param blob the fedora blob
    *
    * @return true if it can be purged, false if only the datastream should be purged, or null
    *         if nothing should be done (e.g. because the object doesn't exist in the first place)
@@ -362,6 +349,8 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
 
   /**
    * Purge this Blob from Fedora.
+   *
+   * @param blob the blob to purge
    *
    * @throws OtmException on an error
    */
@@ -404,7 +393,10 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
   /**
    * Gets the blob content (if it exists) from Fedora.
    *
-   * @return the blob content or null if the blob does not exist
+   * @param blob the blo to download
+   * @param the file to download the blob content to
+   *
+   * @return true if the download succeeded. false if the blob does not exist
    *
    * @throws OtmException on an error
    */
@@ -467,7 +459,9 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
   }
 
   private class FileBackedFedoraBlob extends FileBackedBlobStore.FileBackedBlob {
+
     private final FedoraBlob fb;
+    private String ref = null;
 
     public FileBackedFedoraBlob(FedoraBlob fb, String id, File tmp, File bak) {
       super(id, tmp, bak);
@@ -490,8 +484,40 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
     }
 
     @Override
+    public boolean prepare() throws OtmException {
+      if (!super.prepare())
+        return false;
+
+      /*
+       * Upload in prepare phase. Important for large blobs since this
+       * is the most error prone part of the process.
+       */
+      ref = null;
+      switch(getChangeState()) {
+        case CREATED:
+        case WRITTEN:
+           try {
+            if (log.isDebugEnabled())
+              log.debug("Uploading blob to fedora: " + tmp + " for " + getId());
+            ref = getUploader().upload(tmp);
+          } catch (IOException e) {
+            throw new OtmException("Failed to upload: " + tmp + " for " + getId(), e);
+          }
+      }
+
+      return true;
+    }
+
+    @Override
     protected boolean moveToStore(File from) throws OtmException {
-      return ingest(fb, from);
+      /*
+       * Ensure what we uploaded and what is being asked to 'move' is the same.
+       * It should be the same - unless we screwed up our implementation.
+       */
+      assert (ref != null);
+      assert (from.equals(tmp));
+
+      return ingest(fb, ref);
     }
   }
 }

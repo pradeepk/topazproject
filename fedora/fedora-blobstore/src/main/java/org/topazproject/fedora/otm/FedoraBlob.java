@@ -100,6 +100,12 @@ public interface FedoraBlob {
    */
   public byte[] getFoxml(String ref);
 
+  /**
+   * Allows sub-classes to indicate that there is a one-to-one correspondence
+   * between blob-id and fedora-pid. This will govern how purges are done for example.
+   *
+   * @return true to assert that fedora-pid and blob-id has a one-to-one correspondence
+   */
   public boolean hasSingleDs();
 
   /**

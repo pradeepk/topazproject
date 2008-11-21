@@ -68,7 +68,7 @@ public class FedoraBlobStore extends FileBackedBlobStore {
    * @throws OtmException on an error
    */
   public FedoraBlobStore(String apimUri, String userName, String password) throws OtmException {
-    this(new File(new File(System.getProperty("user.dir")), "fedora-work"),
+    this(new File(new File(System.getProperty("java.io.tmpdir")), "fedora-work"),
          apimUri, userName, password);
   }
 
