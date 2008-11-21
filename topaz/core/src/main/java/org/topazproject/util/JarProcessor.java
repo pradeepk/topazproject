@@ -21,63 +21,69 @@ package org.topazproject.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.jar.JarFile;
+import java.util.jar.JarEntry;
+
 
 /**
- * This class is used to process the contents of a directory and everything under it.
+ * This class is used to process the contents of a Jar.
  * @author Paul Gearon
  */
-public class DirProcessor extends HierarchyProcessor {
+public class JarProcessor extends HierarchyProcessor {
+
+  public static final String JAR_PATH_SEP = "/";
 
   /**
-   * Creates a processor fo handling files and subdirectories under a directory.
+   * Creates a processor fo handling files and directories in a jar.
    * @param fileProc The function for processing any files found.
    * @param dirProc The function for processing any subdirectories found.
    *        May be <code>null</code>.
    * @param fileFilter A filter for selecting which files are to be processed.
    *        If <code>null</code> then all files are processed.
    */
-  public DirProcessor(FileProcessor fileProc, FileProcessor dirProc, FileFilter fileFilter) {
+  public JarProcessor(FileProcessor fileProc, FileProcessor dirProc, FileFilter fileFilter) {
     super(fileProc, dirProc, fileFilter);
   }
 
   /**
-   * Creates a processor fo handling files and subdirectories under a directory.
+   * Creates a processor fo handling files and directories in a jar.
    * @param fileProc The function for processing any files found.
    * @param dirProc The function for processing any subdirectories found.
    */
-  public DirProcessor(FileProcessor fileProc, FileProcessor dirProc) {
+  public JarProcessor(FileProcessor fileProc, FileProcessor dirProc) {
     this(fileProc, dirProc, null);
   }
 
   /**
-   * Creates a processor for handling files under a directory.
+   * Creates a processor for handling files in a jar.
    * @param fileProc The function for processing any files found.
    */
-  public DirProcessor(FileProcessor fileProc) {
+  public JarProcessor(FileProcessor fileProc) {
     this(fileProc, null, null);
   }
 
   /**
-   * Creates a processor for handling files with a given extension under a directory.
+   * Creates a processor for handling files with a given extension in a jar.
    * @param fileProc The function for processing any files found.
    * @param ext The file extension to use.
    */
-  public DirProcessor(FileProcessor fileProc, String ext) {
+  public JarProcessor(FileProcessor fileProc, String ext) {
     super(fileProc, ext);
   }
 
   /**
-   * Process a directory by name and everything under it.
-   * @param dirName The name of the directory to process.
+   * Process a jar by path.
+   * @param jarPath The path of the jar to process..
    * @return The number of items processed.
    * @throws IOException If there was an error processing the file.
    */
-  public int process(String dirName) throws IOException {
-    return process(new File(dirName), true);
+  public int process(String jarPath) throws IOException {
+    return process(new JarFile(jarPath));
   }
 
   /**
-   * Process a path by name. The contents of sub-paths in the hierarchy are optionally processed as well.
+   * Process a jar by path. Subdirectories found in a jar are optionally processed.
    * @param path The path name to process.
    * @param processSubDirs When <code>true</code> then processing will proceed into sub-paths.
    *                       Otherwise, processing is confined to just this path.
@@ -85,69 +91,69 @@ public class DirProcessor extends HierarchyProcessor {
    * @throws IOException If there was an error processing the file.
    */
   public int process(String path, boolean processSubDirs) throws IOException {
-    return process(new File(path), processSubDirs);
+    return process(new JarFile(path), processSubDirs);
   }
 
   /**
-   * Process a directory and everything under it.
-   * @param dirName The name of the directory to process.
+   * Process everything in a jar.
+   * @param jarPath The path of the jar to process.
    * @return The number of items processed.
    * @throws IOException If there was an error processing the file.
    */
-  public int process(File dir) throws IOException {
-    return process(dir, true);
+  public int process(JarFile jar) throws IOException {
+    return process(jar, true);
   }
 
   /**
-   * Process a directory. The contents of subdirectories are optionally processed as well.
-   * @param dir The directory to process.
+   * Process a jar. The contents of subdirectories in the jar are optionally processed as well.
+   * @param jar The jar to process.
    * @param processSubDirs When <code>true</code> then processing will proceed into subdirectories.
-   *                       Otherwise, processing is confined to just this directory.
+   *                       Otherwise, processing is confined to the root of the archive.
    * @return The number of items processed.
-   * @throws IOException If there was an error processing the file.
+   * @throws IOException If there was an error processing the archive.
    */
-  public int process(File dir, boolean processSubDirs) throws IOException {
+  public int process(JarFile jar, boolean processSubDirs) throws IOException {
     int total = 0;
-    for (File file: dir.listFiles(fileFilter)) total += fileProc.fn(file.getPath());
-    for (File d: dir.listFiles(DirFilter.INSTANCE)) {
-      if (dirProc != null)
-        total += dirProc.fn(d.getPath());
-      if (processSubDirs)
-        total += process(d, true);
+    Enumeration<JarEntry> entries = jar.entries();
+    while (entries.hasMoreElements()) {
+      JarEntry entry = entries.nextElement();
+      String entryPath = entry.getName();
+      // truncate the trailing / from directory names
+      if (entry.isDirectory())
+        entryPath = entryPath.substring(0, entryPath.length() - 1);
+      // if we are not recursing and this contains path separators, then continue
+      if (!processSubDirs && entryPath.contains(JAR_PATH_SEP))
+        continue;
+      if (entry.isDirectory()) {
+        if (dirProc != null)
+          total += dirProc.fn(entryPath);
+      } else {
+        if (fileFilter.accept(entryPath))
+          total += fileProc.fn(entryPath);
+      }
     }
     return total;
   }
 
   /**
-   * Gets a filter that will return <code>true</code> for normal files, and <code>false</code>
-   * for non-standard types, such as pipes and directories.
-   *
+   * Gets a filter that will return <code>true</code> for normal files.
    * @return an instance of a FileFilter for identifying files.
    */
   protected FileFilter getStandardFileFilter() {
-    return new AllStandardFiles();
+    return new AllFiles();
   }
 
   /**
-   * A FileFilter that passes all standard files.
+   * A FileFilter that passes all files. There is no need to distinguish between files and
+   * directories because this functor is only called for files.
    */
-  private static class AllStandardFiles implements FileFilter {
+  private static class AllFiles implements FileFilter {
     public boolean accept(File file) {
-      return file.isFile();
+      return true;
     }
     public boolean accept(String path) {
-      return new File(path).isFile();
+      return true;
     }
   }
 
-  /**
-   * A FileFilter that identifies all directories.
-   */
-  static class DirFilter implements java.io.FileFilter {
-    public static DirFilter INSTANCE = new DirFilter();
-    private DirFilter() { }
-    public boolean accept(File file) {
-      return file.isDirectory();
-    }
-  }
 }

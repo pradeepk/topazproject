@@ -96,7 +96,7 @@ public interface SessionFactory {
    *
    * @throws OtmException on an error
    */
-  public void preloadFromSearch() throws OtmException;
+  public void preloadFromClasspath() throws OtmException;
 
   /**
    * Preload all classes that can be found with a given resource marker.
@@ -105,7 +105,7 @@ public interface SessionFactory {
    *
    * @throws OtmException on an error
    */
-  public void preloadFromSearch(String res) throws OtmException;
+  public void preloadFromClasspath(String res) throws OtmException;
 
   /**
    * Validate the registered definitions and bindings and build the {@link ClassMetadata}

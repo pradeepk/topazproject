@@ -92,6 +92,7 @@ import org.topazproject.otm.TripleStore;
 
 import org.topazproject.util.FileProcessor;
 import org.topazproject.util.DirProcessor;
+import org.topazproject.util.JarProcessor;
 
 /**
  * A factory for otm sessions. It should be preloaded with the classes that would be persisted.
@@ -308,14 +309,14 @@ public class SessionFactoryImpl implements SessionFactory {
   /*
    * inherited javadoc
    */
-  public void preloadFromSearch() throws OtmException {
-    preloadFromSearch(DEFAULT_RES_MARKER);
+  public void preloadFromClasspath() throws OtmException {
+    preloadFromClasspath(DEFAULT_RES_MARKER);
   }
 
   /*
    * inherited javadoc
    */
-  public void preloadFromSearch(String res) throws OtmException {
+  public void preloadFromClasspath(String res) throws OtmException {
     try {
       Enumeration<URL> rs = SessionFactoryImpl.class.getClassLoader().getResources(res);
       while (rs.hasMoreElements())
@@ -796,6 +797,8 @@ public class SessionFactoryImpl implements SessionFactory {
     private static final String FILE = "file";
     private static final String FILE_PROT = FILE + ":";
     private static final String BANG = "!";
+
+    /** The path root of all the resources to be found by this processor. */
     private URL resRoot;
 
     /**
@@ -808,33 +811,42 @@ public class SessionFactoryImpl implements SessionFactory {
     }
 
     /**
-     * Determine the type of resource to be processed, and send it to the appropriate processor type.
+     * Determine the type of resource to be processed,
+     * and send it to the appropriate processor type.
      */
     public void run() {
       String protocol = resRoot.getProtocol();
       String path = resRoot.getPath();
       if (protocol.equals(JAR)) {
-        if (path.startsWith(FILE_PROT)) {
+        if (path.startsWith(FILE_PROT))
           processJar(path.substring(FILE_PROT.length(), path.indexOf(BANG)));
-        } else {
+        else
           processUnknown(path);
-        }
-      } else if (protocol.equals(FILE)){
+      } else if (protocol.equals(FILE))
         processPath(new File(path).getParent());
-      } else {
+      else
         processUnknown(resRoot.toString());
-      }
     }
 
     /**
      * Deal with resources that we don't understand.
+     * @param u The string representation of the URL for the resource root.
      */
     void processUnknown(String u) {
       log.info("Unable to search <" + u + "> for Entity classes");
     }
 
+    /**
+     * Process a Jar path.
+     * @param path The path of the Jar to be processed.
+     */
     void processJar(String path) {
-      log.warn("Not yet handling resource: " + path);
+      try {
+        int fileCount = new JarProcessor(new EntityFileProcessor(""), CLASS_EXT).process(path);
+        log.info("Loaded " + fileCount + " Entities from " + path);
+      } catch (IOException e) {
+        log.error("Error while searching classpath for entities", e);
+      }
     }
 
     /**
@@ -843,20 +855,7 @@ public class SessionFactoryImpl implements SessionFactory {
      */
     private void processPath(final String path) {
       // create a processor that can test files and load them if we want them.
-      FileProcessor fp = new FileProcessor() {
-        public Integer fn(File f) {
-          try {
-            Class<?> c = Class.forName(toClassName(path, f));
-            if (c.isAnnotationPresent(Entity.class)) {
-              preload(c);
-              return 1;
-            }
-          } catch (ClassNotFoundException e) {
-            log.error("Unexpectedly lost class for file: " + f, e);
-          }
-          return 0;
-        }
-      };
+      FileProcessor fp = new EntityFileProcessor(path);
 
       // process the path for class files
       try {
@@ -872,18 +871,53 @@ public class SessionFactoryImpl implements SessionFactory {
   /**
    * Take an absolute path to a class file, and convert it to a class name.
    * @param root The path to the point where the class hierarchy starts.
-   * @param f The File for the class file.
+   *             This will be empty for a Jar file.
+   * @param path The path for the class file.
    */
-  private static String toClassName(String root, File f) {
-    String path = f.getPath();
-    if (!path.endsWith(CLASS_EXT))
-      throw new AssertionError("Conversion to class on: " + f);
-    int start = root.length() + (root.endsWith(File.separator) ? 0 : 1);
+  private static String toClassName(String root, String path) {
+    assert path.endsWith(CLASS_EXT) : "Conversion to class on: " + path;
+    int start = root.length();
+    if (start != 0 && !root.endsWith(File.separator))
+      start++;
     path = path.substring(start, path.length() - CLASS_EXT.length());
 
-    return path.replace(File.separator, DOT);
+    String pathSeparator = (root.length() == 0) ? JarProcessor.JAR_PATH_SEP : File.separator;
+    return path.replace(pathSeparator, DOT);
   }
 
+
+  /**
+   * This class is a functor for processing classes that have entity annotations.
+   */
+  private class EntityFileProcessor implements FileProcessor {
+    private String pathRoot;
+
+    /**
+     * Create a new functor that will look for classes rooted with a particular path.
+     * @param pathRoot The root of the classes. This is part of a greater classpath.
+     */
+    public EntityFileProcessor(String pathRoot) {
+      this.pathRoot = pathRoot;
+    }
+
+    /**
+     * Processes a file. This will preload a file if it is a class that is annotated as an Entity.
+     * @param f The path to process.
+     * @return The number of files processed. 0 or 1.
+     */
+    public Integer fn(String f) {
+      try {
+        Class<?> c = Class.forName(toClassName(pathRoot, f));
+        if (c.isAnnotationPresent(Entity.class)) {
+          preload(c);
+          return 1;
+        }
+      } catch (ClassNotFoundException e) {
+        log.error("Unexpectedly lost class for file: " + f, e);
+      }
+      return 0;
+    }
+  }
 
   public LinkedHashSet<SubClassResolver> listEffectiveSubClassResolvers(String entity) {
     LinkedHashSet<SubClassResolver> resolvers = new LinkedHashSet<SubClassResolver>();
