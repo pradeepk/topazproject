@@ -54,57 +54,57 @@
   </ciManagement>
 
   <mailingLists>
-   <mailingList>
-    <name>Topaz project developer mailing
-     list</name>
-    <subscribe>topaz-dev-subscribe@topazproject.org</subscribe>
-    <unsubscribe>topaz-dev-unsubscribe@topazproject.org</unsubscribe>
-    <post>topaz-dev@topazproject.org</post>
-    <archive>http://lists.topazproject.org/pipermail/topaz-dev/</archive>
-   </mailingList>
+    <mailingList>
+      <name>Topaz project developer mailing
+        list</name>
+      <subscribe>topaz-dev-subscribe@topazproject.org</subscribe>
+      <unsubscribe>topaz-dev-unsubscribe@topazproject.org</unsubscribe>
+      <post>topaz-dev@topazproject.org</post>
+      <archive>http://lists.topazproject.org/pipermail/topaz-dev/</archive>
+    </mailingList>
   </mailingLists>
 
   <distributionManagement>
-   <repository>
-    <id>topaz</id>
-    <url>http://maven.topazproject.org/maven2/</url>
-   </repository>
-   <site>
-    <id>topaz-docs</id>
-    <url>${topazproject.site.url}</url>
-   </site>
+    <repository>
+      <id>topaz</id>
+      <url>http://maven.topazproject.org/maven2/</url>
+    </repository>
+    <site>
+      <id>topaz-docs</id>
+      <url>${topazproject.site.url}</url>
+    </site>
   </distributionManagement>
 
   <repositories>
-   <repository>
-    <id>topaz</id>
-    <name>Maven 2 Repository for Topaz</name>
-    <url>http://maven.topazproject.org/maven2/</url>
-   </repository>
+    <repository>
+      <id>topaz</id>
+      <name>Maven 2 Repository for Topaz</name>
+      <url>http://maven.topazproject.org/maven2/</url>
+    </repository>
 
-   <repository>
-    <id>central</id>
-    <name>Maven Repository Switchboard</name>
-    <layout>default</layout>
-    <url>http://repo1.maven.org/maven2</url>
-    <snapshots>
-     <enabled>false</enabled>
-    </snapshots>
-   </repository>
+    <repository>
+      <id>central</id>
+      <name>Maven Repository Switchboard</name>
+      <layout>default</layout>
+      <url>http://repo1.maven.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
 
-   <repository>
-    <id>java.net</id>
-    <url>http://download.java.net/maven/1</url>
-    <layout>legacy</layout>
-   </repository>
+    <repository>
+      <id>java.net</id>
+      <url>http://download.java.net/maven/1</url>
+      <layout>legacy</layout>
+    </repository>
   </repositories>
- 
+
   <properties>
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
     <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
   </properties>
- 
+
   <dependencies>
     <dependency>
       <groupId>org.topazproject</groupId>
@@ -113,21 +113,21 @@
     </dependency>
 
     <dependency>
-     <groupId>org.topazproject</groupId>
-     <artifactId>string-compare-resolver</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>string-compare-resolver</artifactId>
       <version>0.9.1-SNAPSHOT</version>
     </dependency>
 
     <dependency>
-     <groupId>org.mulgara</groupId>
-     <artifactId>mulgara</artifactId>
-     <version>2.0.7-SNAPSHOT</version>
+      <groupId>org.mulgara</groupId>
+      <artifactId>mulgara</artifactId>
+      <version>2.0.7-SNAPSHOT</version>
     </dependency>
 
     <dependency>
-     <groupId>org.mulgara</groupId>
-     <artifactId>driver</artifactId>
-     <version>2.0.7-SNAPSHOT</version>
+      <groupId>org.mulgara</groupId>
+      <artifactId>driver</artifactId>
+      <version>2.0.7-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
