@@ -77,7 +77,8 @@ public class AnnotationConverter {
       if (annotation != null)
         wa.add(convert(annotation, needCreatorName, needBody));
     }
-      return wa;
+
+    return wa;
   }
 
   /**
