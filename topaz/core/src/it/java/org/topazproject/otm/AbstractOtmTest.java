@@ -24,38 +24,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.mulgara.itql.DefaultItqlClientFactory;
-import org.topazproject.otm.criterion.Conjunction;
-import org.topazproject.otm.criterion.Criterion;
-import org.topazproject.otm.criterion.DetachedCriteria;
-import org.topazproject.otm.criterion.Disjunction;
-import org.topazproject.otm.criterion.EQCriterion;
-import org.topazproject.otm.criterion.ExistsCriterion;
-import org.topazproject.otm.criterion.GECriterion;
-import org.topazproject.otm.criterion.GTCriterion;
-import org.topazproject.otm.criterion.LECriterion;
-import org.topazproject.otm.criterion.LTCriterion;
-import org.topazproject.otm.criterion.MinusCriterion;
-import org.topazproject.otm.criterion.NECriterion;
-import org.topazproject.otm.criterion.NotCriterion;
-import org.topazproject.otm.criterion.NotExistsCriterion;
-import org.topazproject.otm.criterion.Order;
-import org.topazproject.otm.criterion.Parameter;
-import org.topazproject.otm.criterion.TransCriterion;
-import org.topazproject.otm.criterion.WalkCriterion;
 
 import org.topazproject.otm.impl.SessionFactoryImpl;
 
 import org.topazproject.otm.samples.Annotea.Body;
-import org.topazproject.otm.samples.Article;
-import org.topazproject.otm.samples.ClassWithEnum;
-import org.topazproject.otm.samples.Grants;
-import org.topazproject.otm.samples.NoPredicate;
-import org.topazproject.otm.samples.NoRdfType;
-import org.topazproject.otm.samples.PrivateAnnotation;
-import org.topazproject.otm.samples.PublicAnnotation;
-import org.topazproject.otm.samples.ReplyThread;
-import org.topazproject.otm.samples.Revokes;
-import org.topazproject.otm.samples.SpecialMappers;
 import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.stores.SimpleBlobStore;
 
@@ -115,21 +87,8 @@ public abstract class AbstractOtmTest {
       if (session != null) session.close();
     }
 
-    Class classes [] = new Class[] {Article.class, PublicAnnotation.class, PrivateAnnotation.class,
-                                    ReplyThread.class, Grants.class, Revokes.class,
-                                    NoRdfType.class, NoPredicate.class, SpecialMappers.class,
-                                    ClassWithEnum.class, Body.class,
-                                    // criteria classes
-                                    Conjunction.class, Criterion.class, DetachedCriteria.class,
-                                    Disjunction.class, EQCriterion.class, ExistsCriterion.class,
-                                    GECriterion.class, GTCriterion.class, LECriterion.class,
-                                    LTCriterion.class, MinusCriterion.class, NECriterion.class,
-                                    NotCriterion.class, NotExistsCriterion.class, Order.class,
-                                    Parameter.class, TransCriterion.class, WalkCriterion.class,
-    };
-
-    for (Class c : classes)
-      factory.preload(c);
+    factory.preloadFromClasspath();
+    factory.preload(Body.class);
 
     factory.validate();
   }

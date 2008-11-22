@@ -54,8 +54,6 @@ public class BlobTest extends AbstractOtmTest {
   public void setUp() throws OtmException {
     try {
       initFactory();
-      factory.preload(BlobTest1.class);
-      factory.validate();
       initGraphs();
     } catch (OtmException e) {
       log.error("OtmException in setup", e);
