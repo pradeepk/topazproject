@@ -58,7 +58,7 @@ import org.topazproject.otm.Session;
  *
  */
 public abstract class FileBackedBlobStore implements BlobStore {
-  protected static char[] hex = "01234567890abcdef".toCharArray();
+  protected static char[] hex = "0123456789abcdef".toCharArray();
   protected File root;
   private int nextId = 1;
   private List<File> txns = new ArrayList<File>();
