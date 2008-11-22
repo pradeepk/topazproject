@@ -18,6 +18,7 @@
  */
 package org.topazproject.otm.impl;
 
+import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 
 import java.io.File;
@@ -908,12 +909,14 @@ public class SessionFactoryImpl implements SessionFactory {
     public Integer fn(String f) {
       try {
         Class<?> c = Class.forName(toClassName(pathRoot, f));
-        if (c.isAnnotationPresent(Entity.class)) {
-          preload(c);
-          return 1;
+        for (Class<? extends Annotation> a: cmf.getKnownAnnotations()) {
+          if (c.isAnnotationPresent(a)) {
+            preload(c);
+            return 1;
+          }
         }
       } catch (ClassNotFoundException e) {
-        log.error("Unexpectedly lost class for file: " + f, e);
+      } catch (NoClassDefFoundError ncd) {
       }
       return 0;
     }

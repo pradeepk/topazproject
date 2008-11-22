@@ -27,6 +27,8 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -74,6 +76,19 @@ public class AnnotationClassMetaFactory {
   private static final Log log = LogFactory.getLog(AnnotationClassMetaFactory.class);
   private SessionFactory   sf;
 
+  /** The list of Annotations recognized by this class. */
+  private static final List<Class<? extends Annotation>> KNOWN_ANNOTATIONS;
+
+  static {
+    List<Class<? extends Annotation>> knowns = new ArrayList<Class<? extends Annotation>>();
+    knowns.add(Aliases.class);
+    knowns.add(Entity.class);
+    knowns.add(SubView.class);
+    knowns.add(UriPrefix.class);
+    knowns.add(View.class);
+    KNOWN_ANNOTATIONS = Collections.unmodifiableList(knowns);
+  }
+
   /**
    * Creates a new AnnotationClassMetaFactory object.
    *
@@ -81,6 +96,15 @@ public class AnnotationClassMetaFactory {
    */
   public AnnotationClassMetaFactory(SessionFactory sf) {
     this.sf                    = sf;
+  }
+
+  /**
+   * Retrieve a list of all the annotation types that this MetaFactory recognizes on classes.
+   *
+   * @return A complete unmodifiable list of all the Annotation classes this class recognizes.
+   */
+  public static final List<Class<? extends Annotation>> getKnownAnnotations() {
+    return KNOWN_ANNOTATIONS;
   }
 
   /**
