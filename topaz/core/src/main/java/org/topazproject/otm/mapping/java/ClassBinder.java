@@ -227,7 +227,7 @@ public class ClassBinder<T> implements EntityBinder {
   public Object loadInstance(Object instance, String id, TripleStore.Result result, Session session)
                       throws OtmException {
     if (log.isDebugEnabled())
-      log.debug("Instantiating object with '" + id + "' for " + cm);
+      log.debug("Instantiating object with '" + id + "' for " + cm + ", fwd-triples = " + result.getFValues() + ", rev-triples = " + result.getRValues());
 
     if (instance == null)
       instance = newLazyLoadedInstance(session, id);
