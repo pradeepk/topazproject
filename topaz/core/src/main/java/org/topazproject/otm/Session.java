@@ -297,11 +297,12 @@ public interface Session {
   public Object get(ClassMetadata cm, String oid, boolean filterObj) throws OtmException;
 
   /**
-   * Merges the given object. The returned object in all cases is an attached object with the
-   * state info merged. If the  supplied object is a detached object, it will remain detached even
-   * after the call.
+   * Replaces the contents any attached object (of the same id) with the given object's contents;
+   * if there is no object with the same id attached to the session then one is created with the
+   * given object's contents and attached to the session. The returned object in all cases is an
+   * attached object with the state info the same as the given object <var>o</var>. If the supplied
+   * object is a detached object, it will remain detached even after the call.
    *
-   * @param <T> the type of object
    * @param o the detached object
    *
    * @return an attached object with merged values
@@ -311,7 +312,9 @@ public interface Session {
   public <T> T merge(T o) throws OtmException;
 
   /**
-   * Refreshes an attached object with values from the database.
+   * Refreshes an attached object with values from the database. Note that the results are
+   * dependent on the {@link setFlushMode} in effect, as this will load the last-flushed data
+   * (or the original data if no flush has occurred so far in the current transaction).
    *
    * @param o the attached object to refresh
    *
