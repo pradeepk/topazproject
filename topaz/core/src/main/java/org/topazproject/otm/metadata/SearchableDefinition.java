@@ -128,7 +128,7 @@ public class SearchableDefinition extends PropertyDefinition {
     return analyzer;
   }
 
-  public int getBoost() {
+  public Integer getBoost() {
     return boost;
   }
 
