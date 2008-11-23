@@ -55,6 +55,11 @@ public class SearchTest extends AbstractTest {
     rdf.sessFactory.preload(SearchTest2.class);
     rdf.sessFactory.preload(SearchTestPP.class);
     rdf.sessFactory.validate()
+
+    assert shouldFail(OtmException, {
+      rdf.sessFactory.preload(SearchTestF1.class)
+      rdf.sessFactory.validate()
+    }).contains("can't be applied to a complex type")
   }
 
   void testBasic() {
@@ -394,5 +399,22 @@ class SearchTestPP {
   @Blob
   void setBody(byte[] body) {
     this.body = body;
+  }
+}
+
+@Entity(graph = 'ri')
+class SearchTestF1 {
+  URI          id;
+  SearchTestPP other;
+
+  @Id
+  void setId(URI id) {
+    this.id = id;
+  }
+
+  @Searchable(index = 'lucene')
+  @Predicate(uri = 'topaz:other')
+  void setOther(SearchTestPP other) {
+    this.other = other;
   }
 }

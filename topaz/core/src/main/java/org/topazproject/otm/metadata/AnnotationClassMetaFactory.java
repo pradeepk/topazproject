@@ -727,6 +727,13 @@ public class AnnotationClassMetaFactory {
     }
 
     public SearchableDefinition getSearchableDefinition(SessionFactory sf) throws OtmException {
+      if (searchable == null && supersedes.get(SearchableDefinition.NS) == null)
+        return null;
+
+      if (!sf.getSerializerFactory().mustSerialize(property.getComponentType()))
+        throw new OtmException("@SearchableDefinition property " + this
+                               + " can't be applied to a complex type");
+
       String       ref = null, uri = null, index = null, analyzer = null;
       Boolean      tokenize     = null;
       Integer      boost        = null;
@@ -747,8 +754,6 @@ public class AnnotationClassMetaFactory {
           throw new OtmException("Unable to instantiate '" + searchable.preProcessor() + "' for " +
                                  this, t);
         }
-      } else if (supersedes.get(SearchableDefinition.NS) == null) {
-        return null;
       }
 
       return new SearchableDefinition(getName(), ref, supersedes.get(SearchableDefinition.NS),
