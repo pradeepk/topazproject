@@ -62,7 +62,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
   protected File root;
   private int nextId = 1;
   private List<File> txns = new ArrayList<File>();
-  protected ReadWriteLock storeLock = new ReentrantReadWriteLock();
+  protected ReentrantReadWriteLock storeLock = new ReentrantReadWriteLock();
 
   /**
    * Construct a FileBackedBlobStore instance.
@@ -362,7 +362,9 @@ public abstract class FileBackedBlobStore implements BlobStore {
 
         txn = null;
       } finally {
-        store.storeLock.writeLock().unlock();
+        int cnt = store.storeLock.getWriteHoldCount();
+        while (cnt-- > 0)
+          store.storeLock.writeLock().unlock();
       }
     }
 
