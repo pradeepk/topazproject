@@ -40,6 +40,6 @@ public class XmlTagStripperTest extends GroovyTestCase {
 	 
        """
 
-    assertEquals(exp, new XmlTagStripper().process(xml))
+    assertEquals(exp, new XmlTagStripper().process(null, null, xml))
   }
 }

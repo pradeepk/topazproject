@@ -300,7 +300,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
         if (sd.getPreProcessor() != null) {
           List<String> procd = new ArrayList<String>(objs.size());
           for (String obj : objs)
-            procd.add(sd.getPreProcessor().process(obj));
+            procd.add(sd.getPreProcessor().process(o, sd, obj));
           objs = procd;
         }
 
@@ -469,7 +469,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     String text = (vals.size() == 1) ? (String) vals.get(0) : null;
     if (text != null) {
       if (field.getPreProcessor() != null)
-        text = field.getPreProcessor().process(text);
+        text = field.getPreProcessor().process(o, field, text);
 
       String tql = "delete <" + id + "> <" + field.getUri() + "> '" + RdfUtil.escapeLiteral(text) +
                    "' from <" + getGraphUri(field.getIndex(), isc) + ">;";

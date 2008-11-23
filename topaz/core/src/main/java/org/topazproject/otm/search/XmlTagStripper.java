@@ -33,6 +33,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.metadata.SearchableDefinition;
 
 /**
  * A pre-processor that just strips all tags and replaces each with a space.
@@ -43,11 +44,13 @@ public class XmlTagStripper implements PreProcessor {
   /**
    * Remove all tags.
    *
+   * @param o     the object involved whose property is to be indexed
+   * @param def   the searchable definition for the property
    * @param value the xml document
    * @return the stripped document
    * @throws OtmException if an error occurs while parsing the input
    */
-  public String process(String value) throws OtmException {
+  public String process(Object o, SearchableDefinition def, String value) throws OtmException {
     try {
       StringWriter out = new StringWriter(value.length());
 

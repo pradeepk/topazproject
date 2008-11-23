@@ -20,6 +20,7 @@
 package org.topazproject.otm.search;
 
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.metadata.SearchableDefinition;
 
 /**
  * Defines a pre-processor for preparing values before indexing. A typical
@@ -31,9 +32,11 @@ public interface PreProcessor {
   /**
    * Process the value and return the resulting value to be indexed.
    *
-   * @param value the input value
+   * @param o     the object involved whose property is to be indexed
+   * @param def   the searchable definition for the property
+   * @param value the property value to be preprocessed before indexing
    * @return the processed value
    * @throws OtmException if an error occurs while processing the input
    */
-  public String process(String value) throws OtmException;
+  public String process(Object o, SearchableDefinition def, String value) throws OtmException;
 }

@@ -42,6 +42,6 @@ public class HtmlTagStripperTest extends GroovyTestCase {
 	 Another one.
        """
 
-    assertEquals(exp, new HtmlTagStripper().process(html))
+    assertEquals(exp, new HtmlTagStripper().process(null, null, html))
   }
 }
