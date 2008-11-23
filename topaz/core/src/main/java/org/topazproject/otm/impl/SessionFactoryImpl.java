@@ -915,8 +915,11 @@ public class SessionFactoryImpl implements SessionFactory {
             return 1;
           }
         }
+      } catch (OtmException oe) {
       } catch (ClassNotFoundException e) {
       } catch (NoClassDefFoundError ncd) {
+      } catch (Throwable t) {
+        log.warn("Unexpected error when testing <" + f + "> for preloading", t); 
       }
       return 0;
     }
