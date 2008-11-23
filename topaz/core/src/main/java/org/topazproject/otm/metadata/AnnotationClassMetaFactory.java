@@ -19,6 +19,7 @@
 package org.topazproject.otm.metadata;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -28,6 +29,8 @@ import java.net.URI;
 import java.net.URL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,12 +42,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.annotations.Alias;
 import org.topazproject.otm.annotations.Aliases;
 import org.topazproject.otm.annotations.Blob;
@@ -57,6 +62,7 @@ import org.topazproject.otm.annotations.Predicate.PropType;
 import org.topazproject.otm.annotations.PredicateMap;
 import org.topazproject.otm.annotations.Projection;
 import org.topazproject.otm.annotations.Searchable;
+import org.topazproject.otm.annotations.SubClassResolver;
 import org.topazproject.otm.annotations.SubView;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.View;
@@ -211,6 +217,11 @@ public class AnnotationClassMetaFactory {
     for (Method method : clazz.getDeclaredMethods()) {
       if (!isAnnotated(method))
         continue;
+
+      if (method.getAnnotation(SubClassResolver.class) != null) {
+        registerSubClassResolver(def, method);
+        continue;
+      }
 
       Property property = Property.toProperty(method);
 
@@ -370,6 +381,45 @@ public class AnnotationClassMetaFactory {
       return entity.name();
 
     return getName(clazz);
+  }
+
+  private void registerSubClassResolver(ClassDefinition def, final Method method)
+      throws OtmException{
+    if (!Modifier.isStatic(method.getModifiers()) || !Modifier.isPublic(method.getModifiers()))
+      throw new OtmException("@SubClassResolver method '" + method + "' is not public and static");
+
+    Method resolve = org.topazproject.otm.SubClassResolver.class.getDeclaredMethods()[0];
+    assert resolve.getName().equals("resolve") :
+           "unexpected method found in SubClassResolver: " + resolve;
+
+    if (method.getGenericReturnType() != resolve.getGenericReturnType())
+      throw new OtmException("@SubClassResolver method '" + method + "' does not return " +
+                             resolve.getGenericReturnType());
+
+    if (!Arrays.equals(method.getGenericParameterTypes(), resolve.getGenericParameterTypes()))
+      throw new OtmException("@SubClassResolver method '" + method + "' has wrong signature - " +
+                             "required: " + Arrays.toString(resolve.getGenericParameterTypes()));
+
+    sf.addSubClassResolver(def.getName(), new org.topazproject.otm.SubClassResolver() {
+      public ClassMetadata resolve(ClassMetadata superEntity, EntityMode instantiatableIn,
+                                   SessionFactory sf, Collection<String> typeUris,
+                                   TripleStore.Result statements) {
+        try {
+          return (ClassMetadata)
+                      method.invoke(null, superEntity, instantiatableIn, sf, typeUris, statements);
+        } catch (Exception e) {
+          if (e instanceof InvocationTargetException) {
+            Throwable t = ((InvocationTargetException) e).getCause();
+            if (t instanceof RuntimeException)
+              throw (RuntimeException) t;
+            if (t instanceof Error)
+              throw (Error) t;
+          }
+
+          throw new OtmException("Error invoking '" + method + "'", e);
+        }
+      }
+    });
   }
 
   private static void validate(Property property, ClassDefinition def)

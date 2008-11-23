@@ -40,6 +40,7 @@ public class SubClassResolverTest extends TestCase {
     sf.preload(Sub.class);
     sf.preload(ExtBase.class);
     sf.preload(Spoiler.class);
+    sf.preload(Sub2.class);
     sf.validate();
 
     ClassMetadata nt = sf.getClassMetadata(NoType.class);
@@ -131,6 +132,25 @@ public class SubClassResolverTest extends TestCase {
 
     assertEquals(nt, sf.getSubClassMetadata(null, EntityMode.POJO, emptyT, r));
 
+    // class-internal subclass-resolver
+    sf.preload(Sub2.class);
+    sf.validate();
+
+    Sub2.entity = "Sub2";
+    assertSame("Class-internal subclass-resolver failed", sf.getClassMetadata("Sub2"),
+               sf.getSubClassMetadata(base, EntityMode.POJO, bothT, r));
+    Sub2.entity = "Sub";
+    assertSame("Class-internal subclass-resolver failed", sf.getClassMetadata("Sub"),
+               sf.getSubClassMetadata(base, EntityMode.POJO, bothT, r));
+    Sub2.entity = null;
+
+    for (Class<?> c : new Class<?>[] { SubF1.class, SubF2.class }) {
+      try {
+        sf.preload(c);
+        fail("Loading of " + c + " should have failed");
+      } catch (OtmException oe) {
+      }
+    }
   }
 
   @Entity(name="NoType")
@@ -154,6 +174,38 @@ public class SubClassResolverTest extends TestCase {
 
   @Entity(name="Spoiler", types = {"sub:type"})
   public static class Spoiler extends Base {
+  }
+
+  @Entity(name="Sub2", types = {"sub:type"})
+  public static class Sub2 extends Base {
+    public static String entity = null;
+
+    @org.topazproject.otm.annotations.SubClassResolver
+    public static ClassMetadata resolve(ClassMetadata superEntity, EntityMode instantiatableIn,
+                                        SessionFactory sf, Collection<String> typeUris,
+                                        TripleStore.Result statements) {
+      return (entity != null && typeUris.contains("sub:type")) ? sf.getClassMetadata(entity) : null;
+    }
+  }
+
+  @Entity
+  public static class SubF1 {
+    @org.topazproject.otm.annotations.SubClassResolver
+    public ClassMetadata resolve(ClassMetadata superEntity, EntityMode instantiatableIn,
+                                 SessionFactory sf, Collection<String> typeUris,
+                                 TripleStore.Result statements) {
+      return null;
+    }
+  }
+
+  @Entity
+  public static class SubF2 {
+    @org.topazproject.otm.annotations.SubClassResolver
+    public static ClassMetadata resolve(ClassMetadata superEntity, EntityMode instantiatableIn,
+                                        SessionFactory sf, String typeUris,
+                                        TripleStore.Result statements) {
+      return null;
+    }
   }
 
   public static class SubSelector implements SubClassResolver {
