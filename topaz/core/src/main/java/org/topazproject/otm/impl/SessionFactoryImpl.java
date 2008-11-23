@@ -907,8 +907,9 @@ public class SessionFactoryImpl implements SessionFactory {
      * @return The number of files processed. 0 or 1.
      */
     public Integer fn(String f) {
+      Class<?> c = null;
       try {
-        Class<?> c = Class.forName(toClassName(pathRoot, f));
+        c = Class.forName(toClassName(pathRoot, f));
         for (Class<? extends Annotation> a: cmf.getKnownAnnotations()) {
           if (c.isAnnotationPresent(a)) {
             preload(c);
@@ -916,10 +917,15 @@ public class SessionFactoryImpl implements SessionFactory {
           }
         }
       } catch (OtmException oe) {
-      } catch (ClassNotFoundException e) {
+        log.warn("Unable to preload annotated class: " + c.getName(), oe); 
+      } catch (ClassNotFoundException cnf) {
+        if (log.isDebugEnabled())
+          log.debug("Class file on scanned classpath could not be loaded: " + f, cnf);
       } catch (NoClassDefFoundError ncd) {
+        if (log.isDebugEnabled())
+          log.debug("Class on scanned classpath is missing a required reference: " + f, ncd); 
       } catch (Throwable t) {
-        log.warn("Unexpected error when testing <" + f + "> for preloading", t); 
+        log.warn("Unexpected error when attempting to preload <" + f + ">", t); 
       }
       return 0;
     }
