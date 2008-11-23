@@ -384,14 +384,13 @@ class SearchTestPP {
     this.id = id;
   }
 
-  @Searchable(index = 'lucene', preProcessorClass = 'org.topazproject.otm.search.HtmlTagStripper')
+  @Searchable(index = 'lucene', preProcessor = HtmlTagStripper.class)
   @Predicate(uri = 'topaz:text3')
   void setText(String text) {
     this.text = text;
   }
 
-  @Searchable(index = 'lucene', uri = 'topaz:body3',
-              preProcessorClass = 'org.topazproject.otm.search.XmlTagStripper')
+  @Searchable(index = 'lucene', uri = 'topaz:body3', preProcessor = XmlTagStripper.class)
   @Blob
   void setBody(byte[] body) {
     this.body = body;

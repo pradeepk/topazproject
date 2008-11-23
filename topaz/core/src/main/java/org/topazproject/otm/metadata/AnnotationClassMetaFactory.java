@@ -691,13 +691,11 @@ public class AnnotationClassMetaFactory {
         boost = (searchable.boost() == Integer.MAX_VALUE) ? null : searchable.boost();
 
         try {
-          if (!searchable.preProcessorClass().equals(""))
-            preProcessor = (PreProcessor) Thread.currentThread().getContextClassLoader()
-                                         .loadClass(searchable.preProcessorClass()).newInstance();
+          if (searchable.preProcessor() != PreProcessor.class)
+            preProcessor = searchable.preProcessor().newInstance();
         } catch (Throwable t) {
-          throw new OtmException("Unable to find implementation of '"
-                                 + searchable.preProcessorClass()
-                                 + "' pre-processor for " + this, t);
+          throw new OtmException("Unable to instantiate '" + searchable.preProcessor() + "' for " +
+                                 this, t);
         }
       } else if (supersedes.get(SearchableDefinition.NS) == null) {
         return null;

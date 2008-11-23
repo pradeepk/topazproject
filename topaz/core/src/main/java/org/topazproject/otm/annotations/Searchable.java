@@ -24,6 +24,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.topazproject.otm.search.PreProcessor;
+
 /**
  * Annotation for properties to specify that they should be inserted into lucene.
  *
@@ -62,6 +64,6 @@ public @interface Searchable {
   /** The boost to assign to this field */
   int boost() default Integer.MAX_VALUE;
 
-  /** The fully qualified class name of the pre-processor to use */
-  String preProcessorClass() default "";
+  /** The pre-processor to use; by default the value is indexed as is. */
+  Class<? extends PreProcessor> preProcessor() default PreProcessor.class;
 }
