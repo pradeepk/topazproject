@@ -124,14 +124,12 @@
 
   <bean id="browseService" class="org.topazproject.ambra.article.service.BrowseService"/>
 
-    <!-- Add all your constants to the map with a key and a value/ref -->
+  <!-- Add all your constants to the map with a key and a value/ref -->
   <util:map id="otherConstants" map-class="java.util.HashMap">
     <entry key="countries" value-ref="countries"/>
   </util:map>
 
   <bean id="searchService" class="org.topazproject.ambra.search.service.SearchService"/>
-
-  <bean id="searchWebService" class="org.topazproject.ambra.search.service.SearchWebService"/>
 
   <bean id="journalService" class="org.topazproject.ambra.journal.JournalService" init-method="init"/>
 
@@ -221,6 +219,11 @@
           <constructor-arg index="2" value="${ambra.graphs.criteria[@type]}"/>
         </bean>
         <bean class="org.topazproject.otm.GraphConfig">
+          <constructor-arg index="0" value="lucene"/>
+          <constructor-arg index="1" value="${ambra.graphs.lucene}"/>
+          <constructor-arg index="2" value="${ambra.graphs.lucene[@type]}"/>
+        </bean>
+        <bean class="org.topazproject.otm.GraphConfig">
           <constructor-arg index="0" value="str"/>
           <constructor-arg index="1" value="${ambra.graphs.str}"/>
           <constructor-arg index="2" value="${ambra.graphs.str[@type]}"/>
@@ -276,6 +279,7 @@
         <value>org.topazproject.ambra.models.Representation</value>
         <value>org.topazproject.ambra.models.Trackback</value>
         <value>org.topazproject.ambra.models.TrackbackContent</value>
+        <value>org.topazproject.ambra.models.TextRepresentation</value>
         <value>org.topazproject.ambra.models.UserAccount</value>
         <value>org.topazproject.ambra.models.UserPreference</value>
         <value>org.topazproject.ambra.models.UserPreferences</value>

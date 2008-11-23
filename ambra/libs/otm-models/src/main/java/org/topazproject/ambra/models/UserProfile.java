@@ -21,6 +21,7 @@ package org.topazproject.ambra.models;
 
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.Searchable;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
@@ -141,6 +142,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param organizationName the organization name.
    */
+  @Searchable(index = "lucene")
   @Predicate
   public void setOrganizationName(String organizationName) {
     this.organizationName = organizationName;
@@ -179,6 +181,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param postalAddress the postal address.
    */
+  @Searchable(index = "lucene")
   @Predicate
   public void setPostalAddress(String postalAddress) {
     this.postalAddress = postalAddress;
@@ -198,6 +201,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param city the city.
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "address:town")
   public void setCity(String city) {
     this.city = city;
@@ -255,6 +259,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param biographyText the text description of the biography.
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "topaz:bio")
   public void setBiographyText(String biographyText) {
     this.biographyText = biographyText;
@@ -274,6 +279,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param interestsText the text description of the interests.
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "topaz:interests")
   public void setInterestsText(String interestsText) {
     this.interestsText = interestsText;
@@ -293,6 +299,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param researchAreasText the text description of the research areas.
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "topaz:researchAreas")
   public void setResearchAreasText(String researchAreasText) {
     this.researchAreasText = researchAreasText;

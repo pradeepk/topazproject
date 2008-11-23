@@ -474,6 +474,9 @@
     <xsl:variable name="ze"     as="element(ZipEntry)" select="$zip-entries[@name = $rep/@entry]"/>
 
     <representations>
+      <xsl:if test="starts-with(my:ext-to-mime(my:get-ext($ze/@name)), 'text/')">
+        <xsl:attribute name="isText">true</xsl:attribute>
+      </xsl:if>
       <name><xsl:value-of select="$rep/@name"/></name>
       <contentType><xsl:value-of select="my:ext-to-mime(my:get-ext($ze/@name))"/></contentType>
       <size><xsl:value-of select="$ze/@size"/></size>

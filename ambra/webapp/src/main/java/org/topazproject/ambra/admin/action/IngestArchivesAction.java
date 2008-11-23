@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ambra.article.service.DuplicateArticleIdException;
-import org.topazproject.ambra.article.service.SearchUtil;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.otm.Session;
 
@@ -60,12 +59,6 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
           String id = article.getId().toString();
           addActionMessage("Ingested: " + filename);
 
-          // FIXME: hack until ingest can directly put into search
-          try {
-            SearchUtil.index(id);
-          } catch (Exception e) {
-            addActionError("Error updating search index for '" + id + "': " + getMessages(e));
-          }
           session.evict(article);  // purely for performance. Subsequent flush()es will be faster.
           getDocumentManagementService().generateIngestedData(file, article);
         } catch (DuplicateArticleIdException de) {

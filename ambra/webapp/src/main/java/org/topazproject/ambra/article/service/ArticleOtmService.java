@@ -24,14 +24,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.text.ParseException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -126,13 +124,10 @@ public class ArticleOtmService {
    * Delete an article.
    *
    * @param article the uri of the article
-   * @throws RemoteException RemoteException
    * @throws NoSuchArticleIdException NoSuchArticleIdException
-   * @throws ServiceException ServiceException
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public void delete(String article)
-          throws NoSuchArticleIdException, RemoteException, ServiceException {
+  public void delete(String article) throws NoSuchArticleIdException {
     pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
 
     Article a = session.get(Article.class, article);
@@ -140,7 +135,6 @@ public class ArticleOtmService {
       throw new NoSuchArticleIdException(article);
 
     session.delete(a);
-    SearchUtil.delete(article);
 
     // TODO: find a better way to know what needs to be deleted, rather than "hardcoding" it here
     permissionsService.cancelPropagatePermissions(article,

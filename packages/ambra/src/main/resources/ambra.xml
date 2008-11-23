@@ -100,20 +100,14 @@
 
     <services>
       <search>
-        <!-- Path where lucene search index is stored -->
-        <indexPath>/var/lib/topaz/data/lucene</indexPath>
         <!-- Fields of lucene meta data that are searched by default -->
         <defaultFields>description,title,body,creator</defaultFields>
         <!-- Number of snippets to show per document -->
         <snippetsMax>3</snippetsMax>
         <!-- Max chars per indexed field? -->
         <fieldMaxLength>50</fieldMaxLength>
-        <!-- Milliseconds to cache search results -->
-        <cacheExpiration>600000</cacheExpiration>
         <!-- Number of results per page -->
         <pageSize>10</pageSize>
-        <!-- Number of results to fetch at a time -->
-        <fetchSize>10</fetchSize>
       </search>
 
       <registration>

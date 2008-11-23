@@ -149,7 +149,7 @@
           <li>
             <span class="date">Published ${hit.date?string("dd MMM yyyy")}</span>
             <span class="article">
-              <a href="/ambra-doi-resolver/${hit.pid?replace('info:doi/','')}">${hit.title}</a>
+              <a href="/ambra-doi-resolver/${hit.uri?replace('info:doi/','')}">${hit.title}</a>
             </span>       
             <span class="authors"> <!-- hitScore: ${hit.hitScore} --> ${hit.creator!""}</span>
             <span class="cite">${hit.highlight}</span>

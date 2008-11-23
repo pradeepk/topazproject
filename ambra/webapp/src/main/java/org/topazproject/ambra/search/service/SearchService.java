@@ -18,19 +18,44 @@
  */
 package org.topazproject.ambra.search.service;
 
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ConstantScoreRangeQuery;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
+
+import org.apache.struts2.ServletActionContext;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.cache.Cache;
+import org.topazproject.ambra.configuration.ConfigurationStore;
+import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.search.SearchResultPage;
 import org.topazproject.ambra.user.AmbraUser;
+import org.topazproject.ambra.web.VirtualJournalContext;
+
+import org.topazproject.otm.OtmException;
+import org.topazproject.otm.RdfUtil;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.metadata.Definition;
+import org.topazproject.otm.metadata.EmbeddedDefinition;
+import org.topazproject.otm.metadata.RdfDefinition;
+import org.topazproject.otm.metadata.SearchableDefinition;
 
 /**
  * Service to provide search capabilities for the application
@@ -39,77 +64,351 @@ import org.topazproject.ambra.user.AmbraUser;
  * @author Eric Brown
  */
 public class SearchService {
-  private static final Log           log   = LogFactory.getLog(SearchService.class);
-  private Cache cache;
+  private static final Log                   log       = LogFactory.getLog(SearchService.class);
+  private static final Map<String, String[]> FIELD_MAP = new HashMap<String, String[]>();
+  private static final Map<String, Boolean>  SRCHB_MAP = new HashMap<String, Boolean>();
+  private static final Map<String, String>   DT_MAP    = new HashMap<String, String>();
+  private static final Configuration         CONF      =
+                ConfigurationStore.getInstance().getConfiguration();
+  private static final String[]              DEFAULT_FIELDS;
 
-  private SearchWebService  searchWebService;
-  private ArticleOtmService articleOtmService;
+  private ArticleOtmService articleService;
+  private Session           session;
+  private Cache             cache;
+
+  static {
+    FIELD_MAP.put("title",
+                  new String[] { "art.dublinCore.title" });
+    FIELD_MAP.put("subject",
+                  new String[] { "art.categories.mainCategory", "art.categories.subCategory" });
+    FIELD_MAP.put("description",
+                  new String[] { "art.dublinCore.description" });
+    FIELD_MAP.put("creator",
+                  new String[] { "art.dublinCore.creators" });
+    FIELD_MAP.put("date",
+                  new String[] { "art.dublinCore.date" });
+    FIELD_MAP.put("body",
+                  new String[] { "cast(art.representations, TextRepresentation).body" });
+    FIELD_MAP.put("citation",
+                  new String[] { "art.dublinCore.references.summary" });// FIXME: any field in Citation?
+
+    // FIXME: get this info from otm metadata (see isSearchable())
+    SRCHB_MAP.put("title",       true);
+    SRCHB_MAP.put("subject",     true);
+    SRCHB_MAP.put("description", true);
+    SRCHB_MAP.put("creator",     true);
+    SRCHB_MAP.put("date",        false);
+    SRCHB_MAP.put("body",        true);
+    SRCHB_MAP.put("citation",    true);
+
+    DT_MAP.put("date", "^^<xsd:date>");
+
+    String[] fields = CONF.getStringArray("ambra.services.search.defaultFields");
+    DEFAULT_FIELDS = (fields != null) ? fields : new String[] { "description", "title", "body" };
+  }
 
   /**
    * Find the results for a given query.
    *
-   * @param query     The query string the user suplied
+   * @param query     The lucene query string the user suplied
    * @param startPage The page number of the search results the user wants
    * @param pageSize  The number of results per page
    * @return A SearchResultPage representing the search results page to be rendered
-   * @throws ApplicationException that wraps some underlying exception
+   * @throws ParseException if <var>query</var> is not valid
    */
   @Transactional(readOnly = true)
   public SearchResultPage find(final String query, final int startPage, final int pageSize)
-      throws ApplicationException {
-    try {
-      AmbraUser   user     = AmbraUser.getCurrentUser();
-      final String  cacheKey = (user == null ? "anon" : user.getUserId()) + "|" + query;
+      throws ParseException, OtmException {
+    AmbraUser user     = AmbraUser.getCurrentUser();
+    String    cacheKey = getCurrentJournal() + "|" + (user == null ? "anon" : user.getUserId()) +
+                         "|" + query;
 
-      Results results = cache.get(cacheKey, -1,
-          new Cache.SynchronizedLookup<Results, ApplicationException>(cacheKey.intern()) {
-            public Results lookup() throws ApplicationException {
-              return new Results(query, searchWebService, articleOtmService);
-            }
-          });
+    // Note: we don't do any cache-invalidation, but instead rely on the ttl for this cache
+    Results results = cache.get(cacheKey, -1,
+        new Cache.SynchronizedLookup<Results, ParseException>(cacheKey.intern()) {
+          public Results lookup() throws ParseException {
+            return doSearch(query);
+          }
+        });
 
-      // Results are shared, but not concurrently.
-      if (!results.getLock().tryLock(10L, TimeUnit.SECONDS)) { // XXX: tune
-        log.warn("Failed to acquire lock for cache entry with '" + cacheKey 
-            + "'. Creating a temporary uncached instance.");
-        results = new Results(query, searchWebService, articleOtmService);
-        results.getLock().lock();
+    return results.getPage(startPage, pageSize);
+  }
+
+  private String getCurrentJournal() {
+    return ((VirtualJournalContext) ServletActionContext.getRequest().
+        getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
+  }
+
+  private Results doSearch(String queryString) throws ParseException, OtmException {
+    // TOOD: should we get the analyzer from one of the model's @Searchable defs?
+    Query lq = new MultiFieldQueryParser(DEFAULT_FIELDS, new StandardAnalyzer()).parse(queryString);
+
+    String oql = buildOql(lq);
+    if (log.isDebugEnabled())
+      log.debug("Translated lucene query '" + queryString + "' to oql query '" + oql + "'");
+
+    org.topazproject.otm.query.Results r = session.createQuery(oql).execute();
+    if (r.getWarnings() != null)
+      log.warn("Warnings from query '" + oql + "': " + Arrays.asList(r.getWarnings()));
+
+    int numVars = r.getVariables().length;
+
+    Map<String, Double> scoredIds = new HashMap<String, Double>();
+    while (r.next()) {
+      String id = r.getString(0);
+
+      double score = 0;
+      for (int idx = 1; idx < numVars; idx++) {
+        String s = r.getString(idx);
+        if (s != null)
+          score += Double.parseDouble(s);
       }
 
-      try {
-        return results.getPage(startPage, pageSize);
-      } finally {
-        results.getLock().unlock();
-      }
-    } catch (Exception e) {
-      throw new ApplicationException("Search failed with exception:", e);
+      Double prevScore = scoredIds.get(id);
+      if (prevScore == null || prevScore < score)
+        scoredIds.put(id, score);
     }
+
+    List<SearchHit> hits = new ArrayList<SearchHit>();
+    for (Map.Entry<String, Double> e : scoredIds.entrySet())
+      hits.add(new SearchHit(e.getValue(), e.getKey(), null, null, null, null));
+    Collections.sort(hits);
+
+    return new Results(hits, lq, articleService);
+  }
+
+  private String buildOql(Query lq) {
+    StringBuilder sel = new StringBuilder("select art.id ");
+    StringBuilder whr = new StringBuilder(500);
+
+    int[] scnt = new int[] { 0 };
+    buildOql(lq, sel, whr, scnt);
+
+    return sel.append("from Article art where ").append(whr).append(';').toString();
+  }
+
+  private void buildOql(Query lq, StringBuilder sel, StringBuilder whr, int[] scnt) {
+    // FIXME: handle ranges for non-searchable items (e.g. dates); add in boost
+
+    if (lq instanceof BooleanQuery)
+      buildOql((BooleanQuery) lq, sel, whr, scnt);
+    else if (lq instanceof ConstantScoreRangeQuery)
+      buildOql((ConstantScoreRangeQuery) lq, sel, whr, scnt);
+    else
+      buildOql(lq.toString(), sel, whr, scnt);
   }
 
   /**
-   * Setter for property 'searchWebService'.
-   * @param searchWebService Value to set for property 'searchWebService'.
+   * This builds an equivalent oql (tql) query for the given lucene boolean query. Each clause in
+   * Lucene's boolean query can be marked required (MUST, '+'), optional (SHOULD, ''), or
+   * not-allowed (MUST_NOT, '-'). The mapping to a true boolean expression is as follows:
+   * <pre>
+   *   +a +b    -&gt; a and b
+   *    a  b    -&gt; a or b
+   *   -a -b    -&gt; !a and !b  ==  !(a or b)
+   *
+   *   +a  b    -&gt; a and (b or true)
+   *    a -b    -&gt; a and !b
+   *   +a -b    -&gt; a and !b
+   * </pre>
+   * The 4th and 5th cases are interesting. In case 4 it would seem that the (b or true) part could
+   * be left out, because it won't affect the truth outcome; however, the score from b still
+   * participates in the overall score, and hence b must still be evaluated. For case 5 one needs
+   * to observe that lucene will only subtract from some otherwise selected set, never from the
+   * set of all documents; i.e. the query '!a' always yields no results.
+   *
+   * <p>In terms of mulgara's query algebra the 'and' and 'or' translate directly, the '!' is the
+   * tql minus operator, and 'true' is UNBOUND (generated in the code below by a '0 &lt; 1'
+   * constraint).
    */
-  @Required
-  public void setSearchWebService(final SearchWebService searchWebService) {
-    this.searchWebService = searchWebService;
+  private void buildOql(BooleanQuery lq, StringBuilder sel, StringBuilder whr, int[] scnt) {
+    if (lq.getClauses().length == 0)
+      return;
+
+    whr.append("(");
+
+    boolean havePhb = false;
+
+    // 'and' up all required clauses
+    for (BooleanClause c : lq.getClauses()) {
+      if (c.isRequired()) {
+        buildOql(c.getQuery(), sel, whr, scnt);
+        whr.append(" and ");
+      } else if (c.isProhibited()) {
+        havePhb = true;
+      }
+    }
+
+    boolean haveRqd = (whr.charAt(whr.length() - 1) != '(');
+
+    // 'or' up all optional clauses
+    if (haveRqd)
+      whr.append("(");
+
+    for (BooleanClause c : lq.getClauses()) {
+      if (c.getOccur() == BooleanClause.Occur.SHOULD) {
+        buildOql(c.getQuery(), sel, whr, scnt);
+        whr.append(" or ");
+      }
+    }
+
+    boolean haveOpt = (whr.charAt(whr.length() - 1) != '(');
+
+    if (haveRqd && haveOpt)
+      whr.append("lt('0'^^<xsd:int>, '1'^^<xsd:int>))");        // 'true' (UNBOUND)
+    else if (haveRqd)
+      whr.setLength(whr.length() - 6);  // remove trailing ' and ('
+    else if (haveOpt)
+      whr.setLength(whr.length() - 4);  // remove trailing ' or '
+    else
+      whr.setLength(whr.length() - 1);  // remove trailing '('
+
+    // 'minus' the prohibited clauses
+    if (havePhb) {
+      if (haveRqd || haveOpt)
+        whr.append(") minus (");
+      else
+        whr.append("minus (");
+
+      for (BooleanClause c : lq.getClauses()) {
+        if (c.isProhibited()) {
+          buildOql(c.getQuery(), sel, whr, scnt);
+          whr.append(" or ");
+        }
+      }
+
+      whr.setLength(whr.length() - 4);    // remove ' or '
+      whr.append(")");
+    }
+
+    // clean up
+    whr.append(") ");
+  }
+
+  private void buildOql(ConstantScoreRangeQuery lq, StringBuilder sel, StringBuilder whr,
+                        int[] scnt) {
+    if (!FIELD_MAP.containsKey(lq.getField()))
+      throw new RuntimeException("Unknown field '" + lq.getField() + "'");
+
+    //if (isSearchable(fexpr)) {
+    if (SRCHB_MAP.get(lq.getField())) {
+      buildOql(lq.toString(), sel, whr, scnt);
+      return;
+    }
+
+    whr.append("(");
+    for (String fexpr : FIELD_MAP.get(lq.getField())) {
+      if (lq.getLowerVal() != null)
+        whr.append(lq.includesLower() ? "ge(" : "gt(").append(fexpr).append(", '").
+            append(RdfUtil.escapeLiteral(lq.getLowerVal())).append("'").
+            append(DT_MAP.containsKey(lq.getField()) ? DT_MAP.get(lq.getField()) : "").append(")");
+
+      if (lq.getLowerVal() != null && lq.getUpperVal() != null)
+        whr.append(" and ");
+
+      if (lq.getUpperVal() != null)
+        whr.append(lq.includesUpper() ? "le(" : "lt(").append(fexpr).append(", '").
+            append(RdfUtil.escapeLiteral(lq.getUpperVal())).append("'").
+            append(DT_MAP.containsKey(lq.getField()) ? DT_MAP.get(lq.getField()) : "").append(")");
+
+      whr.append(" or ");
+    }
+
+    whr.setLength(whr.length() - 4);  // remove trailing ' or '
+    whr.append(")");
+  }
+
+  private void buildOql(String qs, StringBuilder sel, StringBuilder whr, int[] scnt) {
+    int colon = qs.indexOf(':');
+    String field = qs.substring(0, colon);
+    String text  = qs.substring(colon + 1);
+
+    if (!FIELD_MAP.containsKey(field))
+      throw new RuntimeException("Unknown field '" + field + "'");
+
+    whr.append("(");
+
+    for (String fexpr : FIELD_MAP.get(field)) {
+      //if (isSearchable(fexpr)) {
+      if (SRCHB_MAP.get(field)) {
+        whr.append("search(").append(fexpr).append(", '").
+            append(RdfUtil.escapeLiteral(text)).append("', score").append(scnt[0]).
+            append(") or ");
+        sel.append(", score").append(scnt[0]++).append(" ");
+      } else {
+        whr.append(fexpr).append(" = '").append(RdfUtil.escapeLiteral(text)).append("'").
+            append(DT_MAP.containsKey(field) ? DT_MAP.get(field) : "").
+            append(" or ");
+      }
+    }
+
+    whr.setLength(whr.length() - 4);  // remove trailing ' or '
+    whr.append(") ");
+  }
+
+  private boolean isSearchable(String fexpr) {
+    // FIXME: this doesn't handle subclasses correctly
+
+    String[] derefs = fexpr.split("\\.");
+    String entity = session.getSessionFactory().getClassMetadata(Article.class).getName();
+    char sep = ':';
+
+    for (int idx = 1; idx < derefs.length - 1; idx++) {
+      Definition def = session.getSessionFactory().getDefinition(entity + sep + derefs[idx]);
+      if (def == null) {
+        for (String sup : session.getSessionFactory().getClassMetadata(entity).getSuperEntities()) {
+          def = session.getSessionFactory().getDefinition(sup + sep + derefs[idx]);
+          if (def != null) {
+            entity = sup;
+            break;
+          }
+        }
+      }
+
+      if (def instanceof RdfDefinition) {
+        entity = ((RdfDefinition) def).getAssociatedEntity();
+        sep = ':';
+      } else if (def instanceof EmbeddedDefinition) {
+        entity = entity + sep + derefs[idx];
+        sep = '.';
+      } else {
+        throw new RuntimeException("Could find definitions for '" + fexpr + "'; current entity = " +
+                                   "'" + entity + "', last deref = '" + derefs[idx] + "'");
+      }
+    }
+
+    Definition def = SearchableDefinition.findForProp(session.getSessionFactory(),
+                                                      entity + sep + derefs[derefs.length - 1]);
+    return (def != null);
   }
 
   /**
    * Set ArticleOtmService.  Enable Spring autowiring.
-   * @param articleOtmService to use.
+   *
+   * @param articleService to use.
    */
   @Required
-  public void setArticleOtmService(ArticleOtmService articleOtmService) {
-    this.articleOtmService = articleOtmService;
+  public void setArticleOtmService(final ArticleOtmService articleService) {
+    this.articleService = articleService;
   }
 
   /**
-   * Set search cache.  Enable Spring autowiring.
-   * @param cache to use.
+   * Set the search cache to use.
+   *
+   * @param cache the cache
    */
   @Required
   public void setSearchCache(Cache cache) {
     this.cache = cache;
+  }
+
+  /**
+   * Set the otm session to use.
+   *
+   * @param session the session
+   */
+  @Required
+  public void setOtmSession(Session session) {
+    this.session = session;
   }
 }

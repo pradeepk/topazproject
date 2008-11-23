@@ -518,24 +518,6 @@
         <artifactId>fedora-blobstore</artifactId>
         <version>${pom.version}</version>
       </dependency>
-
-      <!-- search -->
-      <dependency>
-        <groupId>org.topazproject.ws</groupId>
-        <artifactId>ws-search-client-impl</artifactId>
-        <version>${pom.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.topazproject.ws</groupId>
-        <artifactId>ambra-lucene-impl</artifactId>
-        <version>${pom.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.topazproject.ws</groupId>
-        <artifactId>ws-search-webapp</artifactId>
-        <version>${pom.version}</version>
-        <type>war</type>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -725,11 +707,9 @@
                   <goal>ecqs-install</goal>
                   <goal>mulgara-install</goal>
                   <goal>fedora-install</goal>
-                  <goal>search-install</goal>
                   <goal>ecqs-start</goal>
                   <goal>mulgara-start</goal>
                   <goal>fedora-start</goal>
-                  <goal>search-start</goal>
                 </goals>
                 <configuration>
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
@@ -742,7 +722,6 @@
                   <goal>ecqs-stop</goal>
                   <goal>fedora-stop</goal>
                   <goal>mulgara-stop</goal>
-                  <goal>search-stop</goal>
                 </goals>
               </execution>
             </executions>

@@ -21,6 +21,7 @@ package org.topazproject.ambra.models;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Searchable;
 
 /**
  * Represents the body of an Annotation object.
@@ -67,5 +68,11 @@ public class AnnotationBlob extends Blob {
       generatorClass = "org.topazproject.ambra.models.support.BlobIdGenerator")
   public void setId(String id) {
     this.id = id;
+  }
+
+  @Override
+  @Searchable(index = "lucene", uri = "topaz:body")
+  public void setBody(byte[] body) {
+    super.setBody(body);
   }
 }

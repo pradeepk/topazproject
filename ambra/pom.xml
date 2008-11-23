@@ -19,7 +19,6 @@
     <module>cas-mod</module>
     <module>doi-resolver</module>
     <module>libs</module>
-    <module>search</module>
     <module>scripts</module>
     <module>registration</module>
     <module>ecqs-bundle</module>

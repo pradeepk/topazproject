@@ -500,7 +500,7 @@ public class AnnotationClassMetaFactory {
         throw new OtmException("@Projection can-only/must be applied to Views or Sub-Views : "
                                + this);
 
-      if ((ann == null) && (cd instanceof ViewDefinition))
+      if (ann == null)
         return null;
 
       IdentifierGenerator generator;

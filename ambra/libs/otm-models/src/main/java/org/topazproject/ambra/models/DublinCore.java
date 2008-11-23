@@ -27,6 +27,7 @@ import java.util.HashSet;
 
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.Searchable;
 
 /**
  * Model for a subset of the elements of the Dublin Core metadata
@@ -89,6 +90,7 @@ public class DublinCore implements Serializable {
    *
    * @param creators the set of creators for this object
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "dc:creator")
   public void setCreators(Set<String> creators) {
     this.creators = creators;
@@ -110,6 +112,7 @@ public class DublinCore implements Serializable {
    * @param contributors the contributors to set
    * @see #getContributors
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "dc:contributor")
   public void setContributors(Set<String> contributors) {
     this.contributors = contributors;
@@ -176,6 +179,7 @@ public class DublinCore implements Serializable {
    * @param description the description to set
    * @see #getDescription
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "dc:description", dataType = "rdf:XMLLiteral")
   public void setDescription(String description) {
     this.description = description;
@@ -218,6 +222,7 @@ public class DublinCore implements Serializable {
    * @param rights the rights to set
    * @see #getRights
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "dc:rights", dataType = "rdf:XMLLiteral")
   public void setRights(String rights) {
     this.rights = rights;
@@ -239,6 +244,7 @@ public class DublinCore implements Serializable {
    * @param title the title to set
    * @see #getTitle
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "dc:title", dataType = "rdf:XMLLiteral")
   public void setTitle(String title) {
     this.title = title;
@@ -262,6 +268,7 @@ public class DublinCore implements Serializable {
    * @param subjects the subjects the object is about
    * @see #getSubjects
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "dc:subject", dataType = "rdf:XMLLiteral")
   public void setSubjects(Set<String> subjects) {
     this.subjects = subjects;
@@ -305,6 +312,7 @@ public class DublinCore implements Serializable {
    * @param publisher the name of the publisher
    * @see #getPublisher
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "dc:publisher", dataType = "rdf:XMLLiteral")
   public void setPublisher(String publisher) {
     this.publisher = publisher;
@@ -469,6 +477,7 @@ public class DublinCore implements Serializable {
    * @param summary the summary/abstract of the object
    * @see #getSummary
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "dcterms:abstract")
   public void setSummary(Set<String> summary) {
     this.summary = summary;

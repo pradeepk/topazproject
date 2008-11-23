@@ -37,10 +37,6 @@
       <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-search-client-impl</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>entity-resolver</artifactId>
     </dependency>
@@ -271,6 +267,17 @@
       <groupId>org.topazproject</groupId>
       <artifactId>ambra-otm-models</artifactId>
       <version>${pom.parent.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>2.4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-highlighter</artifactId>
+      <version>2.4.0</version>
     </dependency>
 
     <!-- Please keep the scope 'provided' to avoid packaging in the war -->

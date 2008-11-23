@@ -206,14 +206,9 @@
     <spring>
       <server>
         <ambra>${ambra.network.hosts.ambra}:${ambra.network.ports.ambra}</ambra>
-        <search>${ambra.network.hosts.ambra}:${ambra.network.ports.ambra}</search>
         <mulgara>${ambra.network.hosts.mulgara}</mulgara>
       </server>
       <homesite>${ambra.network.hosts.default}</homesite>
-      <service>
-        <!-- This may need to be mucked with to be just one -->
-        <search>${ambra.services.search.fedoraGSearch.urls.url}</search>
-      </service>
     </spring>
 
     <articleTypeList>

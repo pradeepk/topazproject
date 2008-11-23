@@ -29,6 +29,7 @@ import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.Searchable;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
@@ -91,6 +92,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param realName the real name; may be null
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "foaf:name")
   public void setRealName(String realName) {
     this.realName = realName;
@@ -110,6 +112,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param givenNames the given names.
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "foaf:givenname")
   public void setGivenNames(String givenNames) {
     this.givenNames = givenNames;
@@ -129,6 +132,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param surnames the surnames.
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "foaf:surname")
   public void setSurnames(String surnames) {
     this.surnames = surnames;

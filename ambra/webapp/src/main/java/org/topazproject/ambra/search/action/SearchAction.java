@@ -26,16 +26,20 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.BrowseService;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.search.SearchResultPage;
+import org.topazproject.ambra.search.service.Results;
 import org.topazproject.ambra.search.service.SearchHit;
 import org.topazproject.ambra.search.service.SearchService;
 
@@ -47,43 +51,43 @@ import org.topazproject.ambra.search.service.SearchService;
  */
 @SuppressWarnings("serial")
 public class SearchAction extends BaseActionSupport {
-  private static final Log log = LogFactory.getLog(SearchAction.class);
+  private static final Log           log  = LogFactory.getLog(SearchAction.class);
+  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
+  private static final DateFormat    luceneDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+  private static final int           DEF_PAGE_SIZE =
+                                                CONF.getInt("ambra.services.search.pageSize", 10);
 
-  private static final DateFormat luceneDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-  private String query;
-  private int startPage = 0;
-  private int pageSize = 10;
   private SearchService searchService;
   private BrowseService browseService;
 
+  private String query;
+  private int    startPage = 0;
+  private int    pageSize  = DEF_PAGE_SIZE;
+
   private Collection<SearchHit> searchResults;
-  private int totalNoOfResults;
-  Map<String, Integer> categoryInfos = new HashMap<String, Integer>(); // empty map for non-null safety
+  private int                   totalNoOfResults;
+  private Map<String, Integer>  categoryInfos = new HashMap<String, Integer>(); // empty map for non-null safety
 
   /**
    * Flag telling this action whether or not the search should be executed.
    */
-  private String noSearchFlag;
+  private String   noSearchFlag;
 
-  //private String title;
-  //private String text;
-  //private String description;
   private String[] creator = null;
-  private String authorNameOp;
-  private String textSearchAll;
-  private String textSearchExactPhrase;
-  private String textSearchAtLeastOne;
-  private String textSearchWithout;
-  private String textSearchOption;
-  private String dateTypeSelect;
-  private String startYear;
-  private String startMonth;
-  private String startDay;
-  private String endYear;
-  private String endMonth;
-  private String endDay;
-  private String subjectCatOpt;
+  private String   authorNameOp;
+  private String   textSearchAll;
+  private String   textSearchExactPhrase;
+  private String   textSearchAtLeastOne;
+  private String   textSearchWithout;
+  private String   textSearchOption;
+  private String   dateTypeSelect;
+  private String   startYear;
+  private String   startMonth;
+  private String   startDay;
+  private String   endYear;
+  private String   endMonth;
+  private String   endDay;
+  private String   subjectCatOpt;
   private String[] limitToCategory = null;
 
   /**
@@ -91,10 +95,9 @@ public class SearchAction extends BaseActionSupport {
    */
   @Transactional(readOnly = true)
   public String executeSimpleSearch() {
-    String rval = executeSearch(query);
     // the simple search text field correlates to advanced search's "for all the words" field
     this.textSearchAll = query;
-    return rval;
+    return executeSearch(query);
   }
 
   /**
@@ -106,44 +109,30 @@ public class SearchAction extends BaseActionSupport {
       query = buildAdvancedQuery();
       return executeSearch(query);
     }
+
     categoryInfos = browseService.getCategoryInfos();
     return INPUT;
   }
 
   private String executeSearch(final String queryString) {
-    try {
-      if (StringUtils.isBlank(queryString)) {
-        addActionError("Please enter a query string.");
-        categoryInfos = browseService.getCategoryInfos();
-        return INPUT;
-      }
+    if (StringUtils.isBlank(queryString)) {
+      addActionError("Please enter a query string.");
+      categoryInfos = browseService.getCategoryInfos();
+      return INPUT;
+    }
 
-      SearchResultPage searchResultPage = searchService.find(queryString, startPage, pageSize);
-//      final SearchResultPage searchResultPage = getMockSearchResults(startPage, pageSize);
-      totalNoOfResults = searchResultPage.getTotalNoOfResults();
-      searchResults = searchResultPage.getHits();
-    } catch (ApplicationException e) {
+    try {
+      SearchResultPage results = searchService.find(queryString, startPage, pageSize);
+      totalNoOfResults = results.getTotalNoOfResults();
+      searchResults    = results.getHits();
+    } catch (Exception e) {
       addActionError("Search failed ");
       log.error("Search failed with error with query string: " + queryString, e);
       return ERROR;
     }
+
     return SUCCESS;
   }
-
-  /*
-  private SearchResultPage getMockSearchResults(final int startPage, final int pageSize) throws ApplicationException {
-    //final Collection<SearchHit> hits = new ArrayList<SearchHit>();
-    final String searchResultXml = "searchResult.xml";
-
-    final String text;
-    try {
-      text = FileUtils.getTextFromUrl(new File(searchResultXml).toURL().toString());
-      return SearchUtil.convertSearchResultXml(text);
-    } catch (Exception e) {
-      throw new ApplicationException("error");
-    }
-  }
-  */
 
   private String buildAdvancedQuery() {
     final Collection<String> fields = new ArrayList<String>();
@@ -306,8 +295,7 @@ public class SearchAction extends BaseActionSupport {
     return StringUtils.join(fields.iterator(), " AND ");
   }
 
-  private String padDatePart(String datePart, boolean isYear) {
-    assert datePart != null;
+  private static String padDatePart(String datePart, boolean isYear) {
     if(isYear) {
       // presume we have a valid 4-digit year
       return datePart;
@@ -320,7 +308,7 @@ public class SearchAction extends BaseActionSupport {
    * Static helper method to escape special characters in a Lucene search string with a \
    */
   protected static final String escapeChars = "+-&|!(){}[]^\"~*?:\\";
-  protected String escape(String in) {
+  protected static String escape(String in) {
     StringBuffer buf = new StringBuffer();
     for (int i=0; i < in.length(); i++) {
       if (escapeChars.indexOf(in.charAt(i)) != -1) {
@@ -331,7 +319,7 @@ public class SearchAction extends BaseActionSupport {
     return buf.toString();
   }
 
-  protected boolean isDigit(String str) {
+  protected static boolean isDigit(String str) {
     if (str == null) return false;
     for (int i=0; i < str.length(); i++) {
       if (!(Character.isDigit(str.charAt(i)))) {

@@ -21,6 +21,7 @@ package org.topazproject.ambra.models;
 import java.io.Serializable;
 
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Searchable;
 
 /**
  * Base class for blobs loaded from the BlobStore.

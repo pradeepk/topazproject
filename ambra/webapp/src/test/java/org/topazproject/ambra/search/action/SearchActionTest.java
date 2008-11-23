@@ -21,12 +21,7 @@ package org.topazproject.ambra.search.action;
 import static com.opensymphony.xwork2.Action.SUCCESS;
 
 import org.topazproject.ambra.BaseAmbraTestCase;
-import org.topazproject.ambra.search.SearchResultPage;
-import org.topazproject.ambra.search.SearchUtil;
 import org.topazproject.ambra.search.action.SearchAction;
-import org.topazproject.ambra.util.FileUtils;
-
-import java.io.File;
 
 public class SearchActionTest extends BaseAmbraTestCase {
   public void testSimpleSearchShouldReturnSomething(){
@@ -38,13 +33,4 @@ public class SearchActionTest extends BaseAmbraTestCase {
     assertEquals(2, searchAction.getSearchResults().size());
     assertEquals(10, searchAction.getPageSize());
   }
-
-  public void testSearchObjectFormed() throws Exception {
-    final String searchResultXml = "webapp/src/test/resources/searchResult.xml";
-
-    final String text = FileUtils.getTextFromUrl(new File(searchResultXml).toURL().toString());
-    final SearchResultPage searchHits = SearchUtil.convertSearchResultXml(text);
-    assertEquals(1, searchHits.getTotalNoOfResults());
-  }
-
 }

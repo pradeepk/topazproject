@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,7 +36,6 @@ import java.util.Set;
 
 import javax.activation.FileDataSource;
 import javax.activation.FileTypeMap;
-import javax.xml.rpc.ServiceException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -186,13 +184,10 @@ public class DocumentManagementService {
    * Useful for deleting a recently ingested article that hasn't been published
    *
    * @param objectURI URI of the article to delete
-   * @throws RemoteException on an error from search service
-   * @throws ServiceException on an error from search service
    * @throws NoSuchArticleIdException if id is invalid
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public void delete(String objectURI)
-      throws RemoteException, ServiceException, NoSuchArticleIdException {
+  public void delete(String objectURI) throws NoSuchArticleIdException {
     articleOtmService.delete(objectURI);
     URI id = URI.create(objectURI);
     for (Journal j : journalService.getAllJournals()) {

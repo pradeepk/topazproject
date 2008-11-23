@@ -93,12 +93,13 @@ public class JournalCreator implements ServletContextListener {
 
       SessionFactory factory = new SessionFactoryImpl();
       factory.setTripleStore(new ItqlStore(service, WebappItqlClientFactory.getInstance()));
-      factory.addGraph(new GraphConfig("ri", URI.create(conf.getString("ambra.graphs.articles")),
-                                       null));
-      factory.addGraph(new GraphConfig("profiles",
-                                       URI.create(conf.getString("ambra.graphs.profiles")), null));
-      factory.addGraph(new GraphConfig("criteria",
-                                       URI.create(conf.getString("ambra.graphs.criteria")), null));
+
+      for (String name : new String[] { "ri", "profiles", "criteria", "lucene" }) {
+        String key = "ambra.graphs." + name;
+        factory.addGraph(new GraphConfig(name, URI.create(conf.getString(key)),
+                                         URI.create(conf.getString(key + "[@type]",
+                                                                   "mulgara:Model"))));
+      }
 
       Configuration aliases = conf.subset("ambra.aliases");
       Iterator it           = aliases.getKeys();

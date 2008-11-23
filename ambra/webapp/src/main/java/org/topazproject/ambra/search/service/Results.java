@@ -22,13 +22,12 @@ import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;
 
-import java.security.Guard;
 import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -36,11 +35,21 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.ambra.article.service.NoSuchArticleIdException;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.search.highlight.Highlighter;
+import org.apache.lucene.search.highlight.QueryScorer;
+import org.apache.lucene.search.highlight.Fragmenter;
+import org.apache.lucene.search.highlight.SimpleFragmenter;
+import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
+
 import org.topazproject.ambra.article.service.ArticleOtmService;
+import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.configuration.ConfigurationStore;
+import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.search.SearchResultPage;
-import org.topazproject.ambra.search.SearchUtil;
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
 import org.topazproject.ambra.xacml.XacmlUtil;
 
@@ -52,31 +61,32 @@ import org.topazproject.ambra.xacml.XacmlUtil;
  * @version $Id$
  */
 public class Results {
-  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
   private static final Log           log  = LogFactory.getLog(Results.class);
+  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
-  private SearchPEP                  pep;
-  private SearchWebService           service;
-  private ArticleOtmService          articleOtmService;
-  private CachingIterator            cache;
-  private String                     query;
-  private int                        totalHits = 0;
-  private Lock                       lock = new ReentrantLock();
+  private final SearchPEP         pep;
+  private final ArticleOtmService articleService;
+  private final Query             luceneQuery;
+  private final List<SearchHit>   unresolvedHits;
+  private final List<SearchHit>   resolvedHits;
+  private final Lock              unresLock = new ReentrantLock();
+  private       int               nextUnres = 0;
+  private       int               totalHits;
 
   /**
    * Construct a search Results object.
    *
-   * @param query               the lucene query to build the search results for.
-   * @param service             the fedoragsearch service
-   * @param articleOtmService the FetchArticleService.
+   * @param scoredIds      the scored articles id's (i.e. only the score and uri are valid)
+   * @param articleService the ArticleOtmService.
    */
-  public Results(String query, SearchWebService service, ArticleOtmService articleOtmService) {
-    this.service  = service;
-    this.articleOtmService = articleOtmService;
-    this.query    = query;
-    this.cache    = new CachingIterator(new GuardedIterator(new HitIterator(), new HitGuard()));
+  public Results(List<SearchHit> scoredIds, Query luceneQuery, ArticleOtmService articleService) {
+    this.unresolvedHits = scoredIds;
+    this.resolvedHits   = new ArrayList<SearchHit>(unresolvedHits.size());
+    this.luceneQuery    = luceneQuery;
+    this.articleService = articleService;
+
     try {
-      this.pep    = new SearchPEP();
+      pep = new SearchPEP();
     } catch (Exception e) {
       throw new Error("Failed to create SearchPEP", e);
     }
@@ -88,84 +98,151 @@ public class Results {
    * @param startPage the page number to return (starts with 0)
    * @param pageSize  the number of entries to return
    * @return The results for one page of a search.
-   * @throws UndeclaredThrowableException if there was a problem retrieving the search results.
-   *         It likely wraps a RemoteException (talking to the search webapp) or an IOException
-   *         parsing the results.
    */
   public SearchResultPage getPage(int startPage, int pageSize) {
-    ArrayList<SearchHit> hits = new ArrayList<SearchHit>(pageSize);
-    int                  cnt  = 0; // Actual number of hits retrieved
+    int end = (startPage + 1) * pageSize;
 
-    // Jump to the record we want
-    cache.gotoRecord(startPage * pageSize);
-
-    // Copy records out of our cache into our hits
-    while (cache.hasNext() && cnt < pageSize) {
-      hits.add((SearchHit) cache.next());
-      cnt++;
-    }
-
-    // If we know we're at the end, set our total size
-    if (!cache.hasNext())
-      totalHits = cache.getCurrentSize();
-
-    return new SearchResultPage(totalHits, pageSize, hits);
-  }
-
-  public Lock getLock() {
-    return lock;
-  }
-
-  /**
-   * Class that uses fedoragsearch to back this custom iterator.<p>
-   *
-   * Use this in a chain of iterators.
-   */
-  private class HitIterator implements Iterator {
-    private ArrayList<SearchHit> items    = new ArrayList<SearchHit>();
-    private Iterator             iter     = items.iterator();
-    private int                  position = 0;
-
-    public boolean hasNext() {
-      if (!iter.hasNext()) {
-        try {
-          String xml = service.find(query, position,
-                                    CONF.getInt("ambra.services.search.fetchSize", 10),
-                                    CONF.getInt("ambra.services.search.snippetsMax", 3),
-                                    CONF.getInt("ambra.services.search.fieldMaxLength", 50),
-                                    CONF.getString("ambra.services.search.index", "TopazIndex"),
-                                    CONF.getString("ambra.services.search.resultPage", "copyXml"));
-
-          if (log.isDebugEnabled())
-            log.debug("HitIterator: Got results: " + xml);
-
-          // Not sure if using a SearchResultPage is the right way here... (but it works)
-          SearchResultPage results = SearchUtil.convertSearchResultXml(xml);
-          items.addAll(results.getHits());
-          if (totalHits == 0) // Just play safe, not sure what happens at EOF
-            totalHits = results.getTotalNoOfResults();
-
-          iter = items.listIterator(position);
-          position += results.getHits().size();
-        } catch (Exception e) {
-          // It is possible we could throw a RemoteException or IOException
-          throw new UndeclaredThrowableException(e, "Error talking to search service");
-        }
+    boolean needResolving;
+    synchronized (resolvedHits) {
+      if (resolvedHits.size() >= end) {
+        return new SearchResultPage(totalHits, pageSize,
+                                    new ArrayList(resolvedHits.subList(startPage * pageSize, end)));
       }
-
-      return iter.hasNext();
     }
 
-    public Object next() {
-      if (hasNext())
-        return iter.next();
-      else
-        throw new NoSuchElementException();
+    resolveHits(end, pageSize);
+
+    synchronized (resolvedHits) {
+      end = Math.min(end, resolvedHits.size());
+      return new SearchResultPage(totalHits, pageSize,
+                                  new ArrayList(resolvedHits.subList(startPage * pageSize, end)));
+    }
+  }
+
+  private void resolveHits(int end, int pageSize) {
+    List<SearchHit> tmp = new ArrayList<SearchHit>(pageSize);
+
+    try {
+      while (!unresLock.tryLock(2L, TimeUnit.SECONDS)) {
+        synchronized (resolvedHits) {
+          if (resolvedHits.size() >= end)
+            return;
+        }
+
+        log.warn("Still waiting for lock to resolve hits");
+      }
+    } catch (InterruptedException ie) {
+      throw new RuntimeException("Error waiting for search-results lock", ie);
     }
 
-    public void remove() {
-      throw new UnsupportedOperationException();
+    try {
+      while (resolvedHits.size() < end && nextUnres < unresolvedHits.size()) {
+        while (tmp.size() < pageSize && nextUnres < unresolvedHits.size()) {
+          SearchHit res = resolveHit(unresolvedHits.get(nextUnres++));
+          if (res != null)
+            tmp.add(res);
+        }
+
+        synchronized (resolvedHits) {
+          resolvedHits.addAll(tmp);
+          totalHits = resolvedHits.size() + (unresolvedHits.size() - nextUnres);
+        }
+
+        tmp.clear();
+      }
+    } finally {
+      unresLock.unlock();
     }
+  }
+
+  private SearchHit resolveHit(SearchHit hit) {
+    URI uri = URI.create(hit.getUri());
+
+    // Verify xacml allows (initially used for <topaz:articleState> ... but may be more)
+    try {
+      pep.checkAccess(SearchPEP.READ_METADATA, uri);
+    } catch (SecurityException se) {
+      if (log.isDebugEnabled())
+        log.debug("Search hit '" + uri + "' removed due to access restrictions", se);
+      return null;
+    }
+
+    // verify that Aricle exists, is accessible by user, is in Journal, etc., be cache aware
+    Article article;
+    try {
+      article = articleService.getArticle(uri);
+    } catch (NoSuchArticleIdException nsae) {
+      // shouldn't actually happen due to filtering being applied on the query directly
+      if (log.isDebugEnabled())
+        log.debug("Search hit '" + uri + "' removed due to the article being filtered out", nsae);
+      return null;
+    }
+
+    // build missing data - FIXME: hardcoded representation name
+    try {
+      return new SearchHit(hit.getHitScore(), hit.getUri(), article.getDublinCore().getTitle(),
+                           createHighlight("body",
+                                  new String(article.getRepresentation("XML").getBody(), "UTF-8")),
+                           article.getDublinCore().getCreators(),
+                           article.getDublinCore().getDate());
+    } catch (IOException ioe) {
+      log.warn("Error creating highlight for article '" + hit.getUri() + "'", ioe);
+      return null;
+    }
+  }
+
+  private String createHighlight(String fname, String fval) throws IOException {
+    int snippetsMax    = CONF.getInt("ambra.services.search.snippetsMax",    3);
+    int fieldMaxLength = CONF.getInt("ambra.services.search.fieldMaxLength", 50);
+
+    // Try to build snippets
+    if (snippetsMax > 0) {
+      SimpleHTMLFormatter formatter =
+          new SimpleHTMLFormatter("<span class=\"highlight\">", "</span>");
+
+      QueryScorer scorer = new QueryScorer(luceneQuery, fname);
+      Highlighter highlighter = new Highlighter(formatter, scorer);
+      Fragmenter fragmenter = new SimpleFragmenter(fieldMaxLength);
+      highlighter.setTextFragmenter(fragmenter);
+      TokenStream tokenStream = getAnalyzer().tokenStream(fname, new StringReader(fval));
+      String[] fragments = highlighter.getBestFragments(tokenStream, fval, snippetsMax);
+      if (fragments != null && fragments.length > 0) {
+        StringBuilder sb = new StringBuilder(snippetsMax * (fieldMaxLength + 25));
+        for (int i = 0; i < fragments.length; i++) {
+          sb.append(stripTrailingEntity(fragments[i]));
+          if (i < (fragments.length - 1))
+            sb.append(" ... ");
+        }
+        return sb.toString();
+      }
+    }
+
+    if (fieldMaxLength > 0 && fval.length() > fieldMaxLength)
+      return stripTrailingEntity(fval.substring(0, fieldMaxLength)) + " ... ";
+    else
+      return fval;
+  }
+
+  private static String stripTrailingEntity(String src) {
+    // Walk the string looking for matching &, ; pairs
+    int pos = 0;
+    while (true) {
+      int iamp = src.indexOf("&", pos);
+      if (iamp == -1)
+        return src;
+      pos = src.indexOf(";", iamp);
+      if (pos == -1)
+        return src.substring(0, iamp);
+      /* See if entity contains any invalid characters (if so, strip entire thing)
+       * Okay, not invalid characters, just any entity that is too long
+       */
+      if (pos - iamp > 7)
+        src = src.substring(0, iamp) + src.substring(pos + 1);
+    }
+  }
+
+  private static final Analyzer getAnalyzer() {
+    return new StandardAnalyzer();
   }
 
   /**
@@ -188,29 +265,6 @@ public class Results {
     protected SearchPEP(PDP pdp)
         throws IOException, ParsingException, UnknownIdentifierException {
       super(pdp);
-    }
-  }
-
-  /**
-   * A guard that uses XACML and OTM to ensure an article's meta data should be visible to
-   * the current user in the current journal (OTM filter).
-   *
-   * @see GuardedIterator
-   */
-  private class HitGuard implements Guard {
-    public void checkGuard(Object object) throws SecurityException {
-      SearchHit hit = (SearchHit) object;
-      URI articleId = URI.create(hit.getPid());
-
-      // Verify xacml allows (initially used for <topaz:articleState> ... but may be more)
-      pep.checkAccess(SearchPEP.READ_METADATA, articleId);
-
-      // verify that Aricle exists, is accessible by user, is in Journal, etc., be cache aware
-      try {
-        articleOtmService.getArticle(articleId);
-      } catch (NoSuchArticleIdException na) {
-        throw new SecurityException(na);
-      }
     }
   }
 }

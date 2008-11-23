@@ -25,6 +25,7 @@ import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.Searchable;
 
 /**
  * Ambra articles have a category and sub-category. Theoretically these are well defined
@@ -68,6 +69,7 @@ public class Category implements Serializable {
   /**
    * @param mainCategory the value of the main category
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "topaz:mainCategory")
   public void setMainCategory(String mainCategory) {
     this.mainCategory = mainCategory;
@@ -83,6 +85,7 @@ public class Category implements Serializable {
   /**
    * @param subCategory the value of the sub-category
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "topaz:subCategory")
   public void setSubCategory(String subCategory) {
     this.subCategory = subCategory;

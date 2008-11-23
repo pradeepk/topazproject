@@ -31,6 +31,7 @@ import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Predicate.PropType;
+import org.topazproject.otm.annotations.Searchable;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
@@ -186,6 +187,7 @@ public class Citation implements Serializable {
   /**
    * @param volume the volume of the journal
    */
+  @Searchable(index = "lucene")
   @Predicate(uri="prism:volume", dataType = "xsd:string")
   public void setVolume(String volume) {
     this.volume = volume;
@@ -207,6 +209,7 @@ public class Citation implements Serializable {
   /**
    * @param issue the issue of the citation's article
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "bibtex:hasNumber", dataType = "xsd:string")
   public void setIssue(String issue) {
     this.issue = issue;
@@ -244,6 +247,7 @@ public class Citation implements Serializable {
   /**
    * @param publisherLocation the location of the publisher
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "bibtex:hasAddress", dataType = "xsd:string")
   public void setPublisherLocation(String publisherLocation) {
     this.publisherLocation = publisherLocation;
@@ -259,6 +263,7 @@ public class Citation implements Serializable {
   /**
    * @param publisherName the name of the publisher
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "bibtex:hasPublisher", dataType = "xsd:string")
   public void setPublisherName(String publisherName) {
     this.publisherName = publisherName;
@@ -316,6 +321,7 @@ public class Citation implements Serializable {
   /**
    * @param journal the journal of the citation
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "bibtex:hasJournal", dataType = "xsd:string")
   public void setJournal(String journal) {
     this.journal = journal;
@@ -334,6 +340,7 @@ public class Citation implements Serializable {
   /**
    * @param note the note for this citation
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "bibtex:hasNote", dataType = "xsd:string")
   public void setNote(String note) {
     this.note = note;
@@ -419,6 +426,7 @@ public class Citation implements Serializable {
    *
    * @param summary the summary/abstract of the object
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "bibtex:hasAbstract", dataType = "xsd:string")
   public void setSummary(String summary) {
     this.summary = summary;

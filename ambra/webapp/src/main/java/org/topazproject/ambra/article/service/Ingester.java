@@ -63,7 +63,12 @@ import org.xml.sax.SAXException;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.DomReader;
 import com.thoughtworks.xstream.mapper.Mapper;
 import com.thoughtworks.xstream.mapper.ImplicitCollectionMapper;
@@ -79,6 +84,8 @@ import org.topazproject.xml.transform.EntityResolvingSource;
 import org.topazproject.xml.transform.cache.CachedSource;
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.Representation;
+import org.topazproject.ambra.models.TextRepresentation;
 import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -300,8 +307,8 @@ public class Ingester {
   }
 
   private XStream getUnmarshaller(final Zip zip) {
-    XStream xstream = new XStream(null, null, getClass().getClassLoader(),
-                                  new CollectionMapper(new XStream().getMapper()));
+    final XStream xstream = new XStream(null, null, getClass().getClassLoader(),
+                                        new CollectionMapper(new XStream().getMapper()));
 
     xstream.setMode(XStream.ID_REFERENCES);
 
@@ -338,6 +345,26 @@ public class Ingester {
         } catch (IOException ioe) {
           throw new RuntimeException("Error reading zip entry '" + str + "'", ioe);
         }
+      }
+    });
+
+    xstream.registerConverter(new Converter() {
+      private final Converter orig =
+                          xstream.getConverterLookup().lookupConverterForType(Representation.class);
+
+      public boolean canConvert(Class type) {
+        return Representation.class.isAssignableFrom(type);
+      }
+
+      public void marshal(Object value, HierarchicalStreamWriter writer,
+                          MarshallingContext context) {
+        // not used
+      }
+
+      public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+        Class rep =
+            reader.getAttribute("isText") != null ? TextRepresentation.class : Representation.class;
+        return context.convertAnother(context.currentObject(), rep, orig);
       }
     });
 

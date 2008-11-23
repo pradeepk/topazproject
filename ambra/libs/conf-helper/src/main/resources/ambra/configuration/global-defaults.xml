@@ -48,8 +48,6 @@
         * fedora       - The blob store used to store ingested articles
         * mulgara      - The triple store.
         * ambra        - The publishing system
-        * search       - The lucene full-text search engine. (No configuration in the
-        network section yet. Shares the ambra container.)
         * doi-resolver - Resolves DOIs. (Also no configuration here yet. Shares
         ambra container.)
         * default      - This is the webhead that runs apache. See wiki for more info.
@@ -67,7 +65,7 @@
         <fedora>${ambra.network.hosts.default}</fedora>
         <mulgara>${ambra.network.hosts.default}</mulgara>
         <ambra>${ambra.network.hosts.default}</ambra>
-        <!-- TODO: Use registration apropriately every where. Pull out doi-resolver (& search?) -->
+        <!-- TODO: Use registration apropriately every where. Pull out doi-resolver -->
       </hosts>
 
       <ports>
@@ -136,6 +134,9 @@
       <criteria type="http://topazproject.org/graphs#filter">
         ${ambra.topaz.tripleStore.mulgara.graphPrefix}filter:graph=criteria
       </criteria>
+      <lucene type="http://mulgara.org/mulgara#LuceneModel">
+        ${ambra.topaz.tripleStore.mulgara.graphPrefix}lucene
+      </lucene>
       <str type="http://topazproject.org/graphs#StringCompare">
         ${ambra.topaz.tripleStore.mulgara.graphPrefix}str
       </str>
@@ -211,25 +212,6 @@
         </imageMagick>
       </documentManagement>
       
-      <search>
-        <fedoraGSearch>
-          <urls>
-            <url>
-              http://${ambra.network.hosts.ambra}:${ambra.network.ports.ambra}/ws-search-webapp/services/FedoraGenericSearchServicePort
-            </url>
-          </urls>
-          <repository>Topaz</repository>
-          <index>TopazIndex</index>
-          <indexDocXslt>topazFoxmlToLucene</indexDocXslt>
-          <resultPageXslt>copyXml</resultPageXslt>
-          <fgsrepository>
-            <fedoraSoap>${ambra.topaz.blobStore.fedora.base-url}services</fedoraSoap>
-            <fedoraUser>${ambra.topaz.blobStore.fedora.userName}</fedoraUser>
-            <fedoraPass>${ambra.topaz.blobStore.fedora.password}</fedoraPass>
-          </fgsrepository>
-        </fedoraGSearch>
-      </search>
-
       <xacml>
         <!-- 
           The pdpName configures the XACML-PDP used by the corresponding XACML-PEP.
