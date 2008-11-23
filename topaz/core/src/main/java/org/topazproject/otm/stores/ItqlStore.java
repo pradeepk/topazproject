@@ -449,8 +449,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     Collection<RdfMapper> mappers = new ArrayList<RdfMapper>();
 
     for (SearchableDefinition def : defs) {
-      String propName = def.getBaseName();
-      Mapper m = cm.getMapperByName(propName.substring(propName.indexOf(':') + 1));
+      Mapper m = cm.getMapperByName(def.getLocalName());
       if (m instanceof RdfMapper)
         mappers.add((RdfMapper) m);
     }
