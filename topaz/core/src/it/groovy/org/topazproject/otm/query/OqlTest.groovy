@@ -2058,7 +2058,7 @@ public class ResultChecker extends BuilderSupport {
           if (a.key == 'class')
             test.assertTrue(a.value.isAssignableFrom(o."${a.key}"))
           else
-            test.assertEquals(a.value, o."${a.key}")
+            test.assertEquals(a.value, a.key.split('\\.').inject(o, { x, f -> x."${f}" }))
         }
         break;
 
