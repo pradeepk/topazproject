@@ -627,8 +627,11 @@ public class SessionImpl extends AbstractSession {
   }
 
   private SearchableDefinition getSearchableDef(ClassMetadata cm, Mapper m) {
+    /* should be using getDefinition(SearchableDefinition.NS + m.getDefinition().getName())
+     * but that breaks with embedded mappers.
+     */
     return (SearchableDefinition)
-        sessionFactory.getDefinition(SearchableDefinition.NS + m.getDefinition().getName());
+        sessionFactory.getDefinition(SearchableDefinition.NS + cm.getName() + ':' + m.getName());
   }
 
   private Wrapper getFromStore(Id id, Object instance, boolean filterObj)

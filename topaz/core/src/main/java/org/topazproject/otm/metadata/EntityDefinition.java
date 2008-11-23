@@ -216,6 +216,19 @@ public class EntityDefinition extends ClassDefinition {
 
           blobField = (BlobMapper) em.promote(ecm.getBlobField());
         }
+
+        for (String p : sf.getClassBinding(edef.getEmbedded()).getProperties()) {
+          SearchableDefinition sd =
+              (SearchableDefinition) sf.getDefinition(SearchableDefinition.NS + p);
+
+          if (sd != null) {
+            String baseName = getName() + ':' + em.getName() + '.' + sd.getLocalName();
+            sf.addDefinition(
+              new SearchableDefinition(baseName, sd.getReference(), sd.getSupersedes(),
+                                       sd.getUri(), sd.getIndex(), sd.tokenize(), sd.getAnalyzer(),
+                                       sd.getBoost(), sd.getPreProcessor()));
+          }
+        }
       } else {
         throw new OtmException("Invalid definition type '" + def.getClass() + "' for property "
                                + def.getName() + " in " + getName());

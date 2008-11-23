@@ -28,6 +28,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.annotations.Blob;
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Searchable;
@@ -53,6 +54,7 @@ public class SearchTest extends AbstractTest {
 
     rdf.sessFactory.preload(SearchTest1.class);
     rdf.sessFactory.preload(SearchTest2.class);
+    rdf.sessFactory.preload(SearchTestEmb.class);
     rdf.sessFactory.preload(SearchTestPP.class);
     rdf.sessFactory.validate()
 
@@ -105,6 +107,54 @@ public class SearchTest extends AbstractTest {
 
     doInTx { s ->
       s.delete(new SearchTest1(id: 'foo:test1'.toURI()))
+    }
+  }
+
+  void testEmbedded() {
+    byte[] body = 'This should really be a very long blurb, but I\'m too lazy to type that...'.
+                  getBytes("UTF-8")
+    def checker = new ResultChecker(test:this)
+
+    doInTx { s ->
+      s.delete(new SearchTestEmb(s1: new SearchTest1(id: 'foo:testemb'.toURI())))
+    }
+
+    doInTx { s ->
+      s.saveOrUpdate(new SearchTestEmb(
+             s1: new SearchTest1(id: 'foo:testemb'.toURI(), text: 'A bottle of Rum', body: body)))
+    }
+
+    doInTx { s ->
+      // search on rdf prop with deref in arg
+      Results r = s.createQuery("select s from SearchTestEmb s where search(s.s1.text, 'bottle');").
+                    execute()
+      checker.verify(r) {
+        row { object (class:SearchTestEmb.class, 's1.id':'foo:testemb'.toURI()) }
+      }
+
+      // search on rdf prop with deref in alias
+      r = s.createQuery(
+            "select s from SearchTestEmb s where a := s.s1.text and search(a, 'bottle');").
+            execute()
+      checker.verify(r) {
+        row { object (class:SearchTestEmb.class, 's1.id':'foo:testemb'.toURI()) }
+      }
+
+      // search on blob prop with deref in arg
+      r = s.createQuery("select s from SearchTestEmb s where search(s.s1.body, 'blurb');").execute()
+      checker.verify(r) {
+        row { object (class:SearchTestEmb.class, 's1.id':'foo:testemb'.toURI()) }
+      }
+
+      // search on blob prop with deref in arg
+      assert shouldFail(OtmException, {
+        s.createQuery("select s from SearchTestEmb s where a := s.s1.body and search(a, 'blurb');").
+          execute()
+      })
+    }
+
+    doInTx { s ->
+      s.delete(new SearchTestEmb(s1: new SearchTest1(id: 'foo:testemb'.toURI())))
     }
   }
 
@@ -373,6 +423,16 @@ class SearchTest2 {
   }
 
   @Predicate(uri = 'topaz:s1')
+  void setS1(SearchTest1 s1) {
+    this.s1 = s1;
+  }
+}
+
+@Entity(graph = 'ri')
+class SearchTestEmb {
+  SearchTest1 s1;
+
+  @Embedded
   void setS1(SearchTest1 s1) {
     this.s1 = s1;
   }
