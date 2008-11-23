@@ -46,14 +46,10 @@ public class VirtualJournalContext {
   /** Default virtual journal name. */
   public static final String PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL = "";
 
-  /** Default virtual journal description. */
-  public static final String PUB_VIRTUALJOURNAL_DEFAULT_DESCRIPTION = "";
-
   /** Default virtual journal mapping prefix. */
   public static final String PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX = "";
 
   private final String journal;
-  private final String description;
   private final String mappingPrefix;
   private final String requestScheme;
   private final int    requestPort;
@@ -66,13 +62,12 @@ public class VirtualJournalContext {
   /**
    * Construct an immutable VirtualJournalContext.
    */
-  public VirtualJournalContext(final String journal, final String description,
-          final String mappingPrefix, final String requestScheme, final int requestPort,
-          final String requestServerName, final String requestContext,
-          final Collection<String> virtualJournals) {
+  public VirtualJournalContext(final String journal, final String mappingPrefix,
+                               final String requestScheme, final int requestPort,
+                               final String requestServerName, final String requestContext,
+                               final Collection<String> virtualJournals) {
 
     this.journal           = journal;
-    this.description       = description;
     this.mappingPrefix     = mappingPrefix;
     this.requestScheme     = requestScheme;
     this.requestPort       = requestPort;
@@ -205,15 +200,6 @@ public class VirtualJournalContext {
    */
   public String getJournal() {
     return journal;
-  }
-
-  /**
-   * Get the virtual journal description.
-   *
-   * @return Journal description, may be <code>null</code>.
-   */
-  public String getDescription() {
-    return description;
   }
 
   /**

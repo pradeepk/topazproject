@@ -31,7 +31,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.ServletActionContext;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.action.BaseActionSupport;
@@ -39,7 +38,6 @@ import org.topazproject.ambra.article.service.BrowseService;
 import org.topazproject.ambra.search.SearchResultPage;
 import org.topazproject.ambra.search.service.SearchHit;
 import org.topazproject.ambra.search.service.SearchService;
-import org.topazproject.ambra.web.VirtualJournalContext;
 
 
 /**
@@ -120,20 +118,7 @@ public class SearchAction extends BaseActionSupport {
         return INPUT;
       }
 
-      // TODO: use real Filters for Journal filtering
-      final VirtualJournalContext journalContext =
-              (VirtualJournalContext)ServletActionContext.getRequest()
-              .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
-      final String journalQualifiedQueryString;
-      if (journalContext.getDescription() != null
-          && journalContext.getDescription().length() != 0) {
-        journalQualifiedQueryString = "(" + queryString + ") AND journal-title:\""
-                + journalContext.getDescription() + "\"";
-      } else {
-        journalQualifiedQueryString = queryString;
-      }
-      final SearchResultPage searchResultPage = searchService.find(journalQualifiedQueryString,
-              startPage, pageSize);
+      SearchResultPage searchResultPage = searchService.find(queryString, startPage, pageSize);
 //      final SearchResultPage searchResultPage = getMockSearchResults(startPage, pageSize);
       totalNoOfResults = searchResultPage.getTotalNoOfResults();
       searchResults = searchResultPage.getHits();

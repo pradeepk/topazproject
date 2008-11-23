@@ -95,7 +95,6 @@ public class VirtualJournalContextFilter implements Filter {
     final Collection<String> virtualJournals = configuration.getList(CONF_VIRTUALJOURNALS_JOURNALS);
 
     String journalName = null;
-    String description    = null;
     String mappingPrefix  = null;
 
     // need to do <rule> based processing?
@@ -103,7 +102,6 @@ public class VirtualJournalContextFilter implements Filter {
       configuration, (HttpServletRequest) request);
     if (ruleValues != null) {
       journalName = ruleValues.getJournal();
-      description    = ruleValues.getDescription();
       mappingPrefix  = ruleValues.getMappingPrefix();
       if (journalName != null) {
         if (log.isTraceEnabled()) {
@@ -116,7 +114,6 @@ public class VirtualJournalContextFilter implements Filter {
     // was a simple config <default> specified?
     if (journalName == null) {
       journalName = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".journal");
-      description    = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".description");
       mappingPrefix  = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".mappingPrefix");
 
       if (log.isTraceEnabled()) {
@@ -128,7 +125,6 @@ public class VirtualJournalContextFilter implements Filter {
     // use system default if not set
     if (journalName == null) {
       journalName = VirtualJournalContext.PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL;
-      description    = VirtualJournalContext.PUB_VIRTUALJOURNAL_DEFAULT_DESCRIPTION;
       mappingPrefix  = VirtualJournalContext.PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX;
 
       if (log.isTraceEnabled()) {
@@ -146,7 +142,7 @@ public class VirtualJournalContextFilter implements Filter {
 
     // put virtualJournal context in the ServletRequest for webapp to use
     request.setAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT,
-      new VirtualJournalContext(journalName, description, mappingPrefix, request.getScheme(),
+      new VirtualJournalContext(journalName, mappingPrefix, request.getScheme(),
         request.getServerPort(), request.getServerName(),
         ((HttpServletRequest) request).getContextPath(), virtualJournals));
 
@@ -175,7 +171,6 @@ public class VirtualJournalContextFilter implements Filter {
     Configuration configuration, HttpServletRequest request) {
 
     String virtualJournal = null;
-    String description    = null;
     String mappingPrefix  = null;
 
     // process all <virtualjournal><journals> entries looking for a match
@@ -209,8 +204,6 @@ public class VirtualJournalContextFilter implements Filter {
         if (reqHttpValue == null) {
           if (httpValue == null) {
             virtualJournal = journal;
-            description = configuration.getString(CONF_VIRTUALJOURNALS + "." + journal
-                    + ".description");
             mappingPrefix = configuration.getString(CONF_VIRTUALJOURNALS + "." + journal + ".mappingPrefix");
             break;
           }
@@ -219,8 +212,6 @@ public class VirtualJournalContextFilter implements Filter {
 
         if (reqHttpValue.matches(httpValue)) {
           virtualJournal = journal;
-          description = configuration.getString(CONF_VIRTUALJOURNALS + "." + journal
-                  + ".description");
           mappingPrefix = configuration.getString(CONF_VIRTUALJOURNALS + "." + journal + ".mappingPrefix");
           break;
         }
@@ -228,7 +219,6 @@ public class VirtualJournalContextFilter implements Filter {
     }
 
     // return match or null
-    return new VirtualJournalContext(virtualJournal, description, mappingPrefix, null, 0, null,
-            null, null);
+    return new VirtualJournalContext(virtualJournal, mappingPrefix, null, 0, null, null, null);
   }
 }
