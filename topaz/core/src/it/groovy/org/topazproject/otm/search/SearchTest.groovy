@@ -54,6 +54,7 @@ public class SearchTest extends AbstractTest {
 
     rdf.sessFactory.preload(SearchTest1.class);
     rdf.sessFactory.preload(SearchTest2.class);
+    rdf.sessFactory.preload(SearchTestSub.class);
     rdf.sessFactory.preload(SearchTestEmb.class);
     rdf.sessFactory.preload(SearchTestPP.class);
     rdf.sessFactory.validate()
@@ -107,6 +108,45 @@ public class SearchTest extends AbstractTest {
 
     doInTx { s ->
       s.delete(new SearchTest1(id: 'foo:test1'.toURI()))
+    }
+  }
+
+  void testSubClass() {
+    def checker = new ResultChecker(test:this)
+
+    doInTx { s ->
+      s.delete(new SearchTestSub(id: 'foo:testsub'.toURI()))
+    }
+
+    doInTx { s ->
+      s.saveOrUpdate(new SearchTestSub(id: 'foo:testsub'.toURI(), text: 'A bottle of Rum'))
+    }
+
+    doInTx { s ->
+      // basic search
+      Results r = s.createQuery("select s from SearchTestSub s where search(s.text, 'bottle');").
+                    execute()
+      checker.verify(r) {
+        row { object (class:SearchTestSub.class, id:'foo:testsub'.toURI()) }
+      }
+
+      // ensure it was properly overriden
+      /* enable this when OQL supports specifying graphs explicitly
+      r = s.createQuery("select s from SearchTestSub s where search(s.<topaz:textsub>, 'bottle');").
+            execute()
+      checker.verify(r) {
+        row { object (class:SearchTestSub.class, id:'foo:testsub'.toURI()) }
+      }
+
+      r = s.createQuery("select s from SearchTestSub s where search(s.<topaz:text>, 'bottle');").
+            execute()
+      checker.verify(r) {
+      }
+      */
+    }
+
+    doInTx { s ->
+      s.delete(new SearchTestSub(id: 'foo:testsub'.toURI()))
     }
   }
 
@@ -435,6 +475,15 @@ class SearchTestEmb {
   @Embedded
   void setS1(SearchTest1 s1) {
     this.s1 = s1;
+  }
+}
+
+@Entity(graph = 'ri')
+class SearchTestSub extends SearchTest1 {
+  @Searchable(index = 'lucene', uri = 'topaz:textsub')
+  @Predicate    // <= FIXME: remove when subclassing bug is fixed
+  void setText(String text) {
+    super.setText(text);
   }
 }
 

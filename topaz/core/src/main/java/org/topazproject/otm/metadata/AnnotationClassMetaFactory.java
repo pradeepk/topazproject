@@ -263,14 +263,10 @@ public class AnnotationClassMetaFactory {
 
     for (PropertyDefFactory fi : factories.values()) {
       PropertyDefinition d = fi.getDefinition(sf, uriPrefix);
-      if (d == null) {
-        log.info("Skipped (WTF) " + fi);
-
-        continue;
+      if (d != null) {
+        sf.addDefinition(d);
+        bin.addBinderFactory(new PropertyBinderFactory(fi.name, fi.property));
       }
-
-      sf.addDefinition(d);
-      bin.addBinderFactory(new PropertyBinderFactory(fi.name, fi.property));
 
       SearchableDefinition sd = fi.getSearchableDefinition(sf);
       if (sd != null)
