@@ -213,8 +213,7 @@ public class TextSearchFunction
 
   private static SearchableDefinition getSearchDef(OqlAST pred, SessionFactory sf)
       throws RecognitionException {
-    SearchableDefinition def = (SearchableDefinition)
-                                    sf.getDefinition(SearchableDefinition.NS + pred.getPropName());
+    SearchableDefinition def = SearchableDefinition.findForProp(sf, pred.getPropName());
     if (def == null)
       throw new RecognitionException("'" + pred.getPropName() + "' is not searchable");
 

@@ -596,7 +596,8 @@ public class SessionImpl extends AbstractSession {
       throws OtmException {
    List<SearchableDefinition> sdList = new ArrayList<SearchableDefinition>();
    for (RdfMapper m : fields) {
-     SearchableDefinition sd = getSearchableDef(cm, m);
+     SearchableDefinition sd =
+         SearchableDefinition.findForProp(sessionFactory, cm.getName() + ':' + m.getName());
      if (sd != null)
        sdList.add(sd);
    }
@@ -611,7 +612,8 @@ public class SessionImpl extends AbstractSession {
 
   private <T> void updateBlobSearch(SearchStore store, Blob blob, ClassMetadata cm, Id id, T o)
       throws OtmException {
-   SearchableDefinition sd = getSearchableDef(cm, cm.getBlobField());
+   SearchableDefinition sd =
+      SearchableDefinition.findForProp(sessionFactory, cm.getBlobField().getDefinition().getName());
    if (sd == null)
      return;
 
@@ -630,8 +632,19 @@ public class SessionImpl extends AbstractSession {
     /* should be using getDefinition(SearchableDefinition.NS + m.getDefinition().getName())
      * but that breaks with embedded mappers.
      */
-    return (SearchableDefinition)
+    SearchableDefinition sd = (SearchableDefinition)
         sessionFactory.getDefinition(SearchableDefinition.NS + cm.getName() + ':' + m.getName());
+    if (sd != null)
+      return sd;
+
+    for (String sup : cm.getSuperEntities()) {
+      sd = (SearchableDefinition)
+          sessionFactory.getDefinition(SearchableDefinition.NS + sup + ':' + m.getName());
+      if (sd != null)
+        return sd;
+    }
+
+    return null;
   }
 
   private Wrapper getFromStore(Id id, Object instance, boolean filterObj)

@@ -55,6 +55,7 @@ public class SearchTest extends AbstractTest {
     rdf.sessFactory.preload(SearchTest1.class);
     rdf.sessFactory.preload(SearchTest2.class);
     rdf.sessFactory.preload(SearchTestSub.class);
+    rdf.sessFactory.preload(SearchTestSub2.class);
     rdf.sessFactory.preload(SearchTestEmb.class);
     rdf.sessFactory.preload(SearchTestPP.class);
     rdf.sessFactory.validate()
@@ -112,14 +113,20 @@ public class SearchTest extends AbstractTest {
   }
 
   void testSubClass() {
+    byte[] body = 'This should really be a very long blurb, but I\'m too lazy to type that...'.
+                  getBytes("UTF-8")
     def checker = new ResultChecker(test:this)
 
     doInTx { s ->
       s.delete(new SearchTestSub(id: 'foo:testsub'.toURI()))
+      s.delete(new SearchTestSub2(id: 'foo:testsub2'.toURI()))
     }
 
     doInTx { s ->
-      s.saveOrUpdate(new SearchTestSub(id: 'foo:testsub'.toURI(), text: 'A bottle of Rum'))
+      s.saveOrUpdate(new SearchTestSub(id: 'foo:testsub'.toURI(), text: 'A bottle of Rum',
+                                       body: body))
+      s.saveOrUpdate(new SearchTestSub2(id: 'foo:testsub2'.toURI(), text: 'A bottle of Tequila',
+                                        body: body))
     }
 
     doInTx { s ->
@@ -128,6 +135,21 @@ public class SearchTest extends AbstractTest {
                     execute()
       checker.verify(r) {
         row { object (class:SearchTestSub.class, id:'foo:testsub'.toURI()) }
+      }
+
+      r = s.createQuery("select s from SearchTestSub s where search(s.body, 'blurb');").execute()
+      checker.verify(r) {
+        row { object (class:SearchTestSub.class, id:'foo:testsub'.toURI()) }
+      }
+
+      r = s.createQuery("select s from SearchTestSub2 s where search(s.text, 'tequila');").execute()
+      checker.verify(r) {
+        row { object (class:SearchTestSub2.class, id:'foo:testsub2'.toURI()) }
+      }
+
+      r = s.createQuery("select s from SearchTestSub2 s where search(s.body, 'lazy');").execute()
+      checker.verify(r) {
+        row { object (class:SearchTestSub2.class, id:'foo:testsub2'.toURI()) }
       }
 
       // ensure it was properly overriden
@@ -147,6 +169,7 @@ public class SearchTest extends AbstractTest {
 
     doInTx { s ->
       s.delete(new SearchTestSub(id: 'foo:testsub'.toURI()))
+      s.delete(new SearchTestSub2(id: 'foo:testsub2'.toURI()))
     }
   }
 
@@ -485,6 +508,16 @@ class SearchTestSub extends SearchTest1 {
   void setText(String text) {
     super.setText(text);
   }
+
+  @Searchable(index = 'lucene', uri = 'topaz:bodysub')
+  @Blob
+  void setBody(byte[] body) {
+    super.setBody(body);
+  }
+}
+
+@Entity(graph = 'ri')
+class SearchTestSub2 extends SearchTest1 {
 }
 
 @Entity(graph = 'ri')

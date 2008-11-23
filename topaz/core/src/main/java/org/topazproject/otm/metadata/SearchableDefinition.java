@@ -141,4 +141,31 @@ public class SearchableDefinition extends PropertyDefinition {
            ", tokenize=" + tokenize + ", analyzer=" + analyzer + ", boost=" + boost +
            ", preProcessor=" + ((preProcessor != null) ? preProcessor.getClass() : "-null-") + "]";
   }
+
+  /**
+   * Attempt to find the SearchableDefinition for the given property. This walks the entity
+   * hierarchy if necessary.
+   *
+   * @param sf   the session-factory to use
+   * @param prop the name of the property for which to find the SearchableDefinition; must be
+   *             a composite name (i.e. entity:field)
+   * @return the SearchableDefinition or null if none was found
+   */
+  public static SearchableDefinition findForProp(SessionFactory sf, String prop) {
+    SearchableDefinition sd = (SearchableDefinition) sf.getDefinition(NS + prop);
+    if (sd != null)
+      return sd;
+
+    int colon = prop.indexOf(':');
+    String entity = prop.substring(0, colon);
+    String field  = prop.substring(colon + 1);
+
+    for (String sup : sf.getClassMetadata(entity).getSuperEntities()) {
+      sd = (SearchableDefinition) sf.getDefinition(NS + sup + ':' + field);
+      if (sd != null)
+        return sd;
+    }
+
+    return null;
+  }
 }
