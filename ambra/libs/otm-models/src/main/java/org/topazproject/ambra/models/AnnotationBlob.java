@@ -42,11 +42,10 @@ public class AnnotationBlob extends Blob {
   /**
    * Creates a new AnnotationBlob object.
    *
-   * @param contentType the content-type 
-   * @param body the annotation body blob
+   * @param contentType the content-type
    */
-  public AnnotationBlob(String contentType, byte[] body) {
-    super(contentType, body);
+  public AnnotationBlob(String contentType) {
+    super(contentType);
   }
 
   /**
@@ -72,7 +71,8 @@ public class AnnotationBlob extends Blob {
 
   @Override
   @Searchable(index = "lucene", uri = "topaz:body")
-  public void setBody(byte[] body) {
+  @org.topazproject.otm.annotations.Blob  // FIXME: remove
+  public void setBody(org.topazproject.otm.Blob body) {
     super.setBody(body);
   }
 }

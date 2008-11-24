@@ -182,7 +182,7 @@ public class Results {
     try {
       return new SearchHit(hit.getHitScore(), hit.getUri(), article.getDublinCore().getTitle(),
                            createHighlight("body",
-                                  new String(article.getRepresentation("XML").getBody(), "UTF-8")),
+                                  new String(article.getRepresentation("XML").getBody().readAll(), "UTF-8")),
                            article.getDublinCore().getCreators(),
                            article.getDublinCore().getDate());
     } catch (IOException ioe) {

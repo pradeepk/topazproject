@@ -46,7 +46,6 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
   private ObjectInfo                                                       object;
 
   private transient boolean modified = true;
-  private transient boolean blobModified = true;
 
   /**
    * No argument constructor for OTM to instantiate.
@@ -55,7 +54,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
   }
 
   /**
-   * Creates a new Representation object. The id of the object is 
+   * Creates a new Representation object. The id of the object is
    * derived from the doi of the ObjectInfo and the representation name.
    *
    * @param object the object this representation belongs to
@@ -101,7 +100,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
    *
    * @param object the object
    */
-  @Predicate(uri = "topaz:hasRepresentation", inverse=Predicate.BT.TRUE, 
+  @Predicate(uri = "topaz:hasRepresentation", inverse=Predicate.BT.TRUE,
              notOwned=Predicate.BT.TRUE, fetch=FetchType.eager)
   public void setObject(ObjectInfo object) {
     this.object = object;
@@ -187,26 +186,21 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
   }
 
   @Override
-  public void setBody(byte[] body) {
+  public void setBody(org.topazproject.otm.Blob body) {
     super.setBody(body);
-    blobModified = true;
   }
 
   public void onPostLoad(Session session, Object object) {
     modified = false;
-    blobModified = false;
   }
 
   public void onPostLoad(Session session, Object object, Mapper field) {
-    if ("body".equals(field.getName()))
-      blobModified = false;
   }
 
   public void onPreInsert(Session session, Object object) {
-    if (modified || blobModified) {
+    if (modified || getBody().getChangeState() != org.topazproject.otm.Blob.ChangeState.NONE) {
       setLastModified(new Date());
       modified = false;
-      blobModified = false;
     }
   }
 }

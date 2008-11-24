@@ -216,7 +216,7 @@ public class AnnotationConverter {
 
   private String loadBody(final Annotea<? extends Blob> annotea) throws OtmException, Error {
     String body;
-    byte[] b = annotea.getBody().getBody(); // could throw OtmException (lazy loaded)
+    byte[] b = annotea.getBody().getBody().readAll(); // could throw OtmException (lazy loaded)
 
     try {
       body = (b == null) ? "" : new String(b, "UTF-8");

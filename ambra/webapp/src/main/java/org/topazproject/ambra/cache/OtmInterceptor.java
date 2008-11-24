@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.Journal;
+import org.topazproject.otm.Blob;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.OtmException;
@@ -356,6 +357,11 @@ public class OtmInterceptor implements Interceptor {
         Streamer streamer = binder.getStreamer();
         if (!streamer.isManaged())
           streamer.setBytes(binder, instance, copy(blob));
+        else {
+          Blob blob = sess.getSessionFactory().getBlobStore().getBlob(cm, id, instance,
+                                                                      sess.getBlobStoreCon());
+          streamer.attach(binder, instance, blob);
+        }
       }
 
       return instance;

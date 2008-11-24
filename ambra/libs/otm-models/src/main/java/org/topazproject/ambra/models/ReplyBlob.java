@@ -43,10 +43,9 @@ public class ReplyBlob extends Blob {
    * Creates a new ReplyBlob object.
    *
    * @param contentType the content type
-   * @param body the reply body blob
    */
-  public ReplyBlob(String contentType, byte[] body) {
-    super(contentType, body);
+  public ReplyBlob(String contentType) {
+    super(contentType);
   }
 
   /**
@@ -72,7 +71,8 @@ public class ReplyBlob extends Blob {
 
   @Override
   @Searchable(index = "lucene", uri = "topaz:body")
-  public void setBody(byte[] body) {
+  @org.topazproject.otm.annotations.Blob  // FIXME: remove
+  public void setBody(org.topazproject.otm.Blob body) {
     super.setBody(body);
   }
 }

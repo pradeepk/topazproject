@@ -110,7 +110,7 @@ public class FetchObjectAction extends BaseActionSupport {
   }
 
   private void setOutputStreamAndAttributes(final Representation rep) throws IOException {
-    inputByteArray = rep.getBody();
+    inputByteArray = rep.getBody().readAll();
 
     contentType = rep.getContentType();
     if (contentType == null)
@@ -169,7 +169,7 @@ public class FetchObjectAction extends BaseActionSupport {
 
   /**
    * Returns the byte[] of the Fedora object so it is not necessary to read from it using an InputStream
-   * @return the byte[] representation of the Fedora object. 
+   * @return the byte[] representation of the Fedora object.
    */
   public byte[] getInputByteArray() {
     return inputByteArray;

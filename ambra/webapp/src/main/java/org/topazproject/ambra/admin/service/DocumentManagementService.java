@@ -285,6 +285,18 @@ public class DocumentManagementService {
       log.info("Ingested: " + file + ":" + article.getId());
     }
 
+    try {
+      generateCrossRefInfoDoc(article);
+    } catch (TransformerException e) {
+      throw new IngestException("Failed to generate cross-ref", e);
+    } catch (SAXException e) {
+      throw new IngestException("Failed to generate cross-ref", e);
+    }
+
+    if (log.isInfoEnabled()) {
+      log.info("Generated Xref: " + article.getId() + " ingested from '" + file + "'");
+    }
+
     return article;
   }
 
@@ -312,19 +324,12 @@ public class DocumentManagementService {
    * @param article the associated article
    *
    * @throws IOException on an error
-   * @throws TransformerException on a cross ref generation error
-   * @throws SAXException on a cross ref generation error
    */
   public void generateIngestedData(File file, Article article)
-    throws IOException, TransformerException, SAXException {
+    throws IOException {
     FileUtils.moveFileToDirectory(file, new File(ingestedDocumentDirectory), true);
     if (log.isInfoEnabled()) {
       log.info("Relocated: " + file + ":" + article.getId());
-    }
-
-    generateCrossRefInfoDoc(article);
-    if (log.isInfoEnabled()) {
-      log.info("Generated Xref: " + article.getId() + " ingested from '" + file + "'");
     }
   }
 
@@ -349,8 +354,8 @@ public class DocumentManagementService {
     t.setParameter("plosDoiUrl", plosDoiUrl);
     t.setParameter("plosEmail", plosEmail);
 
-    InputSource artXml = new InputSource(
-        new ByteArrayInputStream(article.getRepresentation("XML").getBody()));
+    InputSource artXml = new InputSource(article.getRepresentation("XML")
+                                                  .getBody().getInputStream());
     artXml.setSystemId(article.getId().toString());
 
     File target_xml =

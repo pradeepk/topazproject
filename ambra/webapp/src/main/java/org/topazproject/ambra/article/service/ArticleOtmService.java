@@ -587,7 +587,7 @@ public class ArticleOtmService {
     }
 
     public InputStream getInputStream() {
-      return new ByteArrayInputStream(rep.getBody());
+      return rep.getBody().getInputStream();
     }
 
     public OutputStream getOutputStream() throws IOException {

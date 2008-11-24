@@ -21,7 +21,6 @@ package org.topazproject.ambra.models;
 import java.io.Serializable;
 
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.Searchable;
 
 /**
  * Base class for blobs loaded from the BlobStore.
@@ -31,7 +30,7 @@ import org.topazproject.otm.annotations.Searchable;
 @Entity()
 public abstract class Blob implements Serializable {
   private static final long serialVersionUID = -783693796375733488L;
-  private byte[] body;
+  private org.topazproject.otm.Blob body;
 
   /**
    * Creates a new Blob object.
@@ -43,28 +42,27 @@ public abstract class Blob implements Serializable {
    * Creates a new Blob object.
    *
    * @param contentType the content type
-   * @param body the blob
    */
-  public Blob(String contentType, byte[] body) {
-    setBody(body);
+  public Blob(String contentType) {
+    // FIXME: contentType
   }
 
   /**
-   * Get body.
+   * Get the body blob. Available only when attached to OTM.
    *
-   * @return body as byte[].
+   * @return body as a Blob
    */
-  public byte[] getBody() {
+  public org.topazproject.otm.Blob getBody() {
     return body;
   }
 
   /**
-   * Set body.
+   * Set the body. Used by OTM.
    *
    * @param body the value to set.
    */
   @org.topazproject.otm.annotations.Blob
-  public void setBody(byte[] body) {
+  public void setBody(org.topazproject.otm.Blob body) {
     this.body = body;
   }
 

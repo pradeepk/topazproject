@@ -125,9 +125,7 @@ public class AnnotationService extends BaseAnnotationService {
       throw new UnsupportedOperationException("supersedes is not supported");
 
     String                  user       = AmbraUser.getCurrentUser().getUserId();
-    AnnotationBlob          blob       =
-      new AnnotationBlob(contentType, body.getBytes(getEncodingCharset()));
-
+    AnnotationBlob          blob       = new AnnotationBlob(contentType);
     final ArticleAnnotation annotation = annotationClass.newInstance();
 
     annotation.setMediator(getApplicationId());
@@ -139,6 +137,8 @@ public class AnnotationService extends BaseAnnotationService {
     annotation.setCreated(new Date());
 
     String newId = session.saveOrUpdate(annotation);
+    // now that the blob is created by OTM, write to it
+    blob.getBody().writeAll(body.getBytes(getEncodingCharset()));
 
     if (log.isDebugEnabled())
       log.debug("created annotaion " + newId + " for " + target + " with body in blob "

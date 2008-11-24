@@ -85,7 +85,7 @@ public class ReplyService extends BaseAnnotationService {
 
     final String contentType = getContentType(mimeType);
     String       user        = AmbraUser.getCurrentUser().getUserId();
-    ReplyBlob    blob        = new ReplyBlob(contentType, body.getBytes(getEncodingCharset()));
+    ReplyBlob    blob        = new ReplyBlob(contentType);
 
     final Reply  r           = new ReplyThread();
     r.setMediator(getApplicationId());
@@ -98,6 +98,8 @@ public class ReplyService extends BaseAnnotationService {
     r.setCreated(new Date());
 
     String  newId      = session.saveOrUpdate(r);
+    // now that the blob is created by OTM, write to it
+    blob.getBody().writeAll(body.getBytes(getEncodingCharset()));
 
     permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
     setPublicPermissions(newId);

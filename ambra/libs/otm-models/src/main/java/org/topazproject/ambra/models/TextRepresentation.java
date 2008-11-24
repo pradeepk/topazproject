@@ -30,7 +30,6 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
-import org.topazproject.otm.annotations.Blob;
 import org.topazproject.otm.annotations.Searchable;
 import org.topazproject.otm.annotations.SubClassResolver;
 import org.topazproject.otm.metadata.RdfDefinition;
@@ -57,7 +56,7 @@ public class TextRepresentation extends Representation {
   }
 
   /**
-   * Creates a new TextRepresentation object. The id of the object is 
+   * Creates a new TextRepresentation object. The id of the object is
    * derived from the doi of the ObjectInfo and the representation name.
    *
    * @param object the object this representation belongs to
@@ -69,8 +68,8 @@ public class TextRepresentation extends Representation {
 
   @Override
   @Searchable(uri = "topaz:body", index = "lucene", preProcessor = BodyPreProcessor.class)
-  @Blob
-  public void setBody(byte[] body) {
+  @org.topazproject.otm.annotations.Blob  // FIXME: remove
+  public void setBody(org.topazproject.otm.Blob body) {
     super.setBody(body);
   }
 

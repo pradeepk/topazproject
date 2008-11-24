@@ -21,6 +21,7 @@ package org.topazproject.ambra.article.service;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
@@ -84,9 +85,12 @@ import org.topazproject.xml.transform.EntityResolvingSource;
 import org.topazproject.xml.transform.cache.CachedSource;
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.models.TextRepresentation;
 import org.topazproject.ambra.permission.service.PermissionsService;
+import org.topazproject.otm.AbstractBlob;
+import org.topazproject.otm.Blob;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 
@@ -267,10 +271,16 @@ public class Ingester {
         if (!force && existing != null)
           throw new DuplicateArticleIdException(art.getId().toString());
 
-        if (existing != null)
-          art = sess.merge(art);
-        else
-          sess.saveOrUpdate(art);
+        Map<Representation, Blob> blobs = gatherBlobs(art);
+
+        if (existing != null) {
+          sess.delete(existing);
+          sess.flush();
+        }
+
+        sess.saveOrUpdate(art);
+
+        writeBlobs(blobs);
 
       } else if (tag.equals("propagatePermissions")) {
         String resource = child.getAttribute("resource");
@@ -289,6 +299,38 @@ public class Ingester {
       throw new IngestException(msgs.toString());
 
     return art;
+  }
+
+  private Map<Representation, Blob> gatherBlobs(Article art) {
+    Map<Representation, Blob> map = new HashMap<Representation, Blob>();
+    for (Representation rep : art.getRepresentations()) {
+      if (rep.getBody() != null) {
+        map.put(rep, rep.getBody());
+        rep.setBody(null);  // let OTM assign one
+      }
+    }
+
+    for (ObjectInfo part : art.getParts()) {
+      for (Representation rep : part.getRepresentations()) {
+        if (rep.getBody() != null) {
+          map.put(rep, rep.getBody());
+          rep.setBody(null);  // let OTM assign one
+        }
+      }
+    }
+    return map;
+  }
+
+  private void writeBlobs(Map<Representation, Blob> map) throws OtmException {
+    for (Representation rep : map.keySet()) {
+      log.info("Copying from zip to Blob. rep = '" + rep.getName() + "', id = " + rep.getId());
+      try {
+        IOUtils.copy(map.get(rep).getInputStream(), rep.getBody().getOutputStream());
+      } catch (IOException e) {
+        throw new OtmException("Error copying from zip. rep = '" + rep.getName() + "', id = "
+                                     + rep.getId(), e);
+      }
+    }
   }
 
   private List<Element> getChildren(Element parent, String child) {
@@ -332,7 +374,7 @@ public class Ingester {
 
     xstream.registerConverter(new SingleValueConverter() {
       public boolean canConvert(Class type) {
-        return type == byte[].class;
+        return type == Blob.class;
       }
 
       public String toString(Object obj) {
@@ -340,11 +382,9 @@ public class Ingester {
       }
 
       public Object fromString(String str) {
-        try {
-          return IOUtils.toByteArray(zip.getStream(str, new long[1]));
-        } catch (IOException ioe) {
-          throw new RuntimeException("Error reading zip entry '" + str + "'", ioe);
-        }
+        if (log.isDebugEnabled())
+          log.debug("Setting up ZipBlob for " + str);
+        return new ZipBlob(str, zip);
       }
     });
 
@@ -638,6 +678,57 @@ public class Ingester {
         return getClass(((WildcardType) t).getUpperBounds()[0]);
 
       return Object.class;
+    }
+  }
+
+  private static class ZipBlob extends AbstractBlob {
+    private final Zip zip;
+
+    protected ZipBlob(String id, Zip zip) {
+      super(id);
+      this.zip = zip;
+    }
+
+    @Override
+    protected InputStream doGetInputStream() throws OtmException {
+      try {
+        return zip.getStream(getId(), new long[1]);
+      } catch (IOException e) {
+        throw new OtmException("Failed to read zip entry: " + getId(), e);
+      }
+    }
+
+    @Override
+    protected OutputStream doGetOutputStream() throws OtmException {
+      return null;
+    }
+
+    @Override
+    protected void writing(OutputStream out) {
+    }
+
+    public boolean create() throws OtmException {
+      return false;
+    }
+
+    public boolean delete() throws OtmException {
+      return false;
+    }
+
+    public boolean exists() throws OtmException {
+      return true;
+    }
+
+    public ChangeState getChangeState() {
+      return ChangeState.NONE;
+    }
+
+    public ChangeState mark() {
+      return ChangeState.NONE;
+    }
+
+    public byte[] readAll(boolean original) {
+      return readAll();
     }
   }
 }
