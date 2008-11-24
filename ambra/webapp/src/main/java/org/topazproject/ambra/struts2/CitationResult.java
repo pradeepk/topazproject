@@ -47,7 +47,7 @@ public class CitationResult extends FreemarkerResult  {
   protected boolean preTemplateProcess(freemarker.template.Template template,
       freemarker.template.TemplateModel model) throws IOException{
 
-    String doi = (String)invocation.getStack().findValue("citation.DOI");
+    String doi = (String)invocation.getStack().findValue("citation.doi");
     HttpServletResponse response = ServletActionContext.getResponse();
     try {
       response.addHeader("Content-disposition", "attachment; filename=" + URLEncoder.encode(doi, "UTF-8") + fileExtension);

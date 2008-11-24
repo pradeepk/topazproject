@@ -18,7 +18,7 @@
   limitations under the License.
 -->
 TY  - JOUR
-T1  - ${citation.articleTitle}
+T1  - ${citation.title}
 <#assign authorTag = "A1">
 <#list citation.authors as author>
 <#if author.suffix?exists>
@@ -26,21 +26,21 @@ T1  - ${citation.articleTitle}
 <#else>
   <#assign authorSuffix = "">
 </#if>
-${authorTag}  - ${author.surname}, ${author.givenNames}${authorSuffix}
+${authorTag}  - ${author.surnames!}, ${author.givenNames!} ${authorSuffix!}
 </#list>
 <#list citation.collaborativeAuthors as collab>
-${authorTag}  - ${collab.nameRef}
+${authorTag}  - ${collab}
 </#list>
-Y1  - ${citation.publicationDate?string("yyyy/MM/dd")}
-N2  - ${citation.articleAbstract!''}
-JF  - ${citation.journalTitle}
-JA  - ${citation.journalName}
-VL  - ${citation.volume}
-IS  - ${citation.issue}
-UR  - ${citation.URL}
-SP  - ${citation.startPage}
-EP  - ${citation.endPage!''}
-PB  - ${citation.publisherName}
+Y1  - ${citation.year?string("0000")}/${citation.month!}/${citation.day!}
+N2  - ${citation.summary!}
+JF  - ${citation.journal!}
+JA  - ${citation.journal!}
+VL  - ${citation.volume!}
+IS  - ${citation.issue!}
+UR  - ${citation.url!}
+SP  - ${citation.ELocationId!}
+EP  - 
+PB  - ${citation.publisherName!}
 ER  - 
-M3  - doi:${citation.DOI}
+M3  - doi:${citation.doi!}
 

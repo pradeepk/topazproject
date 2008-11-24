@@ -19,7 +19,7 @@
 -->
 <#assign authorList = "">
 <#list citation.authors as author>
-  <#assign authorList = authorList + author.surname>
+  <#assign authorList = authorList + author.surnames>
   <#assign authorList = authorList + ", ">
   <#if author.suffix?exists>
     <#assign authorList = authorList + author.suffix>
@@ -31,23 +31,23 @@
 <#if citation.collaborativeAuthors?has_content>
   <#assign authorList = authorList + " AND ">
   <#list citation.collaborativeAuthors as collab>
-    <#assign authorList = authorList + collab.nameRef + ", ">
+    <#assign authorList = authorList + collab + ", ">
   </#list>
 </#if>
 
-@article{${citation.DOI},
+@article{${citation.doi},
     author = {${authorList}},
-    journal = {${citation.journalName}},
+    journal = {${citation.journal}},
     publisher = {${citation.publisherName}},
-    title = {${citation.articleTitle}},
-    year = {${citation.publicationDate?string("yyyy")}},
-    month = {${citation.publicationDate?string("MMM")}},
-    volume = {${citation.volume}},
-    url = {${citation.URL}},
-    pages = {${citation.startPage}<#if citation.endPage?has_content>--${citation.endPage}</#if>},
-    abstract = {${citation.articleAbstract!''}},
-    number = {${citation.issue}},
-    doi = {${citation.DOI}}
+    title = {${citation.title}},
+    year = {${citation.year?string('0000')}},
+    month = {${citation.month!}},
+    volume = {${citation.volume!}},
+    url = {${citation.url!}},
+    pages = {${citation.ELocationId!}},
+    abstract = {${citation.summary!}},
+    number = {${citation.issue!}},
+    doi = {${citation.doi}}
 }        
 
 

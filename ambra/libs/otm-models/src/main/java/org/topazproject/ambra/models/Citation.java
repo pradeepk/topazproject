@@ -50,6 +50,7 @@ public class Citation implements Serializable {
   private Integer year;
   private String displayYear;
   private String month;
+  private String day;
   private Integer volumeNumber;
   private String volume;
   private String issue;
@@ -62,6 +63,7 @@ public class Citation implements Serializable {
   private String note;
   private List<UserProfile> editors = new ArrayList<UserProfile>();
   private List<UserProfile> authors = new ArrayList<UserProfile>();
+  private List<String> collaborativeAuthors = new ArrayList<String>();
   private String url;
   private String doi;
   private String summary;
@@ -157,6 +159,21 @@ public class Citation implements Serializable {
   @Predicate(uri = "bibtex:hasMonth", dataType = "xsd:string")
   public void setMonth(String month) {
     this.month = month;
+  }
+
+  /**
+   * @return the day of the citation (if available)
+   */
+  public String getDay() {
+    return day;
+  }
+
+  /**
+   * @param day the day of the citation
+   */
+  @Predicate(uri = "bibtex:hasDay", dataType = "xsd:string")
+  public void setDay(String day) {
+    this.day = day;
   }
 
   /**
@@ -376,6 +393,22 @@ public class Citation implements Serializable {
              cascade = { CascadeType.child })
   public void setAuthors(List<UserProfile> authors) {
     this.authors = authors;
+  }
+
+  /**
+   * @return the COLLABORATORS ON this citation
+   */
+  public List<String> getCollaborativeAuthors() {
+    return collaborativeAuthors;
+  }
+
+  /**
+   * @param collaborativeAuthors the collaborators on this citation
+   */
+  @Predicate(uri = "plos:hasCollaborativeAuthorList", collectionType = CollectionType.RDFSEQ,
+             cascade = { CascadeType.child })
+  public void setCollaborativeAuthors(List<String> collaborativeAuthors) {
+    this.collaborativeAuthors = collaborativeAuthors;
   }
 
   /**

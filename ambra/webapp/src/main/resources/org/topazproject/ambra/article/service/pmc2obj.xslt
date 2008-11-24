@@ -263,6 +263,8 @@
             select="if ($pub-date) then substring($pub-date, 1, 4) else ()"/>
         <xsl:with-param name="month"
             select="if ($pub-date) then substring($pub-date, 6, 2) else ()"/>
+        <xsl:with-param name="day"
+            select="if ($pub-date) then substring($pub-date, 9, 2) else ()"/>
         <xsl:with-param name="volume"
             select="$meta/volume"/>
         <xsl:with-param name="volNum"
@@ -290,6 +292,8 @@
             select="$meta/contrib-group/contrib[@contrib-type = 'editor']/name"/>
         <xsl:with-param name="authors"
             select="$meta/contrib-group/contrib[@contrib-type = 'author']/name"/>
+        <xsl:with-param name="collab-authors"
+            select="$meta/contrib-group/contrib[@contrib-type = 'author']/collab[@collab-type='authors']"/>
         <xsl:with-param name="url"
             select="xs:anyURI(concat($doi-url-prefix, encode-for-uri($article-doi)))"/>
         <xsl:with-param name="doi"
@@ -311,6 +315,7 @@
           <xsl:with-param name="year"     select="my:find-int(citation/year[1], 4)"/>
           <xsl:with-param name="dispYear" select="citation/year[1]"/>
           <xsl:with-param name="month"    select="citation/month[1]"/>
+          <xsl:with-param name="day"      select="citation/day[1]"/>
           <xsl:with-param name="volume"   select="citation/volume[1]"/>
           <xsl:with-param name="volNum"   select="my:find-int(citation/volume[1], 1)"/>
           <xsl:with-param name="issue"    select="citation/issue[1]"/>
@@ -347,6 +352,7 @@
     <xsl:param name="year"         as="xs:integer?"/>
     <xsl:param name="dispYear"     as="xs:string?"/>
     <xsl:param name="month"        as="xs:string?"/>
+    <xsl:param name="day"          as="xs:string?"/>
     <xsl:param name="volume"       as="xs:string?"/>
     <xsl:param name="volNum"       as="xs:integer?"/>
     <xsl:param name="issue"        as="xs:string?"/>
@@ -359,6 +365,7 @@
     <xsl:param name="note"         as="xs:string?"/>
     <xsl:param name="editors"      as="element(name)*"/>
     <xsl:param name="authors"      as="element(name)*"/>
+    <xsl:param name="collab-authors" as="element(collab)*"/>
     <xsl:param name="url"          as="xs:anyURI?"/>
     <xsl:param name="doi"          as="xs:string?"/>
     <xsl:param name="summary"/>
@@ -379,6 +386,9 @@
     </xsl:if>
     <xsl:if test="$month">
       <month><xsl:value-of select="$month"/></month>
+    </xsl:if>
+    <xsl:if test="$day">
+      <day><xsl:value-of select="$day"/></day>
     </xsl:if>
     <xsl:if test="$volume">
       <volume><xsl:value-of select="$volume"/></volume>
@@ -433,6 +443,7 @@
         <xsl:call-template name="gen-user"/>
       </authors>
     </xsl:for-each>
+
   </xsl:template>
 
   <xsl:template name="gen-lic">
