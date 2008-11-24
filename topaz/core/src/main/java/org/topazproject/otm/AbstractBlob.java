@@ -197,13 +197,13 @@ public abstract class AbstractBlob implements Blob {
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
       writing(super.out);
-      super.write(b, off, len);
+      super.out.write(b, off, len);
     }
 
     @Override
     public void write(int b) throws IOException {
       writing(super.out);
-      super.write(b);
+      super.out.write(b);
     }
   }
 }
