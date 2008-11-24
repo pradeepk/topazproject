@@ -57,6 +57,16 @@ public interface Blob {
   public ChangeState getChangeState();
 
   /**
+   * Gets the change state of this blob since the previous call.
+   * This is used mainly for the {@link Session#flush()} to see
+   * what changed since the last flush. This avoids the work
+   * for search indexing etc. when things haven't really changed.
+   *
+   * @return the change state
+   */
+  public ChangeState mark();
+
+  /**
    * Gets a stream suitable for reading from this blob within the current transaction. A new stream
    * is returned each time this method is called, and the stream is positioned at the beginning of
    * the data.

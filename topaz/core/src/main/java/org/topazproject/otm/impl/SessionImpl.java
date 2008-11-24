@@ -572,7 +572,7 @@ public class SessionImpl extends AbstractSession {
             break;
         }
 
-        if (blob.getChangeState() == Blob.ChangeState.NONE)
+        if (blob.mark() == Blob.ChangeState.NONE)
           bf = false;
         else
          updateBlobSearch(ss, blob, cm, id, o);

@@ -255,6 +255,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
      * @param cm the metadata of the containing entity
      * @param id the blob id
      * @param instance the containing entity instance
+     * @param work the scratch file
      *
      * @return the Blob object
      *
@@ -382,11 +383,12 @@ public abstract class FileBackedBlobStore implements BlobStore {
    * @author Pradeep Krishnan
    */
   public abstract static class FileBackedBlob extends AbstractBlob {
-    protected Boolean exists = null;
-    protected ChangeState state = ChangeState.NONE;
-    protected ChangeState undo = ChangeState.NONE;
-    protected final File tmp;
-    protected final File bak;
+    protected Boolean     exists = null;
+    protected ChangeState state  = ChangeState.NONE;
+    protected ChangeState undo   = ChangeState.NONE;
+    protected ChangeState marked = ChangeState.NONE;
+    protected final File  tmp;
+    protected final File  bak;
 
     /**
      * Creates an instance of FileBackedBlob.
@@ -403,6 +405,14 @@ public abstract class FileBackedBlobStore implements BlobStore {
 
     public ChangeState getChangeState() {
       return state;
+    }
+
+    public ChangeState mark() {
+      if (log.isDebugEnabled())
+        log.debug("Marking... previous-mark = " + marked + ", state = " + state + ", id = " + getId());
+      ChangeState prev = marked;
+      marked = ChangeState.NONE;
+      return prev;
     }
 
     // TODO: remove this hack
@@ -474,10 +484,10 @@ public abstract class FileBackedBlobStore implements BlobStore {
         case NONE:
           if (log.isTraceEnabled())
             log.trace("Write detected on " + tmp + " for " + getId());
-          state = ChangeState.WRITTEN;
+          state = marked = ChangeState.WRITTEN;
           break;
         case DELETED:
-          // WTF? All streams should be closed on delete.
+          // All streams should be closed on delete.
           log.error("Writing to deleted Blob file: " + tmp + " for " + getId());
       }
     }
@@ -490,7 +500,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
             log.trace("Creating " + tmp + " for " + getId());
           try {
             boolean ret = tmp.createNewFile();
-            state = ChangeState.CREATED;
+            state = marked = ChangeState.CREATED;
             exists = Boolean.TRUE;
             return ret;
           } catch (IOException e) {
@@ -516,7 +526,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
           if (log.isTraceEnabled())
             log.trace("Deleting " + tmp + " for " + getId());
           boolean ret = tmp.delete();
-          state = ChangeState.DELETED;
+          state = marked = ChangeState.DELETED;
           exists = Boolean.FALSE;
           return ret;
       }
@@ -578,7 +588,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
      *
      * @return true only if there was something that needed committing
      *
-     * @throws OtmException
+     * @throws OtmException on an error
      */
     public boolean prepare() throws OtmException {
       if (log.isTraceEnabled())
@@ -624,7 +634,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
           log.debug("Committed(" + operation + ") on " + getId());
         exists = null;
         undo = state;
-        state = ChangeState.NONE;
+        state = marked = ChangeState.NONE;
       }
     }
 
