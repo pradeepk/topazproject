@@ -61,6 +61,8 @@ public class AmbraUser {
   /**
    * Returns the current user. Valid only in a request context.
    */
+  // TODO: inject AmbraUser through Spring.
+  // This creates dependency on ServletRequest everywhere it is used
   public static AmbraUser getCurrentUser() {
     if (ServletActionContext.getRequest() == null)
       return null;
