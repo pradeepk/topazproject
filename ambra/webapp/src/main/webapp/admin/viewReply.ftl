@@ -36,11 +36,20 @@
       <legend><b>Reply Details</b></legend>
       <table width="100%">
         <tr><td width="100px">&nbsp;</td><td/></tr>
-        <tr><td>Id</td><td>${reply.id}</td></tr>
-        <tr><td>Title</td><td>${reply.commentTitle}</td></tr>
-        <tr><td>Created</td><td>${reply.createdAsDate?datetime}</td></tr>
-        <tr><td>Creator</td><td><a href="../user/showUser.action?userId=${reply.creator}">${reply.creator}</a></td></tr>
-        <tr><td colspan="2"><hr/>${reply.commentWithUrlLinking}</td></tr>
+        <tr><td nowrap="nowrap">In Response to</td><td><a href="${freemarker_config.context}/annotation/listThread.action?inReplyTo=${reply.root}&root=${reply.root}">${reply.root}</a></td></tr>
+        <tr><td nowrap="nowrap">Creator</td><td><a href="${freemarker_config.context}/user/showUser.action?userId=${reply.creator}">${reply.creatorName}</a></td></tr>
+        <tr><td nowrap="nowrap">Created</td><td>${reply.createdAsDate?datetime}</td></tr>
+        <tr><td nowrap="nowrap">Reply Id</td><td>${reply.id}</td></tr>
+        <tr>
+          <td colspan="2">
+            <fieldset><legend><b>Title</b></legend>${reply.commentTitle}</fieldset>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <fieldset><legend><b>Content</b></legend>${reply.commentWithUrlLinking}</fieldset>
+          </td>
+        </tr>
       </table>
     </fieldset>
   </body>

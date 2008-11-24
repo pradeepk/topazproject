@@ -36,13 +36,18 @@
       <legend><b>Annotation Details</b></legend>
 	<table width="100%">
           <tr><td width="100px">&nbsp;</td><td/></tr>
-          <tr><td>Id</td><td>${annotation.id}</td></tr>
-          <tr><td>Title</td><td>${annotation.commentTitle}</td></tr>
-          <tr><td>Created</td><td>${annotation.createdAsDate?datetime}</td></tr>
-          <tr><td>Creator</td><td><a href="../user/showUser.action?userId=${annotation.creator}">${annotation.creator}</a></td></tr>
+          <tr><td nowrap="nowrap">Annotates</td><td><a href="${freemarker_config.context}/article/${annotation.annotates}">${annotation.annotates}</a></td></tr>
+          <tr><td nowrap="nowrap">Creator</td><td><a href="${freemarker_config.context}/user/showUser.action?userId=${annotation.creator}">${annotation.creatorName}</a></td></tr>
+          <tr><td nowrap="nowrap">Created</td><td>${annotation.createdAsDate?datetime}</td></tr>
+          <tr><td nowrap="nowrap">Annotation Id</td><td><a href="${freemarker_config.context}/annotation/listThread.action?inReplyTo=${annotation.id}&root=${annotation.id}">${annotation.id}</a></td></tr>
           <tr>
             <td colspan="2">
-              <fieldset><legend><b>Content</b></legend>${annotation.comment}</fieldset>
+              <fieldset><legend><b>Title</b></legend>${annotation.commentTitle}</fieldset>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <fieldset><legend><b>Content</b></legend>${annotation.commentWithUrlLinking}</fieldset>
             </td>
           </tr>
         </table>
