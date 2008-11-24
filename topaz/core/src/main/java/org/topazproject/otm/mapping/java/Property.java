@@ -526,7 +526,7 @@ public class Property {
 
     try {
       m = clazz.getMethod(name, parameterTypes);
-    } catch (Throwable t) {
+    } catch (NoSuchMethodException t) {
       m = null;
     }
 
