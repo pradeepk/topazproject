@@ -92,20 +92,43 @@ public interface SessionFactory {
   public void preload(Class<?> c) throws OtmException;
 
   /**
-   * Preload all classes that can be found with the default resource marker.
+   * Preload all classes that can be found using the current class loader to
+   * seach for the default resource marker.
    *
    * @throws OtmException on an error
    */
   public void preloadFromClasspath() throws OtmException;
 
   /**
-   * Preload all classes that can be found with a given resource marker.
+   * Preload all classes that can be found using a given class loader
+   * using the default resource marker.
+   *
+   * @param cl The class loader to use for searching for classes.
+   *
+   * @throws OtmException on an error
+   */
+  public void preloadFromClasspath(ClassLoader cl) throws OtmException;
+
+  /**
+   * Preload all classes that can be found with the current class loader and using
+   * a given resource marker.
    *
    * @param res The name of a resource to use when searching the class path.
    *
    * @throws OtmException on an error
    */
   public void preloadFromClasspath(String res) throws OtmException;
+
+  /**
+   * Preload all classes that can be found with a given class loader and using
+   * a given resource marker.
+   *
+   * @param res The name of a resource to use when searching the class path.
+   * @param cl The class loader to use for searching for classes.
+   *
+   * @throws OtmException on an error
+   */
+  public void preloadFromClasspath(String res, ClassLoader cl) throws OtmException;
 
   /**
    * Validate the registered definitions and bindings and build the {@link ClassMetadata}

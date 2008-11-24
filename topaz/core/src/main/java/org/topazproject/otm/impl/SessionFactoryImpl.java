@@ -317,9 +317,23 @@ public class SessionFactoryImpl implements SessionFactory {
   /*
    * inherited javadoc
    */
+  public void preloadFromClasspath(ClassLoader cl) throws OtmException {
+    preloadFromClasspath(DEFAULT_RES_MARKER, cl);
+  }
+
+  /*
+   * inherited javadoc
+   */
   public void preloadFromClasspath(String res) throws OtmException {
+    preloadFromClasspath(res, Thread.currentThread().getContextClassLoader());
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void preloadFromClasspath(String res, ClassLoader cl) throws OtmException {
     try {
-      Enumeration<URL> rs = SessionFactoryImpl.class.getClassLoader().getResources(res);
+      Enumeration<URL> rs = cl.getResources(res);
       while (rs.hasMoreElements())
         new ResourceProcessor(rs.nextElement()).run();
     } catch (IOException e) {
@@ -788,149 +802,6 @@ public class SessionFactoryImpl implements SessionFactory {
     resolvers.add(resolver);
   }
 
-  /**
-   * This class is used to take resources requested from the classpath,
-   * and use them as the basis for finding Entity classes that need to be
-   * registered with this SessionFactory.
-   */
-  private class ResourceProcessor implements Runnable {
-    private static final String JAR = "jar";
-    private static final String FILE = "file";
-    private static final String FILE_PROT = FILE + ":";
-    private static final String BANG = "!";
-
-    /** The path root of all the resources to be found by this processor. */
-    private URL resRoot;
-
-    /**
-     * Create a resource processor for handling resources in the same part of
-     * the classpath as a single resource identified by the given URL.
-     * @param resRoot A resource at the root of the classpath to scan.
-     */
-    public ResourceProcessor(URL resRoot) {
-      this.resRoot = resRoot;
-    }
-
-    /**
-     * Determine the type of resource to be processed,
-     * and send it to the appropriate processor type.
-     */
-    public void run() {
-      String protocol = resRoot.getProtocol();
-      String path = resRoot.getPath();
-      if (protocol.equals(JAR)) {
-        if (path.startsWith(FILE_PROT))
-          processJar(path.substring(FILE_PROT.length(), path.indexOf(BANG)));
-        else
-          processUnknown(path);
-      } else if (protocol.equals(FILE))
-        processPath(new File(path).getParent());
-      else
-        processUnknown(resRoot.toString());
-    }
-
-    /**
-     * Deal with resources that we don't understand.
-     * @param u The string representation of the URL for the resource root.
-     */
-    void processUnknown(String u) {
-      log.info("Unable to search <" + u + "> for Entity classes");
-    }
-
-    /**
-     * Process a Jar path.
-     * @param path The path of the Jar to be processed.
-     */
-    void processJar(String path) {
-      try {
-        int fileCount = new JarProcessor(new EntityFileProcessor(""), CLASS_EXT).process(path);
-        log.info("Loaded " + fileCount + " Entities from " + path);
-      } catch (IOException e) {
-        log.error("Error while searching classpath for entities", e);
-      }
-    }
-
-    /**
-     * Take a filesystem path, and process everything under it.
-     * @param path The filesystem path to process.
-     */
-    private void processPath(final String path) {
-      // create a processor that can test files and load them if we want them.
-      FileProcessor fp = new EntityFileProcessor(path);
-
-      // process the path for class files
-      try {
-        int fileCount = new DirProcessor(fp, CLASS_EXT).process(path);
-        log.info("Loaded " + fileCount + " Entities from the filesystem");
-      } catch (IOException e) {
-        log.error("Error while searching classpath for entities", e);
-      }
-    }
-
-  }
-
-  /**
-   * Take an absolute path to a class file, and convert it to a class name.
-   * @param root The path to the point where the class hierarchy starts.
-   *             This will be empty for a Jar file.
-   * @param path The path for the class file.
-   */
-  private static String toClassName(String root, String path) {
-    assert path.endsWith(CLASS_EXT) : "Conversion to class on: " + path;
-    int start = root.length();
-    if (start != 0 && !root.endsWith(File.separator))
-      start++;
-    path = path.substring(start, path.length() - CLASS_EXT.length());
-
-    String pathSeparator = (root.length() == 0) ? JarProcessor.JAR_PATH_SEP : File.separator;
-    return path.replace(pathSeparator, DOT);
-  }
-
-
-  /**
-   * This class is a functor for processing classes that have entity annotations.
-   */
-  private class EntityFileProcessor implements FileProcessor {
-    private String pathRoot;
-
-    /**
-     * Create a new functor that will look for classes rooted with a particular path.
-     * @param pathRoot The root of the classes. This is part of a greater classpath.
-     */
-    public EntityFileProcessor(String pathRoot) {
-      this.pathRoot = pathRoot;
-    }
-
-    /**
-     * Processes a file. This will preload a file if it is a class that is annotated as an Entity.
-     * @param f The path to process.
-     * @return The number of files processed. 0 or 1.
-     */
-    public Integer fn(String f) {
-      Class<?> c = null;
-      try {
-        c = Class.forName(toClassName(pathRoot, f));
-        for (Class<? extends Annotation> a: cmf.getKnownAnnotations()) {
-          if (c.isAnnotationPresent(a)) {
-            preload(c);
-            return 1;
-          }
-        }
-      } catch (OtmException oe) {
-        log.warn("Unable to preload annotated class: " + c.getName(), oe); 
-      } catch (ClassNotFoundException cnf) {
-        if (log.isDebugEnabled())
-          log.debug("Class file on scanned classpath could not be loaded: " + f, cnf);
-      } catch (NoClassDefFoundError ncd) {
-        if (log.isDebugEnabled())
-          log.debug("Class on scanned classpath is missing a required reference: " + f, ncd); 
-      } catch (Throwable t) {
-        log.warn("Unexpected error when attempting to preload <" + f + ">", t); 
-      }
-      return 0;
-    }
-  }
-
   public LinkedHashSet<SubClassResolver> listEffectiveSubClassResolvers(String entity) {
     LinkedHashSet<SubClassResolver> resolvers = new LinkedHashSet<SubClassResolver>();
     gatherSub(entity, resolvers);
@@ -1153,4 +1024,148 @@ public class SessionFactoryImpl implements SessionFactory {
       }
     }
   }
+
+
+  /**
+   * This class is used to take resources requested from the classpath,
+   * and use them as the basis for finding Entity classes that need to be
+   * registered with this SessionFactory.
+   */
+  private class ResourceProcessor implements Runnable {
+    private static final String JAR = "jar";
+    private static final String FILE = "file";
+    private static final String FILE_PROT = FILE + ":";
+    private static final String BANG = "!";
+
+    /** The path root of all the resources to be found by this processor. */
+    private URL resRoot;
+
+    /**
+     * Create a resource processor for handling resources in the same part of
+     * the classpath as a single resource identified by the given URL.
+     * @param resRoot A resource at the root of the classpath to scan.
+     */
+    public ResourceProcessor(URL resRoot) {
+      this.resRoot = resRoot;
+    }
+
+    /**
+     * Determine the type of resource to be processed,
+     * and send it to the appropriate processor type.
+     */
+    public void run() {
+      String protocol = resRoot.getProtocol();
+      String path = resRoot.getPath();
+      if (protocol.equals(JAR)) {
+        if (path.startsWith(FILE_PROT))
+          processJar(path.substring(FILE_PROT.length(), path.indexOf(BANG)));
+        else
+          processUnknown(path);
+      } else if (protocol.equals(FILE))
+        processPath(new File(path).getParent());
+      else
+        processUnknown(resRoot.toString());
+    }
+
+    /**
+     * Deal with resources that we don't understand.
+     * @param u The string representation of the URL for the resource root.
+     */
+    void processUnknown(String u) {
+      log.info("Unable to search <" + u + "> for Entity classes");
+    }
+
+    /**
+     * Process a Jar path.
+     * @param path The path of the Jar to be processed.
+     */
+    void processJar(String path) {
+      try {
+        int fileCount = new JarProcessor(new EntityFileProcessor(""), CLASS_EXT).process(path);
+        log.info("Loaded " + fileCount + " Entities from " + path);
+      } catch (IOException e) {
+        log.error("Error while searching classpath for entities", e);
+      }
+    }
+
+    /**
+     * Take a filesystem path, and process everything under it.
+     * @param path The filesystem path to process.
+     */
+    void processPath(final String path) {
+      // create a processor that can test files and load them if we want them.
+      FileProcessor fp = new EntityFileProcessor(path);
+
+      // process the path for class files
+      try {
+        int fileCount = new DirProcessor(fp, CLASS_EXT).process(path);
+        log.info("Loaded " + fileCount + " Entities from the filesystem");
+      } catch (IOException e) {
+        log.error("Error while searching classpath for entities", e);
+      }
+    }
+
+  }
+
+  /**
+   * This class is a functor for processing classes that have entity annotations.
+   */
+  private class EntityFileProcessor implements FileProcessor {
+    private String pathRoot;
+
+    /**
+     * Create a new functor that will look for classes rooted with a particular path.
+     * @param pathRoot The root of the classes. This is part of a greater classpath.
+     */
+    public EntityFileProcessor(String pathRoot) {
+      this.pathRoot = pathRoot;
+    }
+
+    /**
+     * Processes a file. This will preload a file if it is a class that is annotated as an Entity.
+     * @param f The path to process.
+     * @return The number of files processed. 0 or 1.
+     */
+    public Integer fn(String f) {
+      Class<?> c = null;
+      try {
+        c = Class.forName(toClassName(pathRoot, f));
+        for (Class<? extends Annotation> a: cmf.getKnownAnnotations()) {
+          if (c.isAnnotationPresent(a)) {
+            preload(c);
+            return 1;
+          }
+        }
+      } catch (OtmException oe) {
+        log.warn("Unable to preload annotated class: " + c.getName(), oe);
+      } catch (ClassNotFoundException cnf) {
+        if (log.isDebugEnabled())
+          log.debug("Class file on scanned classpath could not be loaded: " + f, cnf);
+      } catch (NoClassDefFoundError ncd) {
+        if (log.isDebugEnabled())
+          log.debug("Class on scanned classpath is missing a required reference: " + f, ncd);
+      } catch (Throwable t) {
+        log.warn("Unexpected error when attempting to preload <" + f + ">", t);
+      }
+      return 0;
+    }
+  }
+
+  /**
+   * Take an absolute path to a class file, and convert it to a class name.
+   * @param root The path to the point where the class hierarchy starts.
+   *             This will be empty for a Jar file.
+   * @param path The path for the class file.
+   */
+  private static String toClassName(String root, String path) {
+    assert path.endsWith(CLASS_EXT) : "Conversion to class on: " + path;
+    int start = root.length();
+    if (start != 0 && !root.endsWith(File.separator))
+      start++;
+    path = path.substring(start, path.length() - CLASS_EXT.length());
+
+    String pathSeparator = (root.length() == 0) ? JarProcessor.JAR_PATH_SEP : File.separator;
+    return path.replace(pathSeparator, DOT);
+  }
+
 }
