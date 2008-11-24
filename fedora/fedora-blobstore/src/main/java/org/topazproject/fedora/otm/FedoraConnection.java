@@ -514,8 +514,8 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
        * Ensure what we uploaded and what is being asked to 'move' is the same.
        * It should be the same - unless we screwed up our implementation.
        */
-      assert (ref != null);
-      assert (from.equals(tmp));
+      assert (ref != null) : "Not uploaded";
+      assert (from == tmp) : "Expecting txn tmp file that was uploaded";
 
       return ingest(fb, ref);
     }
