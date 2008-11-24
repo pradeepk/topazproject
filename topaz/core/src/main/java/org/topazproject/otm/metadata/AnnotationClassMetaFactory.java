@@ -268,7 +268,7 @@ public class AnnotationClassMetaFactory {
         bin.addBinderFactory(new PropertyBinderFactory(fi.name, fi.property));
       }
 
-      SearchableDefinition sd = fi.getSearchableDefinition(sf);
+      SearchableDefinition sd = fi.getSearchableDefinition(sf, d instanceof BlobDefinition);
       if (sd != null)
         sf.addDefinition(sd);
     }
@@ -722,11 +722,11 @@ public class AnnotationClassMetaFactory {
       return new EmbeddedDefinition(getName(), getEntityName(property.getComponentType()));
     }
 
-    public SearchableDefinition getSearchableDefinition(SessionFactory sf) throws OtmException {
+    public SearchableDefinition getSearchableDefinition(SessionFactory sf, boolean blob) throws OtmException {
       if (searchable == null && supersedes.get(SearchableDefinition.NS) == null)
         return null;
 
-      if (!sf.getSerializerFactory().mustSerialize(property.getComponentType()))
+      if (!blob && !sf.getSerializerFactory().mustSerialize(property.getComponentType()))
         throw new OtmException("@SearchableDefinition property " + this
                                + " can't be applied to a complex type");
 
