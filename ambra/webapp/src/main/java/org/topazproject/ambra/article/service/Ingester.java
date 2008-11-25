@@ -310,11 +310,14 @@ public class Ingester {
       }
     }
 
-    for (ObjectInfo part : art.getParts()) {
-      for (Representation rep : part.getRepresentations()) {
-        if (rep.getBody() != null) {
-          map.put(rep, rep.getBody());
-          rep.setBody(null);  // let OTM assign one
+    // xstream could set parts as null
+    if (art.getParts() != null) {
+      for (ObjectInfo part : art.getParts()) {
+        for (Representation rep : part.getRepresentations()) {
+          if (rep.getBody() != null) {
+            map.put(rep, rep.getBody());
+            rep.setBody(null);  // let OTM assign one
+          }
         }
       }
     }
