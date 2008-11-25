@@ -91,6 +91,7 @@
     <property name="sendToXref" value="${ambra.services.crossref.sendToXref}"/>
   </bean>
 
+  <!-- Warning. Spring does not autowire 'simple' properties like primitives, Strings and Classes -->
   <bean id="defaultEncodingCharset" class="java.lang.String">
     <constructor-arg value="UTF-8"/>
   </bean>
@@ -108,16 +109,21 @@
   <bean id="replyService" class="org.topazproject.ambra.annotation.service.ReplyService">
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
+    <property name="applicationId" ref="applicationId"/>
   </bean>
 
   <bean id="annotationService" class="org.topazproject.ambra.annotation.service.AnnotationService">
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
+    <property name="applicationId" ref="applicationId"/>
   </bean>
 
-  <bean id="ratingsService" class="org.topazproject.ambra.rating.service.RatingsService"/>
+  <bean id="ratingsService" class="org.topazproject.ambra.rating.service.RatingsService">
+    <property name="applicationId" ref="applicationId"/>
+  </bean>
 
   <bean id="userService" class="org.topazproject.ambra.user.service.UserService">
     <property name="emailAddressUrl" value="${ambra.services.cas.url.base}/email?guid="/>
+    <property name="applicationId"  ref="applicationId"/>
   </bean>
 
   <bean id="profanityCheckingService" class="org.topazproject.ambra.util.ProfanityCheckingService"/>
