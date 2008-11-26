@@ -256,68 +256,11 @@
 
     <property name="preloadClasses">
       <list>
-        <value>org.topazproject.ambra.models.Aggregation</value>
-        <value>org.topazproject.ambra.models.Annotation</value>
-        <value>org.topazproject.ambra.models.Annotea</value>
-        <value>org.topazproject.ambra.models.Article</value>
-        <value>org.topazproject.ambra.models.AuthenticationId</value>
-        <value>org.topazproject.ambra.models.Category</value>
-        <value>org.topazproject.ambra.models.Citation</value>
-        <value>org.topazproject.ambra.models.Comment</value>
-        <value>org.topazproject.ambra.models.Correction</value>
-        <value>org.topazproject.ambra.models.FormalCorrection</value>
-        <value>org.topazproject.ambra.models.MinorCorrection</value>
-        <value>org.topazproject.ambra.models.DublinCore</value>
-        <value>org.topazproject.ambra.models.EditorialBoard</value>
-        <value>org.topazproject.ambra.models.FoafPerson</value>
-        <value>org.topazproject.ambra.models.Issue</value>
-        <value>org.topazproject.ambra.models.Journal</value>
-        <value>org.topazproject.ambra.models.License</value>
-        <value>org.topazproject.ambra.models.ObjectInfo</value>
-        <value>org.topazproject.ambra.models.PermissionsPropagator</value>
-        <value>org.topazproject.ambra.models.Rating</value>
-        <value>org.topazproject.ambra.models.RatingContent</value>
-        <value>org.topazproject.ambra.models.RatingSummary</value>
-        <value>org.topazproject.ambra.models.RatingSummaryContent</value>
-        <value>org.topazproject.ambra.models.RelatedArticle</value>
-        <value>org.topazproject.ambra.models.Reply</value>
-        <value>org.topazproject.ambra.models.ReplyThread</value>
-        <value>org.topazproject.ambra.models.Representation</value>
-        <value>org.topazproject.ambra.models.Trackback</value>
-        <value>org.topazproject.ambra.models.TrackbackContent</value>
-        <value>org.topazproject.ambra.models.TextRepresentation</value>
-        <value>org.topazproject.ambra.models.UserAccount</value>
-        <value>org.topazproject.ambra.models.UserPreference</value>
-        <value>org.topazproject.ambra.models.UserPreferences</value>
-        <value>org.topazproject.ambra.models.UserProfile</value>
-        <value>org.topazproject.ambra.models.UserRole</value>
-        <value>org.topazproject.ambra.models.Volume</value>
-        <value>org.topazproject.ambra.models.Blob</value>
-        <value>org.topazproject.ambra.models.AnnotationBlob</value>
-        <value>org.topazproject.ambra.models.ReplyBlob</value>
         <value>org.topazproject.ambra.model.article.CitationInfo</value>
         <value>org.topazproject.ambra.model.UserProfileInfo</value>
         <value>org.topazproject.ambra.model.article.ArticleInfo</value>
         <value>org.topazproject.ambra.model.article.NewArtInfo</value>
         <value>org.topazproject.ambra.model.article.RelatedArticleInfo</value>
-        <value>org.topazproject.otm.criterion.Conjunction</value>
-        <value>org.topazproject.otm.criterion.Criterion</value>
-        <value>org.topazproject.otm.criterion.DetachedCriteria</value>
-        <value>org.topazproject.otm.criterion.Disjunction</value>
-        <value>org.topazproject.otm.criterion.EQCriterion</value>
-        <value>org.topazproject.otm.criterion.ExistsCriterion</value>
-        <value>org.topazproject.otm.criterion.GECriterion</value>
-        <value>org.topazproject.otm.criterion.GTCriterion</value>
-        <value>org.topazproject.otm.criterion.LECriterion</value>
-        <value>org.topazproject.otm.criterion.LTCriterion</value>
-        <value>org.topazproject.otm.criterion.MinusCriterion</value>
-        <value>org.topazproject.otm.criterion.NECriterion</value>
-        <value>org.topazproject.otm.criterion.NotCriterion</value>
-        <value>org.topazproject.otm.criterion.NotExistsCriterion</value>
-        <value>org.topazproject.otm.criterion.Order</value>
-        <value>org.topazproject.otm.criterion.Parameter</value>
-        <value>org.topazproject.otm.criterion.TransCriterion</value>
-        <value>org.topazproject.otm.criterion.WalkCriterion</value>
       </list>
     </property>
   </bean>

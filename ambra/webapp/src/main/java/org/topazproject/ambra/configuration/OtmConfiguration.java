@@ -42,7 +42,7 @@ import org.topazproject.fedora.otm.FedoraBlobFactory;
  */
 public class OtmConfiguration {
   private SessionFactory   factory;
-  private String[]         preloadClasses;
+  private String[]         preloadClasses = new String[0];
   private GraphConfig[]    graphs;
   private static final Log log = LogFactory.getLog(OtmConfiguration.class);
 
@@ -66,6 +66,8 @@ public class OtmConfiguration {
       log.debug("Added blobstore : " + blobStore.getClass());
 
     factory.setBlobStore(blobStore);
+    factory.preloadFromClasspath();
+    factory.validate();
   }
 
   /**
