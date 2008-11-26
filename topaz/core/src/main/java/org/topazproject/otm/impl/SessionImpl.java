@@ -1032,8 +1032,12 @@ public class SessionImpl extends AbstractSession {
       throw new NullPointerException("Null object");
 
     ClassMetadata cm = null;
-    if (assoc != null)
+    if (assoc != null) {
       cm = sessionFactory.getClassMetadata(assoc.getAssociatedEntity());
+      if (cm == null)
+        throw new OtmException("Undefined association '" + assoc.getAssociatedEntity() + "' in '"
+            + assoc.getDefinition().getName());
+    }
 
     cm = checkClass(sessionFactory.getInstanceMetadata(cm, getEntityMode(), o), o.getClass().getName());
     if (cm.isView() && isUpdate)

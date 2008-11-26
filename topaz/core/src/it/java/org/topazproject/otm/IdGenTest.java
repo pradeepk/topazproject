@@ -39,6 +39,7 @@ import org.testng.annotations.AfterClass;
 import static org.testng.AssertJUnit.*;
 
 import org.topazproject.otm.samples.PublicAnnotation;
+import org.topazproject.otm.samples.ReplyThread;
 
 
 public class IdGenTest {
@@ -293,6 +294,17 @@ public class IdGenTest {
     factory.preload(PublicAnnotation.class);
     factory.validate();
     session.saveOrUpdate(new PublicAnnotation(URI.create("http://localhost/annotation/1")));
+    PublicAnnotation a = new PublicAnnotation(URI.create("foo:bar"));
+    a.addReply(new ReplyThread(URI.create("bar:foo")));
+    try {
+      session.saveOrUpdate(a);
+      fail("Expecting a failure for undefined ReplyThread");
+    } catch (OtmException e) {
+      assertTrue("Expecing exception to contain Annotation:replies", 
+          e.getMessage().contains("Annotation:replies"));
+      session.clear();
+    }
+
   }
 
   @Test(groups = { "tx" })
