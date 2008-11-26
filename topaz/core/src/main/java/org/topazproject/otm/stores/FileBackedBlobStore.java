@@ -33,12 +33,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.AbstractBlob;
 import org.topazproject.otm.AbstractConnection;
 import org.topazproject.otm.Blob;
@@ -61,7 +62,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
   protected File root;
   private int nextId = 1;
   private List<File> txns = new ArrayList<File>();
-  protected ReentrantReadWriteLock storeLock = new ReentrantReadWriteLock();
+  private final ResourceLock<Connection> storeLock = new ResourceLock<Connection>();
 
   /**
    * Construct a FileBackedBlobStore instance.
@@ -118,6 +119,10 @@ public abstract class FileBackedBlobStore implements BlobStore {
     return ebsc.get(cm, id, blob);
   }
 
+  public ResourceLock<Connection> getStoreLock() {
+    return storeLock;
+  }
+
   /**
    * A convenient base class for file-backed blob-store implementations.
    *
@@ -125,6 +130,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
    *
    */
   public static abstract class FileBackedBlobStoreConnection extends AbstractConnection {
+    protected final Log             log     = LogFactory.getLog(getClass());
     protected final FileBackedBlobStore store;
     protected File                  txn;
     protected Map<String, FileBackedBlob> blobs = new HashMap<String, FileBackedBlob>();
@@ -321,7 +327,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
       try {
         int mods = 0;
         // Note: we keep the lock acquired thru the commit phase.
-        store.storeLock.writeLock().lock();
+        store.getStoreLock().acquireWrite(this);
         for (FileBackedBlob blob : blobs.values())
           if (blob.prepare())
             mods++;
@@ -346,7 +352,11 @@ public abstract class FileBackedBlobStore implements BlobStore {
     }
 
     private void doRollback() {
-      store.storeLock.writeLock().lock();
+      try {
+        store.getStoreLock().acquireWrite(this);
+      } catch (InterruptedException e) {
+        log.warn("Interrupted while acquiring lock for roll-back. Proceeding without lock", e);
+      }
       cleanup(true);
     }
 
@@ -362,9 +372,9 @@ public abstract class FileBackedBlobStore implements BlobStore {
 
         txn = null;
       } finally {
-        int cnt = store.storeLock.getWriteHoldCount();
+        int cnt = store.getStoreLock().writeCount(this);
         while (cnt-- > 0)
-          store.storeLock.writeLock().unlock();
+          store.getStoreLock().releaseWrite(this);
       }
     }
 
@@ -372,325 +382,383 @@ public abstract class FileBackedBlobStore implements BlobStore {
       if (txn != null)
         doRollback();
     }
+
+    /**
+     * A Blob instance that is file backed. All operations in txn scope is
+     * done on a local File. Sub-classes only implements copying to and
+     * from the store to the txn scratch directory.
+     *
+     * @author Pradeep Krishnan
+     */
+    public abstract class FileBackedBlob extends AbstractBlob {
+      protected Boolean     exists = null;
+      protected ChangeState state  = ChangeState.NONE;
+      protected ChangeState undo   = ChangeState.NONE;
+      protected ChangeState marked = ChangeState.NONE;
+      protected final File  tmp;
+      protected final File  bak;
+
+      /**
+       * Creates an instance of FileBackedBlob.
+       *
+       * @param id the blob id
+       * @param tmp the txn tmp file
+       * @param bak the back-up file to use before modifying the value in store
+       */
+      public FileBackedBlob(String id, File tmp, File bak) {
+        super(id);
+        this.tmp = tmp;
+        this.bak = bak;
+      }
+
+      public ChangeState getChangeState() {
+        return state;
+      }
+
+      public ChangeState mark() {
+        if (log.isDebugEnabled())
+          log.debug("Marking... previous-mark = " + marked + ", state = " + state + ", id = " + getId());
+        ChangeState prev = marked;
+        marked = ChangeState.NONE;
+        return prev;
+      }
+
+      // TODO: remove this hack
+      public byte[] readAll(boolean original) throws OtmException {
+        if (!original || ((state != ChangeState.DELETED) && (state != ChangeState.WRITTEN)))
+          return readAll();
+        if (log.isTraceEnabled())
+          log.trace("Loading old data for search index removal for " + getId());
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        copyFromStore(out, true);
+        return out.toByteArray();
+      }
+
+      @Override
+      public InputStream doGetInputStream() throws OtmException {
+        if (!exists())
+          throw new OtmException("Blob " + getId() + " does not exist. Write to it first to create.");
+
+        if (log.isTraceEnabled())
+          log.trace("Creating inputstream for " + getId() + " from " + tmp);
+
+        try {
+          return new FileInputStream(tmp);
+        } catch (IOException e) {
+          throw new OtmException("Failed to open file: " + tmp + " for " + getId(), e);
+        }
+      }
+
+      @Override
+      public OutputStream doGetOutputStream() throws OtmException {
+        if (state == ChangeState.DELETED)
+          throw new OtmException("Blob " + getId() + " is deleted. Cannot write to it.");
+
+        create();
+
+        if (log.isTraceEnabled())
+          log.trace("Creating outputstream for " + getId() + " from " + tmp);
+
+        try {
+          return new FileOutputStream(tmp);
+        } catch (IOException e) {
+          throw new OtmException("Failed to open file: " + tmp + " for " + getId(), e);
+        }
+      }
+
+      @Override
+      public void closed(Closeable stream) {
+        if (log.isTraceEnabled())
+          log.trace("Closing stream for " + getId() + " on " + tmp);
+        super.closed(stream);
+      }
+
+      @Override
+      public void writing(OutputStream out) {
+        switch (state) {
+          case CREATED:
+          case NONE:
+            if (log.isTraceEnabled())
+              log.trace("Write detected on " + tmp + " for " + getId());
+            state = marked = ChangeState.WRITTEN;
+            break;
+          case DELETED:
+            // All streams should be closed on delete.
+            log.error("Writing to deleted Blob file: " + tmp + " for " + getId());
+        }
+      }
+
+      public boolean create() throws OtmException {
+        switch (state) {
+          case DELETED:
+          case NONE:
+            if (log.isTraceEnabled())
+              log.trace("Creating " + tmp + " for " + getId());
+            try {
+              boolean ret = tmp.createNewFile();
+              state = marked = ChangeState.CREATED;
+              exists = Boolean.TRUE;
+              return ret;
+            } catch (IOException e) {
+              throw new OtmException("Failed to create file: " + tmp + " for " + getId(), e);
+            }
+        }
+        return false;
+      }
+
+      public boolean delete() throws OtmException {
+        switch (state) {
+          case CREATED:
+          case NONE:
+          case WRITTEN:
+            for (Closeable stream : streams) {
+              try {
+                stream.close();
+              } catch (IOException e) {
+                log.warn("Failed to close a stream : " + tmp + " for " + getId(), e);
+              }
+            }
+            streams.clear();
+            if (log.isTraceEnabled())
+              log.trace("Deleting " + tmp + " for " + getId());
+            boolean ret = tmp.delete();
+            state = marked = ChangeState.DELETED;
+            exists = Boolean.FALSE;
+            return ret;
+        }
+        return false;
+      }
+
+      /**
+       * Implement in sub-classes to actually create an instance of this blob in store.
+       *
+       * @return true only if a new instance was created.
+       *
+       * @throws OtmException on an error
+       */
+      protected abstract boolean createInStore() throws OtmException;
+
+      /**
+       * Implement in sub-classes to copy from the store to the txn scratch file.
+       *
+       * @param to the outputs stream to copy to
+       * @param asBackup reason for the copy
+       *
+       * @return true only if the blob was copied over
+       *
+       * @throws OtmException on an error
+       */
+      protected abstract boolean copyFromStore(OutputStream to, boolean asBackup) throws OtmException;
+
+      /**
+       * Implement in sub-classes to copy/move from the txn scratch file to the blob-store.
+       *
+       * @param from the scratch file
+       *
+       * @return true only if the blob was copied/moved
+       *
+       * @throws OtmException on an error
+       */
+      protected abstract boolean moveToStore(File from) throws OtmException;
+
+      /**
+       * Implement in sub-classes to delete/purge this object.
+       *
+       * @return true only if the blob was deleted
+       *
+       * @throws OtmException on an error
+       */
+      protected abstract boolean deleteFromStore() throws OtmException;
+
+      /**
+       * Copy from store to the given file. Calls {@link #copyFromStore(OutputStream, boolean)}.
+       *
+       * @param file the file to copy to
+       *
+       * @param asBackup to indicate what this copy is for
+       *
+       * @return true only if the blob was copied over
+       */
+      protected final boolean copyFromStore(File file, boolean asBackup) {
+        OutputStream out = null;
+        try {
+          out = new FileOutputStream(file);
+        } catch (IOException e) {
+          throw new OtmException("Failed to open file " + file + " for write.", e);
+        }
+
+        try {
+          return copyFromStore(out, false);
+        } finally {
+          closeAll(out);
+        }
+      }
+
+      public boolean exists() throws OtmException {
+        if (exists != null)
+          return exists;
+
+        exists = copyFromStore(tmp, false);
+
+        return exists;
+      }
+
+      /**
+       * Prepare for commit. Backup things etc.
+       *
+       * @return true only if there was something that needed committing
+       *
+       * @throws OtmException on an error
+       */
+      public boolean prepare() throws OtmException {
+        if (log.isTraceEnabled())
+          log.trace("Preparing to commit " + getId());
+
+        close();
+        switch (state) {
+          case DELETED:
+          case WRITTEN:
+            backup();
+        }
+
+        return state != ChangeState.NONE;
+      }
+
+      /**
+       * Commit changes.
+       *
+       * @throws OtmException on an error
+       */
+      public void commit() throws OtmException {
+        boolean success = true;
+        String operation = "no-op";
+        switch (state) {
+          case DELETED:
+            operation = "delete";
+            success = deleteFromStore();
+            break;
+          case CREATED:
+            operation = "create";
+            success = createInStore();
+            break;
+          case WRITTEN:
+            operation = "save";
+            success = moveToStore(tmp);
+            break;
+        }
+
+        if (!success)
+          throw new OtmException("Commit(" + operation + ") failed for " + getId());
+        else {
+          if (log.isDebugEnabled())
+            log.debug("Committed(" + operation + ") on " + getId());
+          exists = null;
+          undo = state;
+          state = marked = ChangeState.NONE;
+        }
+      }
+
+      /**
+       * Clean-up since the txn is now complete.
+       *
+       * @param abort if true, restore from the backup
+       */
+      public void cleanup(boolean abort) {
+        if (abort && ((undo == ChangeState.DELETED) || (undo == ChangeState.WRITTEN)))
+          restore();
+
+        undo = ChangeState.NONE;
+        exists = null;
+        tmp.delete();
+      }
+
+      private void backup() throws OtmException {
+        if (bak.exists()) {
+          if (log.isDebugEnabled())
+            log.debug("Deleting old backup for " + getId());
+          bak.delete();
+          if (bak.exists())
+            throw new OtmException("Failed to delete old backup at " + bak);
+        }
+
+        copyFromStore(bak, true);
+      }
+
+      private void restore() {
+        if (!bak.exists())
+          return;
+
+        if (log.isDebugEnabled())
+          log.debug("Restoring " + bak + " for id " + getId());
+
+        try {
+          if (!moveToStore(bak))
+            log.error("Failed to restore from backup " + bak + " for id " + getId());
+          else
+            log.warn("Restored from backup " + bak + " for id " + getId());
+        } catch (OtmException e) {
+          log.error("Failed to restore from backup " + bak + " for id " + getId(), e);
+        }
+      }
+    }
   }
 
-  /**
-   * A Blob instance that is file backed. All operations in txn scope is
-   * done on a local File. Sub-classes only implements copying to and
-   * from the store to the txn scratch directory.
-   *
-   * @author Pradeep Krishnan
-   */
-  public abstract static class FileBackedBlob extends AbstractBlob {
-    protected Boolean     exists = null;
-    protected ChangeState state  = ChangeState.NONE;
-    protected ChangeState undo   = ChangeState.NONE;
-    protected ChangeState marked = ChangeState.NONE;
-    protected final File  tmp;
-    protected final File  bak;
+  public static class ResourceLock<T>  {
+    private Map<T, int[]> entries = new HashMap<T, int[]>();
+    private T owner = null;
+    private int sc = 0;
+    private static final int RD = 0;
+    private static final int WR = 1;
 
-    /**
-     * Creates an instance of FileBackedBlob.
-     *
-     * @param id the blob id
-     * @param tmp the txn tmp file
-     * @param bak the back-up file to use before modifying the value in store
-     */
-    public FileBackedBlob(String id, File tmp, File bak) {
-      super(id);
-      this.tmp = tmp;
-      this.bak = bak;
+    public synchronized void acquireRead(T resource) throws InterruptedException {
+      while ((owner != null) && (owner != resource))
+        wait();
+      mark(resource, RD, 1);
     }
 
-    public ChangeState getChangeState() {
-      return state;
+    public synchronized void releaseRead(T resource) {
+      mark(resource, RD, -1);
+      if (sc <= 0)
+        notifyAll();
     }
 
-    public ChangeState mark() {
-      if (log.isDebugEnabled())
-        log.debug("Marking... previous-mark = " + marked + ", state = " + state + ", id = " + getId());
-      ChangeState prev = marked;
-      marked = ChangeState.NONE;
-      return prev;
+    public synchronized void acquireWrite(T resource) throws InterruptedException {
+      while ((owner != null) && (owner != resource) && (sc > 0))
+        wait();
+      owner = resource;
+      mark(resource, WR, 1);
     }
 
-    // TODO: remove this hack
-    public byte[] readAll(boolean original) throws OtmException {
-      if (!original || ((state != ChangeState.DELETED) && (state != ChangeState.WRITTEN)))
-        return readAll();
-      if (log.isTraceEnabled())
-        log.trace("Loading old data for search index removal for " + getId());
-
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      copyFromStore(out, true);
-      return out.toByteArray();
-    }
-
-    @Override
-    public InputStream doGetInputStream() throws OtmException {
-      if (!exists())
-        throw new OtmException("Blob " + getId() + " does not exist. Write to it first to create.");
-
-      if (log.isTraceEnabled())
-        log.trace("Creating inputstream for " + getId() + " from " + tmp);
-
-      try {
-        return new FileInputStream(tmp);
-      } catch (IOException e) {
-        throw new OtmException("Failed to open file: " + tmp + " for " + getId(), e);
+    public synchronized void releaseWrite(T resource) {
+      if ((mark(resource, 1, -1) <= 0) && (owner == resource)) {
+        owner = null;
+        notifyAll();
       }
     }
 
-    @Override
-    public OutputStream doGetOutputStream() throws OtmException {
-      if (state == ChangeState.DELETED)
-        throw new OtmException("Blob " + getId() + " is deleted. Cannot write to it.");
+    private int mark(T resource, int idx, int inc) {
+      int[] e = entries.get(resource);
+      if (e == null)
+        entries.put(resource, e = new int[] {0, 0});
 
-      create();
+      e[idx] += inc;
 
-      if (log.isTraceEnabled())
-        log.trace("Creating outputstream for " + getId() + " from " + tmp);
+      if ((idx == RD) && (e[RD] >= 0))
+        sc += inc;
 
-      try {
-        return new FileOutputStream(tmp);
-      } catch (IOException e) {
-        throw new OtmException("Failed to open file: " + tmp + " for " + getId(), e);
-      }
+      if ((e[0] <= 0) && (e[1] <= 0))
+        entries.remove(resource);
+
+      return e[idx];
     }
 
-    @Override
-    public void closed(Closeable stream) {
-      if (log.isTraceEnabled())
-        log.trace("Closing stream for " + getId() + " on " + tmp);
-      super.closed(stream);
+    public synchronized int readCount(T resource) {
+      return mark(resource, RD, 0);
     }
 
-    @Override
-    public void writing(OutputStream out) {
-      switch (state) {
-        case CREATED:
-        case NONE:
-          if (log.isTraceEnabled())
-            log.trace("Write detected on " + tmp + " for " + getId());
-          state = marked = ChangeState.WRITTEN;
-          break;
-        case DELETED:
-          // All streams should be closed on delete.
-          log.error("Writing to deleted Blob file: " + tmp + " for " + getId());
-      }
-    }
-
-    public boolean create() throws OtmException {
-      switch (state) {
-        case DELETED:
-        case NONE:
-          if (log.isTraceEnabled())
-            log.trace("Creating " + tmp + " for " + getId());
-          try {
-            boolean ret = tmp.createNewFile();
-            state = marked = ChangeState.CREATED;
-            exists = Boolean.TRUE;
-            return ret;
-          } catch (IOException e) {
-            throw new OtmException("Failed to create file: " + tmp + " for " + getId(), e);
-          }
-      }
-      return false;
-    }
-
-    public boolean delete() throws OtmException {
-      switch (state) {
-        case CREATED:
-        case NONE:
-        case WRITTEN:
-          for (Closeable stream : streams) {
-            try {
-              stream.close();
-            } catch (IOException e) {
-              log.warn("Failed to close a stream : " + tmp + " for " + getId(), e);
-            }
-          }
-          streams.clear();
-          if (log.isTraceEnabled())
-            log.trace("Deleting " + tmp + " for " + getId());
-          boolean ret = tmp.delete();
-          state = marked = ChangeState.DELETED;
-          exists = Boolean.FALSE;
-          return ret;
-      }
-      return false;
-    }
-
-    /**
-     * Implement in sub-classes to actually create an instance of this blob in store.
-     *
-     * @return true only if a new instance was created.
-     *
-     * @throws OtmException on an error
-     */
-    protected abstract boolean createInStore() throws OtmException;
-
-    /**
-     * Implement in sub-classes to copy from the store to the txn scratch file.
-     *
-     * @param to the outputs stream to copy to
-     * @param asBackup reason for the copy
-     *
-     * @return true only if the blob was copied over
-     *
-     * @throws OtmException on an error
-     */
-    protected abstract boolean copyFromStore(OutputStream to, boolean asBackup) throws OtmException;
-
-    /**
-     * Implement in sub-classes to copy/move from the txn scratch file to the blob-store.
-     *
-     * @param from the scratch file
-     *
-     * @return true only if the blob was copied/moved
-     *
-     * @throws OtmException on an error
-     */
-    protected abstract boolean moveToStore(File from) throws OtmException;
-
-    /**
-     * Implement in sub-classes to delete/purge this object.
-     *
-     * @return true only if the blob was deleted
-     *
-     * @throws OtmException on an error
-     */
-    protected abstract boolean deleteFromStore() throws OtmException;
-
-    /**
-     * Copy from store to the given file. Calls {@link #copyFromStore(OutputStream, boolean)}.
-     *
-     * @param file the file to copy to
-     *
-     * @param asBackup to indicate what this copy is for
-     *
-     * @return true only if the blob was copied over
-     */
-    protected final boolean copyFromStore(File file, boolean asBackup) {
-      OutputStream out = null;
-      try {
-        out = new FileOutputStream(file);
-      } catch (IOException e) {
-        throw new OtmException("Failed to open file " + file + " for write.", e);
-      }
-
-      try {
-        return copyFromStore(out, false);
-      } finally {
-        closeAll(out);
-      }
-    }
-
-    public boolean exists() throws OtmException {
-      if (exists != null)
-        return exists;
-
-      exists = copyFromStore(tmp, false);
-
-      return exists;
-    }
-
-    /**
-     * Prepare for commit. Backup things etc.
-     *
-     * @return true only if there was something that needed committing
-     *
-     * @throws OtmException on an error
-     */
-    public boolean prepare() throws OtmException {
-      if (log.isTraceEnabled())
-        log.trace("Preparing to commit " + getId());
-
-      close();
-      switch (state) {
-        case DELETED:
-        case WRITTEN:
-          backup();
-      }
-
-      return state != ChangeState.NONE;
-    }
-
-    /**
-     * Commit changes.
-     *
-     * @throws OtmException on an error
-     */
-    public void commit() throws OtmException {
-      boolean success = true;
-      String operation = "no-op";
-      switch (state) {
-        case DELETED:
-          operation = "delete";
-          success = deleteFromStore();
-          break;
-        case CREATED:
-          operation = "create";
-          success = createInStore();
-          break;
-        case WRITTEN:
-          operation = "save";
-          success = moveToStore(tmp);
-          break;
-      }
-
-      if (!success)
-        throw new OtmException("Commit(" + operation + ") failed for " + getId());
-      else {
-        if (log.isDebugEnabled())
-          log.debug("Committed(" + operation + ") on " + getId());
-        exists = null;
-        undo = state;
-        state = marked = ChangeState.NONE;
-      }
-    }
-
-    /**
-     * Clean-up since the txn is now complete.
-     *
-     * @param abort if true, restore from the backup
-     */
-    public void cleanup(boolean abort) {
-      if (abort && ((undo == ChangeState.DELETED) || (undo == ChangeState.WRITTEN)))
-        restore();
-
-      undo = ChangeState.NONE;
-      exists = null;
-      tmp.delete();
-    }
-
-    private void backup() throws OtmException {
-      if (bak.exists()) {
-        if (log.isDebugEnabled())
-          log.debug("Deleting old backup for " + getId());
-        bak.delete();
-        if (bak.exists())
-          throw new OtmException("Failed to delete old backup at " + bak);
-      }
-
-      copyFromStore(bak, true);
-    }
-
-    private void restore() {
-      if (!bak.exists())
-        return;
-
-      if (log.isDebugEnabled())
-        log.debug("Restoring " + bak + " for id " + getId());
-
-      try {
-        if (!moveToStore(bak))
-          log.error("Failed to restore from backup " + bak + " for id " + getId());
-        else
-          log.warn("Restored from backup " + bak + " for id " + getId());
-      } catch (OtmException e) {
-        log.error("Failed to restore from backup " + bak + " for id " + getId(), e);
-      }
+    public synchronized int writeCount(T resource) {
+      return mark(resource, WR, 0);
     }
   }
 }

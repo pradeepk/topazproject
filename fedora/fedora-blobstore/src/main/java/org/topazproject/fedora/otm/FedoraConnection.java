@@ -38,8 +38,6 @@ import org.topazproject.fedora.otm.FedoraBlob.INGEST_OP;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.stores.FileBackedBlobStore;
-import org.topazproject.otm.stores.FileBackedBlobStore.FileBackedBlob;
 import org.topazproject.otm.stores.FileBackedBlobStore.FileBackedBlobStoreConnection;
 
 /**
@@ -419,7 +417,7 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
     }
   }
 
-  private class FileBackedFedoraBlob extends FileBackedBlobStore.FileBackedBlob {
+  private class FileBackedFedoraBlob extends FileBackedBlob {
     private final FedoraBlob fb;
     private String ref = null;
 
@@ -430,16 +428,23 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
 
     @Override
     protected boolean copyFromStore(OutputStream out, boolean asBackup) throws OtmException {
-      InputStream in = getBlobStream(fb);
-      if (in == null)
-        return false;
-
       try {
-        copy(in, out);
-      } catch (IOException e) {
-        throw new OtmException("Copy failed for " + getId(), e);
+        store.getStoreLock().acquireRead(FedoraConnection.this);
+        InputStream in = getBlobStream(fb);
+        if (in == null)
+          return false;
+
+        try {
+          copy(in, out);
+        } catch (IOException e) {
+          throw new OtmException("Copy failed for " + getId(), e);
+        } finally {
+          closeAll(in);
+        }
+      } catch (InterruptedException e) {
+        throw new OtmException("Interrupted while waiting for read-lock for " + getId(), e);
       } finally {
-        closeAll(in);
+        store.getStoreLock().releaseRead(FedoraConnection.this);
       }
 
       return true;

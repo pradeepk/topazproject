@@ -71,80 +71,88 @@ public class SimpleBlobStore extends FileBackedBlobStore {
   }
 
   public Connection openConnection(Session sess, boolean readOnly) throws OtmException {
-    return new FileBackedBlobStoreConnection(this, sess) {
-      @Override
-      protected FileBackedBlob doGetBlob(ClassMetadata cm, String id, Object instance, File work)
-          throws OtmException {
-        File file = toFile(SimpleBlobStore.this.storage, id, ".dat");
-        File bak = toFile(SimpleBlobStore.this.storage, id, ".bak");
-
-        return new FileBlob(id, file, work, bak);
-      }
-    };
+    return new SimpleBlobStoreConnection(this, sess);
   }
 
-  private class FileBlob extends FileBackedBlob {
-    private final File file;
-
-    public FileBlob(String id, File file, File work, File bak) {
-      super(id, work, bak);
-      this.file = file;
+  private final class SimpleBlobStoreConnection extends FileBackedBlobStoreConnection {
+    private SimpleBlobStoreConnection(FileBackedBlobStore store, Session sess) throws OtmException {
+      super(store, sess);
     }
 
-    protected boolean copyFromStore(OutputStream to, boolean backup) throws OtmException {
-      InputStream in = null;
-      try {
-        storeLock.readLock().lock();
-        if (!file.exists())
-          return false;
+    @Override
+    protected FileBackedBlob doGetBlob(ClassMetadata cm, String id, Object instance, File work)
+        throws OtmException {
+      File file = toFile(SimpleBlobStore.this.storage, id, ".dat");
+      File bak = toFile(SimpleBlobStore.this.storage, id, ".bak");
 
-        if (log.isTraceEnabled())
-          log.trace("Creating " + (backup ? "backup " : "copy ") + to + " from " + file
-              + " for id " + getId());
+      return new FileBlob(id, file, work, bak);
+    }
+
+    private final class FileBlob extends FileBackedBlob {
+      private final File file;
+
+      public FileBlob(String id, File file, File work, File bak) {
+        super(id, work, bak);
+        this.file = file;
+      }
+
+      protected boolean copyFromStore(OutputStream to, boolean backup) throws OtmException {
+        InputStream in = null;
         try {
-          copy(in = new FileInputStream(file), to);
-        } catch (IOException e) {
-          throw new OtmException("Failed to copy from store " + file + " to " + to
-                                  + " for " + getId());
+          getStoreLock().acquireRead(SimpleBlobStoreConnection.this);
+          if (!file.exists())
+            return false;
+
+          if (log.isTraceEnabled())
+            log.trace("Creating " + (backup ? "backup " : "copy ") + to + " from " + file
+                + " for id " + getId());
+          try {
+            copy(in = new FileInputStream(file), to);
+          } catch (IOException e) {
+            throw new OtmException("Failed to copy from store " + file + " to " + to + " for "
+                + getId());
+          }
+
+          return true;
+        } catch (InterruptedException e) {
+          throw new OtmException("Interrupted while acquiring read-lock for " + getId(), e);
+        } finally {
+          closeAll(in);
+          getStoreLock().releaseRead(SimpleBlobStoreConnection.this);
+        }
+      }
+
+      protected boolean createInStore() throws OtmException {
+        boolean success = file.exists();
+        if (!success) {
+          if (log.isTraceEnabled())
+            log.trace("Commit-Creating " + file + " for " + getId());
+          try {
+            success = file.createNewFile();
+          } catch (IOException e) {
+            throw new OtmException("Failed to create : " + file + " for " + getId());
+          }
+        }
+        return success;
+      }
+
+      protected boolean moveToStore(File from) throws OtmException {
+        if (log.isTraceEnabled())
+          log.trace("Commit-Saving " + from + " to " + file + " for " + getId());
+
+        return from.renameTo(file);
+      }
+
+      protected boolean deleteFromStore() throws OtmException {
+        boolean success = !file.exists();
+        if (!success) {
+          if (log.isTraceEnabled())
+            log.trace("Commit-Deleting " + file + " for " + getId());
+          success = file.delete();
         }
 
-        return true;
-      } finally {
-        closeAll(in);
-        storeLock.readLock().unlock();
+        return success;
       }
-    }
-
-    protected boolean createInStore() throws OtmException {
-      boolean success = file.exists();
-      if (!success) {
-        if (log.isTraceEnabled())
-          log.trace("Commit-Creating " + file + " for " + getId());
-        try {
-          success = file.createNewFile();
-        } catch (IOException e) {
-          throw new OtmException("Failed to create : " + file + " for " + getId());
-        }
-      }
-      return success;
-    }
-
-    protected boolean moveToStore(File from) throws OtmException {
-      if (log.isTraceEnabled())
-        log.trace("Commit-Saving " + from + " to " + file + " for " + getId());
-
-      return from.renameTo(file);
-    }
-
-    protected boolean deleteFromStore() throws OtmException {
-      boolean success = !file.exists();
-      if (!success) {
-        if (log.isTraceEnabled())
-          log.trace("Commit-Deleting " + file + " for " + getId());
-        success = file.delete();
-      }
-
-      return success;
     }
   }
 }
