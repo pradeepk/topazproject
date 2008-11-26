@@ -29,8 +29,8 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
- * RatingContent is the body of a Rating.
- * It stores, insight, reliability, style and comment values.
+ * TrackBackContent is the body of the trackback annotation. It stores the trackback information
+ * received via the trackback protocol to enable an application to display it.
  *
  * @author stevec
  * @author Jeff Suttor
@@ -52,7 +52,6 @@ public class TrackbackContent implements Serializable {
   public TrackbackContent() {
     this(null, null, null, null);
   }
-
 
   /**
    * Creates a new TrackbackContent object with specified values.
