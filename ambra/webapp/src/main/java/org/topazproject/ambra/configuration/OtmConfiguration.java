@@ -19,13 +19,14 @@
 package org.topazproject.ambra.configuration;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.GraphConfig;
-import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.impl.SessionFactoryImpl;
@@ -41,9 +42,12 @@ import org.topazproject.fedora.otm.FedoraBlobFactory;
  * @author Stephen Cheng
  */
 public class OtmConfiguration {
-  private SessionFactory   factory;
-  private String[]         preloadClasses = new String[0];
-  private GraphConfig[]    graphs;
+  private final String        tripleStoreUrl;
+  private final BlobStore     blobStore;
+  private SessionFactory      factory = null;
+  private String[]            preloadClasses = new String[0];
+  private GraphConfig[]       graphs = new GraphConfig[0];
+  private Map<String, String> aliases = new HashMap<String, String>();
   private static final Log log = LogFactory.getLog(OtmConfiguration.class);
 
   /**
@@ -53,21 +57,8 @@ public class OtmConfiguration {
    * @param blobStore the blob-store to use
    */
   public OtmConfiguration(String tripleStoreUrl, BlobStore blobStore) {
-    factory = new SessionFactoryImpl();
-
-    if (log.isDebugEnabled()) {
-      log.debug("Creating new triplestore: " + tripleStoreUrl);
-    }
-
-    factory.setTripleStore(new ItqlStore(URI.create(tripleStoreUrl),
-                           WebappItqlClientFactory.getInstance()));
-
-    if (log.isDebugEnabled())
-      log.debug("Added blobstore : " + blobStore.getClass());
-
-    factory.setBlobStore(blobStore);
-    factory.preloadFromClasspath();
-    factory.validate();
+    this.tripleStoreUrl = tripleStoreUrl;
+    this.blobStore = blobStore;
   }
 
   /**
@@ -85,17 +76,11 @@ public class OtmConfiguration {
    * @param preloadClasses The preloadClasses to set.
    */
   public void setPreloadClasses(String[] preloadClasses) {
-    this.preloadClasses = preloadClasses;
-
-    for (String className : preloadClasses) {
-      try {
-        factory.preload(Class.forName(className));
-      } catch (ClassNotFoundException ce) {
-        log.info("Could not preload class: " + className, ce);
-      }
+    if ((factory != null) && !Arrays.equals(preloadClasses, this.preloadClasses)) {
+      factory = null;
+      log.warn("Removed old factory because new set of preloadClasses specified");
     }
-
-    factory.validate();
+    this.preloadClasses = preloadClasses;
   }
 
   /**
@@ -104,6 +89,8 @@ public class OtmConfiguration {
    * @return Returns the factory.
    */
   public SessionFactory getFactory() {
+    if (factory == null)
+      factory = createFactory();
     return factory;
   }
 
@@ -122,18 +109,11 @@ public class OtmConfiguration {
    * @param graphs The graphs to set.
    */
   public void setGraphs(final GraphConfig[] graphs) {
+    if ((factory != null) && !Arrays.equals(graphs, this.graphs)) {
+      factory = null;
+      log.warn("Removed old factory because new set of graph configs specified");
+    }
     this.graphs = graphs;
-
-    for (GraphConfig graph : graphs)
-      factory.addGraph(graph);
-
-    TransactionHelper.doInTx(factory, new TransactionHelper.Action<Void>() {
-      public Void run(Transaction tx) {
-        for (GraphConfig graph : graphs)
-          tx.getSession().createGraph(graph.getId());
-        return null;
-      }
-    });
   }
 
   /**
@@ -142,7 +122,7 @@ public class OtmConfiguration {
    * @return the aliases
    */
   public Map<String, String> getAliases() {
-    return factory.listAliases();
+    return aliases;
   }
 
   /**
@@ -151,8 +131,11 @@ public class OtmConfiguration {
    * @param aliases the aliases to set.
    */
   public void setAliases(Map<String, String> aliases) {
-    for (Map.Entry<String, String> alias : aliases.entrySet())
-      factory.addAlias(alias.getKey(), alias.getValue());
+    if ((factory != null) && !aliases.equals(this.aliases)) {
+      factory = null;
+      log.warn("Removed old factory because new set of aliases specified");
+    }
+    this.aliases = aliases;
   }
 
   /**
@@ -161,13 +144,79 @@ public class OtmConfiguration {
    * @param fbfs array of fedora blob factories to add
    */
   public void setFedoraBlobFactories(FedoraBlobFactory[] fbfs) {
-    if (factory.getBlobStore() instanceof FedoraBlobStore) {
-      FedoraBlobStore fbs = (FedoraBlobStore)factory.getBlobStore();
+    if (blobStore instanceof FedoraBlobStore) {
+      FedoraBlobStore fbs = (FedoraBlobStore)blobStore;
       for (FedoraBlobFactory fbf : fbfs) {
         fbs.addBlobFactory(fbf);
         if (log.isDebugEnabled())
           log.debug("Added BlobFactory for " + fbf.getSupportedUriPrefixes());
       }
     }
+  }
+
+  private SessionFactory createFactory() {
+    if (log.isDebugEnabled())
+      log.debug("Creating new SessionFactory instance ...");
+
+    SessionFactory factory = new SessionFactoryImpl();
+
+    if (log.isDebugEnabled())
+      log.debug("Adding aliases: " + aliases);
+
+    for (Map.Entry<String, String> alias : aliases.entrySet())
+      factory.addAlias(alias.getKey(), alias.getValue());
+
+    if (log.isDebugEnabled())
+      log.debug("Creating new triplestore: " + tripleStoreUrl);
+
+    factory.setTripleStore(new ItqlStore(URI.create(tripleStoreUrl),
+                           WebappItqlClientFactory.getInstance()));
+
+    if (log.isDebugEnabled())
+      log.debug("Setting blobstore : " + blobStore.getClass());
+
+    factory.setBlobStore(blobStore);
+
+    if (log.isDebugEnabled())
+      log.debug("Adding graph configs : " + Arrays.asList(graphs));
+
+    for (GraphConfig graph : graphs)
+      factory.addGraph(graph);
+
+    if (log.isDebugEnabled())
+      log.debug("Creating graphs : " + Arrays.asList(graphs));
+
+    TransactionHelper.doInTx(factory, new TransactionHelper.Action<Void>() {
+      public Void run(Transaction tx) {
+        for (GraphConfig graph : graphs)
+          tx.getSession().createGraph(graph.getId());
+        return null;
+      }
+    });
+
+    if (log.isDebugEnabled())
+      log.debug("Pre-loading classes from class-path ...");
+
+    factory.preloadFromClasspath();
+
+    if (log.isDebugEnabled())
+      log.debug("Pre-loading classes : " + Arrays.asList(preloadClasses));
+
+    for (String className : preloadClasses) {
+      try {
+        factory.preload(Class.forName(className));
+      } catch (ClassNotFoundException ce) {
+        log.warn("Could not preload class: " + className, ce);
+      }
+    }
+
+    if (log.isDebugEnabled())
+      log.debug("Validating factory config...");
+
+    factory.validate();
+
+    log.info("Initialized OTM SessionFactory instance.");
+
+    return factory;
   }
 }
