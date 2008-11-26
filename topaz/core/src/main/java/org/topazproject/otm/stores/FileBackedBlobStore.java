@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.transaction.xa.XAException;
@@ -419,25 +418,12 @@ public abstract class FileBackedBlobStore implements BlobStore {
     public byte[] readAll(boolean original) throws OtmException {
       if (!original || ((state != ChangeState.DELETED) && (state != ChangeState.WRITTEN)))
         return readAll();
-      File f = null;
-      InputStream in = null;
-      try {
-        f = File.createTempFile("search-tmp", ".dat");
+      if (log.isTraceEnabled())
+        log.trace("Loading old data for search index removal for " + getId());
 
-        if (log.isTraceEnabled())
-          log.trace("Loading old data for search index removal for " + getId() + " from " + f );
-
-        copyFromStore(f, true);
-        ByteArrayOutputStream out = new ByteArrayOutputStream((int) f.length());
-        copy(in = new FileInputStream(f), out);
-        return out.toByteArray();
-      } catch (IOException e) {
-        throw new OtmException("Failed to read from store: " + getId(), e);
-      } finally {
-        closeAll(in);
-        if (f != null)
-          f.delete();
-      }
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      copyFromStore(out, true);
+      return out.toByteArray();
     }
 
     @Override
@@ -547,14 +533,14 @@ public abstract class FileBackedBlobStore implements BlobStore {
     /**
      * Implement in sub-classes to copy from the store to the txn scratch file.
      *
-     * @param to the scratch file
+     * @param to the outputs stream to copy to
      * @param asBackup reason for the copy
      *
      * @return true only if the blob was copied over
      *
      * @throws OtmException on an error
      */
-    protected abstract boolean copyFromStore(File to, boolean asBackup) throws OtmException;
+    protected abstract boolean copyFromStore(OutputStream to, boolean asBackup) throws OtmException;
 
     /**
      * Implement in sub-classes to copy/move from the txn scratch file to the blob-store.
@@ -575,6 +561,30 @@ public abstract class FileBackedBlobStore implements BlobStore {
      * @throws OtmException on an error
      */
     protected abstract boolean deleteFromStore() throws OtmException;
+
+    /**
+     * Copy from store to the given file. Calls {@link #copyFromStore(OutputStream, boolean)}.
+     *
+     * @param file the file to copy to
+     *
+     * @param asBackup to indicate what this copy is for
+     *
+     * @return true only if the blob was copied over
+     */
+    protected final boolean copyFromStore(File file, boolean asBackup) {
+      OutputStream out = null;
+      try {
+        out = new FileOutputStream(file);
+      } catch (IOException e) {
+        throw new OtmException("Failed to open file " + file + " for write.", e);
+      }
+
+      try {
+        return copyFromStore(out, false);
+      } finally {
+        closeAll(out);
+      }
+    }
 
     public boolean exists() throws OtmException {
       if (exists != null)

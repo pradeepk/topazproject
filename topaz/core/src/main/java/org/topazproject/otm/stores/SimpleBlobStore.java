@@ -20,7 +20,6 @@ package org.topazproject.otm.stores;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -92,9 +91,8 @@ public class SimpleBlobStore extends FileBackedBlobStore {
       this.file = file;
     }
 
-    public boolean copyFromStore(File to, boolean backup) throws OtmException {
+    protected boolean copyFromStore(OutputStream to, boolean backup) throws OtmException {
       InputStream in = null;
-      OutputStream out = null;
       try {
         storeLock.readLock().lock();
         if (!file.exists())
@@ -104,7 +102,7 @@ public class SimpleBlobStore extends FileBackedBlobStore {
           log.trace("Creating " + (backup ? "backup " : "copy ") + to + " from " + file
               + " for id " + getId());
         try {
-          copy(in = new FileInputStream(file), out = new FileOutputStream(to));
+          copy(in = new FileInputStream(file), to);
         } catch (IOException e) {
           throw new OtmException("Failed to copy from store " + file + " to " + to
                                   + " for " + getId());
@@ -112,12 +110,12 @@ public class SimpleBlobStore extends FileBackedBlobStore {
 
         return true;
       } finally {
-        closeAll(in, out);
+        closeAll(in);
         storeLock.readLock().unlock();
       }
     }
 
-    public boolean createInStore() throws OtmException {
+    protected boolean createInStore() throws OtmException {
       boolean success = file.exists();
       if (!success) {
         if (log.isTraceEnabled())
@@ -131,14 +129,14 @@ public class SimpleBlobStore extends FileBackedBlobStore {
       return success;
     }
 
-    public boolean moveToStore(File from) throws OtmException {
+    protected boolean moveToStore(File from) throws OtmException {
       if (log.isTraceEnabled())
         log.trace("Commit-Saving " + from + " to " + file + " for " + getId());
 
       return from.renameTo(file);
     }
 
-    public boolean deleteFromStore() throws OtmException {
+    protected boolean deleteFromStore() throws OtmException {
       boolean success = !file.exists();
       if (!success) {
         if (log.isTraceEnabled())

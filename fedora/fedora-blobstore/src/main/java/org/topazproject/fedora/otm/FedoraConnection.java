@@ -19,9 +19,9 @@
 package org.topazproject.fedora.otm;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 
 import java.rmi.RemoteException;
@@ -391,75 +391,35 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
   }
 
   /**
-   * Gets the blob content (if it exists) from Fedora.
+   * Gets the blob's InputStream from Fedora.
    *
-   * @param blob the blo to download
-   * @param the file to download the blob content to
+   * @param blob the blob
    *
-   * @return true if the download succeeded. false if the blob does not exist
+   * @return the InputStream or null
    *
    * @throws OtmException on an error
    */
-  private boolean readBlob(FedoraBlob blob, File to) throws OtmException {
+  private InputStream getBlobStream(FedoraBlob blob) throws OtmException {
     Datastream stream = getDatastream(blob);
 
     if (stream == null)
-      return false;
+      return null;
 
-    InputStream in       = null;
-    URL         location = null;
+    URL  location = getDatastreamLocation(blob.getPid(), blob.getDsId());
 
     try {
-      location   = getDatastreamLocation(blob.getPid(), blob.getDsId());
-      in         = location.openStream();
+      return location.openStream();
     } catch (Exception e) {
       if (log.isDebugEnabled())
         log.debug("Error while opening a stream to read from " + blob.getPid() + "/" + blob.getDsId()
                   + ". According to Fedora the stream must exist - but most likeley was"
                   + " purged recently. Treating this as if it was purged and does not exist.", e);
 
-      return false;
-    }
-
-    FileOutputStream out = null;
-    try {
-        out = new FileOutputStream(to);
-        byte[]buf = new byte[4096];
-
-        int c;
-        long len = 0;
-
-        while ((c = in.read(buf)) >= 0) {
-          out.write(buf, 0, c);
-          len += c;
-        }
-
-      if (log.isDebugEnabled())
-        log.debug("Got " + len + " bytes from " + location);
-
-      return true;
-    } catch (Exception e) {
-      throw new OtmException("Get failed on " + blob.getBlobId(), e);
-    } finally {
-      try {
-        if (in != null)
-          in.close();
-      } catch (Throwable t) {
-        if (log.isDebugEnabled())
-          log.debug("Failed to close connection to " + location, t);
-      }
-      try {
-        if (out != null)
-          out.close();
-      } catch (Throwable t) {
-        if (log.isDebugEnabled())
-          log.debug("Failed to close connection to " + to, t);
-      }
+      return null;
     }
   }
 
   private class FileBackedFedoraBlob extends FileBackedBlobStore.FileBackedBlob {
-
     private final FedoraBlob fb;
     private String ref = null;
 
@@ -469,8 +429,20 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
     }
 
     @Override
-    protected boolean copyFromStore(File to, boolean asBackup) throws OtmException {
-      return readBlob(fb, to);
+    protected boolean copyFromStore(OutputStream out, boolean asBackup) throws OtmException {
+      InputStream in = getBlobStream(fb);
+      if (in == null)
+        return false;
+
+      try {
+        copy(in, out);
+      } catch (IOException e) {
+        throw new OtmException("Copy failed for " + getId(), e);
+      } finally {
+        closeAll(in);
+      }
+
+      return true;
     }
 
     @Override
@@ -497,12 +469,12 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
         case CREATED:
         case WRITTEN:
            try {
-            if (log.isDebugEnabled())
-              log.debug("Uploading blob to fedora: " + tmp + " for " + getId());
-            ref = getUploader().upload(tmp);
-          } catch (IOException e) {
-            throw new OtmException("Failed to upload: " + tmp + " for " + getId(), e);
-          }
+             if (log.isDebugEnabled())
+               log.debug("Uploading blob to fedora: " + tmp + " for " + getId());
+             ref = getUploader().upload(tmp);
+           } catch (IOException e) {
+             throw new OtmException("Failed to upload: " + tmp + " for " + getId(), e);
+           }
       }
 
       return true;
@@ -510,14 +482,20 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
 
     @Override
     protected boolean moveToStore(File from) throws OtmException {
-      /*
-       * Ensure what we uploaded and what is being asked to 'move' is the same.
-       * It should be the same - unless we screwed up our implementation.
-       */
-      assert (ref != null) : "Not uploaded";
-      assert (from == tmp) : "Expecting txn tmp file that was uploaded";
+      String r = ref;
+      ref = null;
 
-      return ingest(fb, ref);
+      if ((from != tmp) || (r == null)) {
+        try {
+          if (log.isDebugEnabled())
+            log.debug("Uploading blob to fedora: " + from + " for " + getId());
+          r = getUploader().upload(tmp);
+        } catch (IOException e) {
+          throw new OtmException("Failed to upload: " + from + " for " + getId(), e);
+        }
+      }
+
+      return ingest(fb, r);
     }
   }
 }
