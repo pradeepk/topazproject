@@ -100,8 +100,11 @@ public class SimpleBlobStore extends FileBackedBlobStore {
         InputStream in = null;
         try {
           getStoreLock().acquireRead(SimpleBlobStoreConnection.this);
-          if (!file.exists())
+          if (!file.exists()) {
+            if (log.isTraceEnabled())
+              log.trace("copyFromStore(no-op): " + file + " does not exist for " + getId());
             return false;
+          }
 
           if (log.isTraceEnabled())
             log.trace("Creating " + (backup ? "backup " : "copy ") + to + " from " + file

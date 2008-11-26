@@ -461,7 +461,7 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
     }
 
     @Override
-    public boolean prepare() throws OtmException {
+    protected boolean prepare() throws OtmException {
       if (!super.prepare())
         return false;
 

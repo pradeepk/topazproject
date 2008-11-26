@@ -273,13 +273,16 @@ public abstract class FileBackedBlobStore implements BlobStore {
         public void commit(Xid xid, boolean onePhase) throws XAException {
           if (onePhase) {
             try {
-              doPrepare();
+              onePhase = !doPrepare();
             } catch (XAException xae) {
               doRollback();
               throw xae;
             }
           }
-          doCommit();
+          if (onePhase)
+            close();
+          else
+            doCommit();
         }
 
         public void rollback(Xid xid) throws XAException {
@@ -323,21 +326,27 @@ public abstract class FileBackedBlobStore implements BlobStore {
       };
     }
 
-    private boolean doPrepare() throws XAException {
+    protected boolean doPrepare() throws XAException {
       try {
+        if (log.isTraceEnabled())
+          log.trace("doPrepare starting ...");
         int mods = 0;
         // Note: we keep the lock acquired thru the commit phase.
         store.getStoreLock().acquireWrite(this);
         for (FileBackedBlob blob : blobs.values())
           if (blob.prepare())
             mods++;
+        if (log.isDebugEnabled())
+          log.debug("doPrepare found " + mods + " change(s) to commit");
         return (mods > 0);
       } catch (Exception oe) {
         throw (XAException) new XAException(XAException.XAER_RMERR).initCause(oe);
       }
     }
 
-    private void doCommit() throws XAException {
+    protected void doCommit() throws XAException {
+      if (log.isTraceEnabled())
+        log.trace("doCommit starting ...");
       boolean abort = true;
       try {
         // Note: lock acquired in doPrepare().
@@ -351,16 +360,24 @@ public abstract class FileBackedBlobStore implements BlobStore {
       }
     }
 
-    private void doRollback() {
+    protected void doRollback() throws XAException {
+      if (log.isTraceEnabled())
+        log.trace("doRollback starting ...");
       try {
-        store.getStoreLock().acquireWrite(this);
-      } catch (InterruptedException e) {
-        log.warn("Interrupted while acquiring lock for roll-back. Proceeding without lock", e);
+        try {
+          store.getStoreLock().acquireWrite(this);
+        } catch (InterruptedException e) {
+          log.warn("Interrupted while acquiring lock for roll-back. Proceeding without lock", e);
+        }
+        cleanup(true);
+      } catch (Exception e) {
+        throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
       }
-      cleanup(true);
     }
 
-    private void cleanup(boolean abort) {
+    protected void cleanup(boolean abort) {
+      if (log.isTraceEnabled())
+        log.trace("cleanup(abort=" + abort + ") starting ...");
       try {
         for (FileBackedBlob blob : blobs.values())
           blob.cleanup(abort);
@@ -379,13 +396,19 @@ public abstract class FileBackedBlobStore implements BlobStore {
     }
 
     public void close() {
-      if (txn != null)
-        doRollback();
+      if (log.isTraceEnabled())
+        log.trace("close starting ...");
+      try {
+        if (txn != null)
+          doRollback();
+      } catch (XAException e) {
+        log.warn("Failed to close connection", e);
+      }
     }
 
     /**
      * A Blob instance that is file backed. All operations in txn scope is
-     * done on a local File. Sub-classes only implements copying to and
+     * done on a local File. Sub-classes only implement copying to and
      * from the store to the txn scratch directory.
      *
      * @author Pradeep Krishnan
@@ -530,6 +553,21 @@ public abstract class FileBackedBlobStore implements BlobStore {
         return false;
       }
 
+      public boolean exists() throws OtmException {
+        if (exists != null)
+          return exists;
+
+        if (log.isTraceEnabled())
+          log.trace("performing exists() check on " + getId());
+
+        exists = copyFromStore(tmp, false);
+
+        if (log.isTraceEnabled())
+          log.trace("exists() check result: " + exists);
+
+        return exists;
+      }
+
       /**
        * Implement in sub-classes to actually create an instance of this blob in store.
        *
@@ -595,15 +633,6 @@ public abstract class FileBackedBlobStore implements BlobStore {
         }
       }
 
-      public boolean exists() throws OtmException {
-        if (exists != null)
-          return exists;
-
-        exists = copyFromStore(tmp, false);
-
-        return exists;
-      }
-
       /**
        * Prepare for commit. Backup things etc.
        *
@@ -611,7 +640,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
        *
        * @throws OtmException on an error
        */
-      public boolean prepare() throws OtmException {
+      protected boolean prepare() throws OtmException {
         if (log.isTraceEnabled())
           log.trace("Preparing to commit " + getId());
 
@@ -630,7 +659,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
        *
        * @throws OtmException on an error
        */
-      public void commit() throws OtmException {
+      protected void commit() throws OtmException {
         boolean success = true;
         String operation = "no-op";
         switch (state) {
@@ -664,7 +693,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
        *
        * @param abort if true, restore from the backup
        */
-      public void cleanup(boolean abort) {
+      protected void cleanup(boolean abort) {
         if (abort && ((undo == ChangeState.DELETED) || (undo == ChangeState.WRITTEN)))
           restore();
 
@@ -697,13 +726,21 @@ public abstract class FileBackedBlobStore implements BlobStore {
             log.error("Failed to restore from backup " + bak + " for id " + getId());
           else
             log.warn("Restored from backup " + bak + " for id " + getId());
-        } catch (OtmException e) {
+        } catch (Exception e) {
           log.error("Failed to restore from backup " + bak + " for id " + getId(), e);
         }
       }
     }
   }
 
+  /**
+   * A read-write lock where locks are owned by a resource rather than a thread.
+   * eg. to lock on a Connection.
+   *
+   * @author Pradeep Krishnan
+   *
+   * @param <T> The type of the owning resource
+   */
   public static class ResourceLock<T>  {
     private Map<T, int[]> entries = new HashMap<T, int[]>();
     private T owner = null;
@@ -737,6 +774,14 @@ public abstract class FileBackedBlobStore implements BlobStore {
       }
     }
 
+    public synchronized int readCount(T resource) {
+      return mark(resource, RD, 0);
+    }
+
+    public synchronized int writeCount(T resource) {
+      return mark(resource, WR, 0);
+    }
+
     private int mark(T resource, int idx, int inc) {
       int[] e = entries.get(resource);
       if (e == null)
@@ -751,14 +796,6 @@ public abstract class FileBackedBlobStore implements BlobStore {
         entries.remove(resource);
 
       return e[idx];
-    }
-
-    public synchronized int readCount(T resource) {
-      return mark(resource, RD, 0);
-    }
-
-    public synchronized int writeCount(T resource) {
-      return mark(resource, WR, 0);
     }
   }
 }
