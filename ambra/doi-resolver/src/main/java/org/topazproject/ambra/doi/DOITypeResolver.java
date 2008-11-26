@@ -46,6 +46,8 @@ import org.topazproject.otm.stores.ItqlStore;
  * @author Pradeep Krishnan
  */
 public class DOITypeResolver {
+  private static final Log log = LogFactory.getLog(DOITypeResolver.class);
+
   /**
    * Predicate URI for a:annotates
    */
@@ -55,9 +57,7 @@ public class DOITypeResolver {
    * The default GRAPH  that will be searched.
    */
   public static final String GRAPH = "local:///topazproject#filter:graph=ri";
-  private static final Log log = LogFactory.getLog(DOITypeResolver.class);
 
-  //
   private final SessionFactory sf;
   private String               graph;
 
@@ -69,7 +69,7 @@ public class DOITypeResolver {
    * @throws OtmException if an error occurred talking to the web-service
    */
   public DOITypeResolver(URI mulgaraUri) throws OtmException {
-    sf                         = new SessionFactoryImpl();
+    sf = new SessionFactoryImpl();
     sf.setTripleStore(new ItqlStore(mulgaraUri));
     sf.preload(Resource.class);
     sf.preload(Annotation.class);
@@ -185,7 +185,7 @@ public class DOITypeResolver {
         log.warn("rollback failed", re);
       }
 
-      throw e; // or display error message
+      throw e;
     } finally {
       try {
         session.close();
@@ -195,7 +195,7 @@ public class DOITypeResolver {
     }
   }
 
-/**
+  /**
    * The interface actions must implement.
    */
   protected static interface Action<T> {
@@ -213,8 +213,8 @@ public class DOITypeResolver {
 
   @Entity(graph = "ri")
   public static class Resource {
-    private String                                        id;
-    private Set<String>                                   types;
+    private String      id;
+    private Set<String> types;
 
     /**
      * Get id.
@@ -224,6 +224,7 @@ public class DOITypeResolver {
     public String getId() {
       return id;
     }
+
     /**
      * Set id.
      *
@@ -256,8 +257,8 @@ public class DOITypeResolver {
 
   @Entity(graph = "ri")
   public static class Annotation {
-    private String                                                         id;
-    private Annotation                                                     ann;
+    private String     id;
+    private Annotation ann;
 
     /**
      * Get id.
@@ -286,6 +287,7 @@ public class DOITypeResolver {
     public Annotation getAnn() {
       return ann;
     }
+
     /**
      * Set ann.
      *
