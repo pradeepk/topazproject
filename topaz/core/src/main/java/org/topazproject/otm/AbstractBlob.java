@@ -95,7 +95,7 @@ public abstract class AbstractBlob implements Blob {
   }
 
   /**
-   * Copies an input stream to an output stream and closes both streams.
+   * Copies an input stream to an output stream.
    *
    * @param in the input stream
    * @param out the output stream
@@ -103,18 +103,22 @@ public abstract class AbstractBlob implements Blob {
    * @throws IOException on an error
    */
   protected void copy(InputStream in, OutputStream out) throws IOException {
-    try {
-      byte[] b = new byte[4096];
-      for (int len; (len = in.read(b)) != -1; )
-        out.write(b, 0, len);
-    } finally {
-      for (Closeable c : new Closeable[] {in, out}) {
-        try {
-          if (c != null)
-            c.close();
-        } catch (IOException e) {
-           log.warn("Failed to close stream for " + getId(), e);
-        }
+    byte[] b = new byte[4096];
+    for (int len; (len = in.read(b)) != -1; )
+      out.write(b, 0, len);
+  }
+  /**
+   * Closes all the streams 'silently'. Catches and logs exceptions instead of throwing.
+   *
+   * @param streams array of streams
+   */
+  protected void closeAll(Closeable ... streams) {
+    for (Closeable c : streams) {
+      try {
+        if (c != null)
+          c.close();
+      } catch (IOException e) {
+        log.warn("Failed to close stream for " + getId(), e);
       }
     }
   }
@@ -160,14 +164,7 @@ public abstract class AbstractBlob implements Blob {
   }
 
   public void close() throws OtmException {
-    for (Closeable stream : streams) {
-      try {
-        stream.close();
-      } catch (IOException t) {
-        log.warn("Failed to close a stream for : " + getId(), t);
-      }
-    }
-
+    closeAll(streams.toArray(new Closeable[streams.size()]));
     streams.clear();
     closed = true;
   }

@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
@@ -91,6 +93,8 @@ public class SimpleBlobStore extends FileBackedBlobStore {
     }
 
     public boolean copyFromStore(File to, boolean backup) throws OtmException {
+      InputStream in = null;
+      OutputStream out = null;
       try {
         storeLock.readLock().lock();
         if (!file.exists())
@@ -100,7 +104,7 @@ public class SimpleBlobStore extends FileBackedBlobStore {
           log.trace("Creating " + (backup ? "backup " : "copy ") + to + " from " + file
               + " for id " + getId());
         try {
-          copy(new FileInputStream(file), new FileOutputStream(to));
+          copy(in = new FileInputStream(file), out = new FileOutputStream(to));
         } catch (IOException e) {
           throw new OtmException("Failed to copy from store " + file + " to " + to
                                   + " for " + getId());
@@ -108,6 +112,7 @@ public class SimpleBlobStore extends FileBackedBlobStore {
 
         return true;
       } finally {
+        closeAll(in, out);
         storeLock.readLock().unlock();
       }
     }

@@ -420,6 +420,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
       if (!original || ((state != ChangeState.DELETED) && (state != ChangeState.WRITTEN)))
         return readAll();
       File f = null;
+      InputStream in = null;
       try {
         f = File.createTempFile("search-tmp", ".dat");
 
@@ -428,11 +429,12 @@ public abstract class FileBackedBlobStore implements BlobStore {
 
         copyFromStore(f, true);
         ByteArrayOutputStream out = new ByteArrayOutputStream((int) f.length());
-        copy(new FileInputStream(f), out);
+        copy(in = new FileInputStream(f), out);
         return out.toByteArray();
       } catch (IOException e) {
         throw new OtmException("Failed to read from store: " + getId(), e);
       } finally {
+        closeAll(in);
         if (f != null)
           f.delete();
       }
