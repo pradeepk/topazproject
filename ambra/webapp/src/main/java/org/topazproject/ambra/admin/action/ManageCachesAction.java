@@ -30,6 +30,8 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.Statistics;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ambra.action.BaseActionSupport;
 
@@ -40,6 +42,7 @@ import org.topazproject.ambra.action.BaseActionSupport;
  */
 @SuppressWarnings("serial")
 public class ManageCachesAction extends BaseActionSupport {
+  private static final Log     log            = LogFactory.getLog(ManageCachesAction.class);
 
   private SortedMap<String, String[]> cacheStats = new TreeMap<String, String[]>();
 
@@ -80,8 +83,13 @@ public class ManageCachesAction extends BaseActionSupport {
     } else if ("getKeys".equals(cacheAction) && cacheName != null) {
       Ehcache cache = cacheManager.getEhcache(cacheName);
       cacheKeys = cache.getKeysNoDuplicateCheck();
-      Collections.sort(cacheKeys);
-      addActionMessage(cacheName + ".getKeysNoDuplicateCheck() executed.");
+      try {
+        Collections.sort(cacheKeys);
+        addActionMessage(cacheName + ".getKeysNoDuplicateCheck() executed.");
+      } catch (ClassCastException e) {
+        log.warn("Caught ClassCastException while sorting cachekeys for " + cacheName, e);
+        addActionMessage(cacheName + ".getKeysNoDuplicateCheck() executed. (unsorted list)");
+      }
     }
 
     // populate stats for display
