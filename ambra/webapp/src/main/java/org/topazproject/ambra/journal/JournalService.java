@@ -188,10 +188,10 @@ public class JournalService {
   /**
    * Set the carrier cache. Called by spring's bean wiring.
    *
-   * @param objectCache the carrier cache
+   * @param carrierCache the carrier cache
    */
   @Required
-  public void setObjectCache(Cache objectCache) {
-    this.objectCarriers = objectCache;
+  public void setCarrierCache(Cache carrierCache) {
+    this.objectCarriers = carrierCache;
   }
 }
