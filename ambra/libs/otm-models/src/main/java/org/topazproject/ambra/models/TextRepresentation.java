@@ -30,6 +30,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Searchable;
 import org.topazproject.otm.annotations.SubClassResolver;
 import org.topazproject.otm.metadata.RdfDefinition;
@@ -46,6 +47,7 @@ import org.topazproject.xml.transform.cache.CachedSource;
  *
  * @author Ronald Tschalär
  */
+@Entity
 public class TextRepresentation extends Representation {
   private static final long serialVersionUID = 1;
 

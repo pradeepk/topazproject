@@ -28,7 +28,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Jeff Suttor
  */
-  @Entity(types = {"plos:Issue"}, graph = "ri")
+@Entity(types = {"plos:Issue"}, graph = "ri")
 public class Issue extends Aggregation {
   private static final long serialVersionUID = -4532961080689709771L;
   private String displayName;
