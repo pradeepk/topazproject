@@ -49,8 +49,8 @@ import org.topazproject.otm.mapping.java.ClassBinder;
 
 /**
  * This service manages the journal filters that are to be applied to the Session. The filter
- * definitions are loaded to the {@link org.topazproject.otm.SessionFactory SessionFactory} 
- * on demand. This means that any changes in filter definitions must immediately be visible 
+ * definitions are loaded to the {@link org.topazproject.otm.SessionFactory SessionFactory}
+ * on demand. This means that any changes in filter definitions must immediately be visible
  * to the {@link org.topazproject.otm.Session Session} that is requesting it.
  *
  * <p>This service also maintains the filter definitions in a cache - purely as a mechanism
@@ -77,11 +77,12 @@ class JournalFilterService {
    * Create a new journal-filter-service instance. One and only one of these should be created for evey
    * session-factory instance.
    *
-   * @param sf           the session-factory to use
-   * @param filterCache the cache to use for caching journal definitions
-   * @param keyPrefix   the partition in the cache for filter-service use - could be null.
+   * @param sf                the session-factory to use
+   * @param filterCache       the cache to use for caching journal definitions
+   * @param keyPrefix         the partition in the cache for filter-service use - could be null.
+   * @param journalKeyService the key service to translate keys to journals
    */
-  public JournalFilterService(SessionFactory sf, Cache filterCache, String keyPrefix, 
+  public JournalFilterService(SessionFactory sf, Cache filterCache, String keyPrefix,
       JournalKeyService journalKeyService) {
     this.sf             = sf;
     this.filterCache    = filterCache;
@@ -117,9 +118,7 @@ class JournalFilterService {
   }
 
   private void invalidateFilterCache(Journal j) {
-    if (log.isDebugEnabled())
-      log.debug("invalidating filter cache for journal '" + j.getKey() + "'");
-
+    log.warn("invalidating filter cache for journal '" + j.getKey() + "'");
     filterCache.remove(keyPrefix + j.getKey());
   }
 
@@ -129,14 +128,13 @@ class JournalFilterService {
 
   /* Must be invoked with journalCache monitor held and active tx on session */
   private void removeJournalFilters(String jName, Session s) {
-    if (log.isDebugEnabled())
-      log.debug("removing journal '" + jName + "'");
-
     Set<String> oldDefs = journalFilters.remove(jName);
-    if (oldDefs != null) {
+    if ((oldDefs != null) && !oldDefs.isEmpty()) {
+      log.warn("Removing old filter-defs " + oldDefs + " for journal '" + jName + "'");
       for (String fn : oldDefs)
         sf.removeFilterDefinition(fn);
     }
+    log.warn("Removing filter-cache entry for journal '" + jName + "'");
     filterCache.remove(keyPrefix + jName);
   }
 
@@ -150,30 +148,35 @@ class JournalFilterService {
         getAggregationFilters(j, getFilterPrefix(j.getKey()), s,
                               new HashSet<Aggregation>(), true);
 
-    if (log.isDebugEnabled())
-      log.debug("journal '" + j.getKey() + "' has filters: " + jfds);
-
     // clear old defs
-    Set<String> oldDefs = journalFilters.remove(j.getKey());
-    if (oldDefs != null) {
-      for (String fn : oldDefs)
+    Set<String> defs = journalFilters.remove(j.getKey());
+    if ((defs != null) && !defs.isEmpty()) {
+      log.warn("Removing old filter-defs " + defs + " for journal '" + j.getKey() + "'");
+      for (String fn : defs)
         sf.removeFilterDefinition(fn);
     }
 
     // save the new filter-defs
-    for (FilterDefinition fd : jfds.values()) {
-      sf.addFilterDefinition(fd);
-      put(journalFilters, j.getKey(), fd.getFilterName());
+    if (jfds.isEmpty()) {
+      log.warn("No new filter-defs to add for journal '" + j.getKey() + "'");
+      defs = Collections.emptySet();
+    } else {
+      defs = new HashSet<String>();
+      for (FilterDefinition fd : jfds.values()) {
+        sf.addFilterDefinition(fd);
+        defs.add(fd.getFilterName());
+      }
+      log.warn("Added new filter-defs " + defs + " for journal '" + j.getKey() + "'");
     }
 
-    if (!journalFilters.containsKey(j.getKey()))
-      journalFilters.put(j.getKey(), Collections.EMPTY_SET);
+    journalFilters.put(j.getKey(), defs);
 
     // Note: We are using rawPut instead of the transactional put since 'load' is
     //       considered a 'populate' operation. ie. it is not a result of a write
-    filterCache.rawPut(keyPrefix + j.getKey(), new Cache.Item(journalFilters.get(j.getKey())));
+    log.warn("Updating filter-cache for journal '" + j.getKey() + "' with " + defs);
+    filterCache.rawPut(keyPrefix + j.getKey(), new Cache.Item(defs));
 
-    return journalFilters.get(j.getKey());
+    return defs;
   }
 
   /**
