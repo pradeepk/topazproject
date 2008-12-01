@@ -106,14 +106,17 @@ class TransactionLogger extends QueueingFilterHandler<String> {
     return config.getLong("transactionLogger.flushInterval", 30000L);
   }
 
+  @Override
   public void graphCreated(URI filterGraph, URI realGraph) throws ResolverException {
     queue("create <" + filterGraph + "> <" + FilterResolver.GRAPH_TYPE + ">;\n");
   }
 
+  @Override
   public void graphRemoved(URI filterGraph, URI realGraph) {
     queue("drop <" + filterGraph + "> <" + FilterResolver.GRAPH_TYPE + ">;\n");
   }
 
+  @Override
   public void graphModified(URI filterGraph, URI realGraph, Statements stmts, boolean occurs,
                             ResolverSession resolverSession) throws ResolverException {
     StringBuilder sb = new StringBuilder(500);
@@ -181,14 +184,17 @@ class TransactionLogger extends QueueingFilterHandler<String> {
    * =====================================================================
    */
 
+  @Override
   protected void handleQueuedItem(String cmd) throws IOException {
     txLog.write(cmd);
   }
 
+  @Override
   protected void idleCallback() throws IOException {
     txLog.flush();
   }
 
+  @Override
   protected void shutdownCallback() throws IOException {
     txLog.close();
   }
@@ -356,16 +362,19 @@ class TransactionLogger extends QueueingFilterHandler<String> {
         super(os);
       }
 
+      @Override
       public void write(int b) throws IOException {
         out.write(b);
         curSize++;
       }
 
+      @Override
       public void write(byte[] b) throws IOException {
         out.write(b);
         curSize += b.length;
       }
 
+      @Override
       public void write(byte[] b, int off, int len) throws IOException {
         out.write(b, off, len);
         curSize += len;

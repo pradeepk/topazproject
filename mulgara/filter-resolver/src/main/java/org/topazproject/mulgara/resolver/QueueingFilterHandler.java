@@ -90,10 +90,12 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
    * 
    * @return the xa-resource
    */
+  @Override
   public XAResource getXAResource() {
     return xaResource;
   }
 
+  @Override
   public void abort() {
     try {
       xaResource.rollback(currentTxId.get());
@@ -105,6 +107,7 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
   /**
    * Flush all pending data and shut down.
    */
+  @Override
   public void close() {
     logger.info("Flushing worker");
     worker.interrupt();
@@ -162,6 +165,7 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
    * stuff that's been committed.
    */
   protected class QueueingXAResource extends DummyXAResource {
+    @Override
     public void start(Xid xid, int flags) {
       if (logger.isTraceEnabled())
         logger.trace("setting xid '" + xid + "'");
@@ -169,6 +173,7 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
       currentTxId.set(xid);
     }
 
+    @Override
     public void end(Xid xid, int flags) {
       if (logger.isTraceEnabled())
         logger.trace("clearing xid '" + xid + "'");
@@ -176,6 +181,7 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
       currentTxId.set(null);
     }
 
+    @Override
     public void commit(Xid xid, boolean onePhase) {
       if (logger.isTraceEnabled())
         logger.trace("committing xid '" + xid + "'");
@@ -194,6 +200,7 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
       }
     }
 
+    @Override
     public void rollback(Xid xid) {
       if (logger.isTraceEnabled())
         logger.trace("rolling back xid '" + xid + "'");
@@ -215,6 +222,7 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
       this.coalesce = coalesce;
     }
 
+    @Override
     public void run() {
       while (true) {
         boolean process;

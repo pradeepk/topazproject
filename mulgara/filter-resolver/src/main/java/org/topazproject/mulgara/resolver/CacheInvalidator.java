@@ -280,14 +280,17 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
     return res.toArray(new Rule[res.size()]);
   }
 
+  @Override
   public XAResource getXAResource() {
     return xaResource;
   }
 
+  @Override
   public void graphRemoved(URI filterGraph, URI realGraph) throws ResolverException {
     // FIXME: implement
   }
 
+  @Override
   public void graphModified(URI filterGraph, URI realGraph, Statements stmts, boolean occurs,
                             ResolverSession resolverSession) throws ResolverException {
     try {
@@ -557,6 +560,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
    * This exists to capture query states before the commit in order to be able to do a proper diff.
    */
   private class CIXAResource extends QueueingXAResource {
+    @Override
     public int prepare(Xid xid) throws XAException {
       // get the list of modifications
       List<ModItem> queue;
@@ -640,6 +644,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
    * =====================================================================
    */
 
+  @Override
   protected void handleQueuedItem(ModItem mi) throws IOException {
     // get the Ehcache instance
     Ehcache cache = CacheManager.getInstance().getEhcache(mi.cache);
@@ -778,9 +783,11 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
     }
   }
 
+  @Override
   protected void idleCallback() {
   }
 
+  @Override
   protected void shutdownCallback() {
     CacheManager.getInstance().shutdown();
     logger.info("shut down cache-manager");
