@@ -26,6 +26,6 @@
   <skin>
     <groupId>org.topazproject</groupId>
     <artifactId>topaz-skin</artifactId>
-    <version>0.9-SNAPSHOT</version>
+    <version>${project.version}</version>
   </skin>
 </project>
