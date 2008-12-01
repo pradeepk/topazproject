@@ -383,25 +383,20 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
   }
 
   private static class Rule {
-    public final int NONE = -1;
-    public final int CNST = 0;
-    public final int SUBJ = 1;
-    public final int PRED = 2;
-    public final int OBJ  = 3;
-    public final int GRPH = 4;
+    public static enum KeyType { NONE, CNST, SUBJ, PRED, OBJ, GRPH };
 
     private final String s;
     private final String p;
     private final String o;
     private final String g;
 
-    private final String cache;
-    private final int    keySelector;
-    private final String key;
-    private final String query;
+    private final String  cache;
+    private final KeyType keySelector;
+    private final String  key;
+    private final String  query;
 
-    public Rule(String s, String p, String o, String g, int keySelector, String key, String cache,
-                String query) {
+    public Rule(String s, String p, String o, String g, KeyType keySelector, String key,
+                String cache, String query) {
       this.s           = s;
       this.p           = p;
       this.o           = o;
@@ -428,23 +423,23 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
         if (k.hasAttribute("field")) {
           String f = k.getAttribute("field");
           if (f.equals("s"))
-            keySelector = SUBJ;
+            keySelector = KeyType.SUBJ;
           else if (f.equals("p"))
-            keySelector = PRED;
+            keySelector = KeyType.PRED;
           else if (f.equals("o"))
-            keySelector = OBJ;
+            keySelector = KeyType.OBJ;
           else if (f.equals("g"))
-            keySelector = GRPH;
+            keySelector = KeyType.GRPH;
           else
             throw new IllegalArgumentException("Unknown field type '" + f + "'");
           key = null;
         } else {
-          keySelector = CNST;
+          keySelector = KeyType.CNST;
           key         = getText(k);
         }
         query = null;
       } else {
-        keySelector = NONE;
+        keySelector = KeyType.NONE;
         key         = null;
         query = expandAliases(getText(q), aliases);
       }
