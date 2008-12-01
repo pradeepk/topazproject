@@ -317,10 +317,9 @@ public class FilterResolver implements Resolver {
     if (!graphName.startsWith("filter:"))
       throw new ResolverException("Graph-name '" + graphName + "' doesn't start with 'filter:'");
 
-    String[] params = graphName.substring(7).split(";");
-    for (int idx = 0; idx < params.length; idx++) {
-      if (params[idx].startsWith("graph="))
-        return params[idx].substring(6);
+    for (String param : graphName.substring(7).split(";")) {
+      if (param.startsWith("graph="))
+        return param.substring(6);
     }
 
     throw new ResolverException("invalid graph name encountered: '" + uri + "' - must be of " +
