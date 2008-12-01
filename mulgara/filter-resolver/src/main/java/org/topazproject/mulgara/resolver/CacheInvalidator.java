@@ -120,17 +120,16 @@ import net.sf.ehcache.Ehcache;
  * <p>The object section specifies the name of the cache to which the invalidation should be sent,
  * and the key that should be invalidated. The key can either be one of the elements of the quad
  * that was matched, or it can be an itql query. Queries must return exactly two columns, a key
- * and a value. Each time the a rule is triggered the query is run before and after the
- * modifications are applied to the db and the two lists of (key, value) pairs are compared: all
- * keys which were not present before, are not present anymore, or whose values changed, will be
- * invalidated. To reduce the number of queries run, the query results are cached (see the
- * "queryCache" parameter above). Also, the guarantee is only that the first query will have run
- * some time before the modifications are applied, and the second query will run some time after
- * the modifications are applied, though this time will be short (in the range of seconds, though
- * the latter delay is controlled by the "invalidationInterval" parameter above). This means that
- * if, say, a value changes and then is immediately reset to the original value, or if a statement
- * is inserted and then immediately deleted again, that those changes may or may not trigger a
- * cache invalidation.
+ * and a value. Each time a rule is triggered the query is run before and after the modifications
+ * are applied to the db and the two lists of (key, value) pairs are compared: all keys which were
+ * not present before, are not present anymore, or whose values changed, will be invalidated. To
+ * reduce the number of queries run, the query results are cached (see the "queryCache" parameter
+ * above). Also, the guarantee is only that the first query will have run some time before the
+ * modifications are applied, and the second query will run some time after the modifications are
+ * applied, though this time will be short (in the range of seconds, though the latter delay is
+ * controlled by the "invalidationInterval" parameter above). This means that if, say, a value
+ * changes and then is immediately reset to the original value, or if a statement is inserted and
+ * then immediately deleted again, that those changes may or may not trigger a cache invalidation.
  *
  * <p>Example rules:
  * <pre>

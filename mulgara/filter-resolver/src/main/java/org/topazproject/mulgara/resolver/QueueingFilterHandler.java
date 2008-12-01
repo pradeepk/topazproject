@@ -34,7 +34,9 @@ import org.mulgara.resolver.spi.DummyXAResource;
 
 /** 
  * This implements some common functionality for filter-handlers that queue updates which are
- * then processed asynchronously by another thread.
+ * then processed asynchronously by another thread after the commit. Subclasses should {@link
+ * #queue} their items, and they will later get called in {@link #handleQueuedItem} to actually
+ * process it.
  * 
  * @author Ronald Tschalär
  */
@@ -74,6 +76,11 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
     worker = new Worker(workerName, workWait, clscWait);
   }
 
+  /**
+   * Queue the given item for later processing. This is for subclasses to invoke.
+   *
+   * @param obj the item to queue.
+   */
   protected void queue(T obj) {
     synchronized (txQueue) {
       List<T> queue = txQueue.get(currentTxId.get());
@@ -124,6 +131,11 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
    * =====================================================================
    */
 
+  /**
+   * Process the queue. This must not be explicitly invoked by subclasses, but instead is invoked
+   * from the worker thread. Subclasses may override this if they have special needs. This basically
+   * ends up invoking {@link #handleQueuedItem} for each item on the queue.
+   */
   protected void processQueue() {
     if (logger.isDebugEnabled())
       logger.debug("Processing worker queue");
@@ -154,10 +166,28 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
     }
   }
 
+  /**
+   * Handle the earlier queued item.
+   *
+   * @param obj the item
+   * @throws Exception if an error occurs handling the item; the item will be pushed back on the
+   *                   queue for later retry.
+   */
   protected abstract void handleQueuedItem(T obj) throws Exception;
 
+  /**
+   * This callback is invoked if the worker is idle for more than the configured wait time.
+   *
+   * @throws Exception if an error occurred
+   */
   protected abstract void idleCallback() throws Exception;
 
+  /**
+   * Invoked after the worker is shut down. I.e. no further calls to {@link #handleQueuedItem} or
+   * {@link #idleCallback} will occur after this.
+   *
+   * @throws Exception if an error occurred
+   */
   protected abstract void shutdownCallback() throws Exception;
 
   /** 
@@ -211,10 +241,22 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
     }
   }
 
+  /**
+   * The worker thread.
+   */
   protected class Worker extends Thread {
     private final long maxWait;
     private final long coalesce;
 
+    /**
+     * Create a new worker thread. The thread must still be started.
+     *
+     * @param name     the thread name
+     * @param maxWait  the maximum time to wait (in milliseconds) for work; if nothing is queued
+     *                 within this time the idle-callback is invoked.
+     * @param coalesce the amount of time to wait (in milliseconds) after an item has been queued
+     *                 in hope that more will be queued.
+     */
     public Worker(String name, long maxWait, long coalesce) {
       super(name);
       setDaemon(true);
