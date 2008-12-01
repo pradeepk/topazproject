@@ -18,20 +18,20 @@
  */
 
 @Aliases({
-    @Alias(alias = "foaf",    value = Rdf.foaf)
-  , @Alias(alias = "dc",      value = Rdf.dc)
-  , @Alias(alias = "dcterms", value = Rdf.dc_terms)
-  , @Alias(alias = "dcmi",    value = Rdf.dcmi)
-  , @Alias(alias = "topaz",   value = Rdf.topaz)
-  , @Alias(alias = "plos",    value = Ambra.plos)
-  , @Alias(alias = "cc",      value = Ambra.creativeCommons)
-  , @Alias(alias = "bibtex",  value = Ambra.bibtex)
-  , @Alias(alias = "prism",   value = Ambra.prism)
-  , @Alias(alias = "r",       value = Reply.NS)
-  , @Alias(alias = "annotea", value = Annotea.W3C_NS)
-  , @Alias(alias = "bio",     value = UserProfile.BIO_URI)
-  , @Alias(alias = "address", value = UserProfile.ADDR_URI)
-  , @Alias(alias = "contact", value = UserProfile.contact)
+  @Alias(alias = "foaf",    value = Rdf.foaf),
+  @Alias(alias = "dc",      value = Rdf.dc),
+  @Alias(alias = "dcterms", value = Rdf.dc_terms),
+  @Alias(alias = "dcmi",    value = Rdf.dcmi),
+  @Alias(alias = "topaz",   value = Rdf.topaz),
+  @Alias(alias = "plos",    value = Ambra.plos),
+  @Alias(alias = "cc",      value = Ambra.creativeCommons),
+  @Alias(alias = "bibtex",  value = Ambra.bibtex),
+  @Alias(alias = "prism",   value = Ambra.prism),
+  @Alias(alias = "r",       value = Reply.NS),
+  @Alias(alias = "annotea", value = Annotea.W3C_NS),
+  @Alias(alias = "bio",     value = UserProfile.BIO_URI),
+  @Alias(alias = "address", value = UserProfile.ADDR_URI),
+  @Alias(alias = "contact", value = UserProfile.contact)
 })
 package org.topazproject.ambra.models;
 
