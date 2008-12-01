@@ -113,7 +113,7 @@ class TransactionLogger extends QueueingFilterHandler<String> {
 
   @Override
   public void graphRemoved(URI filterGraph, URI realGraph) {
-    queue("drop <" + filterGraph + "> <" + FilterResolver.GRAPH_TYPE + ">;\n");
+    queue("drop <" + filterGraph + ">;\n");
   }
 
   @Override

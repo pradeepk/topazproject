@@ -19,12 +19,6 @@
 
 package org.topazproject.mulgara.resolver;
 
-import java.util.logging.Level;
-
-import org.mulgara.itql.ItqlInterpreterBean;
-import org.mulgara.server.SessionFactory;
-import org.mulgara.server.driver.SessionFactoryFinder;
-
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
@@ -35,62 +29,22 @@ import net.sf.ehcache.event.CacheEventListener;
  *
  * @author Ronald Tschalär
  */
-class CacheInvalidatorTest extends GroovyTestCase {
-  static final String MULGARA     = 'local:///topazproject'
-  static final String TEST_GRAPH  = "<${MULGARA}#filter:graph=test>"
-  static final String REAL_GRAPH  = "<${MULGARA}#test>"
-  static final String RSLV_TYPE   = "<${FilterResolver.GRAPH_TYPE}>"
-  static final SessionFactory sf  = SessionFactoryFinder.newSessionFactory(MULGARA.toURI())
-  static final TestListener   cel = new TestListener()
+class CacheInvalidatorTest extends AbstractTest {
+  private final TestListener cel = new TestListener()
 
-  ItqlInterpreterBean itql
-
-  static {
-    sf.setDirectory(new File(new File(System.getProperty('basedir')), 'target/mulgara-db'))
-    openDb()
-  }
-
-  static void openDb() {
-    sf.newSession().close()     // force initialization of resolver and filter-handler
+  void openDb() {
     Ehcache cache = CacheManager.getInstance().getEhcache('article-state')
     cache.getCacheEventNotificationService().registerListener(cel)
+
+    System.properties[FilterResolverFactory.CONFIG_FACTORY_CONFIG_PROPERTY] =
+                                          "/conf/topaz-factory-config.cache-invalidator-test.xml"
+
+    super.openDb();
   }
 
-  static void closeDb() {
-    sf.close()
+  void closeDb() {
+    super.closeDb();
     CacheManager.getInstance().getEhcache('queryCache').removeAll()
-  }
-
-  private void openDbCon() {
-    itql = new ItqlInterpreterBean(sf.newSession(), sf.getSecurityDomain())
-    itql.setAliasMap([topaz:'http://rdf.topazproject.org/RDF/'.toURI()])
-  }
-
-  private void closeDbCon() {
-    itql.close()
-  }
-
-  void setUp() {
-    openDbCon()
-  }
-
-  void tearDown() {
-    closeDbCon()
-  }
-
-  private void resetDb() {
-    try {
-      itql.executeUpdate("drop ${TEST_GRAPH};")
-    } catch (Exception e) {
-      log.log(Level.FINE, "Error dropping ${TEST_GRAPH} (probably because it doesn't exist)", e)
-    }
-    try {
-      itql.executeUpdate("drop ${REAL_GRAPH};")
-    } catch (Exception e) {
-      log.log(Level.FINE, "Error dropping ${REAL_GRAPH} (probably because it doesn't exist)", e)
-    }
-
-    itql.executeUpdate("create ${TEST_GRAPH} ${RSLV_TYPE};")
   }
 
   void testDirectKeys() {
@@ -247,10 +201,8 @@ class CacheInvalidatorTest extends GroovyTestCase {
     assertEquals(['foo:1', 'bar:1', 'baz:1'] as Set, cel.keys)
     cel.keys.clear()
 
-    closeDbCon()
     closeDb()
     openDb()
-    openDbCon()
 
     itql.beginTransaction('qdk12')
     itql.executeUpdate("insert <foo:1> <topaz:articleState> '1' into ${TEST_GRAPH};")
