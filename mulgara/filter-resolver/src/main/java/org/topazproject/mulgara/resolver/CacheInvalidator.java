@@ -89,19 +89,19 @@ import net.sf.ehcache.Ehcache;
  *   &lt;!ELEMENT rule     (match, object)&gt;
  *   &lt;!ELEMENT aliasMap (entry)*&gt;
  * 
- *   &lt;!ELEMENT match    (s?, p?, o?, m?)&gt;
+ *   &lt;!ELEMENT match    (s?, p?, o?, g?)&gt;
  *   &lt;!ELEMENT s        (#PCDATA)&gt;
  *   &lt;!ELEMENT p        (#PCDATA)&gt;
  *   &lt;!ELEMENT o        (#PCDATA)&gt;
- *   &lt;!ELEMENT m        (#PCDATA)&gt;
+ *   &lt;!ELEMENT g        (#PCDATA)&gt;
  * 
  *   &lt;!ELEMENT object   (cache, (key | query))&gt;
  *   &lt;!ELEMENT cache    (#PCDATA)&gt;
  *   &lt;!ELEMENT key      (#PCDATA)&gt;
  *   &lt;!ATTLIST key
- *       field (s | p | o | m) #IMPLIED&gt;
+ *       field (s | p | o | g) #IMPLIED&gt;
  *   &lt;!ELEMENT query    (#PCDATA)&gt;
- *     &lt;!-- ${x} (where x = 's', 'p', 'o', or 'm') will be replaced with the corresponding
+ *     &lt;!-- ${x} (where x = 's', 'p', 'o', or 'g') will be replaced with the corresponding
  *        - value from the match.
  *        --&gt;
  * 
@@ -137,7 +137,7 @@ import net.sf.ehcache.Ehcache;
  *   &lt;rule&gt;
  *     &lt;match&gt;
  *       &lt;p&gt;topaz:hasRoles&lt;/p&gt;
- *       &lt;m&gt;graph:users&lt;/m&gt;
+ *       &lt;g&gt;graph:users&lt;/g&gt;
  *     &lt;/match&gt;
  *     &lt;object&gt;
  *       &lt;cache&gt;permit-admin&lt;/cache&gt;
@@ -154,7 +154,7 @@ import net.sf.ehcache.Ehcache;
  *   &lt;rule&gt;
  *     &lt;match&gt;
  *       &lt;p&gt;topaz:propagate-permissions-to&lt;/p&gt;
- *       &lt;m&gt;graph:pp&lt;/m&gt;
+ *       &lt;g&gt;graph:pp&lt;/g&gt;
  *     &lt;/match&gt;
  *     &lt;object&gt;
  *       &lt;cache&gt;article-state&lt;/cache&gt;
@@ -349,9 +349,9 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
     return null;
   }
 
-  private ModItem getModItem(String s, String p, String o, String m) {
+  private ModItem getModItem(String s, String p, String o, String g) {
     for (int idx = 0; idx < rules.length; idx++) {
-      ModItem mi = rules[idx].match(s, p, o, m);
+      ModItem mi = rules[idx].match(s, p, o, g);
       if (mi != null)
         return mi;
     }
@@ -359,9 +359,9 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
     return null;
   }
 
-  private Rule findMatchingRule(String s, String p, String o, String m) {
+  private Rule findMatchingRule(String s, String p, String o, String g) {
     for (int idx = 0; idx < rules.length; idx++) {
-      ModItem mi = rules[idx].match(s, p, o, m);
+      ModItem mi = rules[idx].match(s, p, o, g);
       if (mi != null)
         return rules[idx];
     }
@@ -388,24 +388,24 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
     public final int SUBJ = 1;
     public final int PRED = 2;
     public final int OBJ  = 3;
-    public final int MODL = 4;
+    public final int GRPH = 4;
 
     private final String s;
     private final String p;
     private final String o;
-    private final String m;
+    private final String g;
 
     private final String cache;
     private final int    keySelector;
     private final String key;
     private final String query;
 
-    public Rule(String s, String p, String o, String m, int keySelector, String key, String cache,
+    public Rule(String s, String p, String o, String g, int keySelector, String key, String cache,
                 String query) {
       this.s           = s;
       this.p           = p;
       this.o           = o;
-      this.m           = m;
+      this.g           = g;
       this.keySelector = keySelector;
       this.key         = key;
       this.cache       = cache;
@@ -417,7 +417,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
       s = expandAliases(getChildText(match, "s"), aliases);
       p = expandAliases(getChildText(match, "p"), aliases);
       o = expandAliases(getChildText(match, "o"), aliases);
-      m = expandAliases(getChildText(match, "m"), aliases);
+      g = expandAliases(getChildText(match, "g"), aliases);
 
       Element object = (Element) rule.getElementsByTagName("object").item(0);
       cache = getChildText(object, "cache");
@@ -433,8 +433,8 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
             keySelector = PRED;
           else if (f.equals("o"))
             keySelector = OBJ;
-          else if (f.equals("m"))
-            keySelector = MODL;
+          else if (f.equals("g"))
+            keySelector = GRPH;
           else
             throw new IllegalArgumentException("Unknown field type '" + f + "'");
           key = null;
@@ -471,15 +471,15 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
       return str;
     }
 
-    public ModItem match(String s, String p, String o, String m) {
+    public ModItem match(String s, String p, String o, String g) {
       if ((this.s == null || this.s.equals(s)) &&
           (this.p == null || this.p.equals(p)) &&
           (this.o == null || this.o.equals(o)) &&
-          (this.m == null || this.m.equals(m))) {
+          (this.g == null || this.g.equals(g))) {
         switch (keySelector) {
           case NONE:
             return new ModItem(cache, null, query.replaceAll("\\Q${s}", s).replaceAll("\\Q${p}", p).
-                                                replaceAll("\\Q${o}", o).replaceAll("\\Q${m}", m));
+                                                replaceAll("\\Q${o}", o).replaceAll("\\Q${g}", g));
           case CNST:
             return new ModItem(cache, key);
           case SUBJ:
@@ -488,8 +488,8 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
             return new ModItem(cache, p);
           case OBJ:
             return new ModItem(cache, o);
-          case MODL:
-            return new ModItem(cache, m);
+          case GRPH:
+            return new ModItem(cache, g);
         }
       }
 
@@ -498,7 +498,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
 
     public String toString() {
       return "Rule[match=[s=" + strOrStar(s) + ", p=" + strOrStar(p) + ", o=" + strOrStar(o) +
-                          ", m=" + strOrStar(m) + "], object=[cache='" + cache + "', key=" +
+                          ", g=" + strOrStar(g) + "], object=[cache='" + cache + "', key=" +
                           keyToStr() + ", query='" + query + "']]";
     }
 
@@ -518,7 +518,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
           return "<pred>";
         case OBJ:
           return "<obj>";
-        case MODL:
+        case GRPH:
           return "<graph>";
         default:
           return "-unknown-" + keySelector + "-";

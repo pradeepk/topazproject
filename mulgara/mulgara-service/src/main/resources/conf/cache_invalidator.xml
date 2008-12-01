@@ -23,19 +23,19 @@
   <!ELEMENT rule     (match, object)>
   <!ELEMENT aliasMap (entry)*>
 
-  <!ELEMENT match    (s?, p?, o?, m?)>
+  <!ELEMENT match    (s?, p?, o?, g?)>
   <!ELEMENT s        (#PCDATA)>
   <!ELEMENT p        (#PCDATA)>
   <!ELEMENT o        (#PCDATA)>
-  <!ELEMENT m        (#PCDATA)>
+  <!ELEMENT g        (#PCDATA)>
 
   <!ELEMENT object   (cache, (key | query))>
   <!ELEMENT cache    (#PCDATA)>
   <!ELEMENT key      (#PCDATA)>
   <!ATTLIST key
-      field (s | p | o | m) #IMPLIED>
+      field (s | p | o | g) #IMPLIED>
   <!ELEMENT query    (#PCDATA)>
-    <!-- ${x} (where x = 's', 'p', 'o', or 'm') will be replaced with the corresponding
+    <!-- ${x} (where x = 's', 'p', 'o', or 'g') will be replaced with the corresponding
        - value from the match.
        -->
 
@@ -68,7 +68,7 @@
   <rule>
     <match>
       <p>topaz:articleState</p>
-      <m>graph:ri</m>
+      <g>graph:ri</g>
     </match>
     <object>
       <cache>article-state</cache>
@@ -83,7 +83,7 @@
   <rule>
     <match>
       <p>topaz:propagate-permissions-to</p>
-      <m>graph:pp</m>
+      <g>graph:pp</g>
     </match>
     <object>
       <cache>article-state</cache>
@@ -99,7 +99,7 @@
   <rule>
     <match>
       <p>topaz:hasRoles</p>
-      <m>graph:users</m>
+      <g>graph:users</g>
     </match>
     <object>
       <cache>permit-admin</cache>
@@ -112,7 +112,7 @@
     <match>
       <p>topaz:role</p>
       <o>admin</o>
-      <m>graph:users</m>
+      <g>graph:users</g>
     </match>
     <object>
       <cache>permit-bootstrap</cache>
@@ -124,7 +124,7 @@
   <rule>
     <match>
       <p>dc:creator</p>
-      <m>graph:ri</m>
+      <g>graph:ri</g>
     </match>
     <object>
       <cache>permit-creator</cache>
@@ -139,7 +139,7 @@
   <rule>
     <match>
       <p>topaz:anonymousCreator</p>
-      <m>graph:ri</m>
+      <g>graph:ri</g>
     </match>
     <object>
       <cache>permit-creator</cache>
@@ -154,7 +154,7 @@
   <rule>
     <match>
       <p>topaz:propagate-permissions-to</p>
-      <m>graph:pp</m>
+      <g>graph:pp</g>
     </match>
     <object>
       <cache>permit-creator</cache>
