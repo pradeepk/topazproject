@@ -768,7 +768,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
     }
 
     public synchronized void releaseWrite(T resource) {
-      if ((mark(resource, 1, -1) <= 0) && (owner == resource)) {
+      if ((mark(resource, WR, -1) <= 0) && (owner == resource)) {
         owner = null;
         notifyAll();
       }
@@ -792,7 +792,7 @@ public abstract class FileBackedBlobStore implements BlobStore {
       if ((idx == RD) && (e[RD] >= 0))
         sc += inc;
 
-      if ((e[0] <= 0) && (e[1] <= 0))
+      if ((e[RD] <= 0) && (e[WR] <= 0))
         entries.remove(resource);
 
       return e[idx];
