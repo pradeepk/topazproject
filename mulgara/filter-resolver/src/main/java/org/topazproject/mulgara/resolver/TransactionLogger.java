@@ -106,15 +106,15 @@ class TransactionLogger extends QueueingFilterHandler<String> {
     return config.getLong("transactionLogger.flushInterval", 30000L);
   }
 
-  public void modelCreated(URI filterGraph, URI realGraph) throws ResolverException {
+  public void graphCreated(URI filterGraph, URI realGraph) throws ResolverException {
     queue("create <" + filterGraph + "> <" + FilterResolver.GRAPH_TYPE + ">;\n");
   }
 
-  public void modelRemoved(URI filterGraph, URI realGraph) {
+  public void graphRemoved(URI filterGraph, URI realGraph) {
     queue("drop <" + filterGraph + "> <" + FilterResolver.GRAPH_TYPE + ">;\n");
   }
 
-  public void modelModified(URI filterGraph, URI realGraph, Statements stmts, boolean occurs,
+  public void graphModified(URI filterGraph, URI realGraph, Statements stmts, boolean occurs,
                             ResolverSession resolverSession) throws ResolverException {
     StringBuilder sb = new StringBuilder(500);
     sb.append(occurs ? "insert " : "delete ");
