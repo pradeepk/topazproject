@@ -223,7 +223,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
     final List<DetachedCriteria> dclist = journal.getSmartCollectionRules();
     if(dclist != null && dclist.size() > 0) {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for(DetachedCriteria dc : journal.getSmartCollectionRules()) {
         sb.append(", ");
         sb.append(dc.toString());
@@ -233,7 +233,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
     final List<URI> volumes = journal.getVolumes();
     if(volumes != null && volumes.size() > 0) {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for(URI v : volumes) {
         sb.append(", ");
         sb.append(v.toString());

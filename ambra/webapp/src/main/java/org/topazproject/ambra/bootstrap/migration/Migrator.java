@@ -151,7 +151,7 @@ public class Migrator implements ServletContextListener {
         map.put(r.getString(0), v.getValue());
     }
 
-    StringBuffer b = new StringBuffer(2500);
+    StringBuilder b = new StringBuilder(2500);
     b.append("delete ");
     for (String k : map.keySet()) {
       b.append("<" + k + "> <topaz:state> '" + map.get(k) + "' ");

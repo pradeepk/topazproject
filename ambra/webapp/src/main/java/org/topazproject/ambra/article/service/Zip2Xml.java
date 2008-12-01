@@ -75,7 +75,7 @@ public class Zip2Xml {
    * @throws IOException if an exception occurred reading the zip archive
    */
   public static String describeZip(Zip zip) throws IOException {
-    StringBuffer res = new StringBuffer(500);
+    StringBuilder res = new StringBuilder(500);
     res.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     res.append("<ZipInfo");
     if (zip.getName() != null)
@@ -96,7 +96,7 @@ public class Zip2Xml {
    * @param ze  the zip entry to describe.
    * @param buf the buffer to place the description into
    */
-  private static void entry2xml(ZipEntry ze, StringBuffer buf) {
+  private static void entry2xml(ZipEntry ze, StringBuilder buf) {
     buf.append("<ZipEntry name=\"").append(attrEscape(ze.getName())).append("\"");
 
     if (ze.isDirectory())

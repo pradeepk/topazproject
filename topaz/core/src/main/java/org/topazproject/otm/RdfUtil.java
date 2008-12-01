@@ -49,10 +49,10 @@ public class RdfUtil {
    * @throws IllegalArgumentException if a value is missing for a ${token}
    */
   public static String bindValues(String fmt, Map values) {
-    Pattern      p   = Pattern.compile("\\$\\{(\\w*)\\}");
-    Matcher      m   = p.matcher(fmt);
-    StringBuffer sb  = new StringBuffer(fmt.length() * 2);
-    int          pos = 0;
+    Pattern       p   = Pattern.compile("\\$\\{(\\w*)\\}");
+    Matcher       m   = p.matcher(fmt);
+    StringBuilder sb  = new StringBuilder(fmt.length() * 2);
+    int           pos = 0;
 
     while (m.find()) {
       int    ts    = m.start();

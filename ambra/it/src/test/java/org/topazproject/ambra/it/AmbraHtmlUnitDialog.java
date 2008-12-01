@@ -581,7 +581,7 @@ public class AmbraHtmlUnitDialog implements IJWebUnitDialog {
     }
 
     public String getServerResponse() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         WebResponse wr = wc.getCurrentWindow().getEnclosedPage()
                 .getWebResponse();
         result.append(wr.getStatusCode()).append(" ").append(

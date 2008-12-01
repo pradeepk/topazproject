@@ -35,9 +35,9 @@ public abstract class CitationUtils {
   private static final int MAX_AUTHORS_TO_DISPLAY = 5;
 
   /**
-   * Appends to the given {@link StringBuffer} the article authors in a prescribed format.
+   * Appends to the given {@link StringBuilder} the article authors in a prescribed format.
    * @param ci Citation
-   * @param sb StringBuffer to which the authors String is appended
+   * @param sb StringBuilder to which the authors String is appended
    * @param correction Is this for an article correction citation?
    */
   private static void handleAuthors(Citation ci, StringBuilder sb, boolean correction) {

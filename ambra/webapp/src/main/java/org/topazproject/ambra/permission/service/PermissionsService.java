@@ -176,7 +176,7 @@ public class PermissionsService implements Permissions {
 
     Configuration conf        = CONF.subset("ambra.permissions.impliedPermissions");
 
-    StringBuffer  sb          = new StringBuffer();
+    StringBuilder sb          = new StringBuilder();
     List          permissions = conf.getList("permission[@uri]");
     int           c           = permissions.size();
 
@@ -420,7 +420,7 @@ public class PermissionsService implements Permissions {
 
     pep.checkAccess(action, RdfUtil.validateUri(resource, "resource"));
 
-    StringBuffer sb = new StringBuffer(512);
+    StringBuilder sb = new StringBuilder(512);
 
     for (int i = 0; i < principals.length; i++) {
       String principal = principals[i];
@@ -475,7 +475,7 @@ public class PermissionsService implements Permissions {
 
     pep.checkAccess(action, RdfUtil.validateUri(subject, sLabel));
 
-    StringBuffer sb = new StringBuffer(512);
+    StringBuilder sb = new StringBuilder(512);
 
     for (int i = 0; i < objects.length; i++) {
       sb.append("<").append(subject).append("> ");

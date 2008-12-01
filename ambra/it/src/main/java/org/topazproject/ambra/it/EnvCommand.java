@@ -38,7 +38,7 @@ public class EnvCommand {
       return;
     }
       
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       for (int i=0; i<args.length; i++) {
           buf.append(" ");
           buf.append(args[i]);

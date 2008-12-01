@@ -69,7 +69,7 @@ public class ItqlQueryFunction extends OtmQueryFunction {
     if (parts.length == 1)
       return parts[0];
 
-    StringBuffer s = new StringBuffer(512);
+    StringBuilder s = new StringBuilder(512);
 
     int          i;
 

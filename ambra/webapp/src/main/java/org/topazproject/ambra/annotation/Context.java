@@ -97,7 +97,7 @@ public class Context {
 
   @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer(512);
+    StringBuilder sb = new StringBuilder(512);
     sb.append("START[path:");
     sb.append(startPath);
     sb.append(", offset:");

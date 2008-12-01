@@ -261,7 +261,7 @@ public class StringCompareResolver implements Resolver {
   }
 
   private String toString(Tuples t) throws GlobalizeException, TuplesException {
-    StringBuffer res = new StringBuffer(50);
+    StringBuilder res = new StringBuilder(50);
     res.append("{ ");
 
     t.beforeFirst();

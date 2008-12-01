@@ -225,14 +225,14 @@ public class DenyBiasedPEP {
    * Decision support class for this pep.
    */
   public static class Decision {
-    private int          permit           = 0;
-    private int          deny             = 0;
-    private int          inapplicable     = 0;
-    private int          indeterminate    = 0;
-    private int          unfulfillable    = 0;
-    private StringBuffer explanation      = new StringBuffer();
-    private Set          obligations      = new HashSet();
-    private Set          knownObligations;
+    private int           permit           = 0;
+    private int           deny             = 0;
+    private int           inapplicable     = 0;
+    private int           indeterminate    = 0;
+    private int           unfulfillable    = 0;
+    private StringBuilder explanation      = new StringBuilder();
+    private Set           obligations      = new HashSet();
+    private Set           knownObligations;
 
     public Decision(Set knownObligations) {
       this.knownObligations = knownObligations;

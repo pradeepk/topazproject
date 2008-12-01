@@ -1255,7 +1255,7 @@ public class DefaultManagement extends Module implements Management {
         }
 
         if (usedList.size() > 0) {
-          StringBuffer msg = new StringBuffer();
+          StringBuilder msg = new StringBuilder();
           msg.append("Cannot purge entire datastream because it\n");
           msg.append("is used by the following disseminators:");
 
@@ -1309,7 +1309,7 @@ public class DefaultManagement extends Module implements Management {
   private String getPurgeLogMessage(String kindaThing, String id, Date start, Date end,
                                     Date[] deletedDates) {
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    StringBuffer     buf = new StringBuffer();
+    StringBuilder     buf = new StringBuilder();
     buf.append("Purged ");
     buf.append(kindaThing);
     buf.append(" (ID=");
@@ -2071,7 +2071,7 @@ public class DefaultManagement extends Module implements Management {
     int numFailures = causedFailures.keySet().size();
 
     if (numFailures > 0) {
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       buf.append("This mime type change would invalidate " + numFailures + " disseminator(s):");
 
       Iterator iter = causedFailures.keySet().iterator();

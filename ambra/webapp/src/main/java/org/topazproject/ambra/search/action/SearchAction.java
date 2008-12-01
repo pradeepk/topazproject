@@ -139,7 +139,7 @@ public class SearchAction extends BaseActionSupport {
 
     // Build Search terms for Authors if specified
     if ((creator != null) && (creator.length > 0) && (StringUtils.isNotBlank(creator[0]))) {
-      StringBuffer buf = new StringBuffer("(creator:(");
+      StringBuilder buf = new StringBuilder("(creator:(");
       boolean allAuthors = false;
       if ("all".equals(authorNameOp)) {
         allAuthors = true;
@@ -180,7 +180,7 @@ public class SearchAction extends BaseActionSupport {
     // All words field should be in parenthesis with AND between each word.
     if (StringUtils.isNotBlank(textSearchAll)) {
       String[] words = StringUtils.split(textSearchAll);
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       if (textSearchField != null) {
         buf.append(textSearchField);
       }
@@ -197,7 +197,7 @@ public class SearchAction extends BaseActionSupport {
 
     // Exact phrase should be placed in quotes
     if (StringUtils.isNotBlank(textSearchExactPhrase)) {
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       if (textSearchField != null) {
         buf.append(textSearchField);
       }
@@ -209,7 +209,7 @@ public class SearchAction extends BaseActionSupport {
 
     // At least one of should be placed in parenthesis separated by spaced (OR'ed)
     if (StringUtils.isNotBlank(textSearchAtLeastOne)) {
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       if (textSearchField != null) {
         buf.append(textSearchField);
       }
@@ -225,7 +225,7 @@ public class SearchAction extends BaseActionSupport {
       // TODO - we might want to allow the entry of phrases to omit (entered using quotes?)
       // - in which case we have to be smarter about how we split...
       String[] words = StringUtils.split(textSearchWithout);
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       if (textSearchField != null) {
         buf.append(textSearchField);
       }
@@ -246,7 +246,7 @@ public class SearchAction extends BaseActionSupport {
       if ("range".equals(dateTypeSelect)) {
         if (isDigit(startYear)&& isDigit(startMonth) && isDigit(startDay) &&
             isDigit(endYear) && isDigit(endMonth) && isDigit(endDay)) {
-          StringBuffer buf = new StringBuffer("date:[");
+          StringBuilder buf = new StringBuilder("date:[");
           buf.append(padDatePart(startYear, true)).append('-').append(padDatePart(startMonth, false)).append('-').append(padDatePart(startDay, false));
           buf.append(" TO ");
           buf.append(padDatePart(endYear, true)).append('-').append(padDatePart(endMonth, false)).append('-').append(padDatePart(endDay, false));
@@ -271,7 +271,7 @@ public class SearchAction extends BaseActionSupport {
           startDateStr = luceneDateFormat.format(cal.getTime());
         }
 
-        StringBuffer buf = new StringBuffer("date:[");
+        StringBuilder buf = new StringBuilder("date:[");
         buf.append(startDateStr).append(" TO ").append(endDateStr).append("]");
         fields.add(buf.toString());
       }
@@ -279,7 +279,7 @@ public class SearchAction extends BaseActionSupport {
 
     if ("some".equals(subjectCatOpt)) {
       if ((limitToCategory != null) && (limitToCategory.length > 0)) {
-        StringBuffer buf = new StringBuffer("subject:( " );
+        StringBuilder buf = new StringBuilder("subject:( " );
         for (int i=0; i < limitToCategory.length; i++) {
           buf.append("\"").append(escape(limitToCategory[i])).append("\" ");
         }
@@ -309,7 +309,7 @@ public class SearchAction extends BaseActionSupport {
    */
   protected static final String escapeChars = "+-&|!(){}[]^\"~*?:\\";
   protected static String escape(String in) {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     for (int i=0; i < in.length(); i++) {
       if (escapeChars.indexOf(in.charAt(i)) != -1) {
         buf.append("\\");
@@ -530,7 +530,7 @@ public class SearchAction extends BaseActionSupport {
    */
   public String getCreatorStr() {
     if(creator == null) return "";
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for(String auth : creator) {
       sb.append(',');
       sb.append(auth.trim());

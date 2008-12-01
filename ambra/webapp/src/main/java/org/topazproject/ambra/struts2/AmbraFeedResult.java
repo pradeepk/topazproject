@@ -440,7 +440,7 @@ public class AmbraFeedResult extends Feed implements Result {
     description.setType("html");
 
     try {
-      StringBuffer text = new StringBuffer();
+      StringBuilder text = new StringBuilder();
 
       // If this is a normal feed (not extended) and there's more than one author, add to content
       if ((!cacheKey.isExtended()) && numAuthors > 1) {
@@ -480,7 +480,7 @@ public class AmbraFeedResult extends Feed implements Result {
     String displayName = annotation.getDisplayName();
     description.setType("html");
 
-    StringBuffer text = new StringBuffer();
+    StringBuilder text = new StringBuilder();
     text.append("<p>");
     if (displayName != null) {
       String d = displayName + " on ";

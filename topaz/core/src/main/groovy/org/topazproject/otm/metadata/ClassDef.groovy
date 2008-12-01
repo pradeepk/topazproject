@@ -171,7 +171,7 @@ public class ClassDef {
     def idField = idFields[0]
 
     // generate the groovy class definition
-    StringBuffer clsSrc = new StringBuffer(100)
+    StringBuilder clsSrc = new StringBuilder(100)
 
     if (className.contains('.'))
       clsSrc << "package ${className.substring(0, className.lastIndexOf('.'))}\n"

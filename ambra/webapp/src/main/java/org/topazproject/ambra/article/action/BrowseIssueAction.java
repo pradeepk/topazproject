@@ -158,7 +158,7 @@ public class BrowseIssueAction extends BaseActionSupport{
       }
 
       if (log.isErrorEnabled() && !articleAddedToAtLeastOneGroup) {
-        StringBuffer buf = new StringBuffer("| ");
+        StringBuilder buf = new StringBuilder("| ");
         Iterator<ArticleType> it = ai.getArticleTypes().iterator();
         while (it.hasNext()) {
           ArticleType at = it.next();
