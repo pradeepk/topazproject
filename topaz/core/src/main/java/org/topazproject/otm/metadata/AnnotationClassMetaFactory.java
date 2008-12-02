@@ -27,6 +27,7 @@ import java.lang.reflect.Type;
 
 import java.net.URI;
 import java.net.URL;
+import java.net.URISyntaxException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +47,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
+import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
@@ -56,6 +58,8 @@ import org.topazproject.otm.annotations.Blob;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
+import org.topazproject.otm.annotations.Graph;
+import org.topazproject.otm.annotations.Graphs;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Predicate.PropType;
@@ -121,7 +125,13 @@ public class AnnotationClassMetaFactory {
    * @throws OtmException on an error
    */
   public void create(Class clazz) throws OtmException {
-    addAliases(clazz);
+    // Add alias definitions from both class and package
+    addAliases((Aliases)clazz.getAnnotation(Aliases.class));
+    addAliases((Aliases)clazz.getPackage().getAnnotation(Aliases.class));
+
+    // Add graph definitions from both class and package
+    addGraphs((Graphs)clazz.getAnnotation(Graphs.class));
+    addGraphs((Graphs)clazz.getPackage().getAnnotation(Graphs.class));
 
     if ((clazz.getAnnotation(View.class) != null) || (clazz.getAnnotation(SubView.class) != null))
       createView(clazz);
@@ -129,20 +139,23 @@ public class AnnotationClassMetaFactory {
       createEntity(clazz);
   }
 
-  private void addAliases(Class<?> clazz) throws OtmException {
-    Aliases aliases = clazz.getAnnotation(Aliases.class);
-
-    if (aliases != null) {
-      for (Alias a : aliases.value())
-        sf.addAlias(a.alias(), a.value());
+  private void addGraphs(Graphs graphs) throws OtmException {
+    if (graphs == null)
+      return;
+    for (Graph g : graphs.value()) {
+      try {
+        sf.addGraph(new GraphConfig(g.id(), new URI(g.uri()), new URI(g.type())));
+      } catch (URISyntaxException e) {
+        throw new OtmException("Invalid URI syntax in graph definition: " + g.id(),e);
+      }
     }
+  }
 
-    aliases = (clazz.getPackage() != null) ? clazz.getPackage().getAnnotation(Aliases.class) : null;
-
-    if (aliases != null) {
-      for (Alias a : aliases.value())
-        sf.addAlias(a.alias(), a.value());
-    }
+  private void addAliases(Aliases aliases) throws OtmException {
+    if (aliases == null)
+      return;
+    for (Alias a : aliases.value())
+      sf.addAlias(a.alias(), a.value());
   }
 
   private void createEntity(Class<?> clazz) throws OtmException {
