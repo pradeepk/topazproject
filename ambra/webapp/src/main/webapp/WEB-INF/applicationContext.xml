@@ -32,8 +32,8 @@
   <bean id="pdpFactory" class="org.topazproject.ambra.xacml.PDPFactory"/>
 
   <bean id="permissionsPdp" factory-bean="pdpFactory" factory-method="getPDP">
-     <constructor-arg index="0" value="${ambra.services.xacml.permissions.pdpName}"/>
-   </bean>
+    <constructor-arg index="0" value="${ambra.services.xacml.permissions.pdpName}"/>
+  </bean>
 
   <bean id="repliesPdp" factory-bean="pdpFactory" factory-method="getPDP">
     <constructor-arg index="0" value="${ambra.services.xacml.replies.pdpName}"/>
@@ -130,7 +130,11 @@
 
   <bean id="userContext" class="org.topazproject.ambra.web.UserContext"/>
 
-  <bean id="permissionsService" class="org.topazproject.ambra.permission.service.PermissionsService"/>
+  <bean id="permissionsServiceFactory" init-method="init" 
+     class="org.topazproject.ambra.permission.service.PermissionsServiceFactory"/> 
+
+  <bean id="permissionsService" factory-bean="permissionsServiceFactory" 
+     factory-method="getPermissionsService"/>
 
   <bean id="annotationConverter" class="org.topazproject.ambra.annotation.service.AnnotationConverter"/>
 
@@ -409,6 +413,15 @@
   <bean id="repEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
     <property name="cacheName" value="RepresentationCache"/>
   </bean>
+
+  <bean id="grantsEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName" value="permission-grants"/>
+  </bean>
+
+  <bean id="revokesEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName" value="permission-revokes"/>
+  </bean>
+
 
   <bean id="virtualJournalMappingFilterCache"
     class="org.springframework.cache.ehcache.EhCacheFactoryBean">

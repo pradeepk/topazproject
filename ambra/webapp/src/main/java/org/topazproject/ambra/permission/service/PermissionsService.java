@@ -36,22 +36,16 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.configuration.ConfigurationStore;
-import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.query.Results;
 
 import org.apache.struts2.ServletActionContext;
 
 import com.sun.xacml.PDP;
 
-import net.sf.ehcache.CacheException;
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
@@ -69,20 +63,13 @@ public class PermissionsService implements Permissions {
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
   //
-  private static final String GRANTS_GRAPH       =
+  public static final String GRANTS_GRAPH       =
     "<" + CONF.getString("ambra.graphs.grants") + ">";
-  private static final String REVOKES_GRAPH      =
+  public static final String REVOKES_GRAPH      =
     "<" + CONF.getString("ambra.graphs.revokes") + ">";
-  private static final String PP_GRAPH           = "<" + CONF.getString("ambra.graphs.pp") + ">";
-  private static final String GRANTS_GRAPH_TYPE  =
-    "<" + CONF.getString("ambra.graphs.grants[@type]", "mulgara:Model") + ">";
-  private static final String REVOKES_GRAPH_TYPE =
-    "<" + CONF.getString("ambra.graphs.revokes[@type]", "mulgara:Model") + ">";
-  private static final String PP_GRAPH_TYPE      =
-    "<" + CONF.getString("ambra.graphs.pp[@type]", "mulgara:Model") + ">";
-
+  public static final String PP_GRAPH           = "<" + CONF.getString("ambra.graphs.pp") + ">";
   //
-  private static final String IMPLIES    = Rdf.topaz + "implies";
+  public static final String IMPLIES    = Rdf.topaz + "implies";
   private static final String PROPAGATES = Rdf.topaz + "propagate-permissions-to";
 
   //
@@ -119,92 +106,17 @@ public class PermissionsService implements Permissions {
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
 
   //
-  private static Ehcache grantsCache  = initCache("permission-grants");
-  private static Ehcache revokesCache = initCache("permission-revokes");
+  private Ehcache grantsCache;
+  private Ehcache revokesCache;
 
-  private static Ehcache initCache(String name) {
-    Ehcache cache = null;
-
-    try {
-      cache = CacheManager.getInstance().getEhcache(name);
-    } catch (CacheException ce) {
-      log.error("Error getting cache-manager", ce);
-    } catch (IllegalStateException ise) {
-      log.error("Error getting cache", ise);
-    }
-
-    if (cache == null)
-      log.info("No cache configuration found for " + name + ".");
-    else
-      log.info("Cache configuration found for " + name + ".");
-
-    return cache;
+  @Required
+  public void setGrantsEhCache(Ehcache grantsCache) {
+    this.grantsCache = grantsCache;
   }
 
-  /**
-   * Initialize the permissions ITQL graph.
-   *
-   * @param s the session to use
-   *
-   * @throws OtmException on a failure
-   */
-  public static void initializeGraph(Session s) throws OtmException {
-    if (((grantsCache != null) && (grantsCache.getSize() != 0))
-         || ((revokesCache != null) && (revokesCache.getSize() != 0)))
-      return; // xxx: cache has entries perhaps from peers. so initialized is a good guess
-
-    boolean localTxn = false;
-    Transaction txn = s.getTransaction();
-    if (txn == null) {
-      localTxn = true;
-      txn = s.beginTransaction();
-    }
-    try {
-      SessionFactory sf   = s.getSessionFactory();
-      GraphConfig grants  = new GraphConfig("grants",  toURI(GRANTS_GRAPH),  toURI(GRANTS_GRAPH_TYPE));
-      GraphConfig revokes = new GraphConfig("revokes", toURI(REVOKES_GRAPH), toURI(REVOKES_GRAPH_TYPE));
-      GraphConfig pp      = new GraphConfig("pp",      toURI(PP_GRAPH),      toURI(PP_GRAPH_TYPE));
-      sf.addGraph(grants);
-      sf.addGraph(revokes);
-      sf.addGraph(pp);
-      s.createGraph(grants.getId());
-      s.createGraph(revokes.getId());
-      s.createGraph(pp.getId());
-      if (localTxn) txn.commit();
-    } catch (OtmException e) {
-      if (localTxn) txn.rollback();
-      throw e;
-    }
-
-
-    Configuration conf        = CONF.subset("ambra.permissions.impliedPermissions");
-
-    StringBuilder sb          = new StringBuilder();
-    List          permissions = conf.getList("permission[@uri]");
-    int           c           = permissions.size();
-
-    for (int i = 0; i < c; i++) {
-      List implies = conf.getList("permission(" + i + ").implies[@uri]");
-      log.info("config contains " + permissions.get(i) + " implies " + implies);
-
-      for (int j = 0; j < implies.size(); j++) {
-        sb.append("<").append(permissions.get(i)).append("> ");
-        sb.append("<").append(IMPLIES).append("> ");
-        sb.append("<").append(implies.get(j)).append("> ");
-      }
-    }
-
-    String triples   = sb.toString();
-    final String cmd = "insert " + triples + " into " + PP_GRAPH + ";";
-
-    if (permissions.size() > 0)
-      s.doNativeUpdate(cmd);
-
-    if (grantsCache != null)
-      grantsCache.removeAll();
-
-    if (revokesCache != null)
-      revokesCache.removeAll();
+  @Required
+  public void setRevokesEhCache(Ehcache revokesCache) {
+    this.revokesCache = revokesCache;
   }
 
   private static URI toURI(String uri) {
@@ -225,6 +137,7 @@ public class PermissionsService implements Permissions {
   public void setPermissionsPdp(PDP pdp) {
     this.pep = new PermissionsPEP(pdp);
   }
+
 
   /*
    * @see org.topazproject.ambra.permission.service.Permissions#grant
@@ -640,4 +553,5 @@ public class PermissionsService implements Permissions {
       .getRequiredWebApplicationContext(ServletActionContext.getServletContext())
       .getBean("otmSession");
   }
+
 }

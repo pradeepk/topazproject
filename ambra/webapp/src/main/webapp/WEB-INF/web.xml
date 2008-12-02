@@ -244,9 +244,6 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
   <listener>
     <listener-class>org.topazproject.ambra.bootstrap.journal.JournalCreator</listener-class>
   </listener>
-  <listener>
-    <listener-class>org.topazproject.ambra.bootstrap.permissions.WebAppListenerInitPermissionsModel</listener-class>
-  </listener>
 
   <!-- to hook in the spring container -->
   <listener>

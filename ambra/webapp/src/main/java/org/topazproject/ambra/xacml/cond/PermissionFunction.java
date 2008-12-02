@@ -26,9 +26,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
 
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.topazproject.ambra.permission.service.Permissions;
 import org.topazproject.ambra.permission.service.PermissionsService;
+import org.topazproject.otm.Session;
 
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.attr.BooleanAttribute;
@@ -93,9 +96,6 @@ public abstract class PermissionFunction implements Function {
 
   // A List used by makeProcessingError() to save some steps.
   private static List processingErrList = null;
-
-  // The singleton permissions-impl to use
-  private static final Permissions permissions = new PermissionsService();
 
   /**
    * Creates a new PermissionFunction object.
@@ -170,7 +170,7 @@ public abstract class PermissionFunction implements Function {
     String principal = result.getAttributeValue().encode();
 
     try {
-      boolean ret = execute(permissions, resource, permission, principal);
+      boolean ret = execute(getPermissionsService(), resource, permission, principal);
 
       return new EvaluationResult(BooleanAttribute.getInstance(ret));
     } catch (Exception e) {
@@ -246,6 +246,12 @@ public abstract class PermissionFunction implements Function {
     EvaluationResult processingError = new EvaluationResult(errStatus);
 
     return processingError;
+  }
+
+  protected Permissions getPermissionsService() {
+    return (Permissions) WebApplicationContextUtils
+    .getRequiredWebApplicationContext(ServletActionContext.getServletContext())
+    .getBean("permissionsService");
   }
 
   public static class IsGranted extends PermissionFunction {
