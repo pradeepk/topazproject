@@ -92,6 +92,7 @@ public class AnnotationClassMetaFactory {
   static {
     List<Class<? extends Annotation>> knowns = new ArrayList<Class<? extends Annotation>>();
     knowns.add(Aliases.class);
+    knowns.add(Graphs.class);
     knowns.add(Entity.class);
     knowns.add(SubView.class);
     knowns.add(UriPrefix.class);
@@ -124,14 +125,16 @@ public class AnnotationClassMetaFactory {
    *
    * @throws OtmException on an error
    */
-  public void create(Class clazz) throws OtmException {
+  public void create(Class<?> clazz) throws OtmException {
     // Add alias definitions from both class and package
-    addAliases((Aliases)clazz.getAnnotation(Aliases.class));
-    addAliases((Aliases)clazz.getPackage().getAnnotation(Aliases.class));
+    addAliases(clazz.getAnnotation(Aliases.class));
+    if (clazz.getPackage() != null)
+      addAliases(clazz.getPackage().getAnnotation(Aliases.class));
 
     // Add graph definitions from both class and package
-    addGraphs((Graphs)clazz.getAnnotation(Graphs.class));
-    addGraphs((Graphs)clazz.getPackage().getAnnotation(Graphs.class));
+    addGraphs(clazz.getAnnotation(Graphs.class));
+    if (clazz.getPackage() != null)
+      addGraphs(clazz.getPackage().getAnnotation(Graphs.class));
 
     if ((clazz.getAnnotation(View.class) != null) || (clazz.getAnnotation(SubView.class) != null))
       createView(clazz);
@@ -146,7 +149,7 @@ public class AnnotationClassMetaFactory {
       try {
         sf.addGraph(new GraphConfig(g.id(), new URI(g.uri()), new URI(g.type())));
       } catch (URISyntaxException e) {
-        throw new OtmException("Invalid URI syntax in graph definition: " + g.id(),e);
+        throw new OtmException("Invalid URI syntax in graph definition: " + g.id(), e);
       }
     }
   }
