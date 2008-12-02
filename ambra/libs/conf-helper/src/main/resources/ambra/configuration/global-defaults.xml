@@ -246,9 +246,6 @@
         <alerts>
           <pdpName>standard-pdp</pdpName>
         </alerts>
-        <search>
-          <pdpName>standard-pdp</pdpName>
-        </search>
         <access>
           <pdpName>standard-pdp</pdpName>
         </access>

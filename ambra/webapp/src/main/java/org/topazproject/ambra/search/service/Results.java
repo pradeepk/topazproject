@@ -18,10 +18,6 @@
  */
 package org.topazproject.ambra.search.service;
 
-import com.sun.xacml.ParsingException;
-import com.sun.xacml.PDP;
-import com.sun.xacml.UnknownIdentifierException;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -50,8 +46,6 @@ import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.search.SearchResultPage;
-import org.topazproject.ambra.xacml.AbstractSimplePEP;
-import org.topazproject.ambra.xacml.XacmlUtil;
 
 /**
  * Store the progress of a search. That is, when a search is done, we get the first N results
@@ -64,7 +58,6 @@ public class Results {
   private static final Log           log  = LogFactory.getLog(Results.class);
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
-  private final SearchPEP         pep;
   private final ArticleOtmService articleService;
   private final Query             luceneQuery;
   private final List<SearchHit>   unresolvedHits;
@@ -84,12 +77,6 @@ public class Results {
     this.resolvedHits   = new ArrayList<SearchHit>(unresolvedHits.size());
     this.luceneQuery    = luceneQuery;
     this.articleService = articleService;
-
-    try {
-      pep = new SearchPEP();
-    } catch (Exception e) {
-      throw new Error("Failed to create SearchPEP", e);
-    }
   }
 
   /**
@@ -157,15 +144,6 @@ public class Results {
 
   private SearchHit resolveHit(SearchHit hit) {
     URI uri = URI.create(hit.getUri());
-
-    // Verify xacml allows (initially used for <topaz:articleState> ... but may be more)
-    try {
-      pep.checkAccess(SearchPEP.READ_METADATA, uri);
-    } catch (SecurityException se) {
-      if (log.isDebugEnabled())
-        log.debug("Search hit '" + uri + "' removed due to access restrictions", se);
-      return null;
-    }
 
     // verify that Aricle exists, is accessible by user, is in Journal, etc., be cache aware
     Article article;
@@ -243,28 +221,5 @@ public class Results {
 
   private static final Analyzer getAnalyzer() {
     return new StandardAnalyzer();
-  }
-
-  /**
-   * The XACML Policy-Enforcement-Point for search. We have only one operation:
-   * articles:readMetaData.
-   */
-  private static class SearchPEP extends AbstractSimplePEP {
-    public    static final String     READ_METADATA         = "articles:readMetaData";
-    protected static final String[]   SUPPORTED_ACTIONS     = new String[] { READ_METADATA };
-    protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] { null };
-
-    static {
-      init(SearchPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
-    }
-
-    public SearchPEP() throws IOException, ParsingException, UnknownIdentifierException {
-      this(XacmlUtil.lookupPDP("ambra.services.xacml.search.pdpName"));
-    }
-
-    protected SearchPEP(PDP pdp)
-        throws IOException, ParsingException, UnknownIdentifierException {
-      super(pdp);
-    }
   }
 }
