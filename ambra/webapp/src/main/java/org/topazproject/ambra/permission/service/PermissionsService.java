@@ -26,16 +26,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.topazproject.ambra.configuration.ConfigurationStore;
+import org.topazproject.ambra.models.Ambra;
+
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
@@ -59,55 +58,48 @@ import net.sf.ehcache.Element;
 public class PermissionsService implements Permissions {
   private static final Log log = LogFactory.getLog(PermissionsService.class);
 
-  //
-  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
+  public static final String GRANTS_GRAPH  = "<" + Ambra.GRAPH_PREFIX + "filter:graph=grants" + ">";
+  public static final String REVOKES_GRAPH = "<" + Ambra.GRAPH_PREFIX + "filter:graph=revokes" + ">";
+  public static final String PP_GRAPH      = "<" + Ambra.GRAPH_PREFIX + "filter:graph=pp" + ">";
 
-  //
-  public static final String GRANTS_GRAPH       =
-    "<" + CONF.getString("ambra.graphs.grants") + ">";
-  public static final String REVOKES_GRAPH      =
-    "<" + CONF.getString("ambra.graphs.revokes") + ">";
-  public static final String PP_GRAPH           = "<" + CONF.getString("ambra.graphs.pp") + ">";
-  //
-  public static final String IMPLIES    = Rdf.topaz + "implies";
+  public static final String IMPLIES     = Rdf.topaz + "implies";
   private static final String PROPAGATES = Rdf.topaz + "propagate-permissions-to";
 
-  //
   private static final String ITQL_LIST                 =
     "select $p from ${GRAPH} where <${resource}> $p <${principal}>;";
   private static final String ITQL_LIST_PP              =
     "select $o from ${GRAPH} where <${s}> <${p}> $o;".replaceAll("\\Q${GRAPH}", PP_GRAPH);
   private static final String ITQL_LIST_PP_TRANS        =
-    ("select $o from ${GRAPH} where <${s}> <${p}> $o "
-    + " or trans(<${s}> <${p}> $o and $s <${p}> $o);").replaceAll("\\Q${GRAPH}", PP_GRAPH);
+    ("select $o from ${GRAPH} where <${s}> <${p}> $o " +
+     " or trans(<${s}> <${p}> $o and $s <${p}> $o);").replaceAll("\\Q${GRAPH}", PP_GRAPH);
   private static final String ITQL_INFER_PERMISSION     =
-    ("select $s from ${PP_GRAPH} where $s $p $o in ${GRAPH} "
-    + "and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
-    + "      or $s <${PP}> <${resource}> "
-    + "      or trans($s <${PP}> <${resource}> and $s <${PP}> $res))"
-    + "and ($p <mulgara:is> <${permission}> or $p <mulgara:is> <${ALL}> "
-    + "      or $p <${IMPLIES}> <${permission}> "
-    + "      or trans($p <${IMPLIES}> <${permission}> and $p <${IMPLIES}> $perm)) "
-    + "and ($o <mulgara:is> <${principal}> or $o <mulgara:is> <${ALL}>);" //
+    ("select $s from ${PP_GRAPH} where $s $p $o in ${GRAPH} " +
+     "and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> " +
+     "      or $s <${PP}> <${resource}> " +
+     "      or trans($s <${PP}> <${resource}> and $s <${PP}> $res))" +
+     "and ($p <mulgara:is> <${permission}> or $p <mulgara:is> <${ALL}> " +
+     "      or $p <${IMPLIES}> <${permission}> " +
+     "      or trans($p <${IMPLIES}> <${permission}> and $p <${IMPLIES}> $perm)) " +
+     "and ($o <mulgara:is> <${principal}> or $o <mulgara:is> <${ALL}>);"
     ).replaceAll("\\Q${PP_GRAPH}", PP_GRAPH).replaceAll("\\Q${PP}", PROPAGATES)
-      .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
+     .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
   private static final String ITQL_RESOURCE_PERMISSIONS =
-    ("select $p $o from ${PP_GRAPH} where ($s $p $o in ${GRAPH} " //
-    + "   and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
-    + "      or $s <${PP}> <${resource}> "
-    + "      or trans($s <${PP}> <${resource}> and $s <${PP}> $res))"
-    + ") or ($s $impliedBy $o in ${GRAPH} " //
-    + "   and ($impliedBy <${IMPLIES}> $p " //
-    + "      or trans($impliedBy <${IMPLIES}> $p)) " //
-    + "   and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
-    + "      or $s <${PP}> <${resource}> "
-    + "      or trans($s <${PP}> <${resource}> and $s <${PP}> $res))" + ");" //
+    ("select $p $o from ${PP_GRAPH} where ($s $p $o in ${GRAPH} " +
+     "   and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> " +
+     "      or $s <${PP}> <${resource}> " +
+     "      or trans($s <${PP}> <${resource}> and $s <${PP}> $res))" +
+     ") or ($s $impliedBy $o in ${GRAPH} " +
+     "   and ($impliedBy <${IMPLIES}> $p " +
+     "      or trans($impliedBy <${IMPLIES}> $p)) " +
+     "   and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> " +
+     "      or $s <${PP}> <${resource}> " +
+     "      or trans($s <${PP}> <${resource}> and $s <${PP}> $res))" + ");"
     ).replaceAll("\\Q${PP_GRAPH}", PP_GRAPH).replaceAll("\\Q${PP}", PROPAGATES)
-      .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
+     .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
 
-  //
-  private Ehcache grantsCache;
-  private Ehcache revokesCache;
+  private Ehcache        grantsCache;
+  private Ehcache        revokesCache;
+  private PermissionsPEP pep;
 
   @Required
   public void setGrantsEhCache(Ehcache grantsCache) {
@@ -123,9 +115,6 @@ public class PermissionsService implements Permissions {
     return URI.create(uri.substring(1, uri.length() - 1));
   }
 
-  //
-  private PermissionsPEP pep;
-
   /**
    * Creates a new PermissionsService object.
    *
@@ -137,7 +126,6 @@ public class PermissionsService implements Permissions {
   public void setPermissionsPdp(PDP pdp) {
     this.pep = new PermissionsPEP(pdp);
   }
-
 
   /*
    * @see org.topazproject.ambra.permission.service.Permissions#grant
@@ -553,5 +541,4 @@ public class PermissionsService implements Permissions {
       .getRequiredWebApplicationContext(ServletActionContext.getServletContext())
       .getBean("otmSession");
   }
-
 }
