@@ -73,9 +73,7 @@ public class DOITypeResolverTest {
       anns.put("doi:article" + i, s);
     }
 
-    doiResolver = new DOITypeResolver(storeUri);
-    doiResolver.setGraph(graph);
-
+    doiResolver = new DOITypeResolver(storeUri, graph);
     SessionFactory factory     = new SessionFactoryImpl();
     TripleStore    tripleStore = new ItqlStore(storeUri);
     factory.setTripleStore(tripleStore);

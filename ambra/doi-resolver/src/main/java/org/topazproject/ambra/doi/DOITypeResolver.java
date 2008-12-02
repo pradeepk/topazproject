@@ -65,41 +65,19 @@ public class DOITypeResolver {
    * Creates a new DOITypeResolver object.
    *
    * @param mulgaraUri the mulgara service uri
-   *
+   * @param graph      the graph to use
+   * 
    * @throws OtmException if an error occurred talking to the web-service
    */
-  public DOITypeResolver(URI mulgaraUri) throws OtmException {
+  public DOITypeResolver(URI mulgaraUri, String graph) throws OtmException {
     sf = new SessionFactoryImpl();
     sf.setTripleStore(new ItqlStore(mulgaraUri));
     sf.preload(Resource.class);
     sf.preload(Annotation.class);
-    sf.validate();
-    setGraph(GRAPH);
-  }
-
-  /**
-   * Sets the uri for the graph where the queries are to be performed.
-   *
-   * @param graph the graph uri
-   */
-  public void setGraph(String graph) {
-    this.graph = graph;
-
-    GraphConfig mc = sf.getGraph("ri");
-
-    if (mc != null)
-      sf.removeGraph(mc);
-
+    if (graph == null)
+      graph = GRAPH;
     sf.addGraph(new GraphConfig("ri", URI.create(graph), null));
-  }
-
-  /**
-   * Gets the graph where the queries are to be performed
-   *
-   * @return the graph uri
-   */
-  public String getGraph() {
-    return graph;
+    sf.validate();
   }
 
   /**
