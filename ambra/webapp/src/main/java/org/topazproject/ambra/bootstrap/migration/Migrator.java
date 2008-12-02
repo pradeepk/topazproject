@@ -31,6 +31,8 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.configuration.WebappItqlClientFactory;
+import org.topazproject.ambra.models.Ambra;
+
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
@@ -46,7 +48,7 @@ import org.topazproject.otm.stores.ItqlStore;
  */
 public class Migrator implements ServletContextListener {
   private static Log    log = LogFactory.getLog(Migrator.class);
-  private static String RI;
+  private static String RI  = Ambra.GRAPH_PREFIX + "ri";
 
   /**
    * Shutdown things.
@@ -83,13 +85,13 @@ public class Migrator implements ServletContextListener {
     try {
       Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
       URI           service = new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql.uri"));
-      RI                    = stripFilterResolver(conf.getString("ambra.graphs.ri"));
 
       log.info("Checking and performing data-migrations ...");
       SessionFactory factory = new SessionFactoryImpl();
       factory.setTripleStore(new ItqlStore(service, WebappItqlClientFactory.getInstance()));
 
       sess = factory.openSession();
+      dropObsoleteGraphs(sess);
       tx = sess.beginTransaction(false, 60*60);
       int count = addXsdIntToTopazState(sess);
       tx.commit();
@@ -114,13 +116,22 @@ public class Migrator implements ServletContextListener {
     }
   }
 
-  private String stripFilterResolver(String model) {
-    int pos = model.indexOf("filter:model=");
-    if (pos > 0) {
-      model = model.substring(0, pos) + model.substring(pos + 13);
-      log.warn("By-passing filter resolver. Updates will be to  <" + model + ">");
+  /**
+   * Drop obsolete graphs. Ignore the exceptions as graphs might not exist.
+   *
+   * @param session the Topaz session
+   */
+  public void dropObsoleteGraphs(Session session) {
+    Transaction txn = null;
+    try {
+      txn = session.beginTransaction();
+      session.doNativeUpdate("drop <" + Ambra.GRAPH_PREFIX + "str> ;");
+      txn.commit();
+    } catch (OtmException e) {
+      if (txn != null)
+        txn.rollback();
+      log.warn("Could not drop graph " + Ambra.GRAPH_PREFIX + "str", e);
     }
-    return model;
   }
 
   /**

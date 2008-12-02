@@ -28,9 +28,9 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.configuration.WebappItqlClientFactory;
+
 import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -94,7 +94,6 @@ public class WebAppListenerInitModels implements ServletContextListener {
 
 
       session = sessionFactory.openSession();
-      dropObsoleteGraphs(conf, session);
       txn = session.beginTransaction();
       for (GraphConfig graph: sessionFactory.listGraphs())
         session.createGraph(graph.getId());
@@ -110,26 +109,5 @@ public class WebAppListenerInitModels implements ServletContextListener {
         session.close();
     }
 
-  }
-
-  /**
-   * Have to do this to deal with change from "models" to "graphs"
-   * @param conf Configuration
-   * @param session A writable Session to access the store
-   *
-   * TODO: Remove this after 0.9.2
-   */
-  private void dropObsoleteGraphs(Configuration conf, Session session) {
-    String graphPrefix = conf.getString("ambra.topaz.tripleStore.mulgara.graphPrefix");
-    Transaction txn = null;
-    try {
-      txn = session.beginTransaction();
-      session.doNativeUpdate("drop <" + graphPrefix + "str> ;");
-      txn.commit();
-    } catch (OtmException e) {
-      if (txn != null)
-        txn.rollback();
-      log.warn("Could not drop graph " + graphPrefix + "str", e);
-    }
   }
 }

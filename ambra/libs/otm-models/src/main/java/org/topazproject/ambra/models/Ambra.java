@@ -24,6 +24,10 @@ package org.topazproject.ambra.models;
  * @author Amit Kapoor
  */
 public interface Ambra {
+  /** Graph prefix */
+  public static final String GRAPH_PREFIX       = "local:///topazproject#";
+  /** Graph type prefix */
+  public static final String TYPE_PREFIX        = "http://topazproject.org/graphs#";
   /** PLoS namespace */
   public static final String plos               = "http://rdf.plos.org/RDF/";
   /** Creative Commons namespace */
