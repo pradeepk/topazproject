@@ -169,7 +169,12 @@
 
   <bean id="searchService" class="org.topazproject.ambra.search.service.SearchService"/>
 
-  <bean id="journalService" class="org.topazproject.ambra.journal.JournalService" init-method="init"/>
+  <bean id="journalCreator" class="org.topazproject.ambra.journal.JournalCreator" init-method="createJournals"/>
+
+  <bean id="journalServiceFactory" class="org.topazproject.ambra.journal.JournalServiceFactory"/>
+  
+  <bean id="journalService" factory-bean="journalServiceFactory" 
+      factory-method="getJournalService" init-method="init"/>
 
   <!-- OTM setups -->
   <bean name="fedoraBlobStore" class="org.topazproject.fedora.otm.FedoraBlobStore" lazy-init="true">

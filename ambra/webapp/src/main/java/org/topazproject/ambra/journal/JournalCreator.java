@@ -15,31 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.topazproject.ambra.bootstrap.journal;
+package org.topazproject.ambra.journal;
 
-import java.net.URI;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
+import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ambra.configuration.ConfigurationStore;
-import org.topazproject.ambra.configuration.WebappItqlClientFactory;
-import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.DublinCore;
-import org.topazproject.ambra.models.EditorialBoard;
-import org.topazproject.ambra.models.Issue;
 import org.topazproject.ambra.models.Journal;
-import org.topazproject.ambra.models.Volume;
-import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
@@ -47,10 +36,7 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.criterion.EQCriterion;
-import org.topazproject.otm.criterion.NECriterion;
 import org.topazproject.otm.criterion.Restrictions;
-import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.util.TransactionHelper;
 
 /**
@@ -60,25 +46,10 @@ import org.topazproject.otm.util.TransactionHelper;
  *
  * @author Pradeep Krishnan
  */
-public class JournalCreator implements ServletContextListener {
+public class JournalCreator {
   private static Log log = LogFactory.getLog(JournalCreator.class);
 
-  /**
-   * Shutdown things.
-   *
-   * @param event the destryed event
-   */
-  public void contextDestroyed(ServletContextEvent event) {
-  }
-
-  /**
-   * Initialize things.
-   *
-   * @param event init event
-   */
-  public void contextInitialized(ServletContextEvent event) {
-    createJournals();
-  }
+  private SessionFactory sf;
 
   /**
    * Create all configured journals.
@@ -89,42 +60,8 @@ public class JournalCreator implements ServletContextListener {
     final Configuration conf = ConfigurationStore.getInstance().getConfiguration();
 
     try {
-      URI service = new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql.uri"));
-
-      SessionFactory factory = new SessionFactoryImpl();
-      factory.setTripleStore(new ItqlStore(service, WebappItqlClientFactory.getInstance()));
-
-      for (String name : new String[] { "ri", "profiles", "criteria", "lucene" }) {
-        String key = "ambra.graphs." + name;
-        factory.addGraph(new GraphConfig(name, URI.create(conf.getString(key)),
-                                         URI.create(conf.getString(key + "[@type]",
-                                                                   "mulgara:Model"))));
-      }
-
-      Configuration aliases = conf.subset("ambra.aliases");
-      Iterator it           = aliases.getKeys();
-      while (it.hasNext()) {
-        String key = (String) it.next();
-
-        if ((key.indexOf("[") >= 0) || (key.indexOf(".") >= 0))
-          continue;
-
-        factory.addAlias(key, aliases.getString(key));
-      }
-
-      factory.preload(DetachedCriteria.class);
-      factory.preload(EQCriterion.class);
-      factory.preload(NECriterion.class);
-      factory.preload(EditorialBoard.class);
-      factory.preload(Issue.class);
-      factory.preload(Journal.class);
-      factory.preload(Volume.class);
-      factory.preload(Article.class);
-
-      factory.validate();
-
       Integer count =
-        TransactionHelper.doInTxE(factory, new TransactionHelper.ActionE<Integer, OtmException>() {
+        TransactionHelper.doInTxE(sf, new TransactionHelper.ActionE<Integer, OtmException>() {
             public Integer run(Transaction tx) throws OtmException {
               return createJournals(tx.getSession(), conf);
             }
@@ -250,5 +187,10 @@ public class JournalCreator implements ServletContextListener {
     }
 
     return false;
+  }
+
+  @Required
+  public void setOtmSessionFactory(SessionFactory sf) {
+    this.sf = sf;
   }
 }
