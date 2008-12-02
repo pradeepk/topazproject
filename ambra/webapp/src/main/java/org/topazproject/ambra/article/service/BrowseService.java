@@ -50,6 +50,8 @@ import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session.FlushMode;
 import org.topazproject.otm.query.Results;
 
+import com.sun.xacml.PDP;
+
 /**
  * Class to get all Articles in system and organize them by date and by category
  *
@@ -99,7 +101,7 @@ public class BrowseService {
     return Integer.valueOf(date.substring(8, 10));
   }
 
-  private final ArticlePEP     pep;
+  private       ArticlePEP     pep;
   private       Session        session;
   private       Cache          browseCache;
   private       JournalService journalService;
@@ -107,9 +109,14 @@ public class BrowseService {
 
   /**
    * Constructor
+   *
    */
-  public BrowseService() throws IOException {
-    pep = new ArticlePEP();
+  public BrowseService() {
+  }
+
+  @Required
+  public void setArticlesPdp(PDP pdp) {
+    pep = new ArticlePEP(pdp);
   }
 
   /**

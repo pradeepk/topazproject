@@ -38,6 +38,8 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 
+import com.sun.xacml.PDP;
+
 /**
  * Rating action class to retrieve all ratings for an Article.
  *
@@ -59,13 +61,12 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
   private RatingsPEP pep;
 
   private RatingsPEP getPEP() {
-    try {
-      if (pep == null)
-        pep                           = new RatingsPEP();
-    } catch(Exception e) {
-      throw new Error("Failed to create Ratings PEP", e);
-    }
     return pep;
+  }
+
+  @Required
+  public void setRatingsPdp(PDP pdp) {
+    this.pep = new RatingsPEP(pdp);
   }
 
   /**

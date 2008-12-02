@@ -41,6 +41,8 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.criterion.Restrictions;
 
+import com.sun.xacml.PDP;
+
 /**
  * This service allows client code to operate on ratings objects.
  *
@@ -56,11 +58,11 @@ public class RatingsService {
   private String               applicationId;
 
   public RatingsService() {
-    try {
-      pep = new RatingsPEP();
-    } catch (Exception e) {
-      throw new Error("Failed to create Ratings PEP", e);
-    }
+  }
+
+  @Required
+  public void setRatingsPdp(PDP pdp) {
+    pep = new RatingsPEP(pdp);
   }
 
   /**

@@ -27,6 +27,34 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
+
+  <!--  XACML PDPs -->
+  <bean id="pdpFactory" class="org.topazproject.ambra.xacml.PDPFactory"/>
+
+  <bean id="permissionsPdp" factory-bean="pdpFactory" factory-method="getPDP">
+     <constructor-arg index="0" value="${ambra.services.xacml.permissions.pdpName}"/>
+   </bean>
+
+  <bean id="repliesPdp" factory-bean="pdpFactory" factory-method="getPDP">
+    <constructor-arg index="0" value="${ambra.services.xacml.replies.pdpName}"/>
+  </bean>
+
+  <bean id="annotationsPdp" factory-bean="pdpFactory" factory-method="getPDP">
+     <constructor-arg index="0" value="${ambra.services.xacml.annotations.pdpName}"/>
+   </bean>
+
+  <bean id="articlesPdp" factory-bean="pdpFactory" factory-method="getPDP">
+    <constructor-arg value="${ambra.services.xacml.articles.pdpName}"/>
+  </bean>
+
+  <bean id="ratingsPdp" factory-bean="pdpFactory" factory-method="getPDP">
+    <constructor-arg value="${ambra.services.xacml.ratings.pdpName}"/>
+  </bean>
+
+  <bean id="usersPdp" factory-bean="pdpFactory" factory-method="getPDP">
+    <constructor-arg value="${ambra.services.xacml.users.pdpName}"/>
+  </bean>
+
   <!--Ambra developer beans here -->
   <bean id="fetchArticleService" class="org.topazproject.ambra.article.service.FetchArticleService">
     <property name="encodingCharset" ref="defaultEncodingCharset"/>

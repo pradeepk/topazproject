@@ -39,7 +39,7 @@ import com.sun.xacml.finder.AttributeFinder;
  * varoius attribute,policy and resource finder modules. Also xacml extensions (new attribute
  * types and functions) can be defined in the config file. The xacml extensions will be shared
  * across all PDP instances.
- * 
+ *
  * <p>
  * Makes use of <code>com.sun.xacml.ConfigurationStore</code> for parsing the config file.
  * </p>
@@ -51,36 +51,17 @@ public class PDPFactory {
    * Default PDP configuration File.
    */
   public static final String DEFAULT_PDP_CONFIG = "/PDPConfig.xml";
+
+  /**
+   * The special value for when looking up a PDP in the config to indicate the default PDP.
+   * Example config entry:<pre>  ambra.services.xacml.annotations.pdpName={@value}</pre>
+   */
+  public static final String SN_DEFAULT_PDP = "_default_";
+
   private ConfigurationStore store;
   private PDP                defaultPDP       = null;
   private PDPConfig          defaultPDPConfig = null;
-  private Map                pdpMap           = new HashMap();
-  private static PDPFactory  instance         = null;
-
-  /**
-   * Returns a singleton instance of the factory for a wep-app. The instance is maintained in the
-   * <code>ServletContext</code> itself.
-   * 
-   * <p>
-   * Uses {@link #getPDPConfigFile} to locate the configuration file for the factory.
-   * </p>
-   * 
-   * <p></p>
-   *
-   * @return Returns the PDPFactory instance
-   *
-   * @throws IOException on error in accessing the config file
-   * @throws ParsingException on error in parsing the config file
-   * @throws UnknownIdentifierException when an unknown identifier was used in a standard xacml
-   *         factory
-   */
-  public static PDPFactory getInstance()
-                                throws IOException, ParsingException, UnknownIdentifierException {
-    if (instance == null)
-      instance = new PDPFactory(getPDPConfigFile());
-
-    return instance;
-  }
+  private Map<String, PDP>   pdpMap           = new HashMap<String, PDP>();
 
   /**
    * Creates a PDPFactory from a configuration file.  See
@@ -98,6 +79,18 @@ public class PDPFactory {
     // xxx: use defaults now; may be provide ability to choose factories later
     store.useDefaultFactories();
     defaultPDPConfig = store.getDefaultPDPConfig();
+  }
+
+  /**
+   * Creates a PDPFactory from a configuration file loaded by {@link #getPDPConfigFile}.
+   *
+   * @throws ParsingException on error in parsing the config file
+   * @throws UnknownIdentifierException when an unknown identifier was used in a standard xacml
+   *         factory
+   * @throws IOException on an error in loading the default config file
+   */
+  public PDPFactory() throws ParsingException, UnknownIdentifierException, IOException {
+    this(getPDPConfigFile());
   }
 
   /**
@@ -119,6 +112,8 @@ public class PDPFactory {
 
   /**
    * Returns a PDP corresponding to the named configuration.
+   * Note that the {@link #SN_DEFAULT_PDP} value may be used
+   * to indicate the default PDP returned by {@link #getDefaultPDP()}.
    *
    * @param name Configuration name
    *
@@ -128,8 +123,11 @@ public class PDPFactory {
    *         factory
    */
   public PDP getPDP(String name) throws UnknownIdentifierException {
+    if (name.equals(SN_DEFAULT_PDP))
+      return getDefaultPDP();
+
     synchronized (this) {
-      PDP pdp = (PDP) pdpMap.get(name);
+      PDP pdp = pdpMap.get(name);
 
       if (pdp == null) {
         PDPConfig config = store.getPDPConfig(name);
@@ -147,15 +145,15 @@ public class PDPFactory {
 
   /**
    * Returns a PDP configuration file. Looks for a name of the config file in the following order:
-   * 
+   *
    * <ul>
    * <li>
    * System property <code>com.sun.xacml.PDPConfigFile</code>
    * </li>
    * </ul>
-   * 
+   *
    * If a name is not found, a default name of {@link #DEFAULT_PDP_CONFIG} is used.
-   * 
+   *
    * <p>
    * The name is first looked up relative to the web-app context and then in the local file system.
    * If found in the web-app context, it is copied to the temp directory for the web-app  (to

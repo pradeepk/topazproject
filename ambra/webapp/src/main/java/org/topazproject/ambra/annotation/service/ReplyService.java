@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.models.Reply;
@@ -37,28 +38,25 @@ import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.criterion.Restrictions;
 
+import com.sun.xacml.PDP;
+
 /**
  * Wrapper over reply web service
  */
 public class ReplyService extends BaseAnnotationService {
   private static final Log     log         = LogFactory.getLog(ReplyService.class);
-  private final RepliesPEP     pep;
+  private RepliesPEP     pep;
   private String defaultType;
   /**
    * Create a new instance of ReplyService.
    *
-   * @throws IOException on an error in creating the PEP
    */
-  public ReplyService() throws IOException {
-    try {
-      pep                                  = new RepliesPEP();
-    } catch (IOException e) {
-      throw e;
-    } catch (Exception e) {
-      IOException ioe = new IOException("Failed to create PEP");
-      ioe.initCause(e);
-      throw ioe;
-    }
+  public ReplyService() {
+  }
+
+  @Required
+  public void setRepliesPdp(PDP pdp) {
+    this.pep = new RepliesPEP(pdp);
   }
 
   /**

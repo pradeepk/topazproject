@@ -57,6 +57,8 @@ import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session.FlushMode;
 import org.topazproject.otm.criterion.Restrictions;
 
+import com.sun.xacml.PDP;
+
 /**
  * Wrapper over annotation(not the same as reply) web service
  */
@@ -67,7 +69,7 @@ public class AnnotationService extends BaseAnnotationService {
 
   public  static final String ANNOTATED_KEY = "ArticleAnnotationCache-Annotation-";
   private static final Log    log  = LogFactory.getLog(AnnotationService.class);
-  private        final AnnotationsPEP pep;
+  private              AnnotationsPEP pep;
   private              Cache          articleAnnotationCache;
   private              Invalidator    invalidator;
 
@@ -78,18 +80,14 @@ public class AnnotationService extends BaseAnnotationService {
   /**
    * Create an AnnotationService object.
    *
-   * @throws IOException on a PEP creation error
+   * @param pdp the PDP to use
    */
-  public AnnotationService() throws IOException {
-    try {
-      pep  = new AnnotationsPEP();
-    } catch (IOException e) {
-      throw e;
-    } catch (Exception e) {
-      IOException ioe = new IOException("Failed to create PEP");
-      ioe.initCause(e);
-      throw ioe;
-    }
+  public AnnotationService() {
+  }
+
+  @Required
+  public void setAnnotationsPdp(PDP pdp) {
+    pep  = new AnnotationsPEP(pdp);
   }
 
   /**

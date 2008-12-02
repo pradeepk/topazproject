@@ -19,17 +19,13 @@
 
 package org.topazproject.ambra.user;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Set;
 
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
-import org.topazproject.ambra.xacml.XacmlUtil;
 
-import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
-import com.sun.xacml.UnknownIdentifierException;
 
 /**
  * The XACML PEP for the user accounts manager.
@@ -174,31 +170,21 @@ public class UsersPEP extends AbstractSimplePEP {
     init(UsersPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
   }
 
-  /** 
-   * Create a new users pep. 
-   * 
-   * @throws IOException if an error occurred trying to get the PDP
+  /**
+   * Create a new users pep.
+   *
+   *  @param pdp the PDP to use
    */
-  public UsersPEP() throws IOException {
-    super(getPDP());
+  public UsersPEP(PDP pdp) {
+    super(pdp);
   }
 
-  private static final PDP getPDP() throws IOException {
-    try {
-      return XacmlUtil.lookupPDP("ambra.services.xacml.users.pdpName");
-    } catch (ParsingException pe) {
-      throw (IOException) new IOException("Error creating users-pep").initCause(pe);
-    } catch (UnknownIdentifierException uie) {
-      throw (IOException) new IOException("Error creating users-pep").initCause(uie);
-    }
-  }
-
-  /** 
-   * Check whether the given action is allowed on the given resource by the current user. 
+  /**
+   * Check whether the given action is allowed on the given resource by the current user.
    * This is the same as {@link AbstractSimplePEP#checkAccess AbstractSimplePEP.checkAccess}
    * except that a {@link java.lang.SecurityException SecurityException} is converted into an
    * {@link org.topazproject.ambra.ApplicationException ApplicationException}.
-   * 
+   *
    * @param action   the action to check
    * @param resource the resource to check
    * @return the obligations

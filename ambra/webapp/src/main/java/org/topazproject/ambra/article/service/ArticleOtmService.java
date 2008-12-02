@@ -46,6 +46,8 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.query.Results;
 
+import com.sun.xacml.PDP;
+
 /**
  * Provide Article "services" via OTM.
  */
@@ -60,8 +62,12 @@ public class ArticleOtmService {
   private Session            session;
   private PermissionsService permissionsService;
 
-  public ArticleOtmService() throws IOException {
-    pep = new ArticlePEP();
+  public ArticleOtmService() {
+  }
+
+  @Required
+  public void setArticlesPdp(PDP pdp) {
+    pep = new ArticlePEP(pdp);
   }
 
   /**

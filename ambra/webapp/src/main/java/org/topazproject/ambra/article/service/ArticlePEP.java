@@ -18,15 +18,11 @@
  */
 package org.topazproject.ambra.article.service;
 
-import java.io.IOException;
 import java.net.URI;
 
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
-import org.topazproject.ambra.xacml.XacmlUtil;
 
-import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
-import com.sun.xacml.UnknownIdentifierException;
 
 /**
  * The XACML PEP for Articles.
@@ -79,21 +75,8 @@ public class ArticlePEP extends AbstractSimplePEP {
     init(ArticlePEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
   }
 
-  public ArticlePEP() throws IOException {
-    this(getPDP());
-  }
-
-  private static final PDP getPDP() throws IOException {
-    try {
-      return XacmlUtil.lookupPDP("ambra.services.xacml.articles.pdpName");
-    } catch (ParsingException pe) {
-      throw (IOException) new IOException("Error creating articles-pep").initCause(pe);
-    } catch (UnknownIdentifierException uie) {
-      throw (IOException) new IOException("Error creating articles-pep").initCause(uie);
-    }
-  }
-
-  protected ArticlePEP(PDP pdp) {
+  public ArticlePEP(PDP pdp) {
     super(pdp);
   }
+
 }

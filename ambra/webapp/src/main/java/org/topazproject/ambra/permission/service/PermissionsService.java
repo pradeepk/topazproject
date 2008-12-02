@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.configuration.ConfigurationStore;
@@ -46,6 +47,8 @@ import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.query.Results;
 
 import org.apache.struts2.ServletActionContext;
+
+import com.sun.xacml.PDP;
 
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
@@ -209,24 +212,18 @@ public class PermissionsService implements Permissions {
   }
 
   //
-  private final PermissionsPEP pep;
+  private PermissionsPEP pep;
 
   /**
    * Creates a new PermissionsService object.
    *
-   * @throws Exception on an error
    */
-  public PermissionsService() throws Exception {
-    this(new PermissionsPEP());
+  public PermissionsService() {
   }
 
-  /**
-   * Create a new permission instance.
-   *
-   * @param pep the policy-enforcer to use for access-control
-   */
-  public PermissionsService(PermissionsPEP pep) {
-    this.pep   = pep;
+  @Required
+  public void setPermissionsPdp(PDP pdp) {
+    this.pep = new PermissionsPEP(pdp);
   }
 
   /*

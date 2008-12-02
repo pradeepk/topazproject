@@ -41,7 +41,7 @@ import com.sun.xacml.ctx.Status;
 /**
  * A XACML extension function to execute a Permission service check. The arguments to the function
  * are:
- * 
+ *
  * <ul>
  * <li>
  * config: the configuration identifier for the itql service
@@ -56,7 +56,7 @@ import com.sun.xacml.ctx.Status;
  * principal: the principal accessing the resource
  * </li>
  * </ul>
- * 
+ *
  *
  * @author Pradeep Krishnan
  */
@@ -95,7 +95,7 @@ public abstract class PermissionFunction implements Function {
   private static List processingErrList = null;
 
   // The singleton permissions-impl to use
-  private static final Permissions permissions = new PermissionsService(null);
+  private static final Permissions permissions = new PermissionsService();
 
   /**
    * Creates a new PermissionFunction object.

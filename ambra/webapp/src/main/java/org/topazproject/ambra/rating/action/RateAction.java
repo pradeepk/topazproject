@@ -39,6 +39,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import com.sun.xacml.PDP;
 
 /**
  * General Rating action class to store and retrieve a users's rating
@@ -62,13 +63,12 @@ public class RateAction extends AbstractRatingAction {
   private ProfanityCheckingService profanityCheckingService;
 
   private RatingsPEP getPEP() {
-    try {
-      if (pep == null)
-        pep                      = new RatingsPEP();
-    } catch (Exception e) {
-      throw new Error("Failed to create Ratings PEP", e);
-    }
     return pep;
+  }
+
+  @Required
+  public void setRatingsPdp(PDP pdp) {
+    this.pep = new RatingsPEP(pdp);
   }
 
   /**

@@ -18,14 +18,9 @@
  */
 package org.topazproject.ambra.annotation.service;
 
-import java.io.IOException;
-
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
-import org.topazproject.ambra.xacml.XacmlUtil;
 
 import com.sun.xacml.PDP;
-import com.sun.xacml.ParsingException;
-import com.sun.xacml.UnknownIdentifierException;
 
 /**
  * The XACML PEP for Replies Web Service.
@@ -88,20 +83,7 @@ public class RepliesPEP extends AbstractSimplePEP {
     init(RepliesPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
   }
 
-  /*
-   *     inherited javadoc
-   *
-   */
-  public RepliesPEP() throws IOException, ParsingException, UnknownIdentifierException {
-    this(XacmlUtil.lookupPDP("ambra.services.xacml.replies.pdpName"));
-  }
-
-  /*
-   *     inherited javadoc
-   *
-   */
-  protected RepliesPEP(PDP pdp)
-                throws IOException, ParsingException, UnknownIdentifierException {
+  public RepliesPEP(PDP pdp) {
     super(pdp);
   }
 }

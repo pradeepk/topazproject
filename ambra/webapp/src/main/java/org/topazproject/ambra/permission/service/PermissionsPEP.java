@@ -19,7 +19,8 @@
 package org.topazproject.ambra.permission.service;
 
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
-import org.topazproject.ambra.xacml.XacmlUtil;
+
+import com.sun.xacml.PDP;
 
 /**
  * The XACML PEP for the permission accounts manager.
@@ -47,12 +48,7 @@ public class PermissionsPEP extends AbstractSimplePEP implements Permissions.Ser
     init(PermissionsPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
   }
 
-  /**
-   * Creates a new PermissionsPEP object.
-   *
-   * @throws Exception on an error
-   */
-  public PermissionsPEP() throws Exception {
-    super(XacmlUtil.lookupPDP("ambra.services.xacml.permissions.pdpName"));
+  public PermissionsPEP(PDP pdp) {
+    super(pdp);
   }
 }

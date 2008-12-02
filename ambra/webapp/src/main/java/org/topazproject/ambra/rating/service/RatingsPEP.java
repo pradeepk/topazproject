@@ -19,18 +19,14 @@
 
 package org.topazproject.ambra.rating.service;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
 import org.topazproject.ambra.xacml.Util;
-import org.topazproject.ambra.xacml.XacmlUtil;
 
 import com.sun.xacml.PDP;
-import com.sun.xacml.ParsingException;
-import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.attr.AnyURIAttribute;
 import com.sun.xacml.ctx.Attribute;
 
@@ -76,13 +72,8 @@ public class RatingsPEP extends AbstractSimplePEP {
     init(RatingsPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
   }
 
-  public RatingsPEP()
-      throws IOException, ParsingException, UnknownIdentifierException {
-    this(XacmlUtil.lookupPDP("ambra.services.xacml.ratings.pdpName"));
-  }
 
-  protected RatingsPEP(PDP pdp)
-      throws IOException, ParsingException, UnknownIdentifierException {
+  public RatingsPEP(PDP pdp) {
     super(pdp);
   }
 

@@ -50,6 +50,8 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.spring.OtmTransactionManager;
 
+import com.sun.xacml.PDP;
+
 /**
  * Class to roll up web services that a user needs in Ambra. Rest of application should generally
  * use AmbraUser to
@@ -71,7 +73,7 @@ public class UserService {
   private Session               session;
   private OtmTransactionManager txManager;
 
-  private final UsersPEP pep;
+  private UsersPEP pep;
 
   private PermissionsService permissionsService;
   private Cache userCache;
@@ -83,10 +85,13 @@ public class UserService {
 
   /**
    * Constructor
-   * @throws IOException IOException
    */
-  public UserService() throws IOException {
-    pep = new UsersPEP();
+  public UserService() {
+  }
+
+  @Required
+  public void setUsersPdp(PDP pdp) {
+    pep = new UsersPEP(pdp);
   }
 
   /**
