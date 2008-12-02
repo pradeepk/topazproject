@@ -150,7 +150,11 @@ public class AnnotationClassMetaFactory {
         GraphConfig oldGraph = sf.getGraph(g.id());
         if (oldGraph != null)
           sf.removeGraph(oldGraph);
-        sf.addGraph(new GraphConfig(g.id(), new URI(g.uri()), new URI(g.type())));
+
+        URI gType = null;
+        if (!"".equals(g.type()))
+          gType = new URI(g.type());
+        sf.addGraph(new GraphConfig(g.id(), new URI(g.uri()), gType));
       } catch (URISyntaxException e) {
         throw new OtmException("Invalid URI syntax in graph definition: " + g.id(), e);
       }

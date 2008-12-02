@@ -17,15 +17,19 @@
  * limitations under the License.
  */
 
+@Graphs({
+  @Graph(id = "users", uri = "local:///topazproject#users")
+})
 @Aliases({
-    @Alias(alias = "foaf",     value = Rdf.foaf)
-  , @Alias(alias = "dc",       value = Rdf.dc)
-  , @Alias(alias = "dcterms",  value = Rdf.dc_terms)
-  , @Alias(alias = "topaz",    value = Rdf.topaz)
+  @Alias(alias = "foaf",     value = Rdf.foaf),
+  @Alias(alias = "dc",       value = Rdf.dc),
+  @Alias(alias = "dcterms",  value = Rdf.dc_terms),
+  @Alias(alias = "topaz",    value = Rdf.topaz)
 })
 package org.topazproject.sample1;
 
-import org.topazproject.otm.annotations.Aliases;
 import org.topazproject.otm.annotations.Alias;
+import org.topazproject.otm.annotations.Aliases;
+import org.topazproject.otm.annotations.Graph;
+import org.topazproject.otm.annotations.Graphs;
 import org.topazproject.otm.Rdf;
-

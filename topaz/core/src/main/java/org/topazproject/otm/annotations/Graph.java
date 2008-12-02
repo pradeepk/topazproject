@@ -28,12 +28,15 @@ import java.lang.annotation.Retention;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Graph {
-  /** Id for the graph **/
+  /** Id for the graph */
   String id();
 
-  /** the URI identifying the graph. **/
+  /** the URI identifying the graph. */
   String uri();
 
-  /** The URI identifying the type of the graph. **/
-  String type();
+  /**
+   * The URI identifying the type of the graph. NOTE: This returns an empty string if not specified
+   * and in that case should be treated as 'null'.
+   */
+  String type() default "";
 }

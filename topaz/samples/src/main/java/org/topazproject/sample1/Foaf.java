@@ -48,7 +48,7 @@ import org.topazproject.otm.stores.SimpleBlobStore;
  *
  * @author Amit Kapoor
  */
-@Entity(types = {"foaf:Person", "foaf:agent"}, graph = Foaf.GRAPH_NAME)
+@Entity(types = {"foaf:Person", "foaf:agent"}, graph = "users")
 @UriPrefix("foaf:")
 public class Foaf {
   private URI     id;
@@ -158,21 +158,6 @@ public class Foaf {
     this.homePage = homePage;
   }
 
-
-  // We have only a single graph here
-  public static final String GRAPH_NAME = "users";
-
-  private static GraphConfig userGraph =
-    new GraphConfig(GRAPH_NAME, URI.create("local:///topazproject#" + GRAPH_NAME), null);
-
-  private static GraphConfig[] graphs = new GraphConfig[] {
-    userGraph,
-  };
-
-  private static String[] graphNames = {
-    GRAPH_NAME,
-  };
-
   /**
    * Main entry point
    */
@@ -190,16 +175,10 @@ public class Foaf {
       SimpleBlobStore blobStore = new SimpleBlobStore("target/blob-db");
       factory.setBlobStore(blobStore);
 
-      // Add the graph definitions
-      for (GraphConfig graph : graphs)
-        factory.addGraph(graph);
-
-      // Pre-load the the single POJO by hand
-      factory.preload(Foaf.class);
+      // Pre-load all the Topaz annotated classes
+      factory.preloadFromClasspath();
       factory.validate();
-
-      // Initialize the graphs
-      initGraphs(graphNames, factory);
+      initGraphs(factory);
 
       // Store and retrieve an object
       Session s = factory.openSession();
@@ -211,7 +190,7 @@ public class Foaf {
                                 "http://john.doe.com/"));
 
         Foaf john = s.get(Foaf.class, "http://www.topazproject.org/foaf/1");
-        System.out.println("Person name: " + john.getName() + ", nick: " + john.getNick());
+        System.out.println("\n Person name: " + john.getName() + ", nick: " + john.getNick() + "\n");
 
         txn.commit();
       } catch (OtmException exp) {
@@ -238,22 +217,20 @@ public class Foaf {
   /**
    * Initialize the graphs
    *
-   * @param names   the graph names
    * @param factory the Topaz factory.
    */
-  public static void initGraphs(String[] names, SessionFactory factory) throws OtmException {
+  public static void initGraphs(SessionFactory factory) throws OtmException {
     Session s = null;
     Transaction txn = null;
     try {
       s = factory.openSession();
-      for (String name : names) {
-        GraphConfig graph = factory.getGraph(name);
+      for (GraphConfig graph : factory.listGraphs()) {
         txn = s.beginTransaction();
         try {
           s.dropGraph(graph.getId());
           txn.commit();
         } catch (Throwable t) {
-          System.out.println("Failed to drop graph '" + name + "'" + t);
+          System.out.println("Failed to drop graph '" + graph.getId() + "' " + t);
           txn.rollback();
         }
         txn = null;
