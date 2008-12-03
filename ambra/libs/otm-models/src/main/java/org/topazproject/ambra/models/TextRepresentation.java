@@ -19,6 +19,7 @@
 
 package org.topazproject.ambra.models;
 
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.Collection;
 
@@ -73,6 +74,33 @@ public class TextRepresentation extends Representation {
   @org.topazproject.otm.annotations.Blob  // FIXME: remove
   public void setBody(org.topazproject.otm.Blob body) {
     super.setBody(body);
+  }
+
+  /**
+   * Set the body. The string is UTF-8 encoded to create the byte[]. This assumes a body
+   * already exists and replaces its contents.
+   *
+   * @param body the body
+   */
+  public void setBodyAsText(String body) {
+    try {
+      super.getBody().writeAll(body.getBytes("UTF-8"));
+    } catch (UnsupportedEncodingException uee) {
+      throw new RuntimeException("Unexpected problem with UTF-8", uee);
+    }
+  }
+
+  /**
+   * Get the body as a String. The encoding is assumed to be UTF-8.
+   *
+   * @return the body
+   */
+  public String getBodyAsText() {
+    try {
+      return new String(super.getBody().readAll(), "UTF-8");
+    } catch (UnsupportedEncodingException uee) {
+      throw new RuntimeException("Unexpected problem with UTF-8", uee);
+    }
   }
 
   /**
