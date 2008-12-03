@@ -149,7 +149,8 @@
           <li>
             <span class="date">Published ${hit.date?string("dd MMM yyyy")}</span>
             <span class="article">
-              <a href="/ambra-doi-resolver/${hit.uri?replace('info:doi/','')}">${hit.title}</a>
+-             <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${hit.uri}" includeParams="none"/>
+-             <@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${hit.title}</@s.a>
             </span>       
             <span class="authors"> <!-- hitScore: ${hit.hitScore} --> ${hit.creator!""}</span>
             <span class="cite">${hit.highlight}</span>
