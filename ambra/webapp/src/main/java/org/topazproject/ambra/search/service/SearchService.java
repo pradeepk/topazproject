@@ -192,7 +192,11 @@ public class SearchService {
     int[] scnt = new int[] { 0 };
     buildOql(lq, sel, whr, scnt);
 
-    return sel.append("from Article art where ").append(whr).append(';').toString();
+    sel.append("from Article art ");
+    if (whr.length() > 0)
+      sel.append("where ").append(whr);
+
+    return sel.append(';').toString();
   }
 
   private void buildOql(Query lq, StringBuilder sel, StringBuilder whr, int[] scnt) {
