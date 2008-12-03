@@ -188,7 +188,7 @@ public class OtmConfiguration {
 
     TransactionHelper.doInTx(factory, new TransactionHelper.Action<Void>() {
       public Void run(Transaction tx) {
-        for (GraphConfig graph : graphs)
+        for (GraphConfig graph : tx.getSession().getSessionFactory().listGraphs())
           tx.getSession().createGraph(graph.getId());
         return null;
       }
