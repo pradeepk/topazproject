@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ConstantScoreRangeQuery;
@@ -140,7 +141,7 @@ public class SearchService {
   }
 
   private Results doSearch(String queryString) throws ParseException, OtmException {
-    // TOOD: should we get the analyzer from one of the model's @Searchable defs?
+    // TODO: should we get the analyzer from one of the model's @Searchable defs?
     Query lq = new MultiFieldQueryParser(DEFAULT_FIELDS, new StandardAnalyzer()).parse(queryString);
 
     String oql = buildOql(lq);
@@ -229,20 +230,25 @@ public class SearchService {
    * to observe that lucene will only subtract from some otherwise selected set, never from the
    * set of all documents; i.e. the query '!a' always yields no results.
    *
+   * <p>Regarding cases 3 and 6, lucene treats 'a (-b AND -c)' and 'a (-b OR -c)' identically,
+   * namely as the former.
+   *
    * <p>In terms of mulgara's query algebra the 'and' and 'or' translate directly, the '!' is the
    * tql minus operator, and 'true' is UNBOUND (generated in the code below by a '0 &lt; 1'
    * constraint).
    */
   private void buildOql(BooleanQuery lq, StringBuilder sel, StringBuilder whr, int[] scnt) {
-    if (lq.getClauses().length == 0)
+    if (lq.clauses().size() == 0)
       return;
 
-    whr.append("(");
+    simplify(lq);
+
+    whr.append("((");
 
     boolean havePhb = false;
 
     // 'and' up all required clauses
-    for (BooleanClause c : lq.getClauses()) {
+    for (BooleanClause c : (List<BooleanClause>) lq.clauses()) {
       if (c.isRequired()) {
         buildOql(c.getQuery(), sel, whr, scnt);
         whr.append(" and ");
@@ -257,8 +263,8 @@ public class SearchService {
     if (haveRqd)
       whr.append("(");
 
-    for (BooleanClause c : lq.getClauses()) {
-      if (c.getOccur() == BooleanClause.Occur.SHOULD) {
+    for (BooleanClause c : (List<BooleanClause>) lq.clauses()) {
+      if (c.getOccur() == Occur.SHOULD) {
         buildOql(c.getQuery(), sel, whr, scnt);
         whr.append(" or ");
       }
@@ -272,17 +278,19 @@ public class SearchService {
       whr.setLength(whr.length() - 6);  // remove trailing ' and ('
     else if (haveOpt)
       whr.setLength(whr.length() - 4);  // remove trailing ' or '
-    else
-      whr.setLength(whr.length() - 1);  // remove trailing '('
+    else {
+      whr.setLength(whr.length() - 2);  // remove '(('
+      whr.append("gt('0'^^<xsd:int>, '1'^^<xsd:int>)");         // 'false' (EMPTY)
+      return;
+    }
+
+    whr.append(")");
 
     // 'minus' the prohibited clauses
     if (havePhb) {
-      if (haveRqd || haveOpt)
-        whr.append(") minus (");
-      else
-        whr.append("minus (");
+      whr.append(" minus (");
 
-      for (BooleanClause c : lq.getClauses()) {
+      for (BooleanClause c : (List<BooleanClause>) lq.clauses()) {
         if (c.isProhibited()) {
           buildOql(c.getQuery(), sel, whr, scnt);
           whr.append(" or ");
@@ -295,6 +303,67 @@ public class SearchService {
 
     // clean up
     whr.append(") ");
+  }
+
+  /**
+   * This attempts to simplify the clauses of a boolean query, specifically the minus clauses.
+   * The issues are that:
+   * <ul>
+   *   <li>lucene's MultiFieldQueryParser often creates nested clauses for minus terms; e.g.
+   *       'a (-b)' generates '(a) (-(b))', i.e. the second clause appears as an optional clause
+   *       in the top-level boolean-query</li>
+   *   <li>we don't really want to ever subtract from all, so if we have only minus terms then
+   *       we try to pull the minus up a level. E.g. 'a (-foo -bar)' can be turned into
+   *       'a -(foo OR bar)'</li>
+   * </ul>
+   *
+   * @param bq the boolean-query to simplify
+   */
+  private static void simplify(BooleanQuery bq) {
+    for (BooleanClause c : (List<BooleanClause>) bq.clauses()) {
+      if (!(c.getQuery() instanceof BooleanQuery))
+        continue;
+
+      bq = (BooleanQuery) c.getQuery();
+      simplify(bq);
+
+      if (bq.clauses().size() == 1) {
+        // flatten single-element list
+        BooleanClause c2 = (BooleanClause) bq.clauses().get(0);
+        c.setOccur(combineOccurs(c.getOccur(), c2.getOccur()));
+        c.setQuery(c2.getQuery());
+      } else if (bq.clauses().size() > 1 && allNegative(bq)) {
+        for (BooleanClause c2 : (List<BooleanClause>) bq.clauses())
+          c2.setOccur(Occur.SHOULD);
+        c.setOccur(combineOccurs(c.getOccur(), Occur.MUST_NOT));
+      }
+    }
+  }
+
+  /*
+   * + .  ->  +
+   * - .  ->  -
+   * . .  ->  .
+   * + +  ->  +
+   * - -  ->  +
+   * + -  ->  -
+   */
+  private static Occur combineOccurs(Occur outer, Occur inner) {
+    if (outer == Occur.SHOULD)
+      return inner;
+    if (inner == Occur.SHOULD)
+      return outer;
+    if (outer == inner)
+      return Occur.MUST;
+    return Occur.MUST_NOT;
+  }
+
+  private static boolean allNegative(BooleanQuery bq) {
+    for (BooleanClause c : (List<BooleanClause>) bq.clauses()) {
+      if (!c.isProhibited())
+        return false;
+    }
+    return true;
   }
 
   /**
