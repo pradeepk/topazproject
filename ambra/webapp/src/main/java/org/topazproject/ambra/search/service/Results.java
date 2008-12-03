@@ -85,26 +85,34 @@ public class Results {
    * Return a search results page.
    *
    * @param startPage the page number to return (starts with 0)
-   * @param pageSize  the number of entries to return
-   * @return The results for one page of a search.
+   * @param pageSize  the page size; this controls both the number of entries to return as well as
+   *                  the the first entry to return.
+   * @return The results for one page of a search. If the <var>startPage</var> is beyond the end of
+   *         the results then the last page is returned; if <var>startPage</var> is less than 0 then
+   *         the first page is returned. If there are no search results, the hits list will be
+   *         empty.
    */
   public SearchResultPage getPage(int startPage, int pageSize) {
-    int end = (startPage + 1) * pageSize;
+    pageSize = Math.max(pageSize, 1);
+
+    int start = Math.max(startPage * pageSize, 0);
+    int end   = start + pageSize;
 
     boolean needResolving;
     synchronized (resolvedHits) {
       if (resolvedHits.size() >= end) {
         return new SearchResultPage(totalHits, pageSize,
-                                    new ArrayList(resolvedHits.subList(startPage * pageSize, end)));
+                                    new ArrayList(resolvedHits.subList(start, end)));
       }
     }
 
     resolveHits(end, pageSize);
 
     synchronized (resolvedHits) {
-      end = Math.min(end, resolvedHits.size());
+      start = Math.min(start, Math.max(((resolvedHits.size() - 1) / pageSize) * pageSize, 0));
+      end   = Math.min(end, resolvedHits.size());
       return new SearchResultPage(totalHits, pageSize,
-                                  new ArrayList(resolvedHits.subList(startPage * pageSize, end)));
+                                  new ArrayList(resolvedHits.subList(start, end)));
     }
   }
 
