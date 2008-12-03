@@ -177,6 +177,14 @@ public class SearchService {
     return new Results(hits, lq, articleService);
   }
 
+  /**
+   * Turn the given lucene query into an equivalent oql query. The oql query will query for
+   * articles with the given lucene constraints; the result will have 1 + N columns, with the
+   * first column containing the article id and the remaining N columns containing scores.
+   *
+   * @param lq  the parsed lucene query
+   * @return the resulting oql query
+   */
   private String buildOql(Query lq) {
     StringBuilder sel = new StringBuilder("select art.id ");
     StringBuilder whr = new StringBuilder(500);
@@ -188,7 +196,7 @@ public class SearchService {
   }
 
   private void buildOql(Query lq, StringBuilder sel, StringBuilder whr, int[] scnt) {
-    // FIXME: handle ranges for non-searchable items (e.g. dates); add in boost
+    // FIXME: add in boost
 
     if (lq instanceof BooleanQuery)
       buildOql((BooleanQuery) lq, sel, whr, scnt);
@@ -285,6 +293,16 @@ public class SearchService {
     whr.append(") ");
   }
 
+  /**
+   * Turn a lucene range query into an oql constraint. If the field represents a property that is
+   * searchable then an oql search() function is added to the where clause; otherwise an oql
+   * equality lt() and/or a gt() is added.
+   *
+   * @param qs   the lucene range query; it's expected to be in &lt;field&gt;:&lt;query&gt; format
+   * @param sel  the oql select clause
+   * @param whr  the oql where clause
+   * @param scnt the current score-variable counter
+   */
   private void buildOql(ConstantScoreRangeQuery lq, StringBuilder sel, StringBuilder whr,
                         int[] scnt) {
     if (!FIELD_MAP.containsKey(lq.getField()))
@@ -318,6 +336,17 @@ public class SearchService {
     whr.append(")");
   }
 
+  /**
+   * Turn a non-boolean/range lucene query into an oql constraint. If the field represents a
+   * property that is searchable then an oql search() function is added to the where clause;
+   * otherwise an oql equality ('=') is added. If a search() function is added then a new score
+   * is added to the select clause.
+   *
+   * @param qs   the lucene query; it's expected to be in &lt;field&gt;:&lt;query&gt; format
+   * @param sel  the oql select clause
+   * @param whr  the oql where clause
+   * @param scnt the current score-variable counter
+   */
   private void buildOql(String qs, StringBuilder sel, StringBuilder whr, int[] scnt) {
     int colon = qs.indexOf(':');
     String field = qs.substring(0, colon);
