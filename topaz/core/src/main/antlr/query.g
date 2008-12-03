@@ -156,13 +156,15 @@ wclause // where clause
     ;
 
 oexpr
-    :   ( aexpr OR ) => aexpr (OR! aexpr)+ { #oexpr = #([OR,"or"], oexpr); }
-    |   aexpr
+    :   aexpr (OR! aexpr)* {
+          if (#oexpr != null && #oexpr.getNextSibling() != null) #oexpr = #([OR,"or"], oexpr);
+        }
     ;
 
 aexpr
-    :   ( expr AND ) => expr (AND! expr)+ { #aexpr = #([AND,"and"], aexpr); }
-    |   expr
+    :   expr (AND! expr)* {
+          if (#aexpr != null && #aexpr.getNextSibling() != null) #aexpr = #([AND,"and"], aexpr);
+        }
     ;
 
 expr
