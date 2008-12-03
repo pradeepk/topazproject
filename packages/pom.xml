@@ -170,7 +170,7 @@
       </build>
 
       <properties>
-        <topazproject.rpm.release>snap.${timestamp}_${buildNumber}</topazproject.rpm.release>
+        <topazproject.rpm.release>snap.${buildNumber}_${timestamp}</topazproject.rpm.release>
       </properties>
     </profile>
 
