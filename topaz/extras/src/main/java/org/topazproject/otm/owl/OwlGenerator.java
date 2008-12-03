@@ -72,9 +72,11 @@ public class OwlGenerator {
   private static final Log log = LogFactory.getLog(OwlGenerator.class);
 
   // Local namespaces
-  private static final String JAVA_PREFIX = "java";
-  private static final String JAVA_NS     = Rdf.topaz + JAVA_PREFIX + "/";
-  private static final String CLASS_NS    = Rdf.topaz + "class/";
+  private static final String JAVA_PREFIX    = "java";
+  private static final String MULGARA_PREFIX = "mulgara";
+  private static final String JAVA_NS        = Rdf.topaz + JAVA_PREFIX + "/";
+  private static final String MULGARA_NS     = "http://www.mulgara.org/rdf/";
+  private static final String CLASS_NS       = Rdf.topaz + "class/";
 
   // Map of created OWL classes: Key is the rdf:type
   HashMap<String, OWLClass> classMap;
@@ -137,12 +139,18 @@ public class OwlGenerator {
     }
 
     // Add useful OWL class annotations
+    log.debug("Adding OWL annotations to class axiom for " + cb.getName());
+    OWLConstant cnst = null;
+    OWLEntityAnnotationAxiom entityAxiom = null;
+    if (entity.getGraph() != null) {
+      cnst = factory.getOWLTypedConstant(otmFactory.getGraph(entity.getGraph()).getUri().toString());
+      entityAxiom = factory.getOWLEntityAnnotationAxiom(owlClass, URI.create(MULGARA_NS + "graph"), cnst);
+      ontologyManager.applyChange(new AddAxiom(ontology, entityAxiom));
+    }
     String[] names = cb.getBinders().get(EntityMode.POJO).getNames();
     for (int i = 0; i < names.length; i++) {
-      OWLConstant cnst = factory.getOWLTypedConstant(names[i]);
-      log.debug("Adding OWL annotations to class axiom for " + cb.getName());
-      OWLEntityAnnotationAxiom entityAxiom = factory.getOWLEntityAnnotationAxiom(owlClass,
-                                             URI.create(JAVA_NS + "class"), cnst);
+      cnst = factory.getOWLTypedConstant(names[i]);
+      entityAxiom = factory.getOWLEntityAnnotationAxiom(owlClass, URI.create(JAVA_NS + "class"), cnst);
       ontologyManager.applyChange(new AddAxiom(ontology, entityAxiom));
     }
 
@@ -177,6 +185,7 @@ public class OwlGenerator {
       format.addPrefixNamespaceMapping(name, namespaces.get(name));
     }
     format.addPrefixNamespaceMapping(JAVA_PREFIX, JAVA_NS);
+    format.addPrefixNamespaceMapping(MULGARA_PREFIX, MULGARA_NS);
     ontologyManager.setOntologyFormat(ontology, format);
   }
 
