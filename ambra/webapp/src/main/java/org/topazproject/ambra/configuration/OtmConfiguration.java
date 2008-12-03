@@ -35,6 +35,7 @@ import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.util.TransactionHelper;
 import org.topazproject.fedora.otm.FedoraBlobStore;
 import org.topazproject.fedora.otm.FedoraBlobFactory;
+import org.topazproject.mulgara.itql.EmbeddedClient;
 
 /**
  * Convenience class to manage configuration of OTM Session Factory
@@ -218,5 +219,12 @@ public class OtmConfiguration {
     log.info("Initialized OTM SessionFactory instance.");
 
     return factory;
+  }
+
+  /**
+   * Close down everything.
+   */
+  public void close() {
+    EmbeddedClient.releaseResources();
   }
 }

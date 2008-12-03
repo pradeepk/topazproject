@@ -77,7 +77,7 @@ public class VirtualJournalMappingFilter implements Filter {
    * @see javax.servlet.Filter#destroy
    */
   public void destroy() {
-    // nothing to do
+    CacheManager.getInstance().shutdown();
   }
 
   /*
