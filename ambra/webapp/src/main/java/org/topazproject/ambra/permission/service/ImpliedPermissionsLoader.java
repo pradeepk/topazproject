@@ -29,6 +29,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
+import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * Load the implied permissions to the Database.
@@ -42,54 +43,41 @@ public class ImpliedPermissionsLoader {
   private SessionFactory sf;
 
   public void load() throws OtmException {
-    Session s = sf.openSession();
-    Transaction txn = null;
-    try {
-      txn = s.beginTransaction();
-      Configuration conf        = CONF.subset("ambra.permissions.impliedPermissions");
-
-      StringBuilder sb          = new StringBuilder();
-      List          permissions = conf.getList("permission[@uri]");
-      int           c           = permissions.size();
-
-      for (int i = 0; i < c; i++) {
-        List implies = conf.getList("permission(" + i + ").implies[@uri]");
-        log.info("config contains " + permissions.get(i) + " implies " + implies);
-
-        for (int j = 0; j < implies.size(); j++) {
-          sb.append("<").append(permissions.get(i)).append("> ");
-          sb.append("<").append(PermissionsService.IMPLIES).append("> ");
-          sb.append("<").append(implies.get(j)).append("> ");
-        }
+    TransactionHelper.doInTxE(sf, new TransactionHelper.ActionE<Integer, OtmException>() {
+      public Integer run(Transaction tx) throws OtmException {
+        return load(tx.getSession());
       }
+    });
+  }
 
-      String triples   = sb.toString();
-      final String cmd = "insert " + triples + " into " + PermissionsService.PP_GRAPH + ";";
+  public int load(Session session) throws OtmException {
+    Configuration conf        = CONF.subset("ambra.permissions.impliedPermissions");
+    StringBuilder sb          = new StringBuilder();
+    List          permissions = conf.getList("permission[@uri]");
+    int           c           = permissions.size();
+    for (int i = 0; i < c; i++) {
+      List implies = conf.getList("permission(" + i + ").implies[@uri]");
+      log.info("config contains " + permissions.get(i) + " implies " + implies);
 
-      if (permissions.size() > 0)
-        s.doNativeUpdate(cmd);
-
-      txn.commit();
-      txn = null;
-    } finally {
-      try {
-        if (txn != null)
-          txn.rollback();
-      } catch (Exception e) {
-        log.warn("Failed to rollback", e);
-      }
-      try {
-        if (s != null)
-          s.close();
-      } catch (Exception e) {
-        log.warn("Failed to close session", e);
+      for (int j = 0; j < implies.size(); j++) {
+        sb.append("<").append(permissions.get(i)).append("> ");
+        sb.append("<").append(PermissionsService.IMPLIES).append("> ");
+        sb.append("<").append(implies.get(j)).append("> ");
       }
     }
+    String triples   = sb.toString();
+    String cmd = "insert " + triples + " into " + PermissionsService.PP_GRAPH + ";";
+
+    if (c > 0)
+      session.doNativeUpdate(cmd);
+    else
+      log.info("No implied permissions configured.");
+
+    return c;
   }
 
   @Required
   public void setOtmSessionFactory(SessionFactory sf) {
     this.sf = sf;
   }
-
 }
