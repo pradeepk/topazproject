@@ -88,7 +88,7 @@
     <property name="mailSender" ref="mailSender"/>
     <property name="fromEmailAddress" value="${ambra.services.registration.from-email}"/>
     <property name="fromEmailName" value="${ambra.services.registration.from-name}"/>
-    <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>
+    <property name="freemarkerConfig" ref="freemarkerConfig"/>
     <property name="changeEmailMap">
       <map>
         <entry key="text" value="verifyChangeEmail-text.ftl"/>
