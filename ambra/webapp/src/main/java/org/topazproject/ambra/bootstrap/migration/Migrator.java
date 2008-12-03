@@ -20,7 +20,9 @@ package org.topazproject.ambra.bootstrap.migration;
 
 import java.net.URI;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -69,6 +71,7 @@ public class Migrator implements ServletContextListener {
     try {
       migrate();
     } catch (Exception e) {
+      log.error("Error in data-migration", e);
       throw new Error("A data-migration operation failed. Aborting ...", e);
     }
   }
@@ -91,9 +94,13 @@ public class Migrator implements ServletContextListener {
       factory.setTripleStore(new ItqlStore(service, WebappItqlClientFactory.getInstance()));
 
       sess = factory.openSession();
-      dropObsoleteGraphs(sess);
       tx = sess.beginTransaction(false, 60*60);
-      int count = addXsdIntToTopazState(sess);
+      List<String> graphs = getGraphs(sess, service);
+      if (log.isDebugEnabled())
+        log.debug("Found the following graphs: " + graphs);
+
+      int count = dropObsoleteGraphs(sess, graphs);
+      count += addXsdIntToTopazState(sess, graphs);
       tx.commit();
       tx = null;
       if (count == 0)
@@ -116,22 +123,30 @@ public class Migrator implements ServletContextListener {
     }
   }
 
+  public List<String> getGraphs(Session session, URI mulgara) throws OtmException{
+    List<String> graphs = new ArrayList<String>();
+    Results r = session.doNativeQuery("select $s from <" + mulgara + "#> where $s $p $o;");
+    while (r.next())
+      graphs.add(r.getString(0));
+
+    return graphs;
+  }
+
   /**
    * Drop obsolete graphs. Ignore the exceptions as graphs might not exist.
    *
    * @param session the Topaz session
+   * @param graphs the list of graphs in mulgara
    */
-  public void dropObsoleteGraphs(Session session) {
-    Transaction txn = null;
-    try {
-      txn = session.beginTransaction();
-      session.doNativeUpdate("drop <" + Ambra.GRAPH_PREFIX + "str> ;");
-      txn.commit();
-    } catch (OtmException e) {
-      if (txn != null)
-        txn.rollback();
-      log.warn("Could not drop graph " + Ambra.GRAPH_PREFIX + "str", e);
+  public int dropObsoleteGraphs(Session session, List<String> graphs) throws OtmException {
+    String og = Ambra.GRAPH_PREFIX + "str";
+    if (!graphs.contains(og)) {
+      log.info("Skipped dropObsoleteGraphs since <" + og + "> is not in the list of graphs");
+      return 0;
     }
+
+    session.doNativeUpdate("drop <" + og + "> ;");
+    return 1;
   }
 
   /**
@@ -141,7 +156,11 @@ public class Migrator implements ServletContextListener {
    * @return the number of migrations performed
    * @throws OtmException on an error
    */
-  public int addXsdIntToTopazState(Session sess) throws OtmException {
+  public int addXsdIntToTopazState(Session sess, List<String> graphs) throws OtmException {
+    if (!graphs.contains(RI)) {
+      log.info("Skipped addXsdIntToTopazState since <" + RI + "> is not in the list of graphs");
+      return 0;
+    }
     String marker = "<migrator:migrations> <method:addXsdIntToTopazState> ";
     log.info("Adding xsd:int to topaz:state fields ...");
 
