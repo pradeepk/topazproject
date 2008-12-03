@@ -85,4 +85,8 @@ public class GraphConfig {
   public URI getType() {
     return type;
   }
+
+  public String toString() {
+    return "GraphConfig[name=" + getId() + ", uri=" + getUri() + ", type=" + getType() + "]";
+  }
 }
