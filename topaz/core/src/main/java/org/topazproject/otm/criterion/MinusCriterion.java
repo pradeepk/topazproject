@@ -59,8 +59,7 @@ public class MinusCriterion extends Criterion {
   /*
    * inherited javadoc
    */
-  public String toItql(Criteria criteria, String subjectVar, String varPrefix)
-                throws OtmException {
+  public String toItql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
     return "( (" + getMinuend().toItql(criteria, subjectVar, varPrefix + "m1") + ") minus ("
            + getSubtrahend().toItql(criteria, subjectVar, varPrefix + "m2") + ") )";
   }
@@ -68,9 +67,9 @@ public class MinusCriterion extends Criterion {
   /*
    * inherited javadoc
    */
-  public String toOql(Criteria criteria, String subjectVar, String varPrefix)
-               throws OtmException {
-    throw new OtmException("'minus' is not supported by OQL");
+  public String toOql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+    return "( (" + getMinuend().toOql(criteria, subjectVar, varPrefix + "m1") + ") minus ("
+           + getSubtrahend().toOql(criteria, subjectVar, varPrefix + "m2") + ") )";
   }
 
   /**

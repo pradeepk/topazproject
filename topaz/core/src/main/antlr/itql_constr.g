@@ -64,14 +64,14 @@ import antlr.collections.AST;
  * <p>Only the select and where clauses are transformed; the resulting AST has the following
  * form:
  * <pre>
+ *   query: #(SELECT #(FROM ...) #(WHERE where) #(PROJ (pexpr)+) (oclause)? (lclause)? (tclause)?)
  *   pexpr:   clist
  *          | #(SUBQ query)
  *          | #(COUNT query)
  *   where: oexpr
- *   oexpr: #(OR  (aexpr)+)
- *   aexpr: #(AND (dterm)+)
- *   dterm:   cfact
- *          | #(MINUS dterm oexpr)
+ *   oexpr: #(OR  (mexpr)+)
+ *   mexpr: #(MINUS aexpr oexpr)
+ *   aexpr: #(AND (cfact)+)
  *   cfact:   clist
  *          | oexpr
  *          | #(TRANS cnstr cnstr? )
@@ -93,7 +93,6 @@ options {
 
 tokens {
     TRIPLE  = "triple";
-    MINUS   = "minus";
     TRANS   = "trans";
     WALK    = "walk";
     COUNT   = "count";
@@ -304,6 +303,7 @@ wclause[OqlAST tc]
 expr
 { OqlAST var; }
     : #(AND (expr)+)
+    | #(MINUS expr expr)
     | #(OR  (expr)+)
 
     | ! #(ASGN ID af:factor[(OqlAST) #ID, false]) { #expr = #af; }

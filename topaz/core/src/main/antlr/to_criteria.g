@@ -51,6 +51,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.Junction;
+import org.topazproject.otm.criterion.MinusCriterion;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Parameter;
 import org.topazproject.otm.criterion.Restrictions;
@@ -343,6 +344,7 @@ options {
             break;
 
           case OR:
+          case MINUS:
           case EQ:
           case NE:
           case FUNC:
@@ -378,6 +380,12 @@ options {
           c = Restrictions.conjunction();
           for (n = node.getFirstChild(); n != null; n = n.getNextSibling())
             pVar = processCriterion(n, c, pVar, vars);
+          break;
+
+        case MINUS:
+          c = new MinusCriterion();
+          for (n = node.getFirstChild(); n != null; n = n.getNextSibling())
+            pVar = processCriterion(n, c, pVar, new HashMap<String, AST>(vars));
           break;
 
         case OR:
@@ -421,7 +429,13 @@ options {
         ((Criteria) parent).add(c);
       else if (parent instanceof Junction)
         ((Junction) parent).add(c);
-      else
+      else if (parent instanceof MinusCriterion) {
+        MinusCriterion mc = (MinusCriterion) parent;
+        if (mc.getMinuend() == null)
+          mc.setMinuend(c);
+        else
+          mc.setSubtrahend(c);
+      } else
         throw new RecognitionException("Internal error: unexpected parent '" +
                                        parent.getClass().getName() + "'");
     }
@@ -934,6 +948,7 @@ wclause
 
 expr
     : #(AND (expr)+)
+    | #(MINUS expr expr)
     | #(OR  (expr)+)
     | #(ASGN v:ID f:factor) { registerAlias(#v, #f); }
     | #(EQ factor factor)

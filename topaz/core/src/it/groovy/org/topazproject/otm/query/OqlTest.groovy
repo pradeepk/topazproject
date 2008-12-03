@@ -34,6 +34,8 @@ import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.criterion.Disjunction;
 import org.topazproject.otm.criterion.EQCriterion;
+import org.topazproject.otm.criterion.MinusCriterion;
+import org.topazproject.otm.criterion.NECriterion;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.ProxyCriterion;
 import org.topazproject.otm.criterion.Parameter;
@@ -164,6 +166,44 @@ public class OqlTest extends AbstractTest {
           literal ('Yo ho ho');
           literal ('A bottle of Rum', dt:'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral')
         }
+      }
+
+      // minus
+      r = s.createQuery("""
+              select a.id from Annotation a where
+                  a.annotates = <${id4}> minus a.supersedes = <${id1}>;"""
+            ).execute()
+      checker.verify(r) {
+        row { uri (id1); }
+      }
+
+      r = s.createQuery("""
+              select a.id id from Annotation a where
+                  a.annotates = <${id4}> minus a.supersedes = <${id2}> order by id;"""
+            ).execute()
+      checker.verify(r) {
+        row { uri (id1); }
+        row { uri (id2); }
+      }
+
+      r = s.createQuery("""
+              select a.id from Annotation a where
+                  (a.annotates = <${id4}> or a.annotates = <${id5}>) minus
+                    (a.supersedes = <${id1}> or a.id = <${id1}>);"""
+            ).execute()
+      checker.verify(r) {
+        row { uri (id3); }
+      }
+
+      r = s.createQuery("""
+              select a.id id from Annotation a where
+                  (a.annotates = <${id4}> or a.annotates = <${id5}>) minus
+                    ((a.supersedes = <${id1}> or a.id = <${id1}>) minus (a.id = <${id2}>))
+              order by id;"""
+            ).execute()
+      checker.verify(r) {
+        row { uri (id2); }
+        row { uri (id3); }
       }
 
       // subquery
@@ -1642,13 +1682,15 @@ public class OqlTest extends AbstractTest {
 
         createCriteria("nextObject").
           add(Restrictions.eq("dc_type", new URI("dc:type"))).
-          add(Restrictions.eq("uri", new URI("foo:bar")))
+          add(Restrictions.eq("uri", new URI("foo:bar"))).
+          add(Restrictions.minus(Restrictions.ne("pid", new URI("foo:baz")),
+                                 Restrictions.eq("pid", new URI("bar:baz"))))
 
       assertEquals(1, dc.getParameterNames().size())
       assertEquals("auth", dc.getParameterNames().iterator().next())
 
       FilterDefinition cfd = new CriteriaFilterDefinition("critF", dc);
-      assertEquals("select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := cast(o.parts, ObjectInfo) and ((v1.date != '2007-07-08'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := cast(v1.nextObject, ObjectInfo) and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));", cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString())
+      assertEquals("select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := cast(o.parts, ObjectInfo) and ((v1.date != '2007-07-08'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := cast(v1.nextObject, ObjectInfo) and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>) and (( (v22.pid != 'foo:baz') minus (v22.pid = 'bar:baz') ))))));", cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString())
 
       // referrer criteria -> oql
       dc = new DetachedCriteria("Article")
@@ -1694,7 +1736,8 @@ public class OqlTest extends AbstractTest {
       def qry = """select o from Article o where
         (o.title = 'foo' or o.authors = :auth) and o.nextObject.uri = <foo:bar> and
         o.nextObject.dc_type = <dc:type> and p := o.parts and q := p.nextObject and
-        (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)));"""
+        (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>))) and
+        (q.pid != 'foo:baz' minus q.pid = 'bar:baz');"""
       FilterDefinition ofd = new OqlFilterDefinition("oqlF", "Article", qry)
       Criteria c = ofd.createFilter(s).setParameter('auth', 'blah').getCriteria()
 
@@ -1734,7 +1777,7 @@ public class OqlTest extends AbstractTest {
       assertEquals('nextObject', c.mapping.name)
       assertEquals('ObjectInfo', c.classMetadata.name)
       assertEquals(0, c.children.size())
-      assertEquals(1, c.criterionList.size())
+      assertEquals(2, c.criterionList.size())
 
       Criterion n = c.criterionList[0]
       assertInstanceOf(Disjunction, n)
@@ -1754,6 +1797,15 @@ public class OqlTest extends AbstractTest {
       assertEquals(2, n.criterions[1].arguments.length)
       assertEquals('dc_type', n.criterions[1].arguments[0])
       assertEquals('x:y'.toURI(), n.criterions[1].arguments[1])
+
+      n = c.criterionList[1]
+      assertInstanceOf(MinusCriterion, n)
+      assertInstanceOf(NECriterion, n.minuend)
+      assertInstanceOf(EQCriterion, n.subtrahend)
+      assertEquals('pid', n.minuend.fieldName)
+      assertEquals('foo:baz', n.minuend.value)
+      assertEquals('pid', n.subtrahend.fieldName)
+      assertEquals('bar:baz', n.subtrahend.value)
 
       /* oql w/ deref in proj -> referrer criteria 
        * note: this next query is not a valid filter query, but toCriteria() supports it

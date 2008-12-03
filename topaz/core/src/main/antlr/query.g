@@ -62,6 +62,7 @@ tokens {
     PROJ   = "projection";
     AND    = "and";
     OR     = "or";
+    MINUS  = "minus";
     ORDER  = "order";
     BY     = "by";
     LIMIT  = "limit";
@@ -156,9 +157,13 @@ wclause // where clause
     ;
 
 oexpr
-    :   aexpr (OR! aexpr)* {
+    :   mexpr (OR! mexpr)* {
           if (#oexpr != null && #oexpr.getNextSibling() != null) #oexpr = #([OR,"or"], oexpr);
         }
+    ;
+
+mexpr
+    :   aexpr (MINUS^ expr)?
     ;
 
 aexpr

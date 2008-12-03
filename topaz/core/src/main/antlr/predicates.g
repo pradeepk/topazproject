@@ -415,6 +415,7 @@ wclause
 expr[boolean isProj]
 { ExprType type, type2; }
     : #(AND (expr[isProj])+)
+    | #(MINUS expr[isProj] expr[isProj])
     | #(OR  (expr[isProj])+)
     | #(ASGN ID type=factor[isProj, false]) {
         vars.put(#ID.getText(), type);
