@@ -39,7 +39,7 @@ public class MockTemplateMailer implements TemplateMailer {
   public void sendForgotPasswordVerificationEmail(final MailerUser user) {
   }
 
-  public void setFreeMarkerConfigurer(final FreeMarkerConfigurer freeMarkerConfigurer) {
+  public void setFreemarkerConfig(final FreeMarkerConfigurer freemarkerConfig) {
   }
 
   public void setFromEmailAddress(final String fromEmailAddress) {

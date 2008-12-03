@@ -42,7 +42,7 @@ public class MockTemplateMailer extends RegistrationMailer {
   public void sendForgotPasswordVerificationEmail(final User user) {
   }
 
-  public void setFreeMarkerConfigurer(final FreeMarkerConfigurer freeMarkerConfigurer) {
+  public void setFreemarkerConfig(final FreeMarkerConfigurer freemarkerConfig) {
   }
 
   public void setFromEmailAddress(final String fromEmailAddress) {
