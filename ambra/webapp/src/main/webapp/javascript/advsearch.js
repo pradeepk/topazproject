@@ -146,11 +146,11 @@ ambra.advsearch = {
     if(val == '' || val == ambra.advsearch.Config.yearCue || val == ambra.advsearch.Config.monthCue || val == ambra.advsearch.Config.dayCue) {
       errs.push(nme + ' must be specified.');
     }
-    else if(isNaN(parseInt(val))) {
+    else if(isNaN(parseInt(val, 10))) {
       errs.push('Invalid ' + nme);
     }
     else {
-      var ival = parseInt(val);
+      var ival = parseInt(val, 10);
       if(ival < range[0] || ival > range[1]) {
         errs.push(nme + ' must be between ' + range[0] + ' and ' + range[1]);
       }
