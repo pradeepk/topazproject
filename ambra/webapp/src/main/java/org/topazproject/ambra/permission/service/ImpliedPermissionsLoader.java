@@ -31,17 +31,17 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 
 /**
- * Factory to create PermissionsService.
+ * Load the implied permissions to the Database.
  *
  * @author Pradeep Krishnan
  */
-public class PermissionsServiceFactory {
-  private static final Log log = LogFactory.getLog(PermissionsServiceFactory.class);
+public class ImpliedPermissionsLoader {
+  private static final Log log = LogFactory.getLog(ImpliedPermissionsLoader.class);
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
   private SessionFactory sf;
 
-  public void init() throws OtmException {
+  public void load() throws OtmException {
     Session s = sf.openSession();
     Transaction txn = null;
     try {
@@ -92,7 +92,4 @@ public class PermissionsServiceFactory {
     this.sf = sf;
   }
 
-  public PermissionsService getPermissionsService() {
-    return new PermissionsService();
-  }
 }
