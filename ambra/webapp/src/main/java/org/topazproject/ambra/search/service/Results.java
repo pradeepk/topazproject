@@ -45,6 +45,8 @@ import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.Representation;
+import org.topazproject.ambra.models.TextRepresentation;
 import org.topazproject.ambra.search.SearchResultPage;
 
 /**
@@ -156,17 +158,24 @@ public class Results {
       return null;
     }
 
-    // build missing data - FIXME: hardcoded representation name
+    // build missing data
     try {
       return new SearchHit(hit.getHitScore(), hit.getUri(), article.getDublinCore().getTitle(),
-                           createHighlight("body",
-                                  new String(article.getRepresentation("XML").getBody().readAll(), "UTF-8")),
+                           createHighlight("body", findTextRepresentation(article).getBodyAsText()),
                            article.getDublinCore().getCreators(),
                            article.getDublinCore().getDate());
     } catch (IOException ioe) {
       log.warn("Error creating highlight for article '" + hit.getUri() + "'", ioe);
       return null;
     }
+  }
+
+  private static TextRepresentation findTextRepresentation(Article article) throws IOException {
+    for (Representation r : article.getRepresentations()) {
+      if (r instanceof TextRepresentation)
+        return (TextRepresentation) r;
+    }
+    throw new IOException("No text-representation found for article " + article.getId());
   }
 
   private String createHighlight(String fname, String fval) throws IOException {
