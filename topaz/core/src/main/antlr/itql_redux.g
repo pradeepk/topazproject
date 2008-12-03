@@ -302,7 +302,7 @@ options {
       else if (node.getType() == AND) {
         // equality can only be propagated up past an AND
         for (AST n = node.getFirstChild(); n != null; n = n.getNextSibling())
-            simplifySubTree(n, ctxtVars, extVars, extWcls);
+          simplifySubTree(n, ctxtVars, extVars, extWcls);
       } else {
         /* collect variables in each branch - variables in other branches will be part of
          * the untouchable context for any given branch.
