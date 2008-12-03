@@ -358,7 +358,7 @@ public class SearchTest extends AbstractTest {
       }
 
       r = s.createQuery("""
-          select s, c1 from SearchTest2 s where search(s.s1.body, 'queen', c1);""").
+          select s, c1 from SearchTest2 s where search(s.s1.body, 'queen', c1) order by c1;""").
           execute()
       checker.verify(r) {
         row {
