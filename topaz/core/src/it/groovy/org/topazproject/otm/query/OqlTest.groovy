@@ -29,6 +29,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.criterion.Disjunction;
@@ -1734,22 +1735,25 @@ public class OqlTest extends AbstractTest {
       assertEquals('ObjectInfo', c.classMetadata.name)
       assertEquals(0, c.children.size())
       assertEquals(1, c.criterionList.size())
-      assertInstanceOf(Disjunction, c.criterionList[0])
-      assertEquals(2, c.criterionList[0].criterions.size())
-      assertInstanceOf(EQCriterion, c.criterionList[0].criterions[0])
-      assertInstanceOf(Conjunction, c.criterionList[0].criterions[1])
-      assertEquals('date', c.criterionList[0].criterions[0].fieldName)
-      assertEquals('2007', c.criterionList[0].criterions[0].value)
-      assertEquals(2, c.criterionList[0].criterions[1].criterions.size())
-      assertInstanceOf(EQCriterion, c.criterionList[0].criterions[1].criterions[0])
-      assertInstanceOf(ProxyCriterion, c.criterionList[0].criterions[1].criterions[1])
-      assertEquals('rights', c.criterionList[0].criterions[1].criterions[0].fieldName)
-      assertInstanceOf(Parameter, c.criterionList[0].criterions[1].criterions[0].value)
-      assertEquals('x', c.criterionList[0].criterions[1].criterions[0].value.parameterName)
-      assertEquals('le', c.criterionList[0].criterions[1].criterions[1].function)
-      assertEquals(2, c.criterionList[0].criterions[1].criterions[1].arguments.length)
-      assertEquals('dc_type', c.criterionList[0].criterions[1].criterions[1].arguments[0])
-      assertEquals('x:y'.toURI(), c.criterionList[0].criterions[1].criterions[1].arguments[1])
+
+      Criterion n = c.criterionList[0]
+      assertInstanceOf(Disjunction, n)
+      assertEquals(2, n.criterions.size())
+      assertInstanceOf(EQCriterion, n.criterions[0])
+      assertInstanceOf(Conjunction, n.criterions[1])
+      assertEquals('date', n.criterions[0].fieldName)
+      assertEquals('2007', n.criterions[0].value)
+      n = n.criterions[1]
+      assertEquals(2, n.criterions.size())
+      assertInstanceOf(EQCriterion, n.criterions[0])
+      assertInstanceOf(ProxyCriterion, n.criterions[1])
+      assertEquals('rights', n.criterions[0].fieldName)
+      assertInstanceOf(Parameter, n.criterions[0].value)
+      assertEquals('x', n.criterions[0].value.parameterName)
+      assertEquals('le', n.criterions[1].function)
+      assertEquals(2, n.criterions[1].arguments.length)
+      assertEquals('dc_type', n.criterions[1].arguments[0])
+      assertEquals('x:y'.toURI(), n.criterions[1].arguments[1])
 
       /* oql w/ deref in proj -> referrer criteria 
        * note: this next query is not a valid filter query, but toCriteria() supports it
