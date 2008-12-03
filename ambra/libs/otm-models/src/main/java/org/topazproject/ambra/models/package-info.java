@@ -17,6 +17,40 @@
  * limitations under the License.
  */
 
+@Graphs({
+  @Graph(id = "ri", uri = Ambra.GRAPH_PREFIX + "filter:graph=ri",
+         type = Ambra.TYPE_PREFIX + "filter"),
+  @Graph(id = "articles", uri = Ambra.GRAPH_PREFIX + "filter:graph=ri",
+         type = Ambra.TYPE_PREFIX + "filter"),
+  @Graph(id = "annotations", uri = Ambra.GRAPH_PREFIX + "filter:graph=ri",
+         type = Ambra.TYPE_PREFIX + "filter"),
+  @Graph(id = "users", uri = Ambra.GRAPH_PREFIX + "filter:graph=users",
+         type = Ambra.TYPE_PREFIX + "filter"),
+  @Graph(id = "grants", uri = Ambra.GRAPH_PREFIX + "filter:graph=grants",
+         type = Ambra.TYPE_PREFIX + "filter"),
+  @Graph(id = "revokes", uri = Ambra.GRAPH_PREFIX + "filter:graph=revokes",
+         type = Ambra.TYPE_PREFIX + "filter"),
+  @Graph(id = "pp", uri = Ambra.GRAPH_PREFIX + "filter:graph=pp",
+         type = Ambra.TYPE_PREFIX + "filter"),
+  @Graph(id = "preferences", uri = Ambra.GRAPH_PREFIX + "filter:graph=preferences",
+         type = Ambra.TYPE_PREFIX + "filter"),
+  @Graph(id = "profiles", uri = Ambra.GRAPH_PREFIX + "filter:graph=profiles",
+         type = Ambra.TYPE_PREFIX + "filter"),
+  @Graph(id = "ratings", uri = Ambra.GRAPH_PREFIX + "filter:graph=ratings",
+         type = Ambra.TYPE_PREFIX + "filter"),
+  @Graph(id = "alerts", uri = Ambra.GRAPH_PREFIX + "filter:graph=alerts",
+         type = Ambra.TYPE_PREFIX + "filter"),
+  @Graph(id = "criteria", uri = Ambra.GRAPH_PREFIX + "filter:graph=criteria",
+         type = Ambra.TYPE_PREFIX + "filter"),
+  @Graph(id = "lucene", uri = Ambra.GRAPH_PREFIX + "lucene",
+         type = Rdf.mulgara + "LuceneModel"),
+  @Graph(id = "str", uri = Ambra.GRAPH_PREFIX + "str",
+         type = Ambra.TYPE_PREFIX + "StringCompare"),
+  @Graph(id = "xsd", uri = Ambra.GRAPH_PREFIX + "xsd",
+         type = Rdf.mulgara + "XMLSchemaModel"),
+  @Graph(id = "prefix", uri = Ambra.GRAPH_PREFIX + "prefix",
+         type = Rdf.mulgara + "PrefixGraph")
+})
 @Aliases({
   @Alias(alias = "foaf",    value = Rdf.foaf),
   @Alias(alias = "dc",      value = Rdf.dc),
@@ -35,6 +69,8 @@
 })
 package org.topazproject.ambra.models;
 
-import org.topazproject.otm.annotations.Aliases;
 import org.topazproject.otm.annotations.Alias;
+import org.topazproject.otm.annotations.Aliases;
+import org.topazproject.otm.annotations.Graph;
+import org.topazproject.otm.annotations.Graphs;
 import org.topazproject.otm.Rdf;

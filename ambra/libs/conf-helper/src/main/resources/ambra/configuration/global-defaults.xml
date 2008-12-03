@@ -100,54 +100,6 @@
       <appContext></appContext> <!-- web-app context path of ambra. Leave empty for ROOT context. -->
     </platform>
     
-    <!-- The list of graphs in mulgara that we depend on/create -->
-    <graphs>
-      <ri type="http://topazproject.org/graphs#filter">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}filter:graph=ri
-      </ri>
-      <articles type="${ambra.graphs.ri[@type]}">${ambra.graphs.ri}</articles>
-      <annotations type="${ambra.graphs.ri[@type]}">${ambra.graphs.ri}</annotations>
-      <users type="http://topazproject.org/graphs#filter">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}filter:graph=users
-      </users>
-      <grants type="http://topazproject.org/graphs#filter">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}filter:graph=grants
-      </grants>
-      <revokes type="http://topazproject.org/graphs#filter">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}filter:graph=revokes
-      </revokes>
-      <pp type="http://topazproject.org/graphs#filter">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}filter:graph=pp
-      </pp>
-      <preferences type="http://topazproject.org/graphs#filter">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}filter:graph=preferences
-      </preferences>
-      <profiles type="http://topazproject.org/graphs#filter">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}filter:graph=profiles
-      </profiles>
-      <ratings type="http://topazproject.org/graphs#filter">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}filter:graph=ratings
-      </ratings>
-      <alerts type="http://topazproject.org/graphs#filter">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}filter:graph=alerts
-      </alerts>
-      <criteria type="http://topazproject.org/graphs#filter">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}filter:graph=criteria
-      </criteria>
-      <lucene type="http://mulgara.org/mulgara#LuceneModel">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}lucene
-      </lucene>
-      <str type="http://topazproject.org/graphs#StringCompare">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}str
-      </str>
-      <xsd type="http://mulgara.org/mulgara#XMLSchemaModel">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}xsd
-      </xsd>
-      <prefix type="http://mulgara.org/mulgara#PrefixGraph">
-        ${ambra.topaz.tripleStore.mulgara.graphPrefix}prefix
-      </prefix>
-    </graphs>
-    
     <topaz>
       <!-- Configuration to talk to Fedora -->
       <blobStore>
@@ -167,10 +119,6 @@
           <baseuri>
             ${ambra.topaz.tripleStore.mulgara.scheme}//${ambra.network.hosts.mulgara}/topazproject
           </baseuri>
-          <!-- The base uri of all the graphs that we create in mulgara.-->
-          <graphPrefix>
-            local:///topazproject#
-          </graphPrefix>
           <!-- Configuration to talk to Mulgara -->
           <itql>
             <uri>${ambra.topaz.tripleStore.mulgara.baseuri}</uri>

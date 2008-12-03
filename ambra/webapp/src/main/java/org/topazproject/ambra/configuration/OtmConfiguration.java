@@ -178,23 +178,6 @@ public class OtmConfiguration {
     factory.setBlobStore(blobStore);
 
     if (log.isDebugEnabled())
-      log.debug("Adding graph configs : " + Arrays.asList(graphs));
-
-    for (GraphConfig graph : graphs)
-      factory.addGraph(graph);
-
-    if (log.isDebugEnabled())
-      log.debug("Creating graphs : " + Arrays.asList(graphs));
-
-    TransactionHelper.doInTx(factory, new TransactionHelper.Action<Void>() {
-      public Void run(Transaction tx) {
-        for (GraphConfig graph : tx.getSession().getSessionFactory().listGraphs())
-          tx.getSession().createGraph(graph.getId());
-        return null;
-      }
-    });
-
-    if (log.isDebugEnabled())
       log.debug("Pre-loading classes from class-path ...");
 
     factory.preloadFromClasspath();
@@ -211,9 +194,26 @@ public class OtmConfiguration {
     }
 
     if (log.isDebugEnabled())
+      log.debug("Adding graph configs : " + Arrays.asList(graphs));
+
+    for (GraphConfig graph : graphs)
+      factory.addGraph(graph);
+
+    if (log.isDebugEnabled())
       log.debug("Validating factory config...");
 
     factory.validate();
+
+    if (log.isDebugEnabled())
+      log.debug("Creating graphs : " + Arrays.asList(factory.listGraphs()));
+
+    TransactionHelper.doInTx(factory, new TransactionHelper.Action<Void>() {
+      public Void run(Transaction tx) {
+        for (GraphConfig graph : tx.getSession().getSessionFactory().listGraphs())
+          tx.getSession().createGraph(graph.getId());
+        return null;
+      }
+    });
 
     log.info("Initialized OTM SessionFactory instance.");
 
