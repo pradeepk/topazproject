@@ -292,14 +292,14 @@
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty</artifactId>
-        <version>6.1.12.rc2</version>
+        <version>6.1.14</version>
         <scope>provided</scope>
       </dependency>
       
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-util</artifactId>
-        <version>6.1.12.rc2</version>
+        <version>6.1.14</version>
       </dependency>
 
       <dependency>
@@ -821,7 +821,7 @@
         <plugin>
           <groupId>org.mortbay.jetty</groupId>
           <artifactId>maven-jetty-plugin</artifactId>
-          <version>6.1.12.rc2</version>
+          <version>6.1.14</version>
         </plugin>
 
         <plugin>
