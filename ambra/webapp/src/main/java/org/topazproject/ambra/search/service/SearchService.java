@@ -78,6 +78,8 @@ public class SearchService {
   private Cache             cache;
 
   static {
+    FIELD_MAP.put("identifier",
+                  new String[] { "art.id" });
     FIELD_MAP.put("title",
                   new String[] { "art.dublinCore.title" });
     FIELD_MAP.put("subject",
@@ -86,23 +88,65 @@ public class SearchService {
                   new String[] { "art.dublinCore.description" });
     FIELD_MAP.put("creator",
                   new String[] { "art.dublinCore.creators" });
+    FIELD_MAP.put("contributor",
+                  new String[] { "art.dublinCore.contributors" });
+    FIELD_MAP.put("publisher",
+                  new String[] { "art.dublinCore.publisher" });
+    FIELD_MAP.put("rights",
+                  new String[] { "art.dublinCore.rights" });
+    FIELD_MAP.put("language",
+                  new String[] { "art.dublinCore.language" });
+    FIELD_MAP.put("type",
+                  new String[] { "art.dublinCore.type" });
+    FIELD_MAP.put("format",
+                  new String[] { "art.dublinCore.format" });
     FIELD_MAP.put("date",
                   new String[] { "art.dublinCore.date" });
+    FIELD_MAP.put("dateSubmitted",
+                  new String[] { "art.dublinCore.submitted" });
+    FIELD_MAP.put("dateAccepted",
+                  new String[] { "art.dublinCore.accepted" });
+    FIELD_MAP.put("journalTitle",
+                  new String[] { "art.dublinCore.bibliographicCitation.journal" });
+    FIELD_MAP.put("volume",
+                  new String[] { "art.dublinCore.bibliographicCitation.volume" });
+    FIELD_MAP.put("issue",
+                  new String[] { "art.dublinCore.bibliographicCitation.issue" });
+    FIELD_MAP.put("elocationId",
+                  new String[] { "art.dublinCore.bibliographicCitation.eLocationId" });
     FIELD_MAP.put("body",
                   new String[] { "cast(art.representations, TextRepresentation).body" });
     FIELD_MAP.put("citation",
                   new String[] { "art.dublinCore.references.summary" });// FIXME: any field in Citation?
+    FIELD_MAP.put("editor",
+                  new String[] { "art.dublinCore.bibliographicCitation.editors.realName" });
 
     // FIXME: get this info from otm metadata (see isSearchable())
-    SRCHB_MAP.put("title",       true);
-    SRCHB_MAP.put("subject",     true);
-    SRCHB_MAP.put("description", true);
-    SRCHB_MAP.put("creator",     true);
-    SRCHB_MAP.put("date",        false);
-    SRCHB_MAP.put("body",        true);
-    SRCHB_MAP.put("citation",    true);
+    SRCHB_MAP.put("identifier",    false);
+    SRCHB_MAP.put("title",         true);
+    SRCHB_MAP.put("subject",       true);
+    SRCHB_MAP.put("description",   true);
+    SRCHB_MAP.put("creator",       true);
+    SRCHB_MAP.put("contributor",   true);
+    SRCHB_MAP.put("publisher",     true);
+    SRCHB_MAP.put("rights",        true);
+    SRCHB_MAP.put("language",      false);
+    SRCHB_MAP.put("type",          false);
+    SRCHB_MAP.put("format",        false);
+    SRCHB_MAP.put("date",          false);
+    SRCHB_MAP.put("dateSubmitted", false);
+    SRCHB_MAP.put("dateAccepted",  false);
+    SRCHB_MAP.put("journalTitle",  true);
+    SRCHB_MAP.put("volume",        true);
+    SRCHB_MAP.put("issue",         true);
+    SRCHB_MAP.put("elocationId",   false);
+    SRCHB_MAP.put("body",          true);
+    SRCHB_MAP.put("citation",      true);
+    SRCHB_MAP.put("editor",        true);
 
-    DT_MAP.put("date", "^^<xsd:date>");
+    DT_MAP.put("date",          "^^<xsd:date>");
+    DT_MAP.put("dateSubmitted", "^^<xsd:date>");
+    DT_MAP.put("dateAccepted",  "^^<xsd:date>");
 
     String[] fields = CONF.getStringArray("ambra.services.search.defaultFields");
     DEFAULT_FIELDS = (fields != null) ? fields : new String[] { "description", "title", "body" };
