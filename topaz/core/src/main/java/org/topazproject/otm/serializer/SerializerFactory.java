@@ -97,7 +97,7 @@ public class SerializerFactory {
         }
 
         public Long fromDate(Date d) {
-          return new Long(d.getTime());
+          return Long.valueOf(d.getTime());
         }
       };
 
