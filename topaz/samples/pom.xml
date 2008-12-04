@@ -71,7 +71,7 @@
     </repository>
     <site>
       <id>topaz-docs</id>
-      <url>${topazproject.site.url}</url>
+      <url>${topazproject.site.url}/topaz/samples</url>
     </site>
   </distributionManagement>
 
