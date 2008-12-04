@@ -125,6 +125,9 @@ public class SearchAction extends BaseActionSupport {
       SearchResultPage results = searchService.find(queryString, startPage, pageSize);
       totalNoOfResults = results.getTotalNoOfResults();
       searchResults    = results.getHits();
+
+      int totPages = (totalNoOfResults + pageSize - 1) / pageSize;
+      startPage = Math.max(0, Math.min(startPage, totPages - 1));
     } catch (Exception e) {
       addActionError("Search failed ");
       log.error("Search failed with error with query string: " + queryString, e);

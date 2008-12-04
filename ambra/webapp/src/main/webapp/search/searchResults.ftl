@@ -18,20 +18,23 @@
   limitations under the License.
 -->
 <!-- begin : main content wrapper -->
+<#function max x y><#return stack.findValue("@@max(${x}, ${y})")/></#function>
+<#function min x y><#return stack.findValue("@@min(${x}, ${y})")/></#function>
+
 <#macro renderSearchPaginationLinks totalPages, hasMore>
-  <#if (startPage gt 0)>
+  <#if (startPage gt 0) && (totalPages gt 1)>
     <@s.url id="prevPageURL" action="simpleSearch" namespace="/search" startPage="${startPage - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
     <@s.a href="%{prevPageURL}">&lt; Prev</@s.a> |
   </#if>
   <#if (totalPages > 1) >
-    <#list 1..totalPages as pageNumber>
+    <#list max(1, startPage - 9)..min(totalPages, startPage + 11) as pageNumber>
       <#if (startPage == (pageNumber-1))>
         ${pageNumber}
       <#else>
         <@s.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
         <@s.a href="%{searchPageURL}">${pageNumber}</@s.a>
       </#if>
-      <#if pageNumber != totalPages>|</#if>
+      <#if pageNumber != min(totalPages, startPage + 2)>|</#if>
     </#list>
   </#if>
   <#if hasMore == 1>
@@ -43,10 +46,6 @@
 
 <div id="content" class="static">
 
-  <#-- We don't really know the total number of hits (or even if we've seen the total
-       number yet. So we will only show the number of pages up to the hit count we've
-       got so far. (This would best be done in code... and we ought to be passing in
-       "knownHits" so when a user goes backward we can still know totoal hits) -->
   <#assign noOfResults = (startPage + 1) * pageSize>
   <#if (noOfResults >= totalNoOfResults)>
     <#assign noOfResults = totalNoOfResults>
@@ -56,38 +55,20 @@
   </#if>
 
   <#-- Compute number of pages -->
-  <#assign totalPages = (noOfResults / pageSize)?int>
-  <#if (noOfResults % pageSize > 0) >
-    <#assign totalPages = totalPages + 1>
-  </#if>
+  <#assign totalPages = ((totalNoOfResults + pageSize - 1) / pageSize)?int>
 
   <h1>Search Results</h1>
 
   <div id="search-results">
 <#--  <p>Debug: noOfResults: ${noOfResults}, totalNoOfResults: ${totalNoOfResults}, startPage: ${startPage}, pageSize: ${pageSize}, hasMore: ${hasMore}</p> -->
 
-    <#if noOfResults == 0>
+    <#if totalNoOfResults == 0>
       <p>There are no results for <strong>${query?html}</strong>.</p>
     <#else>
       <#assign startIndex = startPage * pageSize>
       <p>
-      Viewing results
-      <strong>
-        ${startIndex + 1} -
-
-        <#if startPage == totalPages - 1>
-          ${noOfResults}
-        <#else>
-          ${startIndex + pageSize}
-        </#if>
-
-      </strong>
-
-      <#if totalNoOfResults == noOfResults>
-        of <strong>${totalNoOfResults}</strong> results, sorted by relevance,
-      <#else>
-        sorted by relevance,
-      </#if>
+      Viewing results <strong>${startIndex + 1} - ${noOfResults}</strong>
+      of <strong>${totalNoOfResults}</strong> results, sorted by relevance,
 
       for <strong>${query?html}</strong>.
       </p>
