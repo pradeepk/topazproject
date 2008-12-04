@@ -46,7 +46,7 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
   private final OqlAST               projVar;
   private       OqlAST[]             derefNodes;
   private       OqlAST[]             projList;
-  private       CollectionType           colType;
+  private       CollectionType       colType;
   private       int                  projCol = -1;
   private       Map<String, Integer> indexes;
 
@@ -92,12 +92,7 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
     assert f.getType() == FROM;
     assert w.getType() == WHERE;
 
-    OqlAST def = getLastDeref(projVar, (OqlAST) w.getFirstChild());
-    if (def != null)
-      def.addListener(this);
-    else
-      throw new RecognitionException("'" + projVar + "' is not an alias or the alias is not a " +
-                                     "dereference");
+    getLastDeref(projVar, (OqlAST) w.getFirstChild()).addListener(this);
   }
 
   private OqlAST getLastDeref(OqlAST var, OqlAST top) throws RecognitionException {
@@ -204,7 +199,7 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
     }
   }
 
-  private Map<String, Integer> buildRdfListOrder(Answer qa, int col) throws AnswerException {
+  private static Map<String, Integer> buildRdfListOrder(Answer qa, int col) throws AnswerException {
     Map<String, String>  fwd     = new HashMap<String, String>();
     Map<String, String>  rev     = new HashMap<String, String>();
     Map<String, Integer> indexes = new HashMap<String, Integer>();
