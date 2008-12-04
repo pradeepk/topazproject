@@ -304,7 +304,7 @@ public class Property {
    * inherited javadoc
    */
   public boolean equals(Object other) {
-    return (!(other instanceof Property)) ? null
+    return (!(other instanceof Property)) ? false
            : (name.equals(((Property) other).name) && clazz.equals(((Property) other).clazz));
   }
 
