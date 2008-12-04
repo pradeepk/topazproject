@@ -468,8 +468,8 @@ public class Criteria implements Parameterizable<Criteria> {
           throw new OtmException("type mismatch in parameter '" + name + "': field '" +
                         field +
                         "' is a plain literal but parameter value is a typed literal with type '" +
-                        type + "'");
-        else if (!lit.getDatatype().equals(type))
+                        lit.getDatatype() + "'");
+        else if (!lit.getDatatype().equals(URI.create(type)))
           throw new OtmException("type mismatch in parameter '" + name + "': field '" +
                           field + "' is a typed literal with data type '" +
                           type + "' but parameter value is a typed literal with datatype '" +
