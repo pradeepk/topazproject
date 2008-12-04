@@ -400,7 +400,7 @@ public class SessionImpl extends AbstractSession {
     }
 
     if (o instanceof LazyLoaded)
-        o.equals(null); // ensure it is loaded
+      o.equals(null); // ensure it is loaded
 
     return o;
   }
@@ -612,20 +612,20 @@ public class SessionImpl extends AbstractSession {
 
   private <T> void updateBlobSearch(SearchStore store, Blob blob, ClassMetadata cm, Id id, T o)
       throws OtmException {
-   SearchableDefinition sd =
+    SearchableDefinition sd =
       SearchableDefinition.findForProp(sessionFactory, cm.getBlobField().getDefinition().getName());
-   if (sd == null)
-     return;
+    if (sd == null)
+      return;
 
-   switch (blob.getChangeState()) {
-     case DELETED:
-       store.remove(cm, sd, id.getId(), o, getSearchStoreCon());
-       break;
-     case WRITTEN:
-       store.remove(cm, sd, id.getId(), o, getSearchStoreCon());
-     case CREATED:
-       store.index(cm, Collections.singleton(sd), id.getId(), o, getSearchStoreCon());
-   }
+    switch (blob.getChangeState()) {
+      case DELETED:
+        store.remove(cm, sd, id.getId(), o, getSearchStoreCon());
+        break;
+      case WRITTEN:
+        store.remove(cm, sd, id.getId(), o, getSearchStoreCon());
+      case CREATED:
+        store.index(cm, Collections.singleton(sd), id.getId(), o, getSearchStoreCon());
+    }
   }
 
   private SearchableDefinition getSearchableDef(ClassMetadata cm, Mapper m) {
