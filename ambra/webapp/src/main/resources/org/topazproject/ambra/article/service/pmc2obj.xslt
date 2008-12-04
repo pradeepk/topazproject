@@ -444,6 +444,10 @@
       </authors>
     </xsl:for-each>
 
+    <xsl:for-each select="$collab-authors">
+      <collaborativeAuthors><xsl:value-of select="."/></collaborativeAuthors>
+    </xsl:for-each>
+
   </xsl:template>
 
   <xsl:template name="gen-lic">
