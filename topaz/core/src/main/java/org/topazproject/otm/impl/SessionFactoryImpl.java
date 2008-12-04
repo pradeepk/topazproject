@@ -943,9 +943,7 @@ public class SessionFactoryImpl implements SessionFactory {
     }
 
     private static XAResourceHolder createResHolder(XAResource xaResource) {
-      ResourceBean rb = new ResourceBean() {
-        public XAResourceProducer createResource() { return null; }
-      };
+      ResourceBean rb = new ResourceBean() { };
       rb.setUniqueName(xaResource.getClass().getName() + System.identityHashCode(xaResource));
       rb.setApplyTransactionTimeout(true);
 
