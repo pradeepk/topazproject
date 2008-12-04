@@ -494,7 +494,6 @@ public class SessionImpl extends AbstractSession {
     ClassMetadata         cm            = sessionFactory.getInstanceMetadata(id.getClassMetadata(),
                                                                                getEntityMode(), o);
     TripleStore           store         = sessionFactory.getTripleStore();
-    BlobStore             bs            = sessionFactory.getBlobStore();
     SearchStore           ss            = sessionFactory.getSearchStore();
     boolean               bf            = (cm.getBlobField() != null);
     boolean               tp            = (cm.getRdfMappers().size() + cm.getAllTypes().size()) > 0;
