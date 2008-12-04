@@ -28,6 +28,7 @@
       <cacheInvalidator>
         <invalidationInterval>0</invalidationInterval>
         <rulesFile>/conf/cache_invalidator.xml</rulesFile>
+        <useSharedCacheManager>true</useSharedCacheManager>
       </cacheInvalidator>
     </fr>
   </topaz>

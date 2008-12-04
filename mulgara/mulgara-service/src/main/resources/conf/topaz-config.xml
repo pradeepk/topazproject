@@ -39,6 +39,7 @@
       <cacheInvalidator>
         <invalidationInterval>100</invalidationInterval>
         <rulesFile>/conf/cache_invalidator.xml</rulesFile>
+        <ehcacheConfig>/conf/cache_invalidator.ehcache.xml</ehcacheConfig>
       </cacheInvalidator>
     </fr>
   </topaz>

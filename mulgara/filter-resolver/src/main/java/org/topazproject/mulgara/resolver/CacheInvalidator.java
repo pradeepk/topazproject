@@ -76,6 +76,11 @@ import net.sf.ehcache.Ehcache;
  *   <dd>the location of the config for Ehcache. If this starts with a '/' it is treated as a
  *       resource; otherwise as a URL. If null, the default config location "/ehcache.xml" is
  *       used.</dd>
+ *   <dt>topaz.fr.cacheInvalidator.useSharedCacheManager</dt>
+ *   <dd>if true then the singleton EhCache CacheManager is used; if false or unset then a new
+ *       CacheManager instance is created. This is mainly useful for testing and should not be
+ *       set for normal use to avoid clashes with any other EhCache instances (especially when
+ *       running mulgara in embedded mode).</dd>
  *   <dt>topaz.fr.cacheInvalidator.queryCache</dt>
  *   <dd>the name of the cache to use for storing rules-query results. If undefined it defaults
  *       to "queryCache". If no cache with the given name has been configured in Ehcache then
@@ -174,6 +179,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
 
   private final Rule[]             rules;
   private final Map<String,String> aliases;
+  private final CacheManager       cacheManager;
   private final Ehcache            queryCache;
   private final XAResource         xaResource;
   private       Session            session;
@@ -218,17 +224,19 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
 
     // set up the Ehcache
     String ehcConfigLoc = config.getString("ehcacheConfig", null);
+    boolean useSingleton = config.getBoolean("useSharedCacheManager", false);
     if (ehcConfigLoc != null) {
       loc = findResOrURL(ehcConfigLoc);
       if (loc == null)
         throw new IOException("Ehcache config file '" + ehcConfigLoc + "' not found");
 
-      CacheManager.create(loc);
-    } else
-      CacheManager.create();
+      cacheManager = useSingleton ? CacheManager.create(loc) : new CacheManager(loc);
+    } else {
+      cacheManager = useSingleton ? CacheManager.create() : new CacheManager();
+    }
 
     String qcName = config.getString("queryCache", DEF_QC_NAME);
-    queryCache    = CacheManager.getInstance().getEhcache(qcName);
+    queryCache    = cacheManager.getEhcache(qcName);
     if (queryCache != null)
       logger.info("Using cache '" + qcName + "' for the query caching");
     else
@@ -646,7 +654,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
   @Override
   protected void handleQueuedItem(ModItem mi) throws IOException {
     // get the Ehcache instance
-    Ehcache cache = CacheManager.getInstance().getEhcache(mi.cache);
+    Ehcache cache = cacheManager.getEhcache(mi.cache);
     if (cache == null) {
       logger.warn("No cache configuration found for '" + mi.cache + "'");
       return;
@@ -788,7 +796,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
 
   @Override
   protected void shutdownCallback() {
-    CacheManager.getInstance().shutdown();
+    cacheManager.shutdown();
     logger.info("shut down cache-manager");
   }
 
