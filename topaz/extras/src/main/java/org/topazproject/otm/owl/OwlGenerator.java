@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -181,8 +182,8 @@ public class OwlGenerator {
     if ((style != null) && (style.equals("text"))) {
       format = new ManchesterOWLSyntaxOntologyFormat();
     }
-    for (String name:namespaces.keySet()) {
-      format.addPrefixNamespaceMapping(name, namespaces.get(name));
+    for (Map.Entry<String, String> entry:namespaces.entrySet()) {
+      format.addPrefixNamespaceMapping(entry.getKey(), entry.getValue());
     }
     format.addPrefixNamespaceMapping(JAVA_PREFIX, JAVA_NS);
     format.addPrefixNamespaceMapping(MULGARA_PREFIX, MULGARA_NS);
