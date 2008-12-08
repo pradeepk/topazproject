@@ -47,7 +47,7 @@ public class ListReplyAction extends BaseActionSupport {
   private WebReply[] replies;
   private WebAnnotation baseAnnotation;
   private Article article;
-  private ArticleOtmService articleOtmService;     // OTM service Spring injected.
+  private ArticleOtmService articleOtmService;
   private Citation citation;
   protected ReplyService replyService;
   protected AnnotationConverter converter;
@@ -120,7 +120,7 @@ public class ListReplyAction extends BaseActionSupport {
   }
 
   /**
-   * @return The constructed annotation citation string.
+   * @return Citation of the article.
    */
   public Citation getCitation() {
     return citation;
