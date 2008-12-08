@@ -33,7 +33,6 @@ import org.topazproject.ambra.annotation.service.WebReply;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Citation;
-import org.topazproject.ambra.util.CitationUtils;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -49,7 +48,7 @@ public class ListReplyAction extends BaseActionSupport {
   private WebAnnotation baseAnnotation;
   private Article article;
   private ArticleOtmService articleOtmService;     // OTM service Spring injected.
-  private String citation;
+  private Citation citation;
   protected ReplyService replyService;
   protected AnnotationConverter converter;
   protected AnnotationService annotationService;
@@ -98,10 +97,9 @@ public class ListReplyAction extends BaseActionSupport {
       // we're only showing annotation citations for formal corrections
       if(baseAnnotation.isFormalCorrection()) {
         // lock @ Article level
-
-        Citation citationObject = article.getDublinCore().getBibliographicCitation();
-
-        citation = CitationUtils.generateArticleCorrectionCitationString(citationObject, baseAnnotation);
+        Citation bibliographicCitation = article.getDublinCore().getBibliographicCitation();
+        bibliographicCitation.getAuthors();
+        citation = bibliographicCitation;
       }
     } catch (Exception ae) {
       citation = null;
@@ -124,7 +122,7 @@ public class ListReplyAction extends BaseActionSupport {
   /**
    * @return The constructed annotation citation string.
    */
-  public String getCitation() {
+  public Citation getCitation() {
     return citation;
   }
 
