@@ -18,7 +18,6 @@
  */
 package org.topazproject.ambra.user.service;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -704,6 +703,7 @@ public class UserService {
    * @param appId
    *          The appId to set.
    */
+  @Required
   public void setApplicationId(String appId) {
     this.applicationId = appId;
   }
