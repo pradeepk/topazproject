@@ -19,8 +19,12 @@
 
 package org.topazproject.ambra.util;
 
-import freemarker.template.*;
 import freemarker.core.Environment;
+import freemarker.template.TemplateDirectiveModel;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateDirectiveBody;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateModelException;
 
 import java.util.Map;
 import java.io.IOException;
