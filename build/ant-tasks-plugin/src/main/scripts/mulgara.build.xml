@@ -73,9 +73,9 @@
     <java jar="${mulgara-jar}" fork="true" spawn="${SPAWN}" failonerror="${failonerr}"
           dir="${home}">
       <jvmarg line="${jvmargs}"/>
-      <arg value="-s"/>
+      <arg value="--servername"/>
       <arg value="topazproject"/>
-      <arg value="-a"/>
+      <arg value="--path"/>
       <arg file="${ambra.topaz.tripleStore.mulgara.databaseDir}"/>
       <arg value="--nohttp"/>
       <arg value="--rmiport"/>
@@ -96,9 +96,9 @@
     <echo>Stopping Mulgara</echo>
 
     <java jar="${mulgara-jar}" fork="true" failonerror="true" dir="${home}">
-      <arg value="-s"/>
+      <arg value="--servername"/>
       <arg value="topazproject"/>
-      <arg value="-x"/>
+      <arg value="--shutdown"/>
     </java>
   </target>
     
