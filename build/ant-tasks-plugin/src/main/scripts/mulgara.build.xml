@@ -77,9 +77,10 @@
       <arg value="topazproject"/>
       <arg value="-a"/>
       <arg file="${ambra.topaz.tripleStore.mulgara.databaseDir}"/>
-      <arg value="-p"/>
-      <arg value="30857"/>
-      <arg value="-r"/>
+      <arg value="--nohttp"/>
+      <arg value="--rmiport"/>
+      <arg value="${port}"/>
+      <arg value="--rmiobjectport"/>
       <arg value="${port}"/>
       <arg line="${logging}"/>
       <syspropertyset>

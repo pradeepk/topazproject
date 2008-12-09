@@ -68,7 +68,9 @@ Environment:
   SU_USER       The user to start/stop server as.
   DATABASE_DIR  The location where to store the database
   SERVERNAME    The RMI server name
+  PORT          The RMI port to use
   LOG4J_CONFIG  The location of the log4j config file
+  OPTIONS       Additional command-line options to pass to mulgara
 EOF
 }
 
@@ -79,7 +81,6 @@ TOPAZ_LOCAL="/usr/local/topaz"
 TOPAZ_CONFIG="/etc/topaz"
 [ -z "$JAVA_OPTS" ] && JAVA_OPTS="-Xmx400m -XX:MaxPermSize=256m"
 [ -z "$STARTUP" ] && STARTUP="jsvc"
-[[ "$OPTIONS" != *"-p "* ]] && OPTIONS="$OPTIONS -p 35791"
 VARDIR="/var"
 LOGDIR="${VARDIR}/log/topaz"
 PIDDIR="${VARDIR}/run/topaz"
@@ -89,10 +90,6 @@ verbose=
 
 MULGARA_HOME="$TOPAZ_LOCAL/topaz-mulgara"
 MULGARA_JAR="`ls \"$MULGARA_HOME\"/mulgara-service-*.jar`"
-
-# These ports are only for printing status. If they're accurate, status will be better
-PORT=
-topaz_mulgara_PORT=1099
 
 #
 # Should not need to modify stuff below here
@@ -184,7 +181,7 @@ MULGARA_RUN="
   -l file://${LOG4J_CONFIG} \
   -s ${SERVERNAME} \
   -a ${DATABASE_DIR} \
-  -r ${PORT} \
+  -r ${PORT} -t ${PORT} \
   ${OPTIONS}"
 
 # Find jsvc (in case root's PATH) doesn't contain it

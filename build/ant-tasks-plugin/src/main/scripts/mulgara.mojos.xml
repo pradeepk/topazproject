@@ -87,7 +87,7 @@
           <property>PORT</property>
           <required>true</required>
           <expression>${PORT}</expression>
-          <defaultValue>1099</defaultValue>
+          <defaultValue>8111</defaultValue>
         </parameter>
 
         <parameter>

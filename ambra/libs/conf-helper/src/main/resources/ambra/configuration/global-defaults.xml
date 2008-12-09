@@ -87,6 +87,7 @@
         <ambra-ssl>10443</ambra-ssl>
         <fedora>9090</fedora>
         <registration-ssl>${ambra.network.ports.cas-ssl}</registration-ssl>
+        <mulgara>8111</mulgara>
       </ports>
     </network>
     <platform>
@@ -115,9 +116,8 @@
 
       <tripleStore>
         <mulgara>
-          <scheme>rmi:</scheme>
           <baseuri>
-            ${ambra.topaz.tripleStore.mulgara.scheme}//${ambra.network.hosts.mulgara}/topazproject
+            rmi://${ambra.network.hosts.mulgara}:${ambra.network.ports.mulgara}/topazproject
           </baseuri>
           <!-- Configuration to talk to Mulgara -->
           <itql>
