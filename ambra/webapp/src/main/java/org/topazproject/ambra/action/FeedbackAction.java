@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,8 +84,7 @@ public class FeedbackAction extends UserActionSupport {
 
     final Map<String, String> attributes = getUserSessionAttributes();
     final List<String> values = new ArrayList<String>();
-    for (final Iterator<String> iterator = attributes.keySet().iterator(); iterator.hasNext();) {
-      final String key = iterator.next();
+    for (final String key : attributes.keySet()) {
       values.add(key + " ---> " + attributes.get(key));
     }
 
@@ -95,6 +93,7 @@ public class FeedbackAction extends UserActionSupport {
     return SUCCESS;
   }
 
+  @SuppressWarnings("unchecked")
   public Map<String, String> getUserSessionAttributes() {
     final Map<String, String> headers = new LinkedHashMap<String, String>();
     final HttpServletRequest request = ServletActionContext.getRequest();
