@@ -18,7 +18,6 @@
  */
 package org.topazproject.ambra.annotation.service;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
@@ -82,9 +81,6 @@ public class AnnotationService extends BaseAnnotationService {
    *
    * @param pdp the PDP to use
    */
-  public AnnotationService() {
-  }
-
   @Required
   public void setAnnotationsPdp(PDP pdp) {
     pep  = new AnnotationsPEP(pdp);
