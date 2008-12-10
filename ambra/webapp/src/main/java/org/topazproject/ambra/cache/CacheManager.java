@@ -211,17 +211,27 @@ public class CacheManager implements CacheListener, ObjectListener {
 
     public void beforeCompletion() {
       try {
-        if (!updateLock.tryLock(lockWaitSeconds, TimeUnit.SECONDS))
-          throw new RuntimeException("Failed to acquire lock to update caches after waiting for "
-                                     + lockWaitSeconds + " seconds.");
+        locked = updateLock.tryLock(lockWaitSeconds, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
         throw new RuntimeException("Interrupted while waiting to acquire a lock", e);
       }
 
-      if (log.isDebugEnabled())
-        log.debug("beforeCompletion: acquired update-lock for " + txn);
+      /*
+       * Locking is best-effort (eg. cache-peers don't participate in locking)
+       * So continue on even when lock cannot be acquired. The expectation
+       * here is that stores are MVCC implementations so that the commit operation
+       * is really fast. For slow commit operations, (like the fedora-blob-store)
+       * that prevent us from acquiring a lock, the txn aspect of the cache is
+       * compromised. If this becomes a problem, then this CacheManager should
+       * also register itself as an XA resource and participate in the two phase
+       * commit process.
+       */
 
-      locked = true;
+      if (!locked)
+        log.warn("Failed to acquire update-lock after waiting for "
+          + lockWaitSeconds + " seconds. Continuing anyway ... ");
+      else if (log.isDebugEnabled())
+        log.debug("beforeCompletion: acquired update-lock for " + txn);
     }
 
     public void afterCompletion(int status) {
