@@ -11,7 +11,7 @@
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  * the specific language governing rights and limitations under the License.</p>
  *
- * <p>The entire file consists of original code.  Copyright &copy; 2002-2006 by 
+ * <p>The entire file consists of original code.  Copyright &copy; 2002-2006 by
  * The Rector and Visitors of the University of Virginia and Cornell University.
  * All rights reserved.</p>
  *
@@ -75,7 +75,7 @@ public class DefaultManagement extends Module implements Management {
 
   /**
    * Creates and initializes the Management Module.
-   * 
+   *
    * <p></p>
    * When the server is starting up, this is invoked as part of the initialization process.
    *
@@ -145,6 +145,27 @@ public class DefaultManagement extends Module implements Management {
           // skip files that aren't named numerically
         }
       }
+
+      Thread t = new Thread() {
+        public void run() {
+           while (true) {
+             try {
+               /*
+                * Deletion of large files take a while too.
+                * So throttle it. eg. 5 files per minute.
+                */
+               sleep(60 * 1000);
+               cleanUpTmpFiles(5);
+             } catch (InterruptedException e) {
+             }
+           }
+        }
+      };
+
+      t.setDaemon(true);
+      t.setPriority(Thread.MIN_PRIORITY);
+      t.start();
+
     } catch (Exception e) {
       e.printStackTrace();
       throw new ModuleInitializationException("Error while initializing "
@@ -740,7 +761,7 @@ public class DefaultManagement extends Module implements Management {
       // NULL or EMPTY PARM means no change to ds attribute...
       if ((dsLocation == null) || dsLocation.equals("")) {
         if (orig.DSControlGrp.equals("M")) {
-          // if managed content location is unspecified, 
+          // if managed content location is unspecified,
           // cause a copy of the prior content to be made at commit-time
           dsLocation = "copy://" + orig.DSLocation;
         } else {
@@ -959,8 +980,8 @@ public class DefaultManagement extends Module implements Management {
       newds.DSMDClass = ((DatastreamXMLMetadata) orig).DSMDClass;
 
       if (dsContent == null) {
-        // If the dsContent input stream parm is null, 
-        // that means "do not change the content".  
+        // If the dsContent input stream parm is null,
+        // that means "do not change the content".
         // Accordingly, here we just make a copy of the old content.
         newds.xmlContent = ((DatastreamXMLMetadata) orig).xmlContent;
       } else {
@@ -1079,9 +1100,9 @@ public class DefaultManagement extends Module implements Management {
         oldValidationReport = getBindingMapValidationReport(context, w, orig.bMechID);
       }
 
-      r = m_manager.getReader(Server.USE_DEFINITIVE_STORE, context, pid); // FIXME: Unnecessary?  Is 
+      r = m_manager.getReader(Server.USE_DEFINITIVE_STORE, context, pid); // FIXME: Unnecessary?  Is
 
-      // there a reason "w" isn't 
+      // there a reason "w" isn't
       // used for the call below?
       Date[]       d = r.getDisseminatorVersions(disseminatorId);
 
@@ -1124,7 +1145,7 @@ public class DefaultManagement extends Module implements Management {
 
       // NULL OR "" INPUT PARM MEANS NO CHANGE:
       // for diss attributes whose values MUST NOT be empty,
-      // either NULL or "" on the input parm indicates no change 
+      // either NULL or "" on the input parm indicates no change
       // (keep original value)
       if ((bMechPid == null) || bMechPid.equals("")) {
         newdiss.bMechID = orig.bMechID;
@@ -1671,22 +1692,7 @@ public class DefaultManagement extends Module implements Management {
     }
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @param context DOCUMENT ME!
-   * @param in DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
-   *
-   * @throws StreamWriteException DOCUMENT ME!
-   * @throws AuthzException DOCUMENT ME!
-   */
-  public String putTempStream(Context context, InputStream in)
-                       throws StreamWriteException, AuthzException {
-    m_fedoraXACMLModule.enforceUpload(context);
-
-    // first clean up after old stuff
+  private void cleanUpTmpFiles(int max) {
     long      minStartTime = System.currentTimeMillis() - (60 * 1000 * m_uploadStorageMinutes);
     ArrayList removeList = new ArrayList();
 
@@ -1709,6 +1715,8 @@ public class DefaultManagement extends Module implements Management {
           }
 
           removeList.add(id);
+          if (removeList.size() >= max)
+            break;
         }
       }
 
@@ -1717,8 +1725,23 @@ public class DefaultManagement extends Module implements Management {
         m_uploadStartTime.remove(id);
       }
     }
+  }
 
-    // then generate an id
+  /**
+   * DOCUMENT ME!
+   *
+   * @param context DOCUMENT ME!
+   * @param in DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   *
+   * @throws StreamWriteException DOCUMENT ME!
+   * @throws AuthzException DOCUMENT ME!
+   */
+  public String putTempStream(Context context, InputStream in)
+                       throws StreamWriteException, AuthzException {
+    m_fedoraXACMLModule.enforceUpload(context);
+
     int id = getNextTempId();
 
     // and attempt to save the stream
@@ -1907,10 +1930,10 @@ public class DefaultManagement extends Module implements Management {
 
   /**
    * Get a byte array containing an xml chunk that is safe to embed in  another UTF-8 xml document.
-   * 
+   *
    * <p>
    * This will ensure that the xml is:
-   * 
+   *
    * <ul>
    * <li>
    * well-formed. If not, an exception will be raised.
