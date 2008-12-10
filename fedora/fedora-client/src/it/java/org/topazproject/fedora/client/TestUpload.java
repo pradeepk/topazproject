@@ -19,8 +19,10 @@
 package org.topazproject.fedora.client;
 
 import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
 
 import java.net.URI;
+import java.util.concurrent.SynchronousQueue;
 
 import junit.framework.TestCase;
 
@@ -93,5 +95,65 @@ public class TestUpload extends TestCase {
       assertEquals(in.length, uploader.download(ref).read(out));
       assertEquals(str, new String(out, 0, in.length));
     }
+
+    byte[] in = new byte[20000];
+    String ref = uploader.upload(in);
+    byte[] out = new byte[in.length];
+
+    assertEquals(in.length, uploader.download(ref).read(out));
+    for (int i = 0; i < in.length; i++)
+      assertEquals("i=" + i, in[i], out[i]);
+  }
+
+  /**
+   * Tests upload via output stream.
+   *
+   * @throws Exception on failure
+   */
+  public void testUploaderStream() throws Exception {
+    final SynchronousQueue<Object> exchange = new SynchronousQueue<Object>();
+    byte[] in = new byte[40000];
+
+    OutputStream out = uploader.getOutputStream(new Uploader.UploadListener() {
+
+      public void uploadComplete(String reference) {
+        try {
+          exchange.put(reference);
+        } catch (InterruptedException e) {
+          throw new Error("Interrupted during notify", e);
+        }
+      }
+
+      public void uploadComplete(Throwable err) {
+        try {
+          exchange.put(err);
+        } catch (InterruptedException e) {
+          throw new Error("Interrupted during notify", err);
+        }
+      }
+    }, -1);
+
+    try {
+      out.write(in);
+    } finally {
+      out.close();
+    }
+
+    Object result = exchange.take();
+
+    if (result instanceof Error)
+      throw (Error)result;
+
+    if (result instanceof Exception)
+      throw (Exception)result;
+
+    if (!(result instanceof String))
+      throw new Exception("Unexpected result " + result);
+
+    String ref = (String) result;
+    byte[] b = new byte[in.length];
+    assertEquals(in.length, uploader.download(ref).read(b));
+    for (int i = 0; i < in.length; i++)
+      assertEquals("i=" + i, in[i], b[i]);
   }
 }
