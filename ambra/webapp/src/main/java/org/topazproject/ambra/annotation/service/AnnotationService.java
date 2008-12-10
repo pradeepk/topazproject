@@ -76,11 +76,6 @@ public class AnnotationService extends BaseAnnotationService {
     ALL_ANNOTATION_CLASSES.add(ArticleAnnotation.class);
   }
 
-  /**
-   * Create an AnnotationService object.
-   *
-   * @param pdp the PDP to use
-   */
   @Required
   public void setAnnotationsPdp(PDP pdp) {
     pep  = new AnnotationsPEP(pdp);
@@ -285,7 +280,6 @@ public class AnnotationService extends BaseAnnotationService {
    * @throws ParseException   if any of the dates or query could not be parsed
    * @throws URISyntaxException  if an element of annotType cannot be parsed as a URI
    */
-   @SuppressWarnings("UnusedDeclaration")
   @Transactional(readOnly = true)
   public List<String> getAnnotationIds(String targetId, Date startDate, Date endDate,
       String mediator, List<String> annotType, int[] states, boolean ascending,
@@ -323,9 +317,8 @@ public class AnnotationService extends BaseAnnotationService {
     // match all types
     if (annotType != null && annotType.size() > 0) {
       qry.append("(");
-      int idx = 0;
-      for (String type : annotType)
-        qry.append("a.<rdf:type> = :type").append(idx++).append(" or ");
+      for (int idx = 0; idx < annotType.size(); idx++)
+        qry.append("a.<rdf:type> = :type").append(idx).append(" or ");
       qry.setLength(qry.length() - 4);
       qry.append(") ");
     }

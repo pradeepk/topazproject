@@ -18,7 +18,6 @@
  */
 package org.topazproject.ambra.permission.service;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,7 +62,7 @@ public class PermissionsService implements Permissions {
   public static final String PP_GRAPH      = "<" + Ambra.GRAPH_PREFIX + "filter:graph=pp" + ">";
 
   public static final String IMPLIES     = Rdf.topaz + "implies";
-  private static final String PROPAGATES = Rdf.topaz + "propagate-permissions-to";
+  public static final String PROPAGATES  = Rdf.topaz + "propagate-permissions-to";
 
   private static final String ITQL_LIST                 =
     "select $p from ${GRAPH} where <${resource}> $p <${principal}>;";
@@ -111,10 +110,6 @@ public class PermissionsService implements Permissions {
     this.revokesCache = revokesCache;
   }
 
-  private static URI toURI(String uri) {
-    return URI.create(uri.substring(1, uri.length() - 1));
-  }
-
   /**
    * Creates a new PermissionsService object.
    *
@@ -133,7 +128,8 @@ public class PermissionsService implements Permissions {
   @Transactional(rollbackFor = { Throwable.class })
   public void grant(String resource, String[] permissions, String[] principals)
              throws OtmException {
-    updateGraph(pep.GRANT, GRANTS_GRAPH, grantsCache, resource, permissions, principals, true);
+    updateGraph(ServicePermissions.GRANT, GRANTS_GRAPH, grantsCache,
+                resource, permissions, principals, true);
   }
 
   /*
@@ -142,7 +138,8 @@ public class PermissionsService implements Permissions {
   @Transactional(rollbackFor = { Throwable.class })
   public void revoke(String resource, String[] permissions, String[] principals)
               throws OtmException {
-    updateGraph(pep.REVOKE, REVOKES_GRAPH, revokesCache, resource, permissions, principals, true);
+    updateGraph(ServicePermissions.REVOKE, REVOKES_GRAPH, revokesCache,
+                resource, permissions, principals, true);
   }
 
   /*
@@ -151,8 +148,8 @@ public class PermissionsService implements Permissions {
   @Transactional(rollbackFor = { Throwable.class })
   public void cancelGrants(String resource, String[] permissions, String[] principals)
                     throws OtmException {
-    updateGraph(pep.CANCEL_GRANTS, GRANTS_GRAPH, grantsCache, resource, permissions, principals,
-                false);
+    updateGraph(ServicePermissions.CANCEL_GRANTS, GRANTS_GRAPH, grantsCache,
+                resource, permissions, principals, false);
   }
 
   /*
@@ -161,8 +158,8 @@ public class PermissionsService implements Permissions {
   @Transactional(rollbackFor = { Throwable.class })
   public void cancelRevokes(String resource, String[] permissions, String[] principals)
                      throws OtmException {
-    updateGraph(pep.CANCEL_REVOKES, REVOKES_GRAPH, revokesCache, resource, permissions, principals,
-                false);
+    updateGraph(ServicePermissions.CANCEL_REVOKES, REVOKES_GRAPH, revokesCache,
+                resource, permissions, principals, false);
   }
 
   /*
@@ -171,7 +168,8 @@ public class PermissionsService implements Permissions {
   @Transactional(readOnly = true)
   public String[] listGrants(String resource, String principal)
                       throws OtmException {
-    return listPermissions(pep.LIST_GRANTS, GRANTS_GRAPH, resource, principal);
+    return listPermissions(ServicePermissions.LIST_GRANTS, GRANTS_GRAPH,
+                           resource, principal);
   }
 
   /*
@@ -180,7 +178,8 @@ public class PermissionsService implements Permissions {
   @Transactional(readOnly = true)
   public String[] listRevokes(String resource, String principal)
                        throws OtmException {
-    return listPermissions(pep.LIST_REVOKES, REVOKES_GRAPH, resource, principal);
+    return listPermissions(ServicePermissions.LIST_REVOKES, REVOKES_GRAPH,
+                           resource, principal);
   }
 
   /*
@@ -189,7 +188,7 @@ public class PermissionsService implements Permissions {
   @Transactional(rollbackFor = { Throwable.class })
   public void implyPermissions(String permission, String[] implies)
                         throws OtmException {
-    updatePP(pep.IMPLY_PERMISSIONS, permission, IMPLIES, implies, true);
+    updatePP(ServicePermissions.IMPLY_PERMISSIONS, permission, IMPLIES, implies, true);
   }
 
   /*
@@ -198,7 +197,7 @@ public class PermissionsService implements Permissions {
   @Transactional(rollbackFor = { Throwable.class })
   public void cancelImplyPermissions(String permission, String[] implies)
                               throws OtmException {
-    updatePP(pep.CANCEL_IMPLY_PERMISSIONS, permission, IMPLIES, implies, false);
+    updatePP(ServicePermissions.CANCEL_IMPLY_PERMISSIONS, permission, IMPLIES, implies, false);
   }
 
   /*
@@ -207,7 +206,7 @@ public class PermissionsService implements Permissions {
   @Transactional(readOnly = true)
   public String[] listImpliedPermissions(String permission, boolean transitive)
                                   throws OtmException {
-    return listPP(pep.LIST_IMPLIED_PERMISSIONS, permission, IMPLIES, transitive);
+    return listPP(ServicePermissions.LIST_IMPLIED_PERMISSIONS, permission, IMPLIES, transitive);
   }
 
   /*
@@ -216,7 +215,7 @@ public class PermissionsService implements Permissions {
   @Transactional(rollbackFor = { Throwable.class })
   public void propagatePermissions(String resource, String[] to)
                             throws OtmException {
-    updatePP(pep.PROPAGATE_PERMISSIONS, resource, PROPAGATES, to, true);
+    updatePP(ServicePermissions.PROPAGATE_PERMISSIONS, resource, PROPAGATES, to, true);
   }
 
   /*
@@ -225,7 +224,7 @@ public class PermissionsService implements Permissions {
   @Transactional(rollbackFor = { Throwable.class })
   public void cancelPropagatePermissions(String resource, String[] to)
                                   throws OtmException {
-    updatePP(pep.CANCEL_PROPAGATE_PERMISSIONS, resource, PROPAGATES, to, false);
+    updatePP(ServicePermissions.CANCEL_PROPAGATE_PERMISSIONS, resource, PROPAGATES, to, false);
   }
 
   /*
@@ -234,7 +233,8 @@ public class PermissionsService implements Permissions {
   @Transactional(readOnly = true)
   public String[] listPermissionPropagations(String resource, boolean transitive)
                                       throws OtmException {
-    return listPP(pep.LIST_PERMISSION_PROPAGATIONS, resource, PROPAGATES, transitive);
+    return listPP(ServicePermissions.LIST_PERMISSION_PROPAGATIONS,
+                  resource, PROPAGATES, transitive);
   }
 
   /*
@@ -249,12 +249,9 @@ public class PermissionsService implements Permissions {
     if (grantsCache == null)
       return isInferred(GRANTS_GRAPH, resource, permission, principal);
 
-    Map<String, List<String>> map;
-    Element element = grantsCache.get(resource);
+    Map<String, List<String>> map = getCacheEntry(grantsCache, resource);
 
-    if (element != null) {
-      map = (Map<String, List<String>>) element.getValue();
-
+    if (map != null) {
       if (log.isDebugEnabled())
         log.debug("grants-cache: cache hit for " + resource);
     } else {
@@ -282,12 +279,9 @@ public class PermissionsService implements Permissions {
     if (revokesCache == null)
       return isInferred(REVOKES_GRAPH, resource, permission, principal);
 
-    Map<String, List<String>> map;
-    Element element = revokesCache.get(resource);
+    Map<String, List<String>> map = getCacheEntry(revokesCache, resource);
 
-    if (element != null) {
-      map = (Map<String, List<String>>) element.getValue();
-
+    if (map != null) {
       if (log.isDebugEnabled())
         log.debug("revokes-cache: cache hit for " + resource);
     } else {
@@ -301,6 +295,15 @@ public class PermissionsService implements Permissions {
     List<String> list = map.get(permission);
 
     return (list != null) && (list.contains(principal) || list.contains(ALL));
+  }
+
+  @SuppressWarnings("unchecked")
+  private Map<String, List<String>> getCacheEntry(Ehcache cache, String key) {
+    Element element = cache.get(key);
+    if (element == null)
+      return null;
+
+    return (Map<String, List<String>>) element.getValue();
   }
 
   private void updateGraph(String action, String graph, Ehcache cache, String resource,
@@ -425,7 +428,7 @@ public class PermissionsService implements Permissions {
 
     pep.checkAccess(action, RdfUtil.validateUri(resource, "resource"));
 
-    Map map = new HashMap(3);
+    Map<String, String> map = new HashMap<String, String>(3);
     map.put("resource", resource);
     map.put("principal", principal);
     map.put("GRAPH", graph);
@@ -443,17 +446,13 @@ public class PermissionsService implements Permissions {
   private String[] listPP(String action, String subject, String predicate, boolean transitive)
                    throws OtmException {
     String sLabel;
-    String oLabel;
 
     if (PROPAGATES.equals(predicate)) {
       sLabel   = "resource";
-      oLabel   = "permission-propagates";
     } else if (IMPLIES.equals(predicate)) {
       sLabel   = "permission";
-      oLabel   = "implied-permissions";
     } else {
       sLabel   = "subject";
-      oLabel   = "objects";
     }
 
     pep.checkAccess(action, RdfUtil.validateUri(subject, sLabel));
@@ -479,7 +478,7 @@ public class PermissionsService implements Permissions {
     RdfUtil.validateUri(permission, "permission");
     RdfUtil.validateUri(principal, "principal");
 
-    HashMap values = new HashMap();
+    HashMap<String, String> values = new HashMap<String, String>();
     values.put("resource", resource);
     values.put("permission", permission);
     values.put("principal", principal);
@@ -500,7 +499,7 @@ public class PermissionsService implements Permissions {
       throw new NullPointerException(name + " list can't be null");
 
     // eliminate duplicates
-    list   = (String[]) (new HashSet(Arrays.asList(list))).toArray(new String[0]);
+    list   = (new HashSet<String>(Arrays.asList(list))).toArray(new String[0]);
 
     name   = name + " list item";
 

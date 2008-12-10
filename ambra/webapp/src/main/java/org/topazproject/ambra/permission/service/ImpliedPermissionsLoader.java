@@ -53,10 +53,10 @@ public class ImpliedPermissionsLoader {
   public int load(Session session) throws OtmException {
     Configuration conf        = CONF.subset("ambra.permissions.impliedPermissions");
     StringBuilder sb          = new StringBuilder();
-    List          permissions = conf.getList("permission[@uri]");
+    List<?>  permissions      = conf.getList("permission[@uri]");
     int           c           = permissions.size();
     for (int i = 0; i < c; i++) {
-      List implies = conf.getList("permission(" + i + ").implies[@uri]");
+      List<?> implies = conf.getList("permission(" + i + ").implies[@uri]");
       log.info("config contains " + permissions.get(i) + " implies " + implies);
 
       for (int j = 0; j < implies.size(); j++) {
