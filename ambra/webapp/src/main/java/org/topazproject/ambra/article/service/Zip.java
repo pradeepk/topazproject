@@ -217,7 +217,9 @@ public interface Zip {
       OutputStream out = null;
       File f = null;
       try {
-        f = File.createTempFile("ambra-unzip-entry", "");
+        f = File.createTempFile("ambra-unzip-", "");
+        if (log.isDebugEnabled())
+          log.debug("Unzipping " + ze.getName() + " as " + f);
         out = new FileOutputStream(f);
         IOUtils.copy(zis, out);
         entries.add(ze);
@@ -234,8 +236,10 @@ public interface Zip {
 
     public InputStream getStream(String name, long[] size) throws IOException {
       File f = tmpFiles.get(name);
-      if (f != null)
+      if (f != null) {
+        size[0] = f.length();
         return new FileInputStream(f);
+      }
 
       boolean restart = loadStream();
 
