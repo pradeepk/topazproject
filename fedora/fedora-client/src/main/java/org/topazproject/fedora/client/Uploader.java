@@ -309,7 +309,8 @@ public class Uploader {
       throw new RuntimeException("Error reported by Uploader-thread", (RuntimeException)o);
 
     if (o instanceof IOException)
-      throw new IOException("Error reported by Uploader-thread", (IOException)o);
+      throw (IOException) new IOException("Error reported by Uploader-thread")
+                                .initCause((Throwable)o);
 
     if (o instanceof Throwable)
       throw new Error("Error reported by Uploader-thread", (Throwable)o);
@@ -413,7 +414,8 @@ public class Uploader {
         throw new RuntimeException("Error reported by Uploader-thread", (RuntimeException)o);
 
       if (o instanceof IOException)
-        throw new IOException("Error reported by Uploader-thread", (IOException)o);
+        throw (IOException) new IOException("Error reported by Uploader-thread")
+                                .initCause((Throwable)o);
 
       if (o instanceof Throwable)
         throw new Error("Error reported by Uploader-thread", (Throwable)o);
