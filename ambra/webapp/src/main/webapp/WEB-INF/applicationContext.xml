@@ -177,10 +177,9 @@
   
   <!-- OTM setups -->
   <bean name="fedoraBlobStore" class="org.topazproject.fedora.otm.FedoraBlobStore" lazy-init="true">
-    <constructor-arg index="0" value="${ambra.topaz.blobStore.fedora.tmpdir}"/>
-    <constructor-arg index="1" value="${ambra.topaz.blobStore.fedora.uri}"/>
-    <constructor-arg index="2" value="${ambra.topaz.blobStore.fedora.userName}"/>
-    <constructor-arg index="3" value="${ambra.topaz.blobStore.fedora.password}"/>
+    <constructor-arg index="0" value="${ambra.topaz.blobStore.fedora.uri}"/>
+    <constructor-arg index="1" value="${ambra.topaz.blobStore.fedora.userName}"/>
+    <constructor-arg index="2" value="${ambra.topaz.blobStore.fedora.password}"/>
   </bean>
   <bean name="simpleBlobStore" class="org.topazproject.otm.stores.SimpleBlobStore" lazy-init="true">
     <constructor-arg index="0" value="${ambra.topaz.blobStore.simple.directory}"/>
@@ -248,7 +247,7 @@
 
   <tx:advice id="longTxTimeout" transaction-manager="txManager">
     <tx:attributes>
-      <tx:method name="*" timeout="7200" rollback-for="java.lang.Throwable"/>
+      <tx:method name="*" timeout="1800" rollback-for="java.lang.Throwable"/>
     </tx:attributes>
   </tx:advice>
 

@@ -32,6 +32,8 @@ import org.topazproject.fedora.client.FedoraAPIA;
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedora.client.Uploader;
 
+import org.topazproject.otm.Blob;
+import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.OtmException;
@@ -47,8 +49,7 @@ import org.topazproject.otm.stores.FileBackedBlobStore;
  *
  * @author Pradeep Krishnan
  */
-public class FedoraBlobStore extends FileBackedBlobStore {
-  private final File                                 bak;
+public class FedoraBlobStore implements BlobStore {
   private final URI                                  fedoraBaseUri;
   private final String                               apimUri;
   private final String                               apiaUri;
@@ -68,13 +69,6 @@ public class FedoraBlobStore extends FileBackedBlobStore {
    * @throws OtmException on an error
    */
   public FedoraBlobStore(String apimUri, String userName, String password) throws OtmException {
-    this(new File(new File(System.getProperty("java.io.tmpdir")), "fedora-work"),
-         apimUri, userName, password);
-  }
-
-  public FedoraBlobStore(File root, String apimUri, String userName, String password) throws OtmException {
-    super(root);
-    this.bak        = new File(super.root, "bak");
     this.apimUri    = apimUri;
     this.userName   = userName;
     this.password   = password;
@@ -102,10 +96,6 @@ public class FedoraBlobStore extends FileBackedBlobStore {
 
     uploadUri   = fedoraBaseUri.resolve("management/upload").toString();
     apiaUri     = fedoraBaseUri.resolve("services/access").toString();
-  }
-
-  public File getBackupRoot() {
-    return bak;
   }
 
   /*
@@ -234,5 +224,12 @@ public class FedoraBlobStore extends FileBackedBlobStore {
     } catch (Exception e) {
       throw new OtmException("Failed to create a Fedora Uploader", e);
     }
+  }
+
+  public void flush(Connection con) throws OtmException {
+  }
+
+  public Blob getBlob(ClassMetadata cm, String id, Object inst, Connection con) throws OtmException {
+    return ((FedoraConnection) con).getBlob(cm, id, inst);
   }
 }

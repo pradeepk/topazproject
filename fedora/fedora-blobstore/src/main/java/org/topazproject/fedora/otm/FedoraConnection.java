@@ -18,13 +18,22 @@
  */
 package org.topazproject.fedora.otm;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,21 +44,29 @@ import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedora.client.Uploader;
 import org.topazproject.fedora.otm.FedoraBlob.INGEST_OP;
 
+import org.topazproject.otm.AbstractBlob;
+import org.topazproject.otm.AbstractConnection;
+import org.topazproject.otm.Blob;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.stores.FileBackedBlobStore.FileBackedBlobStoreConnection;
 
 /**
  * Acts as the client to Fedora and manages the transactional aspects of user operations.
  *
  * @author Pradeep Krishnan
  */
-public class FedoraConnection extends FileBackedBlobStoreConnection {
+public class FedoraConnection extends AbstractConnection {
   private static final Log    log    = LogFactory.getLog(FedoraConnection.class);
   private FedoraAPIM              apim;
   private FedoraAPIA              apia;
   private Uploader                upld;
+  private final FedoraBlobStore   bs;
+  private Map<String, Blob> blobs = new HashMap<String, Blob>();
+  private Map<String, String> uplds = new HashMap<String, String>();
+  private Map<String, String> baks = new HashMap<String, String>();
+  private Map<String, FedoraBlob> fbs = new HashMap<String, FedoraBlob>();
+  private ArrayList<FedoraBlob> ingested = new ArrayList<FedoraBlob>();
 
   /**
    * Creates a new FedoraConnection object.
@@ -59,7 +76,9 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
    * @throws OtmException on an error
    */
   public FedoraConnection(FedoraBlobStore bs, Session sess) throws OtmException {
-    super(bs, sess);
+    super(sess);
+    this.bs = bs;
+    enlistResource(newXAResource());
   }
 
   /**
@@ -68,7 +87,7 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
    * @return the blob-store, or null if this connection has been closed
    */
   FedoraBlobStore getBlobStore() {
-    return (FedoraBlobStore) super.store;
+    return bs;
   }
 
     /**
@@ -126,19 +145,24 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
     }
   }
 
-  @Override
-  protected FileBackedBlob doGetBlob(ClassMetadata cm, String id, Object instance, File work) throws OtmException {
-    FedoraBlobStore bs = getBlobStore();
-    FedoraBlobFactory bf   = bs.mostSpecificBlobFactory(id);
+  public Blob getBlob(ClassMetadata cm, String id, Object instance) throws OtmException {
+    Blob blob = blobs.get(id);
+    if (blob == null) {
+      FedoraBlobStore bs = getBlobStore();
+      FedoraBlobFactory bf   = bs.mostSpecificBlobFactory(id);
 
-    if (bf == null)
-      throw new OtmException("Can't find a blob factory for " + id);
+      if (bf == null)
+        throw new OtmException("Can't find a blob factory for " + id);
 
-    FedoraBlob fb = bf.createBlob(cm, id, instance, this);
-    File bak = toFile(bs.getBackupRoot(), id, ".bak");
+      FedoraBlob fb = bf.createBlob(cm, id, instance, this);
+      fbs.put(id, fb);
 
-    return new FileBackedFedoraBlob(fb, id, work, bak);
+      blob = newBlob(fb);
+      blobs.put(id, blob);
+    }
+    return blob;
   }
+
 
   /**
    * Ingest the contents into Fedora.
@@ -392,12 +416,22 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
    * Gets the blob's InputStream from Fedora.
    *
    * @param blob the blob
+   * @param original to get the original instead of the uploaded
    *
    * @return the InputStream or null
    *
    * @throws OtmException on an error
    */
-  private InputStream getBlobStream(FedoraBlob blob) throws OtmException {
+  private InputStream getBlobStream(FedoraBlob blob, boolean original) throws OtmException {
+    String ref = original ? null : uplds.get(blob.getBlobId());
+    if (ref != null) {
+      try {
+        return getUploader().download(ref);
+      } catch (IOException e) {
+        throw new OtmException("Error while downloading from " + ref + " for " + blob.getBlobId());
+      }
+    }
+
     Datastream stream = getDatastream(blob);
 
     if (stream == null)
@@ -416,91 +450,324 @@ public class FedoraConnection extends FileBackedBlobStoreConnection {
       return null;
     }
   }
-
-  private class FileBackedFedoraBlob extends FileBackedBlob {
-    private final FedoraBlob fb;
-    private String ref = null;
-
-    public FileBackedFedoraBlob(FedoraBlob fb, String id, File tmp, File bak) {
-      super(id, tmp, bak);
-      this.fb = fb;
+  protected boolean doPrepare() throws XAException {
+    try {
+      if (log.isTraceEnabled())
+        log.trace("doPrepare starting ...");
+      int mods = 0;
+      // Note: since the server is not txn based, no point doing any local locks.
+      for (Blob blob : blobs.values()) {
+        FedoraBlob fb = fbs.get(blob.getId());
+        switch(blob.getChangeState()) {
+          case WRITTEN:
+            if (log.isDebugEnabled())
+              log.debug("Ingesting: PID = " + fb.getPid() + " DS = " + fb.getDsId()
+                       + " for " + fb.getBlobId());
+            ingest(fb, uplds.get(blob.getId()));
+            ingested.add(fb);
+          case DELETED:
+            mods++;
+        }
+      }
+      if (log.isDebugEnabled())
+        log.debug("doPrepare found " + mods + " change(s) to commit");
+      return (mods > 0);
+    } catch (Exception oe) {
+      throw (XAException) new XAException(XAException.XAER_RMERR).initCause(oe);
     }
+  }
 
-    @Override
-    protected boolean copyFromStore(OutputStream out, boolean asBackup) throws OtmException {
+  protected void doCommit() throws XAException {
+    if (log.isTraceEnabled())
+      log.trace("doCommit starting ...");
+
+    if (log.isDebugEnabled() && !ingested.isEmpty())
+      log.debug("Ingest committed for " + ingested.size() + " blobs");
+    ingested.clear();
+
+    for (Blob blob : blobs.values()) {
+      FedoraBlob fb = fbs.get(blob.getId());
+      switch(blob.getChangeState()) {
+        case DELETED:
+          try {
+            if (log.isDebugEnabled())
+              log.debug("Purging: PID = " + fb.getPid() + " DS = " + fb.getDsId()
+                       + " for " + fb.getBlobId());
+            purge(fb);
+          } catch (Exception e) {
+            log.error("Failed to purge: PID = " + fb.getPid() + " DS = " + fb.getDsId());
+          }
+          break;
+      }
+    }
+  }
+
+  protected void doRollback() throws XAException {
+    if (log.isTraceEnabled())
+      log.trace("doRollback");
+
+    for (FedoraBlob fb : ingested) {
       try {
-        store.getStoreLock().acquireRead(FedoraConnection.this);
-        InputStream in = getBlobStream(fb);
-        if (in == null)
-          return false;
+        String ref = baks.get(fb.getBlobId());
+        if (ref != null)
+          ingest(fb, ref);
+        else
+          purge(fb);
+      } catch (Exception e) {
+        log.error("Undo of ingest failed for: PID = " + fb.getPid() + " DS = " + fb.getDsId());
+      }
+    }
 
-        try {
-          copy(in, out);
-        } catch (IOException e) {
-          throw new OtmException("Copy failed for " + getId(), e);
-        } finally {
-          closeAll(in);
+    close();
+  }
+
+
+  public void close() {
+    if (log.isTraceEnabled())
+      log.trace("close");
+  }
+
+  private XAResource newXAResource() {
+    return new XAResource() {
+      public void commit(Xid xid, boolean onePhase) throws XAException {
+        if (onePhase) {
+          try {
+            onePhase = !doPrepare();
+          } catch (XAException xae) {
+            doRollback();
+            throw xae;
+          }
         }
-      } catch (InterruptedException e) {
-        throw new OtmException("Interrupted while waiting for read-lock for " + getId(), e);
-      } finally {
-        store.getStoreLock().releaseRead(FedoraConnection.this);
+        if (onePhase)
+          close();
+        else
+          doCommit();
       }
 
-      return true;
-    }
+      public void rollback(Xid xid) throws XAException {
+        doRollback();
+      }
 
-    @Override
-    protected boolean createInStore() throws OtmException {
-      return true;
-    }
+      public int prepare(Xid xid) throws XAException {
+        // assumption: doPrepare only throws RMERR, which means this resource stays in S2
+        if (doPrepare()) {
+          return XA_OK;
+        } else {
+          close();
+          return XA_RDONLY;
+        }
+      }
 
-    @Override
-    protected boolean deleteFromStore() throws OtmException {
-      return purge(fb);
-    }
+      public void start(Xid xid, int flags) {
+      }
 
-    @Override
-    protected boolean prepare() throws OtmException {
-      if (!super.prepare())
+      public void end(Xid xid, int flags) {
+      }
+
+      public Xid[] recover(int flag) {
+        return new Xid[0];
+      }
+
+      public void forget(Xid xid) {
+      }
+
+      public boolean isSameRM(XAResource xares) {
+        return xares == this;
+      }
+
+      public int getTransactionTimeout() {
+        return 0;
+      }
+
+      public boolean setTransactionTimeout(int secs) {
         return false;
+      }
+    };
+  }
 
-      /*
-       * Upload in prepare phase. Important for large blobs since this
-       * is the most error prone part of the process.
-       */
-      ref = null;
-      switch(getChangeState()) {
-        case CREATED:
-        case WRITTEN:
-           try {
-             if (log.isDebugEnabled())
-               log.debug("Uploading blob to fedora: " + tmp + " for " + getId());
-             ref = getUploader().upload(tmp);
-           } catch (IOException e) {
-             throw new OtmException("Failed to upload: " + tmp + " for " + getId(), e);
-           }
+  private Blob newBlob(final FedoraBlob fb) {
+    return new AbstractBlob(fb.getBlobId()) {
+      private Boolean exists = null;
+      private ChangeState state = ChangeState.NONE;
+      private ChangeState marked = ChangeState.NONE;
+
+      @Override
+      protected InputStream doGetInputStream() throws OtmException {
+        InputStream in =  getBlobStream(fb, false);
+        if (in == null)
+          throw new OtmException("Blob " + getId() + " does not exist. Write to it first to create.");
+
+        if (log.isTraceEnabled())
+          log.trace("Creating inputstream for " + getId());
+
+        return in;
       }
 
-      return true;
-    }
-
-    @Override
-    protected boolean moveToStore(File from) throws OtmException {
-      String r = ref;
-      ref = null;
-
-      if ((from != tmp) || (r == null)) {
+      @Override
+      protected OutputStream doGetOutputStream() throws OtmException {
+        InputStream in = (baks.get(getId()) != null) ? null : getBlobStream(fb, true);
+        OutputStream out = null;
         try {
-          if (log.isDebugEnabled())
-            log.debug("Uploading blob to fedora: " + from + " for " + getId());
-          r = getUploader().upload(tmp);
+          if (in != null) {
+            try {
+              copy(in, out = getUploadStream(baks));
+            } catch (IOException e) {
+              throw new OtmException("Failed to backup original content for " + getId());
+            }
+          }
+        } finally {
+          closeAll(in, out);
+        }
+
+        create();
+
+        if (log.isTraceEnabled())
+          log.trace("Creating outputstream for " + getId());
+
+        return getUploadStream(uplds);
+      }
+
+      private OutputStream getUploadStream(final Map<String, String> refs) {
+        final Uploader.UploadResult result = new Uploader.UploadResult();
+        OutputStream out;
+        try {
+          out = getUploader().getOutputStream(result.getListener(), -1);
         } catch (IOException e) {
-          throw new OtmException("Failed to upload: " + from + " for " + getId(), e);
+          throw new OtmException("Error while creating output stream for " + getId(), e);
+        }
+
+        return new FilterOutputStream(out) {
+          public void close() throws IOException {
+            super.close();
+            refs.put(getId(), result.getResult());
+            if (log.isDebugEnabled()) {
+              if (refs == uplds)
+                log.debug("Uploaded content for " + getId() + " into " + refs.get(getId()));
+              else
+                log.debug("Backed up original content for " + getId() + " into " + refs.get(getId()));
+            }
+          }
+
+          @Override
+          public void write(byte[] b, int off, int len) throws IOException {
+            out.write(b, off, len);
+          }
+        };
+      }
+
+      @Override
+      public void closed(Closeable stream) {
+        if (log.isTraceEnabled())
+          log.trace("Closing stream for " + getId());
+        super.closed(stream);
+      }
+
+      @Override
+      public void writing(OutputStream out) {
+        switch (state) {
+          case CREATED:
+          case NONE:
+            if (log.isTraceEnabled())
+              log.trace("Write detected on for " + getId());
+            state = marked = ChangeState.WRITTEN;
+            break;
+          case DELETED:
+            // All streams should be closed on delete.
+            log.error("Writing to deleted Blob " + getId());
         }
       }
 
-      return ingest(fb, r);
-    }
+      public boolean create() throws OtmException {
+        switch (state) {
+          case DELETED:
+          case NONE:
+            boolean ret = !exists();
+            if (log.isTraceEnabled())
+              log.trace("Create requested for " + getId());
+            state = marked = ChangeState.CREATED;
+            exists = Boolean.TRUE;
+            return ret;
+        }
+        return false;
+      }
+
+      public boolean delete() throws OtmException {
+        switch (state) {
+          case CREATED:
+          case NONE:
+          case WRITTEN:
+            for (Closeable stream : streams) {
+              try {
+                stream.close();
+              } catch (IOException e) {
+                log.warn("Failed to close a stream for " + getId(), e);
+              }
+            }
+            streams.clear();
+            boolean ret = exists();
+            if (log.isTraceEnabled())
+              log.trace("Delete requested for " + getId());
+            state = marked = ChangeState.DELETED;
+            exists = Boolean.FALSE;
+            return ret;
+        }
+        return false;
+      }
+
+      public boolean exists() throws OtmException {
+        if (exists != null)
+          return exists;
+
+        if (log.isTraceEnabled())
+          log.trace("performing exists() check on " + getId());
+
+        InputStream in = getBlobStream(fb, true);
+        exists = in != null;
+        try {
+          if (in != null)
+            in.close();
+        } catch (IOException e) {
+          if (log.isDebugEnabled())
+            log.debug("Failed to close stream used in exists() check", e);
+        }
+
+        if (log.isTraceEnabled())
+          log.trace("exists() check result: " + exists);
+
+        return exists;
+      }
+
+      public ChangeState getChangeState() {
+        return state;
+      }
+
+      public ChangeState mark() {
+        if (log.isDebugEnabled())
+          log.debug("Marking... previous-mark = " + marked + ", state = " + state + ", id = " + getId());
+        ChangeState prev = marked;
+        marked = ChangeState.NONE;
+        return prev;
+      }
+
+      public byte[] readAll(boolean original) {
+        if (!original || ((state != ChangeState.DELETED) && (state != ChangeState.WRITTEN)))
+          return readAll();
+        if (log.isTraceEnabled())
+          log.trace("Loading old data for search index removal for " + getId());
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        InputStream in = null;
+        try {
+          in = getBlobStream(fb, true);
+          if (in != null)
+            copy(in, out);
+        } catch (IOException e) {
+          throw new OtmException("Error while reading original blob content", e);
+        } finally {
+          closeAll(in, out);
+        }
+        return out.toByteArray();
+      }
+    };
   }
 }
