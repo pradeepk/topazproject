@@ -118,8 +118,18 @@ public class UploadServlet extends HttpServlet implements Logging {
 
     try {
       InputStream in = s_management.getTempStream(id);
+
       response.setStatus(HttpServletResponse.SC_OK);
       response.setContentType("application/octet-stream");
+
+      /*
+       *  Hack to get to the actual tmp file so that we can set the Content-Length.
+       *  Without the Content-Length header, the stream gets truncated at 8192 bytes.
+       */
+      File tmpDir = new File(getServer().getHomeDir(), "management/upload");
+      String internalId = id.substring(11);
+      File tmpFile = new File(tmpDir, internalId);
+      response.setHeader("Content-Length", "" + tmpFile.length());
 
       OutputStream out = response.getOutputStream();
 
