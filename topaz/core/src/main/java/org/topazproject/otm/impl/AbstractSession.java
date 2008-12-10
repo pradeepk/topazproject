@@ -19,6 +19,8 @@
 package org.topazproject.otm.impl;
 
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -349,6 +351,61 @@ abstract class AbstractSession implements Session {
 
   protected Blob getBlob(ClassMetadata cm, String oid, Object instance) throws OtmException {
     return getSessionFactory().getBlobStore().getBlob(cm, oid, instance, getBlobStoreCon());
+  }
+
+  protected Blob createProxyBlob(final ClassMetadata cm, final String oid, final Object instance)
+                      throws OtmException {
+
+    return new Blob() {
+
+      public Blob getRealBlob() throws OtmException {
+        return getBlob(cm, oid, instance);
+      }
+
+      public boolean create() throws OtmException {
+        return getRealBlob().create();
+      }
+
+      public boolean delete() throws OtmException {
+        return getRealBlob().delete();
+      }
+
+      public boolean exists() throws OtmException {
+        return getRealBlob().exists();
+      }
+
+      public ChangeState getChangeState() {
+        return getRealBlob().getChangeState();
+      }
+
+      public String getId() {
+        return oid;
+      }
+
+      public InputStream getInputStream() throws OtmException {
+        return getRealBlob().getInputStream();
+      }
+
+      public OutputStream getOutputStream() throws OtmException {
+        return getRealBlob().getOutputStream();
+      }
+
+      public ChangeState mark() {
+        return getRealBlob().mark();
+      }
+
+      public byte[] readAll() throws OtmException {
+        return getRealBlob().readAll();
+      }
+
+      public byte[] readAll(boolean original) {
+        return getRealBlob().readAll(original);
+      }
+
+      public void writeAll(byte[] b) throws OtmException {
+        getRealBlob().writeAll(b);
+      }
+    };
   }
 
   /*

@@ -561,7 +561,7 @@ public class SessionImpl extends AbstractSession {
         Blob blob = getBlob(cm, id.toString(), o);
         switch (states.digestUpdate(o, cm, this)) {
           case delete:
-            getBlob(cm, id.toString(), o).delete();
+            blob.delete();
             break;
           case update:
           case insert:
@@ -728,7 +728,7 @@ public class SessionImpl extends AbstractSession {
       cm.getIdField().getBinder(getEntityMode()).set(instance, Collections.singletonList(id));
 
       if (streamer.isManaged())
-        streamer.attach(binder, instance, blob);
+        streamer.attach(binder, instance, createProxyBlob(cm, id, instance));
       else
         streamer.setBytes(binder, instance, blob.readAll());
     }
@@ -854,8 +854,7 @@ public class SessionImpl extends AbstractSession {
         Streamer streamer = binder.getStreamer();
         // attach the Blob
         if (streamer.isManaged()) {
-          Blob blob = getBlob(cm, id.getId(), o);
-          streamer.attach(binder, o, blob);
+          streamer.attach(binder, o, createProxyBlob(cm, id.getId(), o));
         }
       }
 

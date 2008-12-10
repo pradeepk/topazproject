@@ -157,6 +157,59 @@ public class BlobTest extends AbstractOtmTest {
     });
   }
 
+  @Test(dependsOnMethods={"testDelete"})
+  public void testMultiTxnSession() throws OtmException {
+    log.info("Testing multi-txn session on a blob ...");
+    Session     session = factory.openSession();
+    Transaction tx      = null;
+
+    try {
+      URI id = URI.create("blob:2");
+      tx = session.beginTransaction(false, -1);
+      BlobTest2 b = new BlobTest2();
+      b.setId(id);
+      b.setBlob(null);
+      session.saveOrUpdate(b);
+      assertNotNull(b.getBlob());
+      try {
+        b.write(data);
+        assertEquals(data, b.read());
+      } catch (IOException e) {
+        throw new OtmException("Test failed.", e);
+      }
+      tx.commit();
+      tx = session.beginTransaction(false, -1);
+      try {
+        assertEquals(data, b.read());
+      } catch (IOException e) {
+        throw new OtmException("Test failed.", e);
+      }
+      session.delete(b);
+      tx.commit();
+      tx = session.beginTransaction(false, -1);
+      assertNull(session.get(BlobTest2.class, id.toString()));
+      assertNotNull(b.getBlob());
+      assertFalse(b.getBlob().exists());
+      tx.commit();
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e;
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+  }
+
+
   @UriPrefix("foo:")
   @Entity(graph="ri")
   public static class BlobTest1 {
@@ -201,4 +254,38 @@ public class BlobTest extends AbstractOtmTest {
       return out.toByteArray();
     }
   }
+
+  @UriPrefix("foo:")
+  @Entity(graph="ri")
+  public static class BlobTest2 {
+    private URI id;
+    private org.topazproject.otm.Blob blob;
+
+    public URI getId() {
+      return id;
+    }
+
+    @Id
+    public void setId(URI id) {
+      this.id = id;
+    }
+
+    public org.topazproject.otm.Blob getBlob() {
+      return blob;
+    }
+
+    @Blob
+    public void setBlob(org.topazproject.otm.Blob blob) {
+      this.blob = blob;
+    }
+
+    private void write(byte[] buf) throws IOException {
+      blob.writeAll(buf);
+    }
+
+    private byte[] read() throws IOException {
+      return blob.readAll();
+    }
+  }
+
 }
