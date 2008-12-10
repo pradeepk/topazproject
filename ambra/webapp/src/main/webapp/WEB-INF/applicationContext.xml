@@ -240,6 +240,18 @@
 
   <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
 
+  <aop:config proxy-target-class="true">
+    <aop:advisor
+        pointcut="execution(* org.topazproject.ambra.admin.service.DocumentManagementService.ingest(..))"
+        advice-ref="longTxTimeout" order="1"/>
+  </aop:config>
+
+  <tx:advice id="longTxTimeout" transaction-manager="txManager">
+    <tx:attributes>
+      <tx:method name="*" timeout="7200" rollback-for="java.lang.Throwable"/>
+    </tx:attributes>
+  </tx:advice>
+
   <!-- cache manager configs -->
   <bean id="txCacheManagerFactory" class="org.topazproject.ambra.cache.CacheManagerFactory">
     <constructor-arg index="0" ref="otmSessionFactory"/>

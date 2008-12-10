@@ -207,6 +207,9 @@
 
                  Parameters:
                      - none (allowHosts and denyHosts now handled through xacml policies)</comment>
+    <param name="uploadStorageMinutes" value="60">
+      <comment>The expiration time for uploaded contents.</comment>
+    </param>
   </module>
   <module role="fedora.server.access.Access" class="fedora.server.access.DefaultAccess">
     <comment>Description: The access subsystem. This implements the methods
