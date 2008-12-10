@@ -85,7 +85,7 @@ public class UploadServlet extends HttpServlet implements Logging {
     Context context     = ReadOnlyContext.getContext(Constants.HTTP_REQUEST.REST.uri, request);
 
     try {
-      MultipartParser parser = new MultipartParser(request, Long.MAX_VALUE, true, null);
+      MultipartParser parser = new MultipartParser(request, Integer.MAX_VALUE, true, false, null);
       Part            part   = parser.readNextPart();
 
       if ((part != null) && part.isFile()) {
