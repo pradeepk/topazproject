@@ -20,6 +20,16 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.fedora</groupId>
+      <artifactId>cos</artifactId>
+      <scope>provided</scope>
+    </dependency>    
+    <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <version>2.6.2</version>
