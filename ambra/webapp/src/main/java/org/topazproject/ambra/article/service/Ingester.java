@@ -42,6 +42,8 @@ import java.util.Map;
 import java.util.List;
 import java.util.Set;
 
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
@@ -103,19 +105,18 @@ import org.topazproject.otm.Session;
 public class Ingester {
   private static final Log    log = LogFactory.getLog(Ingester.class);
 
+  private final Zip zip;
+
   private final TransformerFactory tFactory;
-  private final Session            sess;
-  private final PermissionsService permSvc;
+  private Document objInfo;
 
   /**
-   * Create a new ingester for the given session.
+   * Create a new ingester for the given zip.
    *
-   * @param sess     the OTM session to use to add the objects
-   * @param permSvc  the permissions-service to use to add the permissions
+   * @param zip   the zip archive containing the article and it's related objects
    */
-  public Ingester(Session sess, PermissionsService permSvc) {
-    this.sess    = sess;
-    this.permSvc = permSvc;
+  public Ingester(Zip zip) {
+    this.zip = zip;
 
     tFactory = new TransformerFactoryImpl();
     tFactory.setURIResolver(new URLResolver());
@@ -137,18 +138,30 @@ public class Ingester {
   }
 
   /**
-   * Ingest a new article.
+   * Create a new ingester for the given DataSource.
    *
-   * @param zip   the zip archive containing the article and it's related objects
-   * @param force if true then don't check whether this article already exists but just
-   *              save this new article.
-   * @return the new article
-   * @throws DuplicateArticleIdException if an article exists with the same URI as the new article
-   *                                     and <var>force</var> is false
-   * @throws IngestException if there's any other problem ingesting the article
+   * @param article the article data-source
+   *
+   * @throws IOException on an error
    */
-  public Article ingest(Zip zip, boolean force)
-      throws DuplicateArticleIdException, IngestException {
+  public Ingester(DataSource article) throws IOException {
+    this(createZip(article));
+  }
+
+  private static Zip createZip(DataSource article) throws IOException {
+    if ((article instanceof FileDataSource)
+        && Zip.StreamZip.isZip(article.getContentType()))
+      return new Zip.FileZip(((FileDataSource) article).getFile().toString());
+    return new Zip.DataSourceZip(article);
+  }
+
+  /**
+   * Prepare the ingester for ingesting. This can be done outside a transaction
+   * scope. It creates the object descriptions ready for ingest.
+   *
+   * @throws IngestException on an error in reading the zip file
+   */
+  public void prepare() throws IngestException {
     try {
       // get zip info
       String zipInfo = Zip2Xml.describeZip(zip);
@@ -161,23 +174,44 @@ public class Ingester {
         log.debug("Using ingest handler '" + handler + "'");
 
       // use handler to convert zip to object descriptions
-      Document objInfo = zip2Obj(zip, zipInfo, handler);
+      objInfo = zip2Obj(zip, zipInfo, handler);
       if (log.isDebugEnabled())
         log.debug("Got object-info '" + dom2String(objInfo) + "'");
+    } catch (IOException ioe) {
+      throw new IngestException("Error reading zip", ioe);
+    } catch (TransformerException te) {
+      throw new IngestException("Zip format error", te);
+    }
+  }
 
+  /**
+   * Ingest a new article.
+   *
+   * @param sess     the OTM session to use to add the objects
+   * @param permSvc  the permissions-service to use to add the permissions
+   * @param force if true then don't check whether this article already exists but just
+   *              save this new article.
+   * @return the new article
+   * @throws DuplicateArticleIdException if an article exists with the same URI as the new article
+   *                                     and <var>force</var> is false
+   * @throws IngestException if there's any other problem ingesting the article
+   */
+  public Article ingest(Session sess, PermissionsService permSvc, boolean force)
+      throws DuplicateArticleIdException, IngestException {
+
+    if (objInfo == null)
+      prepare();
+
+    try {
       // process the object descriptions
-      Article art = processObjectInfo(zip, objInfo, force);
+      Article art = processObjectInfo(zip, objInfo, force, sess, permSvc);
 
       log.info("Successfully ingested '" + art.getId() + "'");
       return art;
-    } catch (IOException ioe) {
-      throw new IngestException("Error reading zip", ioe);
     } catch (OtmException oe) {
       throw new IngestException("Error talking to triple- or blob-store", oe);
     } catch (XStreamException xe) {
       throw new IngestException("Error unmarshalling object-descriptors", xe);
-    } catch (TransformerException te) {
-      throw new IngestException("Zip format error", te);
     }
   }
 
@@ -254,7 +288,7 @@ public class Ingester {
     return (Document) res.getNode();
   }
 
-  private Article processObjectInfo(final Zip zip, Document objInfo, boolean force)
+  private Article processObjectInfo(final Zip zip, Document objInfo, boolean force, Session sess, PermissionsService permSvc)
       throws IngestException, DuplicateArticleIdException {
     Article art = null;
     final StringWriter msgs = new StringWriter();
@@ -733,5 +767,9 @@ public class Ingester {
     public byte[] readAll(boolean original) {
       return readAll();
     }
+  }
+
+  public Zip getZip() {
+    return zip;
   }
 }

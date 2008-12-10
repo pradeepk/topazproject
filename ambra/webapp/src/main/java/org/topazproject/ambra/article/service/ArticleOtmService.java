@@ -71,32 +71,23 @@ public class ArticleOtmService {
   }
 
   /**
-   * Ingest an article.
+   * Execute the configured ingest.
    *
-   * @param article the article
-   * @param force   if true don't check for duplicate and instead always (re-)ingest
+   * @param ingester the configured ingest
+   * @param force if true then don't check whether this article already exists but just
+   *              save this new article.
    * @return the ingested article
    * @throws IngestException IngestException
    * @throws DuplicateArticleIdException DuplicateArticleIdException
    * @throws IOException IOException
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public Article ingest(DataSource article, boolean force)
-          throws DuplicateArticleIdException, IngestException, IOException {
+  public Article ingest(Ingester ingester, boolean force)
+    throws DuplicateArticleIdException, IngestException, IOException {
     pep.checkAccess(ArticlePEP.INGEST_ARTICLE, ArticlePEP.ANY_RESOURCE);
 
-    // ingest article
-    Ingester ingester = new Ingester(session, permissionsService);
-    Article art = ingester.ingest(createZip(article), force);
-
+    Article art = ingester.ingest(session, permissionsService, force);
     return art;
-  }
-
-  private static Zip createZip(DataSource article) throws IOException {
-    if ((article instanceof FileDataSource)
-        && Zip.StreamZip.isZip(article.getContentType()))
-      return new Zip.FileZip(((FileDataSource) article).getFile().toString());
-    return new Zip.DataSourceZip(article);
   }
 
   /**

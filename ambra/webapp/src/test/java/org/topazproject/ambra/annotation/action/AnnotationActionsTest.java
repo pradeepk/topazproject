@@ -55,6 +55,7 @@ import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.annotation.service.WebReply;
 import org.topazproject.ambra.article.action.FetchArticleAction;
 import org.topazproject.ambra.article.service.DuplicateArticleIdException;
+import org.topazproject.ambra.article.service.Ingester;
 import org.topazproject.ambra.permission.service.PermissionsService;
 
 import com.opensymphony.xwork2.Action;
@@ -82,7 +83,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     final URL article = getAsUrl(resourceToIngest);
 
     try {
-      testXmlTarget = getArticleOtmService().ingest(new URLDataSource(article), false).
+      testXmlTarget = getArticleOtmService().ingest(new Ingester(new URLDataSource(article)), false).
                                              getId().toString();
     } catch(DuplicateArticleIdException ex) {
       //article has already been ingested

@@ -26,6 +26,7 @@ import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.article.action.FetchObjectAction;
 import org.topazproject.ambra.article.action.SecondaryObjectAction;
 import org.topazproject.ambra.article.service.ArticleOtmService;
+import org.topazproject.ambra.article.service.Ingester;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.article.service.SecondaryObject;
 import org.topazproject.ambra.models.ObjectInfo;
@@ -92,7 +93,7 @@ public class FetchObjectTest extends BaseAmbraTestCase {
       //means that this article is not ingested yet, so delete would fail
     }
 
-    final String ingestedUri = service.ingest(new URLDataSource(article), false).getId().toString();
+    final String ingestedUri = service.ingest(new Ingester(new URLDataSource(article)), false).getId().toString();
     assertEquals(uri, ingestedUri);
   }
 }

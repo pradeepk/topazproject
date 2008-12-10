@@ -24,6 +24,7 @@ import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.article.action.FetchArticleAction;
 import org.topazproject.ambra.article.service.DuplicateArticleIdException;
+import org.topazproject.ambra.article.service.Ingester;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.models.Article;
 
@@ -51,7 +52,7 @@ public class FetchArticleActionTest extends BaseAmbraTestCase {
     }
 
     final URL article = getAsUrl(resourceToIngest);
-    Article art = getArticleOtmService().ingest(new URLDataSource(article), false);
+    Article art = getArticleOtmService().ingest(new Ingester(new URLDataSource(article)), false);
     assertEquals(art.getId().toString(), resourceURI);
 
     final FetchArticleAction fetchArticleAction = getFetchArticleAction();
@@ -89,13 +90,13 @@ public class FetchArticleActionTest extends BaseAmbraTestCase {
 
     final URL article = getAsUrl(resourceToIngest);
 
-    Article art = getArticleOtmService().ingest(new URLDataSource(article), false);
+    Article art = getArticleOtmService().ingest(new Ingester(new URLDataSource(article)), false);
     assertEquals(art.getId(), resourceURI);
 
     assertNotNull(art.getRepresentation("XML"));
 
     try {
-      art = getArticleOtmService().ingest(new URLDataSource(article), false);
+      art = getArticleOtmService().ingest(new Ingester(new URLDataSource(article)), false);
       fail("Failed to get expected duplicate-id exception");
     } catch (DuplicateArticleIdException die) {
     }

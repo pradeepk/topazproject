@@ -24,7 +24,9 @@ import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.ambra.admin.service.DocumentManagementService;
 import org.topazproject.ambra.article.service.DuplicateArticleIdException;
+import org.topazproject.ambra.article.service.Ingester;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.otm.Session;
 
@@ -51,12 +53,18 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
   @Override
   public String execute() {
     if (filesToIngest != null) {
+      DocumentManagementService dms = getDocumentManagementService();
       for (String filename : filesToIngest) {
         filename = filename.trim();
         try {
-          File file = new File(getDocumentManagementService().getDocumentDirectory(), filename);
-          Article article = getDocumentManagementService().ingest(file, force);
-          String id = article.getId().toString();
+          File file = new File(dms.getDocumentDirectory(), filename);
+          log.info("Creating ingester for " + file);
+          Ingester ingester = dms.createIngester(file);
+          log.info("Preparing ingester for " + file);
+          ingester.prepare();
+          log.info("Starting ingest for " + file);
+          Article article = dms.ingest(ingester, force);
+          log.info("Finished ingest for " + file);
           addActionMessage("Ingested: " + filename);
 
           session.evict(article);  // purely for performance. Subsequent flush()es will be faster.

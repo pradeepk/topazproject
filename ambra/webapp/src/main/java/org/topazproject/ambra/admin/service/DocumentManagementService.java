@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.activation.FileTypeMap;
 import javax.xml.transform.Transformer;
@@ -52,6 +53,7 @@ import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.DuplicateArticleIdException;
 import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.article.service.IngestException;
+import org.topazproject.ambra.article.service.Ingester;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.article.service.Zip;
 import org.topazproject.ambra.journal.JournalService;
@@ -259,30 +261,22 @@ public class DocumentManagementService {
   }
 
   /**
-   * Ingest the file. If successful create the Transformed CrossRef xml file and deposit that in the
-   * Directory as well.
+   * Execute the ingest in transaction context. If successful create the Transformed CrossRef xml
+   * file and deposit that in the Directory as well.
    *
-   * @param file  file to be ingested
-   * @param force if true don't check for duplicate and instead always (re-)ingest
+   * @param ingester the ingester to execute
+   * @param force if true then don't check whether this article already exists but just
+   *              save this new article.
    * @return the ingested article
    * @throws IngestException on an error in ingest
    * @throws DuplicateArticleIdException if the article exists and force is false
    * @throws IOException on any other error
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public Article ingest(File file, boolean force)
+  public Article ingest(Ingester ingester, boolean force)
       throws IngestException, DuplicateArticleIdException, IOException {
-    if (log.isInfoEnabled()) {
-      log.info("Ingesting: " + file);
-    }
 
-    FileDataSource fd = new FileDataSource(file);
-    fd.setFileTypeMap(fileTypeMap);
-    Article article = articleOtmService.ingest(fd, force);
-
-    if (log.isInfoEnabled()) {
-      log.info("Ingested: " + file + ":" + article.getId());
-    }
+    Article article = articleOtmService.ingest(ingester, force);
 
     try {
       generateCrossRefInfoDoc(article);
@@ -293,10 +287,17 @@ public class DocumentManagementService {
     }
 
     if (log.isInfoEnabled()) {
-      log.info("Generated Xref: " + article.getId() + " ingested from '" + file + "'");
+      log.info("Generated Xref: " + article.getId() + " ingested from '"
+          + ingester.getZip().getName() + "'");
     }
 
     return article;
+  }
+
+  public Ingester createIngester(File file) throws IOException {
+    FileDataSource fd = new FileDataSource(file);
+    fd.setFileTypeMap(fileTypeMap);
+    return new Ingester(fd);
   }
 
   /**
