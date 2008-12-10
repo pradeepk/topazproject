@@ -50,6 +50,7 @@ import org.topazproject.otm.Blob;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.Blob.ChangeState;
 
 /**
  * Acts as the client to Fedora and manages the transactional aspects of user operations.
@@ -63,10 +64,8 @@ public class FedoraConnection extends AbstractConnection {
   private Uploader                upld;
   private final FedoraBlobStore   bs;
   private Map<String, Blob> blobs = new HashMap<String, Blob>();
-  private Map<String, String> uplds = new HashMap<String, String>();
-  private Map<String, String> baks = new HashMap<String, String>();
-  private Map<String, FedoraBlob> fbs = new HashMap<String, FedoraBlob>();
-  private ArrayList<FedoraBlob> ingested = new ArrayList<FedoraBlob>();
+  private Map<String, FedoraState> states = new HashMap<String, FedoraState>();
+  private ArrayList<FedoraState> ingested = new ArrayList<FedoraState>();
 
   /**
    * Creates a new FedoraConnection object.
@@ -154,10 +153,12 @@ public class FedoraConnection extends AbstractConnection {
       if (bf == null)
         throw new OtmException("Can't find a blob factory for " + id);
 
-      FedoraBlob fb = bf.createBlob(cm, id, instance, this);
-      fbs.put(id, fb);
+      FedoraState o = new FedoraState(bf.createBlob(cm, id, instance, this));
+      FedoraState fstate = states.get(o.getKey());
+      if (fstate == null)
+        states.put(o.getKey(), fstate = o);
 
-      blob = newBlob(fb);
+      blob = newBlob(id, fstate);
       blobs.put(id, blob);
     }
     return blob;
@@ -199,8 +200,7 @@ public class FedoraConnection extends AbstractConnection {
       }
 
       if (op != null)
-        throw new OtmException("Loop detected: failed to ingest " + blob.getBlobId() + ", pid=" + blob.getPid() +
-                               ", dsId=" + blob.getDsId() + ", op=" + op);
+        throw new OtmException("Loop detected: failed to ingest " + blob + ", op=" + op);
 
     } catch (Exception e) {
       if (e instanceof OtmException)
@@ -218,7 +218,7 @@ public class FedoraConnection extends AbstractConnection {
                              + "'");
 
     if (log.isDebugEnabled())
-      log.debug("Wrote " + blob.getBlobId() + " as " + blob.getPid() + "/" + blob.getDsId());
+      log.debug("Ingested " + blob);
 
     return true;
   }
@@ -228,7 +228,7 @@ public class FedoraConnection extends AbstractConnection {
 
     try {
       if (log.isDebugEnabled())
-        log.debug("Ingesting '" + blob.getPid() + "' with data-stream '" + blob.getDsId() + "'");
+        log.debug("Ingesting " + blob);
 
       newPid[0] = apim.ingest(blob.getFoxml(ref), "foxml1.0", "created");
       new_op = null;
@@ -275,7 +275,7 @@ public class FedoraConnection extends AbstractConnection {
 
     try {
       if (log.isDebugEnabled())
-        log.debug("Modifying data-stream(by reference) '" + blob.getDsId() + "' for '" + blob.getPid() + "'");
+        log.debug("Modifying data-stream(by reference) for " + blob);
 
       apim.modifyDatastreamByReference(blob.getPid(), blob.getDsId(), new String[0], blob.getDatastreamLabel(), false,
                                        blob.getContentType(), null, ref, "A", "updated", false);
@@ -336,7 +336,7 @@ public class FedoraConnection extends AbstractConnection {
       if (isNoSuchObjectException(e) || isNoSuchDatastreamException(e))
         return null;
 
-      throw new OtmException("Error while getting the data-stream for " + blob.getPid() + "/" + blob.getDsId(), e);
+      throw new OtmException("Error while getting the data-stream for " + blob, e);
     }
   }
 
@@ -360,7 +360,7 @@ public class FedoraConnection extends AbstractConnection {
     } catch (Exception e) {
       if (isNoSuchObjectException(e)) {
         if (log.isDebugEnabled())
-          log.debug("Object " + blob.getBlobId()+ " at " + blob.getPid() + " doesn't exist in blob-store", e);
+          log.debug("Object with PID " + blob.getPid() + " does not exist in blob-store", e);
         return null;
       }
 
@@ -383,18 +383,18 @@ public class FedoraConnection extends AbstractConnection {
       Boolean canPurgeObject = canPurgeObject(blob);
       if (canPurgeObject == null) {
         if (log.isDebugEnabled())
-          log.debug("Not purging Object or datastram for " + blob.getBlobId() + " at " + blob.getPid()+ "/" + blob.getDsId());
+          log.debug("Not purging " + blob);
         return false;
       }
 
       if (canPurgeObject) {
         if (log.isDebugEnabled())
-          log.debug("Purging Object " + blob.getBlobId() + " at " + blob.getPid() + "/" + blob.getDsId());
+          log.debug("Purging Object " + blob.getPid());
 
         apim.purgeObject(blob.getPid(), "deleted", false);
       } else {
         if (log.isDebugEnabled())
-          log.debug("Purging Datastream " + blob.getBlobId() + " at " + blob.getPid() + "/" + blob.getDsId());
+          log.debug("Purging Datastream " + blob);
 
         apim.purgeDatastream(blob.getPid(), blob.getDsId(), null, "deleted", false);
       }
@@ -405,8 +405,7 @@ public class FedoraConnection extends AbstractConnection {
         throw new OtmException("Purge failed", e);
 
       if (log.isDebugEnabled())
-        log.debug("Datastream " + blob.getBlobId() + " at " + blob.getPid() + "/" + blob.getDsId() +
-                  " doesn't exist in blob-store", e);
+        log.debug("Datastream " + blob + " does not exist in blob-store", e);
 
       return false;
     }
@@ -422,28 +421,28 @@ public class FedoraConnection extends AbstractConnection {
    *
    * @throws OtmException on an error
    */
-  private InputStream getBlobStream(FedoraBlob blob, boolean original) throws OtmException {
-    String ref = original ? null : uplds.get(blob.getBlobId());
+  private InputStream getBlobStream(FedoraState fs, boolean original) throws OtmException {
+    String ref = original ? null : fs.getUploadedRef();
     if (ref != null) {
       try {
         return getUploader().download(ref);
       } catch (IOException e) {
-        throw new OtmException("Error while downloading from " + ref + " for " + blob.getBlobId());
+        throw new OtmException("Error while downloading from " + ref + " for " + fs);
       }
     }
 
-    Datastream stream = getDatastream(blob);
+    Datastream stream = getDatastream(fs);
 
     if (stream == null)
       return null;
 
-    URL  location = getDatastreamLocation(blob.getPid(), blob.getDsId());
+    URL  location = getDatastreamLocation(fs.getPid(), fs.getDsId());
 
     try {
       return location.openStream();
     } catch (Exception e) {
       if (log.isDebugEnabled())
-        log.debug("Error while opening a stream to read from " + blob.getPid() + "/" + blob.getDsId()
+        log.debug("Error while opening a stream to read from " + fs
                   + ". According to Fedora the stream must exist - but most likeley was"
                   + " purged recently. Treating this as if it was purged and does not exist.", e);
 
@@ -456,15 +455,13 @@ public class FedoraConnection extends AbstractConnection {
         log.trace("doPrepare starting ...");
       int mods = 0;
       // Note: since the server is not txn based, no point doing any local locks.
-      for (Blob blob : blobs.values()) {
-        FedoraBlob fb = fbs.get(blob.getId());
-        switch(blob.getChangeState()) {
+      for (FedoraState fs : states.values()) {
+        switch(fs.getState()) {
           case WRITTEN:
             if (log.isDebugEnabled())
-              log.debug("Ingesting: PID = " + fb.getPid() + " DS = " + fb.getDsId()
-                       + " for " + fb.getBlobId());
-            ingest(fb, uplds.get(blob.getId()));
-            ingested.add(fb);
+              log.debug("Ingesting: " + fs);
+            ingest(fs, fs.getUploadedRef());
+            ingested.add(fs);
           case DELETED:
             mods++;
         }
@@ -483,19 +480,18 @@ public class FedoraConnection extends AbstractConnection {
 
     if (log.isDebugEnabled() && !ingested.isEmpty())
       log.debug("Ingest committed for " + ingested.size() + " blobs");
+
     ingested.clear();
 
-    for (Blob blob : blobs.values()) {
-      FedoraBlob fb = fbs.get(blob.getId());
-      switch(blob.getChangeState()) {
+    for (FedoraState fs : states.values()) {
+      switch(fs.getState()) {
         case DELETED:
           try {
             if (log.isDebugEnabled())
-              log.debug("Purging: PID = " + fb.getPid() + " DS = " + fb.getDsId()
-                       + " for " + fb.getBlobId());
-            purge(fb);
+              log.debug("Purging: " + fs);
+            purge(fs);
           } catch (Exception e) {
-            log.error("Failed to purge: PID = " + fb.getPid() + " DS = " + fb.getDsId());
+            log.error("Failed to purge: " + fs);
           }
           break;
       }
@@ -506,15 +502,15 @@ public class FedoraConnection extends AbstractConnection {
     if (log.isTraceEnabled())
       log.trace("doRollback");
 
-    for (FedoraBlob fb : ingested) {
+    for (FedoraState fs : ingested) {
       try {
-        String ref = baks.get(fb.getBlobId());
+        String ref = fs.getBackupRef();
         if (ref != null)
-          ingest(fb, ref);
+          ingest(fs, ref);
         else
-          purge(fb);
+          purge(fs);
       } catch (Exception e) {
-        log.error("Undo of ingest failed for: PID = " + fb.getPid() + " DS = " + fb.getDsId());
+        log.error("Undo of ingest failed for: " + fs);
       }
     }
 
@@ -585,15 +581,12 @@ public class FedoraConnection extends AbstractConnection {
     };
   }
 
-  private Blob newBlob(final FedoraBlob fb) {
-    return new AbstractBlob(fb.getBlobId()) {
-      private Boolean exists = null;
-      private ChangeState state = ChangeState.NONE;
-      private ChangeState marked = ChangeState.NONE;
+  private Blob newBlob(String id, final FedoraState fstate) {
+    return new AbstractBlob(id) {
 
       @Override
       protected InputStream doGetInputStream() throws OtmException {
-        InputStream in =  getBlobStream(fb, false);
+        InputStream in =  getBlobStream(fstate, false);
         if (in == null)
           throw new OtmException("Blob " + getId() + " does not exist. Write to it first to create.");
 
@@ -605,12 +598,12 @@ public class FedoraConnection extends AbstractConnection {
 
       @Override
       protected OutputStream doGetOutputStream() throws OtmException {
-        InputStream in = (baks.get(getId()) != null) ? null : getBlobStream(fb, true);
+        InputStream in = (fstate.getBackupRef() != null) ? null : getBlobStream(fstate, true);
         OutputStream out = null;
         try {
           if (in != null) {
             try {
-              copy(in, out = getUploadStream(baks));
+              copy(in, out = getUploadStream(true));
             } catch (IOException e) {
               throw new OtmException("Failed to backup original content for " + getId());
             }
@@ -624,10 +617,10 @@ public class FedoraConnection extends AbstractConnection {
         if (log.isTraceEnabled())
           log.trace("Creating outputstream for " + getId());
 
-        return getUploadStream(uplds);
+        return getUploadStream(false);
       }
 
-      private OutputStream getUploadStream(final Map<String, String> refs) {
+      private OutputStream getUploadStream(final boolean backup) {
         final Uploader.UploadResult result = new Uploader.UploadResult();
         OutputStream out;
         try {
@@ -637,14 +630,19 @@ public class FedoraConnection extends AbstractConnection {
         }
 
         return new FilterOutputStream(out) {
+          @Override
           public void close() throws IOException {
             super.close();
-            refs.put(getId(), result.getResult());
+            String ref = result.getResult();
+            if (backup)
+              fstate.setBackupRef(ref);
+            else
+              fstate.setUploadedRef(ref);
             if (log.isDebugEnabled()) {
-              if (refs == uplds)
-                log.debug("Uploaded content for " + getId() + " into " + refs.get(getId()));
+              if (!backup)
+                log.debug("Uploaded content for " + getId() + " into " + ref);
               else
-                log.debug("Backed up original content for " + getId() + " into " + refs.get(getId()));
+                log.debug("Backed up original content for " + getId() + " into " + ref);
             }
           }
 
@@ -664,12 +662,12 @@ public class FedoraConnection extends AbstractConnection {
 
       @Override
       public void writing(OutputStream out) {
-        switch (state) {
+        switch (fstate.getState()) {
           case CREATED:
           case NONE:
             if (log.isTraceEnabled())
               log.trace("Write detected on for " + getId());
-            state = marked = ChangeState.WRITTEN;
+            fstate.setState(ChangeState.WRITTEN);
             break;
           case DELETED:
             // All streams should be closed on delete.
@@ -678,21 +676,21 @@ public class FedoraConnection extends AbstractConnection {
       }
 
       public boolean create() throws OtmException {
-        switch (state) {
+        switch (fstate.getState()) {
           case DELETED:
           case NONE:
             boolean ret = !exists();
             if (log.isTraceEnabled())
               log.trace("Create requested for " + getId());
-            state = marked = ChangeState.CREATED;
-            exists = Boolean.TRUE;
+            fstate.setState(ChangeState.CREATED);
+            fstate.setExists(Boolean.TRUE);
             return ret;
         }
         return false;
       }
 
       public boolean delete() throws OtmException {
-        switch (state) {
+        switch (fstate.getState()) {
           case CREATED:
           case NONE:
           case WRITTEN:
@@ -707,22 +705,22 @@ public class FedoraConnection extends AbstractConnection {
             boolean ret = exists();
             if (log.isTraceEnabled())
               log.trace("Delete requested for " + getId());
-            state = marked = ChangeState.DELETED;
-            exists = Boolean.FALSE;
+            fstate.setState(ChangeState.DELETED);
+            fstate.setExists(Boolean.FALSE);
             return ret;
         }
         return false;
       }
 
       public boolean exists() throws OtmException {
-        if (exists != null)
-          return exists;
+        if (fstate.getExists() != null)
+          return fstate.getExists();
 
         if (log.isTraceEnabled())
           log.trace("performing exists() check on " + getId());
 
-        InputStream in = getBlobStream(fb, true);
-        exists = in != null;
+        InputStream in = getBlobStream(fstate, true);
+        fstate.setExists(in != null);
         try {
           if (in != null)
             in.close();
@@ -732,33 +730,36 @@ public class FedoraConnection extends AbstractConnection {
         }
 
         if (log.isTraceEnabled())
-          log.trace("exists() check result: " + exists);
+          log.trace("exists() check result: " + fstate.getExists());
 
-        return exists;
+        return fstate.getExists();
       }
 
       public ChangeState getChangeState() {
-        return state;
+        return fstate.getState();
       }
 
       public ChangeState mark() {
+        ChangeState prev = fstate.mark();
         if (log.isDebugEnabled())
-          log.debug("Marking... previous-mark = " + marked + ", state = " + state + ", id = " + getId());
-        ChangeState prev = marked;
-        marked = ChangeState.NONE;
+          log.debug("Marking... previous-mark = " + prev
+              + ", state = " + fstate.getState() + ", id = " + getId());
         return prev;
       }
 
       public byte[] readAll(boolean original) {
-        if (!original || ((state != ChangeState.DELETED) && (state != ChangeState.WRITTEN)))
+        if (!original ||
+            ((fstate.getState() != ChangeState.DELETED)
+                && (fstate.getState() != ChangeState.WRITTEN)))
           return readAll();
+
         if (log.isTraceEnabled())
           log.trace("Loading old data for search index removal for " + getId());
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         InputStream in = null;
         try {
-          in = getBlobStream(fb, true);
+          in = getBlobStream(fstate, true);
           if (in != null)
             copy(in, out);
         } catch (IOException e) {
@@ -769,5 +770,136 @@ public class FedoraConnection extends AbstractConnection {
         return out.toByteArray();
       }
     };
+  }
+
+  public static class FedoraState implements FedoraBlob {
+    private final FedoraBlob  fb;
+    private Boolean     exists = null;
+    private ChangeState state = ChangeState.NONE;
+    private ChangeState marked = ChangeState.NONE;
+    private String upld = null;
+    private String bak = null;
+    private final String key;
+
+    public FedoraState(FedoraBlob fb) {
+      this.fb = fb;
+      key = "PID = " + getPid() + ", DS = " + getDsId();
+    }
+
+    public String getKey() {
+      return key;
+    }
+
+    public String toString() {
+      return key;
+    }
+
+    /**
+     * @param upld the reference uri for the uploaded content
+     */
+    public void setUploadedRef(String upld) {
+      this.upld = upld;
+    }
+
+    /**
+     * @return the reference uri for the uploaded content
+     */
+    public String getUploadedRef() {
+      return upld;
+    }
+
+    /**
+     * @param bak the reference uri for the backed up content
+     */
+    public void setBackupRef(String bak) {
+      this.bak = bak;
+    }
+
+    /**
+     * @return the reference uri for the backed up content
+     */
+    public String getBackupRef() {
+      return bak;
+    }
+
+    /**
+     * @param val the new state value
+     */
+    public void setState(ChangeState val) {
+      state = marked = val;
+    }
+
+    /**
+     * @return the current state value
+     */
+    public ChangeState getState() {
+      return state;
+    }
+
+    /**
+     * Reset the state value to NONE and return the new state since the
+     * previous call.
+     *
+     * @return the new state since the previous call
+     */
+    public ChangeState mark() {
+      ChangeState prev = marked;
+      marked = ChangeState.NONE;
+      return prev;
+    }
+
+    /**
+     * @param exists the exists flag to set
+     */
+    public void setExists(Boolean exists) {
+      this.exists = exists;
+    }
+
+    /**
+     * @return the exists flag
+     */
+    public Boolean getExists() {
+      return exists;
+    }
+
+    public boolean canPurgeObject(Datastream[] ds) throws OtmException {
+      return fb.canPurgeObject(ds);
+    }
+
+    public ClassMetadata getClassMetadata() {
+      return fb.getClassMetadata();
+    }
+
+    public String getContentModel() {
+      return fb.getContentModel();
+    }
+
+    public String getContentType() {
+      return fb.getContentType();
+    }
+
+    public String getDatastreamLabel() {
+      return fb.getDatastreamLabel();
+    }
+
+    public String getDsId() {
+      return fb.getDsId();
+    }
+
+    public INGEST_OP getFirstIngestOp() {
+      return fb.getFirstIngestOp();
+    }
+
+    public byte[] getFoxml(String ref) {
+      return fb.getFoxml(ref);
+    }
+
+    public String getPid() {
+      return fb.getPid();
+    }
+
+    public boolean hasSingleDs() {
+      return fb.hasSingleDs();
+    }
   }
 }

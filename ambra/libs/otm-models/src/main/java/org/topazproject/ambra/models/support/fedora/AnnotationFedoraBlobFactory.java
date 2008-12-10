@@ -31,7 +31,6 @@ import org.topazproject.otm.OtmException;
  * @author Pradeep Krishnan
  */
 public class AnnotationFedoraBlobFactory extends DefaultFedoraBlobFactory {
-
   private final String pidNs;
   private final String uriPrefix;
 
@@ -46,7 +45,6 @@ public class AnnotationFedoraBlobFactory extends DefaultFedoraBlobFactory {
     this.uriPrefix = uriPrefix;
   }
 
-
   /*
    * inherited javadoc
    */
@@ -59,7 +57,7 @@ public class AnnotationFedoraBlobFactory extends DefaultFedoraBlobFactory {
    */
   public FedoraBlob createBlob(ClassMetadata cm, String id, Object instance, FedoraConnection con)
                         throws OtmException {
-    return new AnnotationFedoraBlob(cm, id, getPid(cm, id, instance, con), getDsId(cm, id, instance, con));
+    return new AnnotationFedoraBlob(cm, getPid(cm, id, instance, con), getDsId(cm, id, instance, con));
   }
 
   /*

@@ -41,9 +41,9 @@ public class RepresentationFedoraBlob extends DefaultFedoraBlob {
    * @param ct the content type
    * @param cModel content model (in Fedora's domain)
    */
-  public RepresentationFedoraBlob(ClassMetadata cm, String blobId, String pid, String dsId,
+  public RepresentationFedoraBlob(ClassMetadata cm, String pid, String dsId,
                                   String ct, String cModel) {
-    super(cm, blobId, pid, dsId);
+    super(cm, pid, dsId);
     this.contentType                    = ct;
     this.contentModel                   = cModel;
   }
@@ -67,7 +67,7 @@ public class RepresentationFedoraBlob extends DefaultFedoraBlob {
   }
 
   /**
-   * Gets the datastream label to use in the FOXML. 
+   * Gets the datastream label to use in the FOXML.
    *
    * @return the label to use
    */

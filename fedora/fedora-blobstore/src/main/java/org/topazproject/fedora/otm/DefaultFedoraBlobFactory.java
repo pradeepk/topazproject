@@ -41,7 +41,7 @@ public class DefaultFedoraBlobFactory implements FedoraBlobFactory {
 
   public FedoraBlob createBlob(ClassMetadata cm, String id, Object blob, FedoraConnection con)
                         throws OtmException {
-    return new DefaultFedoraBlob(cm, id, getPid(cm, id, blob, con), getDsId(cm, id, blob, con));
+    return new DefaultFedoraBlob(cm, getPid(cm, id, blob, con), getDsId(cm, id, blob, con));
   }
 
   /**

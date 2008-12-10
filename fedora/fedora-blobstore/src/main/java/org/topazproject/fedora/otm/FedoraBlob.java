@@ -29,13 +29,6 @@ import org.topazproject.otm.OtmException;
  */
 public interface FedoraBlob {
   /**
-   * Gets the blob identifier.
-   *
-   * @return the blob identifier URI.
-   */
-  public String getBlobId();
-
-  /**
    * Gets the Fedora PID of this Blob.
    *
    * @return the blob PID

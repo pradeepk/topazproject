@@ -21,7 +21,6 @@ package org.topazproject.ambra.models.support.fedora;
 import org.topazproject.ambra.models.AnnotationBlob;
 import org.topazproject.ambra.models.ReplyBlob;
 import org.topazproject.fedora.otm.DefaultFedoraBlob;
-import org.topazproject.fedora.otm.FedoraConnection;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
@@ -37,13 +36,12 @@ public class AnnotationFedoraBlob extends DefaultFedoraBlob {
    * Creates a new AnnotationFedoraBlob object.
    *
    * @param cm the class metadata of this blob
-   * @param blobId the blob identifier URI
    * @param pid the Fedora PID of this blob
    * @param dsId the Datastream id of this blob
    *
    */
-  public AnnotationFedoraBlob(ClassMetadata cm, String blobId, String pid, String dsId) {
-    super(cm, blobId, pid, dsId);
+  public AnnotationFedoraBlob(ClassMetadata cm, String pid, String dsId) {
+    super(cm, pid, dsId);
   }
 
   /**

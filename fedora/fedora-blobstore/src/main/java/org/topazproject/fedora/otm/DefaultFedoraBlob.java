@@ -49,26 +49,19 @@ public class DefaultFedoraBlob implements FedoraBlob {
     + "<foxml:contentLocation REF=\"${CONTENT}\" TYPE=\"URL\"/></foxml:datastreamVersion>"
     + "</foxml:datastream></foxml:digitalObject>";
   private final ClassMetadata    cm;
-  private final String           blobId;
   private final String           pid;
   private final String           dsId;
 
   /**
    * Creates a new DefaultFedoraBlob object.
    * @param cm the class metadata of this blob
-   * @param blobId the blob identifier URI
    * @param pid the Fedora PID of this blob
    * @param dsId the Datastream id of this blob
    */
-  public DefaultFedoraBlob(ClassMetadata cm, String blobId, String pid, String dsId) {
+  public DefaultFedoraBlob(ClassMetadata cm, String pid, String dsId) {
     this.cm                          = cm;
-    this.blobId                      = blobId;
     this.pid                         = pid;
     this.dsId                        = dsId;
-  }
-
-  public final String getBlobId() {
-    return blobId;
   }
 
   public final ClassMetadata getClassMetadata() {

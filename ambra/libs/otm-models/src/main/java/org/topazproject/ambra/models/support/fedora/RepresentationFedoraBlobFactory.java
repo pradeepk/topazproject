@@ -96,7 +96,7 @@ public class RepresentationFedoraBlobFactory implements FedoraBlobFactory {
 
     String pid = toPid(r.getObject().getId());
 
-    return new RepresentationFedoraBlob(cm, id, pid, r.getName(), r.getContentType(), cModel);
+    return new RepresentationFedoraBlob(cm, pid, r.getName(), r.getContentType(), cModel);
   }
 
   private String toPid(URI uri) throws OtmException {
