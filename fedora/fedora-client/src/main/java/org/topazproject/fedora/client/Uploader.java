@@ -30,9 +30,10 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.MultipartPostMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.PartSource;
 
@@ -50,9 +51,9 @@ public class Uploader {
   private String           serviceUri;
 
   static {
-    // xxx: tune this
-    connectionManager.setMaxConnectionsPerHost(100);
-    connectionManager.setMaxTotalConnections(100);
+    // XXX: tune this
+    connectionManager.getParams().setDefaultMaxConnectionsPerHost(100);
+    connectionManager.getParams().setMaxTotalConnections(100);
   }
 
   /**
@@ -213,8 +214,8 @@ public class Uploader {
   }
 
   private String upload(Part part) throws IOException {
-    MultipartPostMethod post = new MultipartPostMethod(serviceUri);
-    post.addPart(part);
+    PostMethod post = new PostMethod(serviceUri);
+    post.setRequestEntity(new MultipartRequestEntity(new Part[]{part},post.getParams()));
 
     try {
       int resultCode = client.executeMethod(post);
