@@ -19,6 +19,7 @@
 
 package org.topazproject.ambra.article.service;
 
+import java.io.Closeable;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -361,11 +362,22 @@ public class Ingester {
   private void writeBlobs(Map<Representation, Blob> map) throws OtmException {
     for (Representation rep : map.keySet()) {
       log.info("Copying from zip to Blob. rep = '" + rep.getName() + "', id = " + rep.getId());
+      InputStream in = null;
+      OutputStream out = null;
       try {
-        IOUtils.copy(map.get(rep).getInputStream(), rep.getBody().getOutputStream());
+        IOUtils.copy(in = map.get(rep).getInputStream(), out = rep.getBody().getOutputStream());
       } catch (IOException e) {
         throw new OtmException("Error copying from zip. rep = '" + rep.getName() + "', id = "
                                      + rep.getId(), e);
+      } finally {
+        for (Closeable c : new Closeable[] { in, out }) {
+          try {
+            if (c != null)
+              c.close();
+          } catch (IOException e) {
+            log.warn("Error while closing a blob copy stream for " + rep.getId(), e);
+          }
+        }
       }
     }
   }
