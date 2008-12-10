@@ -29,6 +29,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.MultipartPostMethod;
 import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
@@ -73,6 +74,25 @@ public class Uploader {
 
       client.getState().setCredentials(AuthScope.ANY, defaultcreds);
     }
+  }
+
+  /**
+   * Download from an uploaded URI.
+   *
+   * @param uploaded the URI that was returned by an upload
+   * @return the inputstream to read
+   * @throws IOException on an error
+   */
+  public InputStream download(String uploaded) throws IOException {
+     GetMethod get = new GetMethod(serviceUri + "?" + uploaded);
+
+     int resultCode = client.executeMethod(get);
+
+     if (resultCode != 200)
+       throw new IOException(HttpStatus.getStatusText(resultCode) + ":"
+                             + replaceNewlines(get.getResponseBodyAsString(), " "));
+
+     return get.getResponseBodyAsStream();
   }
 
   /**

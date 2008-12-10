@@ -79,4 +79,19 @@ public class TestUpload extends TestCase {
     assertTrue(u.isAbsolute());
   }
 
+  /**
+   * Tests download.
+   *
+   * @throws Exception on failure
+   */
+  public void testDownload() throws Exception {
+    for (String str : new String[]{"Some random string", "Yet another one"}) {
+      byte[] in = str.getBytes();
+      String ref = uploader.upload(in);
+      byte[] out = new byte[in.length + 1];
+
+      assertEquals(in.length, uploader.download(ref).read(out));
+      assertEquals(str, new String(out, 0, in.length));
+    }
+  }
 }
