@@ -22,6 +22,8 @@ package fedora.server.management;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -113,9 +115,24 @@ public class UploadServlet
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-		sendResponse(HttpServletResponse.SC_OK, 
-		        "Client must use HTTP Multipart POST", response);
-	}
+        String id = request.getQueryString();
+        try {
+            InputStream in = s_management.getTempStream(id);
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/octet-stream");
+            OutputStream out = response.getOutputStream();
+
+            byte[] buf = new byte[16384];
+            int len = 0;
+            while ( (len = in.read(buf, 0, buf.length)) != -1) {
+                out.write(buf, 0, len);
+            }
+            out.close();
+        } catch (ServerException sre) {
+            logFine("File not found '" + id + "': " + sre);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, id);
+        }
+    }
 
     public void sendResponse(int status, String message, 
             HttpServletResponse response) {
@@ -290,5 +307,5 @@ public class UploadServlet
   public final boolean loggingFinest() {
       return getServer().loggingFinest();
   }
-
 }
+
