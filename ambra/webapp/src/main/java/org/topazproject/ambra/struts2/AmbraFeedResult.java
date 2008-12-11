@@ -315,6 +315,15 @@ public class AmbraFeedResult extends Feed implements Result {
     List<Entry> entries = new ArrayList<Entry>();
 
     for (Article article : articles) {
+      
+      /*
+       * Article may be removed by the time
+       * it a actually retrieved. A null
+       * may be the result so skip.
+       */
+      if (article == null)
+        continue;
+      
       Entry entry = newEntry(article);
 
       List<Link> altLinks = new ArrayList<Link>();

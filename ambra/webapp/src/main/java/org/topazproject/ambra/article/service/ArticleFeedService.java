@@ -209,7 +209,7 @@ public class ArticleFeedService {
 
     try {
       List<ArticleAnnotation> annotations = annotationService.getAnnotations(
-                                null, cacheKey.getSDate(), cacheKey.getSDate(),
+                                null, cacheKey.getSDate(), cacheKey.getEDate(),
                                 null, annotType, null, true, cacheKey.getMaxResults());
       webAnnot = converter.convert(annotations,true,true);
     } catch (Exception ex) {
@@ -361,7 +361,7 @@ public class ArticleFeedService {
    * @see       org.topazproject.ambra.struts2.AmbraFeedResult
    */
   public class Key implements Serializable, Comparable {
-
+    private static final long serialVersionUID = 1L;
     private String journal;
     private Date   sDate;
     private Date   eDate;
@@ -378,7 +378,7 @@ public class ArticleFeedService {
     private int     maxResults;
     private String  type = FEED_TYPES.Article.toString();
 
-    final SimpleDateFormat dateFrmt = new SimpleDateFormat("yyyy/MM/dd");
+    final SimpleDateFormat dateFrmt = new SimpleDateFormat("yyyy-MM-dd");
     private int hashCode;
 
     /**
@@ -524,14 +524,19 @@ public class ArticleFeedService {
       final int defaultMaxResult = 30;
       final int MAXIMUM_RESULTS = 200;
 
-      if (startDate != null)
-        setSDate(startDate);
+      try {
+        if (startDate != null)
+          setSDate(startDate);
 
-      if (endDate != null)
-        setEDate(endDate);
+        if (endDate != null)
+          setEDate(endDate);
+      } catch (ParseException e)  {
+        action.addFieldError("Feed date parsing error.", "endDate or startDate");
+        log.warn("Feed:Unable to parse feed date.");
+      }
 
       // If start > end then just use end.
-      if ((startDate != null) && (endDate != null) && (sDate.after(eDate)))
+      if ((sDate != null) && (eDate != null) && (sDate.after(eDate)))
         sDate = eDate;
 
       // If there is garbage in the type default to Article
@@ -582,13 +587,10 @@ public class ArticleFeedService {
     /**
      * Convert the string to a date if possible else leave the startDate null.
      * @param date string date to be converted to Date
+     * @throws ParseException date failed to parse
      */
-    public void setSDate(String date) {
-      try {
-        this.sDate = dateFrmt.parse(date);
-      } catch (ParseException e) {
-        log.warn("Feed:Unable to parse start date.");
-      }
+    public void setSDate(String date) throws ParseException {
+         this.sDate = dateFrmt.parse(date);
     }
 
     public void setSDate(Date date) {
@@ -602,13 +604,10 @@ public class ArticleFeedService {
     /**
      * Convert the string to a date if possible else leave the endDate null.
      * @param date string date to be converted to Date
+     * @throws ParseException date failed to parse
      */
-    public void setEDate(String date) {
-      try {
+    public void setEDate(String date) throws ParseException {
         this.eDate = dateFrmt.parse(date);
-      } catch (ParseException e) {
-        log.warn("Feed:Unable to parse end date.");
-      }
     }
 
     public void setEDate(Date date) {
@@ -767,36 +766,16 @@ public class ArticleFeedService {
      * @param updates  updates to articles
      */
     private void invalidateFeedCacheForJournal(Journal journal, Interceptor.Updates updates) {
-      List<Article> articles = new ArrayList<Article>();
 
-      /* SimpleCollection adhoc list of articles secondarily
-       * published to multiple journals. See if the article is
-       * in this list.
+      /* If the simple collect changed size then assume
+       * the change was an addition or deletion and
+       * flush cache entries for this journal.
        */
-      for (URI articleKey : journal.getSimpleCollection()) {
-        try {
-          articles.add(articleOtmService.getArticle(articleKey));
-        } catch (NoSuchArticleIdException e) {
-          if (log.isDebugEnabled())
-            log.debug("Ignoring "+articleKey);
-        }
-      }
-
-      // TODO: Figure out what this is doing?
       List<String> oldArticles = updates.getOldValue("simpleCollection");
-      if (oldArticles != null) {
-        for (String oldArticleUri : oldArticles) {
-          try {
-            articles.add(articleOtmService.getArticle(URI.create(oldArticleUri)));
-          } catch (NoSuchArticleIdException e) {
-            if (log.isDebugEnabled())
-              log.debug("Ignoring old "+oldArticleUri);
-          }
-        }
-      }
+      List<URI> curArticles = journal.getSimpleCollection();
 
-      if (!articles.isEmpty())
-        invalidateFeedCacheForJournalArticle(journal, articles);
+      if ( oldArticles.size() != curArticles.size() )
+        invalidateFeedCacheForJournalArticle(journal);
     }
 
     /**
@@ -818,16 +797,12 @@ public class ArticleFeedService {
      * journal.
      *
      * @param journal  the journal of interest
-     * @param articles articles that are part of the journal
      */
     @SuppressWarnings("unchecked")
-    private void invalidateFeedCacheForJournalArticle(Journal journal, List<Article> articles) {
+    private void invalidateFeedCacheForJournalArticle(Journal journal) {
       for (Key key : (Set<Key>) feedCache.getKeys()) {
         if (key.getJournal().equals(journal.getKey())) {
-          for (Article article : articles) {
-            if (matches(key, article, false))
-              feedCache.remove(key);
-          }
+          feedCache.remove(key);
         }
       }
     }
