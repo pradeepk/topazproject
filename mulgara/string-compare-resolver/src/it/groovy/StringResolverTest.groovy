@@ -85,6 +85,6 @@ class StringResolverTest extends GroovyTestCase {
                     where \$s <bar:is> \$o
                       and ${subj} ${pred} ${obj} in ${RSLV_GRAPH};"""
     def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution*.s.'@resource'.list() == expected
+    assertEquals(expected, ans.query[0].solution*.s.'@resource'.list()*.text())
   }
 }
