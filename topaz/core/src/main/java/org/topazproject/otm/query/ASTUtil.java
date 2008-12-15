@@ -60,6 +60,19 @@ public class ASTUtil implements ConstraintsTokenTypes {
   }
 
   /**
+   * Create an ID object that's a variable.
+   *
+   * @param obj the object from which to create an id; see {@link #makeID}
+   * @param af  the ast-factory to use
+   * @return the new AST object of type ID and marked as a variable
+   */
+  public static OqlAST makeVar(Object obj, ASTFactory af) {
+    OqlAST ast = makeID(obj, af);
+    ast.setIsVar(true);
+    return ast;
+  }
+
+  /**
    * Create a new triple object. The graph used is that attached to the predicate, if the predicate
    * is an OqlAST. The arguments are dup'd if they are OqlAST's.
    *
