@@ -149,7 +149,15 @@ public class OqlTest extends AbstractTest {
         row { object (class:PublicAnnotation.class, id:id3) }
       }
 
-      /* FIXME
+      /* FIXME: this currently creates a query like
+       * select $ann from <local:///topazproject#otmtest1> where
+       *    $ann <rdf:type> <http://www.w3.org/2000/10/annotation-ns#Annotation>
+       *      in <local:///topazproject#otmtest1>
+       *    and $ann <http://www.w3.org/2000/10/annotation-ns#annotates> $x
+       *      in <local:///topazproject#otmtest1>
+       *    and (() minus ($oqltmp2_0 <mulgara:is> <foo:1> ))
+       *    order by $ann;
+       *
       r = s.createQuery("""
           select ann from Annotation ann where x := ann.annotates and <foo:1> != x order by ann;
           """).execute()
