@@ -19,34 +19,17 @@
 
 package org.topazproject.otm.metadata;
 
+import org.topazproject.otm.AbstractTest;
 import org.topazproject.otm.GraphConfig;
-import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.stores.ItqlStore;
-import org.topazproject.otm.impl.SessionFactoryImpl;
 
 /**
  * Integration tests for groovy-builder.
  */
-public class BuilderIntegrationTest extends GroovyTestCase {
-  def rdf;
-  def store;
-
+public class BuilderIntegrationTest extends AbstractTest {
   void setUp() {
-    store = new ItqlStore("local:///topazproject".toURI())
-    rdf = new RdfBuilder(
-        sessFactory:new SessionFactoryImpl(tripleStore:store), defGraph:'ri', defUriPrefix:'topaz:')
-
-    def ri = new GraphConfig("ri", "local:///topazproject#otmtest1".toURI(), null)
-    rdf.sessFactory.addGraph(ri);
-
-    def m2 = new GraphConfig("m2", "local:///topazproject#otmtest2".toURI(), null)
-    rdf.sessFactory.addGraph(m2);
-
-    try { doInTx{ s -> s.dropGraph(ri.getId()) } } catch (OtmException e) { }
-    try { doInTx{ s -> s.dropGraph(m2.getId()) } } catch (OtmException e) { }
-    doInTx{ s -> s.createGraph(ri.getId()) }
-    doInTx{ s -> s.createGraph(m2.getId()) }
+    graphs = [['ri', 'otmtest1', null], ['m2', 'otmtest2', null]];
+    super.setUp();
   }
 
   void testSimple() {
@@ -449,17 +432,5 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     sel = obj.sel
     assertNotNull sel
     assertEquals(obj, sel.sel)
-  }
-
-
-  private def doInTx(Closure c) {
-    Session s = rdf.sessFactory.openSession()
-    s.beginTransaction()
-    try {
-      c(s)
-    } finally {
-      s.transaction.commit()
-      s.close()
-    }
   }
 }
