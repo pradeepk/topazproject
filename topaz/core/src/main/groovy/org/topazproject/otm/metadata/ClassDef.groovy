@@ -202,7 +202,7 @@ public class ClassDef {
       clsSrc << "  }\n"
     }
 
-    clsSrc << "  public boolean equals(Object o) {\n"
+    clsSrc << "  public boolean equals(${className} o) {\n"
     clsSrc << "    return \\\n"
     if (extendsClass)
       clsSrc << "      super.equals(o) &&\n"
@@ -222,7 +222,7 @@ public class ClassDef {
     Class clazz = rdf.gcl.parseClass(clsSrc.toString(), className)
 
     // create class-metadata
-    def mappers = []
+    def mappers = [] as Set
     for (m in fields.findAll{it != idField && !it.isTransient}*.toMapper(rdf, clazz, null))
       mappers.addAll(m)
     def idmapper = fields.contains(idField) ? idField.toMapper(rdf, clazz, getIdGen())[0] : null

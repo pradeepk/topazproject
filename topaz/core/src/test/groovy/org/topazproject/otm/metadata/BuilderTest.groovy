@@ -159,16 +159,7 @@ public class BuilderTest extends GroovyTestCase {
     assertEquals('m41', cm.graph)
     assertEquals(2, cm.rdfMappers.size())
 
-    m = cm.rdfMappers.asList()[0]
-    l = m.getBinder(EntityMode.POJO)
-    assertEquals('value', m.name)
-    assertEquals(String.class, l.type)
-    assertNull(m.dataType)
-    assertEquals('bar4:value', m.uri)
-    assertFalse(m.hasInverseUri())
-    assertEquals('m42', m.graph)
-
-    m = cm.rdfMappers.asList()[1]
+    m = cm.rdfMappers.asList().sort{ it.name }[0]
     l = m.getBinder(EntityMode.POJO)
     assertEquals('history', m.name)
     assertEquals(List.class, l.type)
@@ -178,6 +169,15 @@ public class BuilderTest extends GroovyTestCase {
     assertEquals('bar4:history', m.uri)
     assertFalse(m.hasInverseUri())
     assertNull(m.graph)
+
+    m = cm.rdfMappers.asList().sort{ it.name }[1]
+    l = m.getBinder(EntityMode.POJO)
+    assertEquals('value', m.name)
+    assertEquals(String.class, l.type)
+    assertNull(m.dataType)
+    assertEquals('bar4:value', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertEquals('m42', m.graph)
 
     cm = rdf.sessFactory.getClassMetadata('History')
 
@@ -294,7 +294,7 @@ public class BuilderTest extends GroovyTestCase {
     assertEquals('ri', cm.graph)
     assertEquals(2, cm.rdfMappers.size())
 
-    m = cm.rdfMappers.asList()[0]
+    m = cm.rdfMappers.asList().sort{ it.name }[0]
     l = m.getBinder(EntityMode.POJO)
     assertEquals('blah', m.name)
     assertEquals(String.class, l.type)
@@ -303,7 +303,7 @@ public class BuilderTest extends GroovyTestCase {
     assertFalse(m.hasInverseUri())
     assertNull(m.graph)
 
-    m = cm.rdfMappers.asList()[1]
+    m = cm.rdfMappers.asList().sort{ it.name }[1]
     l = m.getBinder(EntityMode.POJO)
     assertEquals('state', m.name)
     assertEquals(String.class, l.type)
@@ -606,17 +606,33 @@ public class BuilderTest extends GroovyTestCase {
       color ()
     }
 
+    Class ext2 = rdf.class('Ext11', extendsClass:'Ext1') {
+      length ()
+    }
+
     shouldFail(NoSuchFieldException, { base.getDeclaredField('id') })
 
     def obj  = ext.newInstance(id:'foo:1'.toURI(), state:42, color:'blue')
     assertNotNull(obj)
     assertFalse(obj.equals(null))
     assertEquals(ext.newInstance(id:'foo:1'.toURI(), state:42, color:'blue'), obj)
-    assert obj != ext.newInstance(id:'foo:2'.toURI(), state:42, color:'blue') : obj
-    assert obj != ext.newInstance(id:'foo:1'.toURI(), state:43, color:'blue') : obj
-    assert obj != ext.newInstance(id:'foo:1'.toURI(), state:42, color:'red') : obj
+    assertNotEquals(ext.newInstance(id:'foo:2'.toURI(), state:42, color:'blue'), obj)
+    assertNotEquals(ext.newInstance(id:'foo:1'.toURI(), state:43, color:'blue'), obj)
+    assertNotEquals(ext.newInstance(id:'foo:1'.toURI(), state:42, color:'red'), obj)
 
     assertEquals('foo:1'.toURI().hashCode(), obj.hashCode())
+
+    def obj2  = ext2.newInstance(id:'foo:2'.toURI(), state:43, color:'grey', length:3)
+    assertNotNull(obj2)
+    assertFalse(obj2.equals(null))
+    assertEquals(ext2.newInstance(id:'foo:2'.toURI(), state:43, color:'grey', length:3), obj2)
+    assertNotEquals(ext2.newInstance(id:'foo:1'.toURI(), state:43, color:'grey', length:3), obj2)
+    assertNotEquals(ext2.newInstance(id:'foo:2'.toURI(), state:44, color:'grey', length:3), obj2)
+    assertNotEquals(ext2.newInstance(id:'foo:2'.toURI(), state:43, color:'red', length:3), obj2)
+    assertNotEquals(ext2.newInstance(id:'foo:2'.toURI(), state:43, color:'grey'), obj2)
+    assertNotEquals(obj, obj2)
+
+    assertEquals('foo:2'.toURI().hashCode(), obj2.hashCode())
 
     // id inheritance
     base = rdf.class('Base2', isAbstract:true) {
@@ -645,6 +661,11 @@ public class BuilderTest extends GroovyTestCase {
     obj = ext.newInstance(uri:'foo:1', state:42, color:'blue')
     shouldFail(MissingPropertyException, { obj.id })
     assertEquals('foo:1'.hashCode(), obj.hashCode())
+  }
+
+  private static void assertNotEquals(Object exp, Object act) {
+    if (exp == act)
+      fail("Expectedt not-equals: <${exp}>")
   }
 
   void testEmbeddedClass() {
@@ -814,21 +835,8 @@ public class BuilderTest extends GroovyTestCase {
     assertEquals('m1', cm.graph)
     assertEquals(3, cm.rdfMappers.size())
 
-    Mapper m = cm.rdfMappers.asList()[0]
+    Mapper m = cm.rdfMappers.asList().sort{ it.name }[0]
     FieldBinder l = (FieldBinder)m.getBinder(EntityMode.POJO)
-    assertEquals('sel', m.name)
-    assertEquals(cls, l.type)
-    assertNull(m.dataType)
-    assertEquals('foo:p1', m.uri)
-    assertFalse(m.hasInverseUri())
-    assertNull(m.graph)
-    assertTrue(m.isCascadable(CascadeType.delete))
-    assertTrue(m.isCascadable(CascadeType.saveOrUpdate))
-    assertFalse(m.isCascadable(CascadeType.merge))
-    assertFalse(m.isCascadable(CascadeType.refresh))
-
-    m = cm.rdfMappers.asList()[1]
-    l = (FieldBinder)m.getBinder(EntityMode.POJO)
     assertEquals('all', m.name)
     assertEquals(cls, l.type)
     assertNull(m.dataType)
@@ -844,7 +852,7 @@ public class BuilderTest extends GroovyTestCase {
     assertFalse(m.isCascadable(CascadeType.deleteOrphan))
     assertFalse(m.isCascadable(CascadeType.child))
 
-    m = cm.rdfMappers.asList()[2]
+    m = cm.rdfMappers.asList().sort{ it.name }[1]
     l = (FieldBinder)m.getBinder(EntityMode.POJO)
     assertEquals('none', m.name)
     assertEquals(cls, l.type)
@@ -854,6 +862,19 @@ public class BuilderTest extends GroovyTestCase {
     assertNull(m.graph)
     assertFalse(m.isCascadable(CascadeType.delete))
     assertFalse(m.isCascadable(CascadeType.saveOrUpdate))
+    assertFalse(m.isCascadable(CascadeType.merge))
+    assertFalse(m.isCascadable(CascadeType.refresh))
+
+    m = cm.rdfMappers.asList().sort{ it.name }[2]
+    l = (FieldBinder)m.getBinder(EntityMode.POJO)
+    assertEquals('sel', m.name)
+    assertEquals(cls, l.type)
+    assertNull(m.dataType)
+    assertEquals('foo:p1', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.graph)
+    assertTrue(m.isCascadable(CascadeType.delete))
+    assertTrue(m.isCascadable(CascadeType.saveOrUpdate))
     assertFalse(m.isCascadable(CascadeType.merge))
     assertFalse(m.isCascadable(CascadeType.refresh))
   }
