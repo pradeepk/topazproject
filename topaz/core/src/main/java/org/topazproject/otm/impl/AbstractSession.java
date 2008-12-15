@@ -273,12 +273,6 @@ abstract class AbstractSession implements Session {
     store.doNativeUpdate(command, getTripleStoreCon());
   }
 
-  /**
-   * Creates a graph in the underlying TripleStore. This is an idempotent operation.
-   *
-   * @param graph The name of the graph to be created.
-   * @throws OtmException on an error.
-   */
   public void createGraph(String graph) throws OtmException {
     if (flushMode.implies(FlushMode.always))
       flush(); // so that mods are visible to queries
@@ -287,15 +281,9 @@ abstract class AbstractSession implements Session {
     store.createGraph(sessionFactory.getGraph(graph), getTripleStoreCon());
   }
 
-  /**
-   * Removes a graph from the underlying TripleStore.
-   *
-   * @param graph The name of the graph to be removed.
-   * @throws OtmException on an error.
-   */
   public void dropGraph(String graph) throws OtmException {
     if (flushMode.implies(FlushMode.always))
-      flush(); // so that mods are visible to queries
+      flush(); // so that updates to the graph are applied before the drop
 
     TripleStore store = sessionFactory.getTripleStore();
     store.dropGraph(sessionFactory.getGraph(graph), getTripleStoreCon());
