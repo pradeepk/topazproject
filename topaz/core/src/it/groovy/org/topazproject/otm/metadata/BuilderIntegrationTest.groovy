@@ -179,7 +179,7 @@ public class BuilderIntegrationTest extends AbstractTest {
       def m = new GraphConfig("m${num}", "local:///topazproject#otmtest_m${num}".toURI(), null)
       rdf.sessFactory.addGraph(m);
 
-      try { doInTx{ s -> s.dropGraph(m.getId()) } } catch (OtmException oe) { }
+      try { doInTx(true) { s -> s.dropGraph(m.getId()) } } catch (OtmException oe) { }
       doInTx{ s -> s.createGraph(m.getId()) }
     }
 

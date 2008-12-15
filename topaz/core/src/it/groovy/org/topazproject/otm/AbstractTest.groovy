@@ -53,12 +53,16 @@ public abstract class AbstractTest extends GroovyTestCase {
     for (c in graphs) {
       def g = new GraphConfig(c[0], "local:///topazproject#${c[1]}".toURI(), c[2])
       rdf.sessFactory.addGraph(g)
-      try { doInTx { s -> s.dropGraph(g.getId()) } } catch (OtmException e) { }
+      try { doInTx(true) { s -> s.dropGraph(g.getId()) } } catch (OtmException e) { }
       doInTx { s -> s.createGraph(g.getId()) }
     }
   }
 
   protected def doInTx(Closure c) {
+    return doInTx(false, c)
+  }
+
+  protected def doInTx(boolean quiet, Closure c) {
     Session s = rdf.sessFactory.openSession()
     s.beginTransaction()
     try {
@@ -71,7 +75,10 @@ public abstract class AbstractTest extends GroovyTestCase {
       } catch (OtmException oe) {
         log.warn("rollback failed", oe);
       }
-      log.error("error: ${e}", e)
+
+      if (!quiet)
+        log.error("error: ${e}", e)
+
       throw e
     } finally {
       try {
