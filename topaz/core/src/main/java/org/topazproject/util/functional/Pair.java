@@ -60,6 +60,7 @@ public class Pair<T1,T2> implements Map.Entry<T1,T2> {
   }
 
   public Map<T1,T2> add(Map<T1,T2> map) {
-    map.put(first, second); return map;
+    map.put(first, second);
+    return map;
   }
 }
