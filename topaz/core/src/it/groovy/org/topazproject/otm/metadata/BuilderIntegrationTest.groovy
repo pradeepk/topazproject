@@ -155,7 +155,7 @@ public class BuilderIntegrationTest extends AbstractTest {
     assertEquals('foo:1'.toURI(), obj.id)
 
     obj = cls.newInstance(state:42)
-    shouldFail(OtmException, { doInTx { s -> s.saveOrUpdate(obj) } })
+    shouldFail(OtmException, { doInTx(true) { s -> s.saveOrUpdate(obj) } })
 
     // inherited (no) gen
     Class base = rdf.class('Base4', idGenerator:null) {
@@ -170,7 +170,7 @@ public class BuilderIntegrationTest extends AbstractTest {
     assertEquals('foo:1'.toURI(), obj.id)
 
     obj = cls.newInstance(state:42)
-    shouldFail(OtmException, { doInTx { s -> s.saveOrUpdate(obj) } })
+    shouldFail(OtmException, { doInTx(true) { s -> s.saveOrUpdate(obj) } })
   }
 
   void testGraphs() {
