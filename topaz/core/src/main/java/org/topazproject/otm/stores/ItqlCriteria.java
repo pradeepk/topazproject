@@ -27,9 +27,11 @@ import org.topazproject.mulgara.itql.AnswerException;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.filter.AbstractFilterImpl;
@@ -159,8 +161,10 @@ public class ItqlCriteria {
 
     if (!isFilter) {
       for (Filter f : criteria.getFilters()) {
-        if (isFilterApplicable(criteria, f)) {
-          buildFilter((AbstractFilterImpl) f, qry, subject, pfx + "f" + i++);
+        Boolean isAppl = isFilterApplicable(criteria, f);
+        if (isAppl != null) {
+          buildFilter((AbstractFilterImpl) f, isAppl, qry, subject, pfx + "f" + i++,
+                      criteria.getSession());
           qry.append(" and ");
         }
       }
@@ -180,11 +184,60 @@ public class ItqlCriteria {
    * Build a where-clause fragment for the given filter.
    *
    * @param f       the filter
+   * @param isSuper whether the filter is for same-or-superclass of the filtered object or for a
+   *                subclass
+   * @param qry     the query to which to attach the fragment
+   * @param subject the query variable being filtered
+   * @param pfx     the prefix to use for variables
+   * @param session the current session
+   */
+  static void buildFilter(AbstractFilterImpl f, boolean isSuper, StringBuilder qry, String subject,
+                          String pfx, Session session)
+       throws OtmException {
+    // if the filter is on a same-or-super type we can just apply it directly
+    if (isSuper) {
+      buildFilter(f, qry, subject, pfx);
+      return;
+    }
+
+    // the filter is on a sub-type; first build the rdf-type match expression
+    ClassMetadata fcm   =
+        session.getSessionFactory().getClassMetadata(f.getFilterDefinition().getFilteredClass());
+    String        graph = getGraphUri(session, fcm.getGraph());
+
+    StringBuilder typeMatch = new StringBuilder(fcm.getTypes().size() * 150);
+    typeMatch.append("(");
+
+    for (String type : fcm.getTypes())
+      typeMatch.append(subject).append(" <rdf:type> <").append(type).append("> in <").append(graph).
+                append("> and ");
+
+    if (typeMatch.length() > 1) {
+      typeMatch.setLength(typeMatch.length() - 5);
+      typeMatch.append(")");
+    } else {
+      typeMatch.setLength(0);
+    }
+
+    /* the filter applies only if the item has the proper type, i.e. the filter becomes
+     *   subj-type-matches and filters or not subj-type-matches
+     */
+    qry.append("((").append(typeMatch).append(" and ");
+    buildFilter(f, qry, subject, pfx + "f");
+    qry.append(") or (").append(subject).append(" ").append(pfx).append("a1 ").append(pfx).
+        append("a2 in <").append(graph).append("> minus ").append(typeMatch).append("))");
+  }
+
+  /**
+   * Build a where-clause fragment for the given filter.
+   *
+   * @param f       the filter
    * @param qry     the query to which to attach the fragment
    * @param subject the query variable being filtered
    * @param pfx     the prefix to use for variables
    */
-  static void buildFilter(AbstractFilterImpl f, StringBuilder qry, String subject, String pfx)
+  private static void buildFilter(AbstractFilterImpl f, StringBuilder qry, String subject,
+                                  String pfx)
        throws OtmException {
     if (f instanceof JunctionFilterDefinition.JunctionFilter) {
       JunctionFilterDefinition.JunctionFilter jf = (JunctionFilterDefinition.JunctionFilter) f;
@@ -251,7 +304,11 @@ public class ItqlCriteria {
   }
 
   private static String getGraphUri(Criteria criteria, String graphId) throws OtmException {
-    GraphConfig mc = criteria.getSession().getSessionFactory().getGraph(graphId);
+    return getGraphUri(criteria.getSession(), graphId);
+  }
+
+  private static String getGraphUri(Session session, String graphId) throws OtmException {
+    GraphConfig mc = session.getSessionFactory().getGraph(graphId);
 
     if (mc == null) // Happens if using a Class but the graph was not added
       throw new OtmException("Unable to find graph '" + graphId + "'");
@@ -259,13 +316,16 @@ public class ItqlCriteria {
     return mc.getUri().toString();
   }
 
-  private static boolean isFilterApplicable(Criteria current, Filter f) throws OtmException {
-    ClassMetadata cm =
+  private static Boolean isFilterApplicable(Criteria current, Filter f) throws OtmException {
+    ClassMetadata fcm =
         current.getSession().getSessionFactory()
                .getClassMetadata(f.getFilterDefinition().getFilteredClass());
+    ClassMetadata cm = current.getClassMetadata();
+    EntityMode    mode = current.getSession().getEntityMode();
 
-    return (cm != null && cm.isAssignableFrom(current.getClassMetadata(),
-                                              current.getSession().getEntityMode()));
+    return (fcm != null && fcm.isAssignableFrom(cm, mode)) ? Boolean.TRUE :
+           (fcm != null && cm.isAssignableFrom(fcm, mode)) ? Boolean.FALSE :
+           null;
   }
 
   /**

@@ -166,4 +166,134 @@ public class FilterTest extends AbstractTest {
       rdf.sessFactory.removeFilterDefinition(fd3.getFilterName());
     }
   }
+
+  void testSuperSub() {
+    // create data
+    Class clsN = rdf.class('Name') {
+      givenName ()
+      surname   ()
+    }
+    Class clsEN = rdf.class('ExtName', type:'ExtName', extendsClass:'Name') {
+      middleName ()
+    }
+    Class clsXN = rdf.class('Ext2Name', type:'Ext2Name', extendsClass:'Name') {
+      middleName ()
+    }
+
+    for (col in [null, 'Predicate', 'RdfSeq', 'RdfList']) {
+      for (inv in (!col || col == 'Predicate' ? [false, true] : [false])) {
+        Class cls = rdf.class("Test_${col}_${inv}") {
+          name  (type:'Name',     inverse:inv, fetch:'eager', maxCard: col ? -1 : 1, colMapping:col)
+          ename (type:'ExtName',  inverse:inv, fetch:'eager', maxCard: col ? -1 : 1, colMapping:col)
+          xname (type:'Ext2Name', inverse:inv, fetch:'eager', maxCard: col ? -1 : 1, colMapping:col)
+        }
+
+        FilterDefinition fd1 = new OqlFilterDefinition('noBobN', 'Name',
+                        "select n from Name n where n.givenName != 'Bob';")
+        FilterDefinition fd2 = new OqlFilterDefinition('noBobEN', 'ExtName',
+                        "select n from ExtName n where n.givenName != 'Bob';")
+
+        /* TODO: Enable these when we stop turning all filters into criteria (criteria doesn't
+         * supoort the 2-level dereference inside the minus but only supports simple Criterion)
+         * and when we have some sort of exists() function or '!= null' support or something in
+         * Oql
+        FilterDefinition fd3 = new OqlFilterDefinition('noBobON', cls.getName(),
+              "select o from ${cls.getName()} o where o != null minus (o.name.givenName = 'Bob');")
+        FilterDefinition fd4 = new OqlFilterDefinition('noBobOEN', cls.getName(),
+              "select o from ${cls.getName()} o where o != null minus (o.ename.givenName = 'Bob');")
+        */
+
+        def fds = [fd1, fd2 /*, fd3, fd4 */]
+        for (fd in fds)
+          rdf.sessFactory.addFilterDefinition(fd);
+
+        def n1 = clsN.newInstance(id:"name:1".toURI(), givenName:'Bob', surname:'Cutter')
+        def n2 = clsEN.newInstance(id:"name:2".toURI(), givenName:'Bob', surname:'Cutter',
+                                   middleName:'Fritz')
+        def n3 = clsXN.newInstance(id:"name:3".toURI(), givenName:'Bob', surname:'Cutter',
+                                   middleName:'Fritz')
+
+        def o1 = cls.newInstance(id:"foo:1".toURI(), name:  col ? [n1] : n1)
+        def o2 = cls.newInstance(id:"foo:2".toURI(), name:  col ? [n2] : n2)
+        def o3 = cls.newInstance(id:"foo:3".toURI(), name:  col ? [n3] : n3)
+        def o4 = cls.newInstance(id:"foo:4".toURI(), ename: col ? [n2] : n2)
+        def o5 = cls.newInstance(id:"foo:5".toURI(), xname: col ? [n3] : n3)
+
+        def objs = [n1, n2, n3, o1, o2, o3, o4, o5]
+        doInTx { s -> for (o in objs) s.saveOrUpdate(o) }
+
+        // run tests
+        doInTx { s ->
+          // no filters
+          assertEquals(n1, s.get(clsN, n1.id.toString()));
+          assertEquals(n2, s.get(clsEN, n2.id.toString()));
+          assertEquals(n3, s.get(clsXN, n3.id.toString()));
+          assertEquals(o1, s.get(cls, o1.id.toString()));
+          assertEquals(o2, s.get(cls, o2.id.toString()));
+          assertEquals(o3, s.get(cls, o3.id.toString()));
+          assertEquals(o4, s.get(cls, o4.id.toString()));
+          assertEquals(o5, s.get(cls, o5.id.toString()));
+        }
+
+        doInTx { s ->
+          // with filters on super-class (Name)
+          s.enableFilter('noBobN');
+
+          assertNull(s.get(clsN, n1.id.toString()));
+          assertNull(s.get(clsEN, n2.id.toString()));
+          assertNull(s.get(clsXN, n3.id.toString()));
+          assertEquals(col ? [] : null, s.get(cls, o1.id.toString()).name);
+          assertEquals(col ? [] : null, s.get(cls, o2.id.toString()).name);
+          assertEquals(col ? [] : null, s.get(cls, o3.id.toString()).name);
+          assertEquals(col ? [] : null, s.get(cls, o4.id.toString()).ename);
+          assertEquals(col ? [] : null, s.get(cls, o5.id.toString()).xname);
+
+          /* TODO: enable when the filter-def is enabled
+          for (o in [o1, o2, o3, o4, o5])
+            s.evict(s.get(o.getClass(), o.id.toString()))
+          s.enableFilter('noBobON');
+
+          assertNull(s.get(cls, o1.id.toString()));
+          assertNull(s.get(cls, o2.id.toString()));
+          assertNull(s.get(cls, o3.id.toString()));
+          assertNull(s.get(cls, o4.id.toString()));
+          assertNull(s.get(cls, o5.id.toString()));
+          */
+        }
+
+        doInTx { s ->
+          // with filters on sub-class (ExtName)
+          s.enableFilter('noBobEN');
+
+          assertEquals(n1, s.get(clsN, n1.id.toString()));
+          assertNull(s.get(clsEN, n2.id.toString()));
+          assertEquals(n3, s.get(clsXN, n3.id.toString()));
+
+          assertEquals(o1, s.get(cls, o1.id.toString()));
+          assertEquals(col ? [] : null, s.get(cls, o2.id.toString()).name);
+          assertEquals(o3, s.get(cls, o3.id.toString()));
+          assertEquals(col ? [] : null, s.get(cls, o4.id.toString()).ename);
+          assertEquals(o5, s.get(cls, o5.id.toString()));
+
+          /* TODO: enable when the filter-def is enabled
+          for (o in [o1, o2, o3, o4, o5])
+            s.evict(s.get(o.getClass(), o.id.toString()))
+          s.enableFilter('noBobOEN');
+
+          assertEquals(o1, s.get(cls, o1.id.toString()));
+          assertEquals(o2, s.get(cls, o2.id.toString()));
+          assertEquals(o3, s.get(cls, o3.id.toString()));
+          assertNull(s.get(cls, o4.id.toString()));
+          assertEquals(o5, s.get(cls, o5.id.toString()));
+          */
+        }
+
+        // clean up
+        doInTx { s -> for (o in objs) s.delete(o) }
+
+        for (fd in fds)
+          rdf.sessFactory.removeFilterDefinition(fd.getFilterName());
+      }
+    }
+  }
 }

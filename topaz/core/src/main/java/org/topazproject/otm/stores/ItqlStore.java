@@ -71,6 +71,7 @@ import org.topazproject.otm.query.GenericQuery;
 import org.topazproject.otm.query.QueryException;
 import org.topazproject.otm.query.QueryInfo;
 import org.topazproject.otm.query.Results;
+import org.topazproject.util.functional.Pair;
 
 /**
  * An iTQL based store.
@@ -681,25 +682,28 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
       return false;
 
     // find applicable filters
-    SessionFactory sf = session.getSessionFactory();
-    filters = new ArrayList<Filter>(filters);
-    for (Iterator<Filter> iter = filters.iterator(); iter.hasNext(); ) {
-      Filter f = iter.next();
+    SessionFactory             sf     = session.getSessionFactory();
+    List<Pair<Filter,Boolean>> finfos = new ArrayList<Pair<Filter,Boolean>>();
+
+    for (Filter f : filters) {
       ClassMetadata fcm = sf.getClassMetadata(f.getFilterDefinition().getFilteredClass());
-      if (!fcm.isAssignableFrom(cm, session.getEntityMode()))
-        iter.remove();
+      if (fcm.isAssignableFrom(cm, session.getEntityMode()))
+        finfos.add(new Pair<Filter,Boolean>(f, true));
+      else if (cm.isAssignableFrom(fcm, session.getEntityMode()))
+        finfos.add(new Pair<Filter,Boolean>(f, false));
     }
 
-    if (filters.size() == 0)
+    if (finfos.size() == 0)
       return false;
 
     // apply filters
     qry.append(" and (");
 
     int idx = 0;
-    for (Filter f : filters) {
+    for (Pair<Filter,Boolean> i : finfos) {
       qry.append("(");
-      ItqlCriteria.buildFilter((AbstractFilterImpl) f, qry, var, "$gof" + idx++);
+      ItqlCriteria.buildFilter((AbstractFilterImpl) i.first(), i.second(), qry, var,
+                               "$gof" + idx++, session);
       qry.append(") or ");
     }
 

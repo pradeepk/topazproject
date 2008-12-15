@@ -49,6 +49,10 @@ import java.util.Set;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.stores.ItqlFilter;
+import org.topazproject.util.functional.Pair;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import antlr.RecognitionException;
 import antlr.ASTPair;
@@ -83,6 +87,8 @@ options {
 }
 
 {
+    private static final Log log = LogFactory.getLog(ItqlFilterApplicator.class);
+
     private Session                sess;
     private String                 tmpVarPfx;
     private int                    varCnt = 0;
@@ -132,7 +138,9 @@ options {
     }
 
     private void applyFilters(AST root, Set<String> outerVars, String pfx) {
-      org.apache.commons.logging.LogFactory.getLog(ItqlFilterApplicator.class).debug("applying Filters: " + root.toStringTree());
+      if (log.isDebugEnabled())
+        log.debug("applying Filters: " + root.toStringTree());
+
       // make a note of all variables and their types
       Map<String, Map<ExprType, Collection<ASTPair>>> varTypes =
                                           new HashMap<String, Map<ExprType, Collection<ASTPair>>>();
@@ -146,22 +154,23 @@ options {
           continue;
 
         if (ve.getValue().size() == 1) {         // single type - add globally
-          Collection<ItqlFilter> flist = findFilters(ve.getValue().keySet().iterator().next());
+          Collection<Pair<ItqlFilter,Boolean>> flist =
+              findFilters(ve.getValue().keySet().iterator().next());
           if (flist == null)
             continue;
-          for (ItqlFilter f : flist)
-            root.addChild(getFilterAST(f, ve.getKey(), pfx + idx++ + "_"));
+          for (Pair<ItqlFilter,Boolean> p : flist)
+            root.addChild(getFilterAST(p.first(), p.second(), ve.getKey(), pfx + idx++ + "_"));
 
         } else {                                // multiple types - add locally
           for (Map.Entry<ExprType, Collection<ASTPair>> te : ve.getValue().entrySet()) {
-            Collection<ItqlFilter> flist = findFilters(te.getKey());
+            Collection<Pair<ItqlFilter,Boolean>> flist = findFilters(te.getKey());
             if (flist == null || flist.isEmpty())
               continue;
             for (ASTPair p : te.getValue()) {
               if (p.root.getType() != AND)
                 insertAnd(p);
-              for (ItqlFilter f : flist)
-                p.root.addChild(getFilterAST(f, ve.getKey(), pfx + idx++ + "_"));
+              for (Pair<ItqlFilter,Boolean> i : flist)
+                p.root.addChild(getFilterAST(i.first(), i.second(), ve.getKey(), pfx + idx++ + "_"));
             }
           }
         }
@@ -169,7 +178,8 @@ options {
 
       outerVars.addAll(varTypes.keySet());
 
-      org.apache.commons.logging.LogFactory.getLog(ItqlFilterApplicator.class).debug("Filters applied: " + root.toStringTree());
+      if (log.isDebugEnabled())
+        log.debug("Filters applied: " + root.toStringTree());
     }
 
     private void findVarsAndTypes(AST node, List<AST> ancestors,
@@ -205,7 +215,7 @@ options {
       ps.add(p);
     }
 
-    private Collection<ItqlFilter> findFilters(ExprType type) {
+    private Collection<Pair<ItqlFilter,Boolean>> findFilters(ExprType type) {
       if (type == null)
         return null;
 
@@ -213,14 +223,44 @@ options {
       if (cm == null)
         return null;
 
-      Collection<ItqlFilter> list = new ArrayList<ItqlFilter>();
+      Collection<Pair<ItqlFilter,Boolean>> list = new ArrayList<Pair<ItqlFilter,Boolean>>();
       for (ItqlFilter f : filters) {
         ClassMetadata fcm = sess.getSessionFactory().getClassMetadata(f.getFilteredClass());
         if (fcm != null && fcm.isAssignableFrom(cm, sess.getEntityMode()))
-          list.add(f);
+          list.add(new Pair<ItqlFilter,Boolean>(f, true));
+        else if (fcm != null && cm.isAssignableFrom(fcm, sess.getEntityMode()))
+          list.add(new Pair<ItqlFilter,Boolean>(f, false));
       }
 
       return list;
+    }
+
+    private AST getFilterAST(ItqlFilter f, boolean isSuper, String var, String pfx) {
+      // if the filter is on a same-or-super type we can just apply it directly
+      if (isSuper)
+        return getFilterAST(f, var, pfx);
+
+      // the filter is on a sub-type; first build the rdf-type match expression
+      ClassMetadata fcm = sess.getSessionFactory().getClassMetadata(f.getFilteredClass());
+      String graph = sess.getSessionFactory().getGraph(fcm.getGraph()).getUri().toString();
+      AST types = #([AND, "and"]);
+      for (String type : fcm.getTypes())
+        types.addChild(ASTUtil.makeTriple(ASTUtil.makeVar(var, astFactory), "<rdf:type>",
+                                          "<" + type + ">", graph, astFactory));
+
+      /* the filter applies only if the item has the proper type, i.e. the filter becomes
+       *   var-type-matches and filters or not var-type-matches
+       */
+      AST res = #([OR, "or"]);
+      res.addChild(#([AND, "and"], types, getFilterAST(f, var, pfx + "f")));
+      res.addChild(#([MINUS, "minus"],
+                     #([TRIPLE, "triple"], ASTUtil.makeVar(var, astFactory),
+                                           ASTUtil.makeVar(pfx + "a1", astFactory),
+                                           ASTUtil.makeVar(pfx + "a2", astFactory),
+                                           ASTUtil.makeID(graph, astFactory)),
+                     types));
+
+      return res;
     }
 
     private AST getFilterAST(ItqlFilter f, String var, String pfx) {

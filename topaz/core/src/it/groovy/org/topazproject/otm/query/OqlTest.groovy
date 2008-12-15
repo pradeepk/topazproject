@@ -1383,17 +1383,22 @@ public class OqlTest extends AbstractTest {
       }
     }
 
+    Class clsEN = rdf.class('ExtName', type:'ExtName', extendsClass:'Name2') {
+      suffix ()
+    }
+
     def o1 = cls.newInstance(id:"foo:1".toURI(), state:1,
                              info:[name:[givenName:'Bob', surname:'Cutter', middleName:'Fritz']])
     def o2 = cls.newInstance(id:"foo:2".toURI(), state:2,
                              info:[name:[givenName:'Jack', surname:'Keller']])
     def o3 = cls.newInstance(id:"foo:3".toURI(), state:3,
                              info:[name:[givenName:'Billy', surname:'Bob']])
+    def o4 = cls.newInstance(id:"foo:4".toURI(), state:3,
+                       info:[name:clsEN.newInstance(givenName:'Billy', surname:'Bob', suffix:'Jr')])
 
     doInTx { s ->
-      s.saveOrUpdate(o1)
-      s.saveOrUpdate(o2)
-      s.saveOrUpdate(o3)
+      for (o in [o1, o2, o3, o4])
+        s.saveOrUpdate(o)
     }
 
     FilterDefinition ofd1 =
@@ -1405,6 +1410,9 @@ public class OqlTest extends AbstractTest {
     FilterDefinition ofd3 =
         new OqlFilterDefinition('noJack', 'Name',
                                 "select n from Name n where n.givenName != 'Jack';")
+    FilterDefinition ofd4 =
+        new OqlFilterDefinition('noJr', 'ExtName',
+                                "select n from ExtName n where n.suffix != 'Jr';")
 
     FilterDefinition cfd1 = new CriteriaFilterDefinition('noBob',
         new DetachedCriteria('Test1').createCriteria('info').createCriteria('name').
@@ -1413,11 +1421,13 @@ public class OqlTest extends AbstractTest {
         new DetachedCriteria('Test1').add(Restrictions.ne('state', new Parameter('state'))))
     FilterDefinition cfd3 = new CriteriaFilterDefinition('noJack',
         new DetachedCriteria('Name').add(Restrictions.ne('givenName', 'Jack')))
+    FilterDefinition cfd4 = new CriteriaFilterDefinition('noJr',
+        new DetachedCriteria('ExtName').add(Restrictions.ne('suffix', 'Jr')))
 
     def checker = new ResultChecker(test:this)
 
     // run plain filter tests
-    for (t in [[ofd1, ofd2, ofd3], [cfd1, cfd2, cfd2]]) {
+    for (t in [[ofd1, ofd2, ofd3, ofd4], [cfd1, cfd2, cfd3, cfd4]]) {
       // set up available filters
       for (fd in t) {
         rdf.sessFactory.removeFilterDefinition(fd.getFilterName());
@@ -1432,6 +1442,7 @@ public class OqlTest extends AbstractTest {
           row { object (class:cls, id:o1.id) }
           row { object (class:cls, id:o2.id) }
           row { object (class:cls, id:o3.id) }
+          row { object (class:cls, id:o4.id) }
         }
 
         // with filter(s)
@@ -1440,6 +1451,7 @@ public class OqlTest extends AbstractTest {
         checker.verify(r) {
           row { object (class:cls, id:o2.id) }
           row { object (class:cls, id:o3.id) }
+          row { object (class:cls, id:o4.id) }
         }
 
         s.disableFilter('noBob');
@@ -1455,12 +1467,14 @@ public class OqlTest extends AbstractTest {
         checker.verify(r) {
           row { object (class:cls, id:o1.id) }
           row { object (class:cls, id:o3.id) }
+          row { object (class:cls, id:o4.id) }
         }
 
         s.enableFilter('noBob');
         r = s.createQuery("select obj from Test1 obj order by obj;").execute()
         checker.verify(r) {
           row { object (class:cls, id:o3.id) }
+          row { object (class:cls, id:o4.id) }
         }
 
         // filter on non-root class
@@ -1470,20 +1484,41 @@ public class OqlTest extends AbstractTest {
         checker.verify(r) {
           row { object (class:cls, id:o2.id) }
           row { object (class:cls, id:o3.id) }
+          row { object (class:cls, id:o4.id) }
         }
 
         r = s.createQuery(
             "select obj from Test1 obj where obj.info.name.id != <foo:1> order by obj;").execute()
         checker.verify(r) {
           row { object (class:cls, id:o3.id) }
+          row { object (class:cls, id:o4.id) }
+        }
+
+        // filter on subclass
+        s.disableFilter('noJack');
+        assertNotNull(s.enableFilter('noJr'))
+        r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+        checker.verify(r) {
+          row { object (class:cls, id:o2.id) }
+          row { object (class:cls, id:o3.id) }
+          row { object (class:cls, id:o4.id) }
+        }
+
+        r = s.createQuery(
+            "select obj from Test1 obj where obj.info.name.id != <foo:1> order by obj;").execute()
+        checker.verify(r) {
+          row { object (class:cls, id:o2.id) }
+          row { object (class:cls, id:o3.id) }
         }
 
         // other constraints
         s.disableFilter('noBob');
+        assertNotNull(s.enableFilter('noJack'))
         r = s.createQuery(
             "select obj from Test1 obj where obj.state = '3'^^<xsd:int> order by obj;").execute()
         checker.verify(r) {
           row { object (class:cls, id:o3.id) }
+          row { object (class:cls, id:o4.id) }
         }
 
         r = s.createQuery(
@@ -1508,13 +1543,13 @@ public class OqlTest extends AbstractTest {
       // run criteria tests
       doInTx { s ->
         // no filters
-        List r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-        assertEquals([o1, o2, o3], r)
+        List r = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+        assertEquals([o1, o2, o3, o4], r)
 
         // with filter(s)
         s.enableFilter('noBob');
-        r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-        assertEquals([o2, o3], r)
+        r = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+        assertEquals([o2, o3, o4], r)
 
         s.disableFilter('noBob');
         s.enableFilter('state').setParameter('state', 3);
@@ -1522,32 +1557,44 @@ public class OqlTest extends AbstractTest {
         assertEquals([o1, o2], r)
 
         s.enableFilter('state').setParameter('state', 2);
-        r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-        assertEquals([o1, o3], r)
+        r = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+        assertEquals([o1, o3, o4], r)
 
         s.enableFilter('noBob');
-        r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-        assertEquals([o3], r)
+        r = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+        assertEquals([o3, o4], r)
 
         // filter on non-root class
         s.disableFilter('state');
         assertNotNull(s.enableFilter('noJack'))
-        r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-        assertEquals([o2, o3], r)
+        r = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+        assertEquals([o2, o3, o4], r)
 
         r = s.createCriteria(cls).createCriteria('info').createCriteria('name').
               add(Restrictions.ne('id', 'foo:1'.toURI())).parent.parent.
-              addOrder(Order.asc('state')).list()
-        assertEquals([o3], r)
+              addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+        assertEquals([o3, o4], r)
+
+        // filter on subclass
+        s.disableFilter('noJack');
+        assertNotNull(s.enableFilter('noJr'))
+        r = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+        assertEquals([o2, o3, o4], r)
+
+        r = s.createCriteria(cls).createCriteria('info').createCriteria('name').
+              add(Restrictions.ne('id', 'foo:1'.toURI())).parent.parent.
+              addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+        assertEquals([o2, o3], r)
 
         // other constraints
         s.disableFilter('noBob');
+        assertNotNull(s.enableFilter('noJack'))
         r = s.createCriteria(cls).add(Restrictions.eq('state', 3)).addOrder(Order.asc('state')).
-              list()
-        assertEquals([o3], r)
+              addOrder(Order.asc('id')).list()
+        assertEquals([o3, o4], r)
 
         r = s.createCriteria(cls).add(Restrictions.eq('state', 2)).addOrder(Order.asc('state')).
-              list()
+              addOrder(Order.asc('id')).list()
         assertEquals([o2], r)
       }
     }
@@ -1566,18 +1613,20 @@ public class OqlTest extends AbstractTest {
       Results r = s.createQuery("select obj from Test1 obj order by obj;").execute()
       checker.verify(r) {
         row { object (class:cls, id:o3.id) }
+        row { object (class:cls, id:o4.id) }
       }
-      List l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-      assertEquals([o3], l)
+      List l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+      assertEquals([o3, o4], l)
 
       s.enableFilter('notBobAndNotState').getFilters('state')[0].setParameter('state', 1);
       r = s.createQuery("select obj from Test1 obj order by obj;").execute()
       checker.verify(r) {
         row { object (class:cls, id:o2.id) }
         row { object (class:cls, id:o3.id) }
+        row { object (class:cls, id:o4.id) }
       }
-      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-      assertEquals([o2, o3], l)
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+      assertEquals([o2, o3, o4], l)
 
       s.disableFilter('notBobAndNotState');
       s.enableFilter('notBobOrNotState').getFilters('state')[0].setParameter('state', 2);
@@ -1586,24 +1635,26 @@ public class OqlTest extends AbstractTest {
         row { object (class:cls, id:o1.id) }
         row { object (class:cls, id:o2.id) }
         row { object (class:cls, id:o3.id) }
+        row { object (class:cls, id:o4.id) }
       }
-      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-      assertEquals([o1, o2, o3], l)
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+      assertEquals([o1, o2, o3, o4], l)
 
       s.enableFilter('notBobOrNotState').getFilters('state')[0].setParameter('state', 1);
       r = s.createQuery("select obj from Test1 obj order by obj;").execute()
       checker.verify(r) {
         row { object (class:cls, id:o2.id) }
         row { object (class:cls, id:o3.id) }
+        row { object (class:cls, id:o4.id) }
       }
-      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-      assertEquals([o2, o3], l)
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+      assertEquals([o2, o3, o4], l)
     }
 
-    FilterDefinition ofd4 =
+    FilterDefinition ofd5 =
         new OqlFilterDefinition('noKeller', 'Test1',
                                 "select o from Test1 o where o.info.name.surname != 'Keller';")
-    FilterDefinition cfd4 = new CriteriaFilterDefinition('noKeller',
+    FilterDefinition cfd5 = new CriteriaFilterDefinition('noKeller',
         new DetachedCriteria('Test1').createCriteria('info').createCriteria('name').
             add(Restrictions.ne('surname', 'Keller')).parent.parent)
 
@@ -1611,13 +1662,13 @@ public class OqlTest extends AbstractTest {
         new ConjunctiveFilterDefinition('notBobAnd_notStateOrNotKeller', 'Test1').
             addFilterDefinition(ofd1).addFilterDefinition(
                 new DisjunctiveFilterDefinition('notStateOrNotKeller', 'Test1').
-                    addFilterDefinition(cfd2).addFilterDefinition(ofd4));
+                    addFilterDefinition(cfd2).addFilterDefinition(ofd5));
 
     FilterDefinition jfd4 =
         new DisjunctiveFilterDefinition('notStateOr_notBobAndNotKeller', 'Test1').
             addFilterDefinition(ofd2).addFilterDefinition(
                 new ConjunctiveFilterDefinition('notBobAndNotKeller', 'Test1').
-                    addFilterDefinition(cfd1).addFilterDefinition(cfd4));
+                    addFilterDefinition(cfd1).addFilterDefinition(cfd5));
 
     rdf.sessFactory.addFilterDefinition(jfd3);
     rdf.sessFactory.addFilterDefinition(jfd4);
@@ -1629,18 +1680,20 @@ public class OqlTest extends AbstractTest {
       Results r = s.createQuery("select obj from Test1 obj order by obj;").execute()
       checker.verify(r) {
         row { object (class:cls, id:o3.id) }
+        row { object (class:cls, id:o4.id) }
       }
-      List l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-      assertEquals([o3], l)
+      List l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+      assertEquals([o3, o4], l)
 
       stF.setParameter('state', 3);
       r = s.createQuery("select obj from Test1 obj order by obj;").execute()
       checker.verify(r) {
         row { object (class:cls, id:o2.id) }
         row { object (class:cls, id:o3.id) }
+        row { object (class:cls, id:o4.id) }
       }
-      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-      assertEquals([o2, o3], l)
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+      assertEquals([o2, o3, o4], l)
 
       s.disableFilter('notBobAnd_notStateOrNotKeller');
       stF = s.enableFilter('notStateOr_notBobAndNotKeller').getFilters('state')[0];
@@ -1649,18 +1702,20 @@ public class OqlTest extends AbstractTest {
       checker.verify(r) {
         row { object (class:cls, id:o2.id) }
         row { object (class:cls, id:o3.id) }
+        row { object (class:cls, id:o4.id) }
       }
-      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-      assertEquals([o2, o3], l)
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+      assertEquals([o2, o3, o4], l)
 
       stF.setParameter('state', 2);
       r = s.createQuery("select obj from Test1 obj order by obj;").execute()
       checker.verify(r) {
         row { object (class:cls, id:o1.id) }
         row { object (class:cls, id:o3.id) }
+        row { object (class:cls, id:o4.id) }
       }
-      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-      assertEquals([o1, o3], l)
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+      assertEquals([o1, o3, o4], l)
 
       stF.setParameter('state', 3);
       r = s.createQuery("select obj from Test1 obj order by obj;").execute()
@@ -1668,9 +1723,10 @@ public class OqlTest extends AbstractTest {
         row { object (class:cls, id:o1.id) }
         row { object (class:cls, id:o2.id) }
         row { object (class:cls, id:o3.id) }
+        row { object (class:cls, id:o4.id) }
       }
-      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-      assertEquals([o1, o2, o3], l)
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
+      assertEquals([o1, o2, o3, o4], l)
     }
   }
 
