@@ -416,7 +416,7 @@ public interface Session {
    * Removes a graph from the underlying TripleStore. This is an idempotent operation.
    *
    * @param graph The name of the graph to be removed.
-   * @throws OtmException on an error.
+   * @throws OtmException if the graph does not exist or some other error occurred.
    */
   public void dropGraph(String graph) throws OtmException;
 
