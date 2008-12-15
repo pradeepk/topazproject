@@ -646,11 +646,11 @@ public class SessionImpl extends AbstractSession {
     return null;
   }
 
-  private Wrapper getFromStore(Id id, Object instance, boolean filterObj)
-                       throws OtmException {
+  private Wrapper getFromStore(Id id, Object instance, boolean filterObj) throws OtmException {
     Wrapper w = currentGets.get(id);
     if (w != null)
       return w;
+
     TripleStore store = sessionFactory.getTripleStore();
     ClassMetadata cm = id.getClassMetadata();
 
@@ -958,8 +958,7 @@ public class SessionImpl extends AbstractSession {
     return o;
   }
 
-  private LazyLoaded newLazyLoadedInstance(final Id id)
-                          throws OtmException {
+  private LazyLoaded newLazyLoadedInstance(final Id id) throws OtmException {
     LazyLoader mi =
       new LazyLoader() {
         private boolean loading = false;
@@ -1025,7 +1024,8 @@ public class SessionImpl extends AbstractSession {
     return o;
   }
 
-  private Id checkObject(RdfMapper assoc, Object o, boolean isUpdate, boolean dupCheck) throws OtmException {
+  private Id checkObject(RdfMapper assoc, Object o, boolean isUpdate, boolean dupCheck)
+      throws OtmException {
     if (o == null)
       throw new NullPointerException("Null object");
 
@@ -1034,21 +1034,22 @@ public class SessionImpl extends AbstractSession {
       cm = sessionFactory.getClassMetadata(assoc.getAssociatedEntity());
       if (cm == null)
         throw new OtmException("Undefined association '" + assoc.getAssociatedEntity() + "' in '"
-            + assoc.getDefinition().getName());
+                               + assoc.getDefinition().getName());
     }
 
-    cm = checkClass(sessionFactory.getInstanceMetadata(cm, getEntityMode(), o), o.getClass().getName());
+    cm = checkClass(sessionFactory.getInstanceMetadata(cm, getEntityMode(), o),
+                    o.getClass().getName());
     if (cm.isView() && isUpdate)
       throw new OtmException("View's may not be updated: " + o.getClass());
 
-    IdMapper           idField = cm.getIdField();
+    IdMapper idField = cm.getIdField();
 
     if (idField == null)
       throw new OtmException("Must have an id field for " + cm);
 
-    PropertyBinder        b       = idField.getBinder(getEntityMode());
-    List          ids     = b.get(o);
-    String        id      = null;
+    PropertyBinder b   = idField.getBinder(getEntityMode());
+    List           ids = b.get(o);
+    String         id  = null;
 
     if (ids.size() == 0) {
       IdentifierGenerator generator = idField.getGenerator();
@@ -1060,18 +1061,17 @@ public class SessionImpl extends AbstractSession {
       b.set(o, Collections.singletonList(id)); // So user can get at it after saving
 
       if (log.isDebugEnabled())
-        log.debug(generator.getClass().getSimpleName() + " generated '" + id + "' for "
-                  + cm);
+        log.debug(generator.getClass().getSimpleName() + " generated '" + id + "' for " + cm);
     } else {
       id = (String) ids.get(0);
     }
 
     Id oid = new Id(cm, id, getEntityMode());
     if (dupCheck) {
-      for (Object ex : new Object[] {deleteMap.get(oid), cleanMap.get(oid), dirtyMap.get(oid)})
+      for (Object ex : new Object[] { deleteMap.get(oid), cleanMap.get(oid), dirtyMap.get(oid) })
         if ((ex != null) && (ex != o))
           throw new OtmException("Session already contains another object instance with id <"
-            + id + ">");
+                                 + id + ">");
     }
     return oid;
   }
@@ -1116,5 +1116,4 @@ public class SessionImpl extends AbstractSession {
       return (other instanceof Wrapper) ? id.equals(((Wrapper) other).id) : false;
     }
   }
-
 }
