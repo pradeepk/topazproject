@@ -296,57 +296,63 @@ public class BuilderIntegrationTest extends GroovyTestCase {
   }
 
   void testCollTypeLookAhead() {
-   def mc = 0
-   for (graph in ['ri', 'm2']) {
-     def type = 'foo:Assoc' + mc
-     Class ass = rdf.class('Assoc' + mc, type:type, graph:graph) {
-       label()
+    def mc = 0
+    for (graph in ['ri', 'm2']) {
+      def type = 'foo:Assoc' + mc
+      Class ass = rdf.class('Assoc' + mc, type:type, graph:graph) {
+        label()
       }
-     def cnt = mc * 10
-     for (colType in ['Predicate', 'RdfList', 'RdfBag', 'RdfSeq', 'RdfAlt']) {
-       Class cls = rdf.class('Test' + cnt, type:'foo:Test' + cnt) {
-         col (pred:'foo:p1', type:'foo:Test' + cnt, colMapping: colType, maxCard:-1
-                               ,cascade:['child'])
-         lis (pred:'foo:p2', type:type, colMapping: colType, maxCard:-1
-                               ,cascade:['child'])
-         label()
-       }
-       def obj = cls.newInstance(id:'foo:obj'.toURI(), label:'obj')
-       def col = cls.newInstance(id:'foo:col'.toURI(), label:'col')
-       def lis = ass.newInstance(id:'foo:lis'.toURI(), label:'lis')
-       obj.col = [col]
-       obj.lis = [lis]
-       doInTx { s-> s.saveOrUpdate(obj) }
-       doInTx { s ->
-         def o = s.get(cls, 'foo:obj')
-         def c = s.get(cls, 'foo:col')
-         def l = s.get(ass, 'foo:lis')
-         assertNotNull o
-         assertNotNull c
-         assertNotNull l
-         assertEquals('obj', o.label)
-         assertEquals('col', c.label)
-         assertEquals('lis', l.label)
-         assertNotNull o.col
-         assertEquals(1, o.col.size())
-         assertEquals(c, o.col[0])
-         assertNotNull o.lis
-         assertEquals(1, o.lis.size())
-         assertEquals(l, o.lis[0])
-         s.delete(o)
-         assertNull s.get(cls, 'foo:obj')
-         assertNull s.get(cls, 'foo:col')
-         assertNull s.get(ass, 'foo:lis')
-       }
-       doInTx { s ->
-         assertNull s.get(cls, 'foo:obj')
-         assertNull s.get(cls, 'foo:col')
-         assertNull s.get(ass, 'foo:lis')
-       }
-       cnt++
-     }
-     mc++
-   }
+
+      def cnt = mc * 10
+      for (colType in ['Predicate', 'RdfList', 'RdfBag', 'RdfSeq', 'RdfAlt']) {
+        Class cls = rdf.class('Test' + cnt, type:'foo:Test' + cnt) {
+          col (pred:'foo:p1', type:'foo:Test' + cnt, colMapping: colType, maxCard:-1
+                                ,cascade:['child'])
+          lis (pred:'foo:p2', type:type, colMapping: colType, maxCard:-1
+                                ,cascade:['child'])
+          label()
+        }
+
+        def obj = cls.newInstance(id:'foo:obj'.toURI(), label:'obj')
+        def col = cls.newInstance(id:'foo:col'.toURI(), label:'col')
+        def lis = ass.newInstance(id:'foo:lis'.toURI(), label:'lis')
+        obj.col = [col]
+        obj.lis = [lis]
+
+        doInTx { s-> s.saveOrUpdate(obj) }
+
+        doInTx { s ->
+          def o = s.get(cls, 'foo:obj')
+          def c = s.get(cls, 'foo:col')
+          def l = s.get(ass, 'foo:lis')
+          assertNotNull o
+          assertNotNull c
+          assertNotNull l
+          assertEquals('obj', o.label)
+          assertEquals('col', c.label)
+          assertEquals('lis', l.label)
+          assertNotNull o.col
+          assertEquals(1, o.col.size())
+          assertEquals(c, o.col[0])
+          assertNotNull o.lis
+          assertEquals(1, o.lis.size())
+          assertEquals(l, o.lis[0])
+          s.delete(o)
+          assertNull s.get(cls, 'foo:obj')
+          assertNull s.get(cls, 'foo:col')
+          assertNull s.get(ass, 'foo:lis')
+        }
+
+        doInTx { s ->
+          assertNull s.get(cls, 'foo:obj')
+          assertNull s.get(cls, 'foo:col')
+          assertNull s.get(ass, 'foo:lis')
+        }
+
+        cnt++
+      }
+      mc++
+    }
   }
 
   void testCascade() {
@@ -363,7 +369,9 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     obj.sel = sel
     obj.all = all
     obj.none = none
+
     doInTx { s-> s.saveOrUpdate(obj) }
+
     doInTx { s ->
       assertNotNull s.get(cls, 'foo:sel')
       assertNotNull s.get(cls, 'foo:all')
@@ -376,6 +384,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
       s.saveOrUpdate(o)
       s.saveOrUpdate(none)
     }
+
     doInTx { s ->
       assertNotNull s.get(cls, 'foo:sel')
       assertNotNull s.get(cls, 'foo:all')
@@ -389,6 +398,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
       o.none = null
       s.saveOrUpdate(o)
     }
+
     doInTx { s ->
       assertNotNull s.get(cls, 'foo:sel')
       assertNull s.get(cls, 'foo:all')
@@ -402,6 +412,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
       o.none = s.get(cls, 'foo:none')
       s.saveOrUpdate(o)
     }
+
     doInTx { s ->
       assertNotNull s.get(cls, 'foo:sel')
       assertNotNull s.get(cls, 'foo:all')
@@ -412,13 +423,13 @@ public class BuilderIntegrationTest extends GroovyTestCase {
       assertNotNull o.none
       s.delete(o)
     }
+
     doInTx { s ->
       assertNotNull s.get(cls, 'foo:sel')
       assertNull s.get(cls, 'foo:all')
       assertNotNull s.get(cls, 'foo:none')
       assertNull s.get(cls, 'foo:obj')
     }
-
   }
 
   void testEagerLoad() {
