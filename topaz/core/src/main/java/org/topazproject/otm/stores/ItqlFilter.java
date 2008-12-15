@@ -101,7 +101,7 @@ public class ItqlFilter {
 
   /**
    * @return the where clause of preparsed filter expression, as returned by
-   *         ItqlConstraingGenerator, or null if this has a junction-type
+   *         ItqlConstraintGenerator, or null if this has a junction-type
    */
   public AST getDef() {
     return filterDef;
