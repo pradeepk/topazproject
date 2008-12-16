@@ -134,9 +134,9 @@ public class ConfigurationStore {
   }
 
   /**
-   * Overrides all existing configuration with the given conifguration object 
+   * Overrides all existing configuration with the given conifguration object
    * (useful for JUnit testing!)
-   * @param newConfig
+   * @param newConfig the new configuration to test
    */
   public void setConfiguration(CombinedConfiguration newConfig) {
     root = newConfig;
@@ -187,7 +187,7 @@ public class ConfigurationStore {
     addResources(root, GLOBAL_DEFAULTS_RESOURCE);
 
     if (log.isDebugEnabled())
-      log.debug("Configuration dump: " + System.getProperty("line.separator") 
+      log.debug("Configuration dump: " + System.getProperty("line.separator")
           + ConfigurationUtils.toString(root));
   }
 
@@ -232,10 +232,13 @@ public class ConfigurationStore {
   /**
    * Iterate over all the resources of the given name and add them to our root
    * configuration.
+   * @param root the root configuration to add to
+   * @param resource the resource to add
+   * @throws ConfigurationException on an error in adding the new config
    */
   public static void addResources(CombinedConfiguration root, String resource)
       throws ConfigurationException {
-    Class klass = ConfigurationStore.class;
+    Class<?> klass = ConfigurationStore.class;
     if (resource.startsWith("/")) {
       root.addConfiguration(getConfigurationFromUrl(klass.getResource(resource)));
       log.info("Added resource '" + resource + "'");

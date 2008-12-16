@@ -35,7 +35,6 @@ public class RepresentationFedoraBlob extends DefaultFedoraBlob {
    * Creates a new RepresentaionFedoraBlob object.
    *
    * @param cm the class metadata of this blob
-   * @param blobId the blob identifier URI
    * @param pid the Fedora PID of this blob
    * @param dsId the Datastream id of this blob
    * @param ct the content type

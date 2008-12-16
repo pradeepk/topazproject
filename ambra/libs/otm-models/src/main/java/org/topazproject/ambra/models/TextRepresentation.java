@@ -106,6 +106,13 @@ public class TextRepresentation extends Representation {
   /**
    * A {@link org.topazproject.otm.SubClassResolver} which detects Representation's with a
    * content-type of 'text/...' and selects this class instead.
+   * @param superEntity       the root of the entity hierarchy that the resolved class
+   *                          must be a sub-class-of
+   * @param instantiatableIn  the entity mode that the resolved sub-class must be instantiatable in
+   * @param sf                the session factory
+   * @param typeUris          the rdf:type values found in the data
+   * @param statements        the data
+   * @return                  the resolved class or null
    */
   @SubClassResolver
   public static ClassMetadata resolve(ClassMetadata superEntity, EntityMode instantiatableIn,
