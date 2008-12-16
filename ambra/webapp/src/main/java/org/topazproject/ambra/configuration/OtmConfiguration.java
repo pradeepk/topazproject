@@ -150,7 +150,7 @@ public class OtmConfiguration {
       for (FedoraBlobFactory fbf : fbfs) {
         fbs.addBlobFactory(fbf);
         if (log.isDebugEnabled())
-          log.debug("Added BlobFactory for " + fbf.getSupportedUriPrefixes());
+          log.debug("Added BlobFactory for " + Arrays.asList(fbf.getSupportedUriPrefixes()));
       }
     }
   }
