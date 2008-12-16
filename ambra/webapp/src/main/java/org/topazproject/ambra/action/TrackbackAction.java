@@ -31,7 +31,6 @@ import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -41,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.cache.Cache;
-import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Trackback;
 import org.topazproject.ambra.models.TrackbackContent;
@@ -73,19 +71,19 @@ public class TrackbackAction extends BaseActionSupport {
   private String trackbackId;
   private String articleURI;
   private List<Trackback> trackbackList;
-  private VirtualJournalContext journalContext;
   private ObjectInfo articleObj;
   private Cache articleAnnotationCache;
 
   private ArticleOtmService articleOtmService;
-  private static final Configuration myConfig = ConfigurationStore.getInstance().getConfiguration();
 
   private Session          session;
+  private static final String ARTICLE_ACTION = "ambra.platform.articleAction";
 
   /**
    * Main action execution.
    *
    */
+  @SuppressWarnings("unchecked")
   @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws Exception {
 
@@ -96,8 +94,9 @@ public class TrackbackAction extends BaseActionSupport {
       return returnError ("HTTP method must be POST");
     }
 
-    journalContext = (VirtualJournalContext)ServletActionContext.getRequest()
-                      .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
+    // TODO: you should not need to access request directly in struts action, use parameter map here
+    VirtualJournalContext journalContext = (VirtualJournalContext) ServletActionContext.getRequest()
+        .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
 
     final URL permalink;
     final URI trackback;
@@ -210,7 +209,6 @@ public class TrackbackAction extends BaseActionSupport {
    * Set trackbackList with all trackbacks for the resource given by trackbackId.
    *
    * @return status
-   * @throws Exception
    */
   @Transactional(readOnly = true)
   public String getTrackbacks() {
@@ -397,7 +395,7 @@ public class TrackbackAction extends BaseActionSupport {
       escapedURI = articleURI;
     }
 
-    StringBuilder url = new StringBuilder(baseURL).append("/").append (myConfig.getString("ambra.platform.articleAction"))
+    StringBuilder url = new StringBuilder(baseURL).append("/").append (configuration.getString(ARTICLE_ACTION))
     .append(escapedURI);
 
     if (log.isDebugEnabled()) {

@@ -24,7 +24,6 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
@@ -38,8 +37,8 @@ import org.topazproject.otm.util.TransactionHelper;
  */
 public class ImpliedPermissionsLoader {
   private static final Log log = LogFactory.getLog(ImpliedPermissionsLoader.class);
-  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
+  private Configuration configuration;
   private SessionFactory sf;
 
   public void load() throws OtmException {
@@ -51,7 +50,7 @@ public class ImpliedPermissionsLoader {
   }
 
   public int load(Session session) throws OtmException {
-    Configuration conf        = CONF.subset("ambra.permissions.impliedPermissions");
+    Configuration conf        = configuration.subset("ambra.permissions.impliedPermissions");
     StringBuilder sb          = new StringBuilder();
     List<?>  permissions      = conf.getList("permission[@uri]");
     int           c           = permissions.size();
@@ -79,5 +78,14 @@ public class ImpliedPermissionsLoader {
   @Required
   public void setOtmSessionFactory(SessionFactory sf) {
     this.sf = sf;
+  }
+
+  /**
+   * Setter method for configuration. Injected through Spring.
+   * @param configuration Ambra configuration
+   */
+  @Required
+  public void setAmbraConfiguration(Configuration configuration) {
+    this.configuration = configuration;
   }
 }

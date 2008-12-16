@@ -56,6 +56,9 @@
   </bean>
 
   <!--Ambra developer beans here -->
+  <bean id="configurationStore" class="org.topazproject.ambra.configuration.ConfigurationStore" factory-method="getInstance"/>
+  <bean id="ambraConfiguration" factory-bean="configurationStore" factory-method="getConfiguration"/>
+
   <bean id="fetchArticleService" class="org.topazproject.ambra.article.service.FetchArticleService">
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
   </bean>

@@ -83,10 +83,10 @@ import net.sf.saxon.TransformerFactoryImpl;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.configuration.Configuration;
 
 import org.topazproject.xml.transform.EntityResolvingSource;
 import org.topazproject.xml.transform.cache.CachedSource;
-import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Representation;
@@ -160,9 +160,10 @@ public class Ingester {
    * Prepare the ingester for ingesting. This can be done outside a transaction
    * scope. It creates the object descriptions ready for ingest.
    *
+   * @param configuration Ambra configuration
    * @throws IngestException on an error in reading the zip file
    */
-  public void prepare() throws IngestException {
+  public void prepare(Configuration configuration) throws IngestException {
     try {
       // get zip info
       String zipInfo = Zip2Xml.describeZip(zip);
@@ -175,7 +176,7 @@ public class Ingester {
         log.debug("Using ingest handler '" + handler + "'");
 
       // use handler to convert zip to object descriptions
-      objInfo = zip2Obj(zip, zipInfo, handler);
+      objInfo = zip2Obj(zip, zipInfo, handler, configuration.getString("ambra.platform.doiUrlPrefix", null));
       if (log.isDebugEnabled())
         log.debug("Got object-info '" + dom2String(objInfo) + "'");
     } catch (IOException ioe) {
@@ -188,6 +189,7 @@ public class Ingester {
   /**
    * Ingest a new article.
    *
+   * @param configuration Ambra configuration
    * @param sess     the OTM session to use to add the objects
    * @param permSvc  the permissions-service to use to add the permissions
    * @param force if true then don't check whether this article already exists but just
@@ -197,11 +199,11 @@ public class Ingester {
    *                                     and <var>force</var> is false
    * @throws IngestException if there's any other problem ingesting the article
    */
-  public Article ingest(Session sess, PermissionsService permSvc, boolean force)
+  public Article ingest(Configuration configuration, Session sess, PermissionsService permSvc, boolean force)
       throws DuplicateArticleIdException, IngestException {
 
     if (objInfo == null)
-      prepare();
+      prepare(configuration);
 
     try {
       // process the object descriptions
@@ -234,18 +236,17 @@ public class Ingester {
    * @param zip     the zip archive containing the items to ingest
    * @param zipInfo the document describing the zip archive (adheres to zip.dtd)
    * @param handler the stylesheet to run on <var>zipInfo</var>; this is the main script
+   * @param doiUrlPrefix DOI URL prefix
    * @return a document describing the fedora objects to create (must adhere to fedora.dtd)
    * @throws TransformerException if an error occurs during the processing
    */
-  private Document zip2Obj(Zip zip, String zipInfo, String handler)
+  private Document zip2Obj(Zip zip, String zipInfo, String handler, String doiUrlPrefix)
       throws TransformerException {
     Transformer t = tFactory.newTransformer(new StreamSource(handler));
     t.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
     t.setURIResolver(new ZipURIResolver(zip));
 
     // override the doi url prefix if one is specified in the config
-    final String doiUrlPrefix = ConfigurationStore.getInstance().getConfiguration().
-      getString("ambra.platform.doiUrlPrefix", null);
     if (doiUrlPrefix != null)
       t.setParameter("doi-url-prefix", doiUrlPrefix);
 

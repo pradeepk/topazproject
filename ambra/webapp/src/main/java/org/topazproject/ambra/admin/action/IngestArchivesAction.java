@@ -61,7 +61,7 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
           log.info("Creating ingester for " + file);
           Ingester ingester = dms.createIngester(file);
           log.info("Preparing ingester for " + file);
-          ingester.prepare();
+          ingester.prepare(configuration);
           log.info("Starting ingest for " + file);
           Article article = dms.ingest(ingester, force);
           log.info("Finished ingest for " + file);

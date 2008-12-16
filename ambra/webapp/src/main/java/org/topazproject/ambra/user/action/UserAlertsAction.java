@@ -33,7 +33,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.service.UserAlert;
 
@@ -45,17 +44,15 @@ public abstract class UserAlertsAction extends UserActionSupport {
 
   private static final Log log = LogFactory.getLog(UserAlertsAction.class);
 
-  /**
-   * The list of available {@link UserAlert}s as prescribed in the configuration. May be empty.
-   */
-  private static final List<UserAlert> userAlerts = new ArrayList<UserAlert>();
+  private String displayName;
+  private String[] monthlyAlerts = new String[]{};
+  private String[] weeklyAlerts = new String[]{};
+  private static final String MONTHLY_ALERT_SUFFIX = "_monthly";
+  private static final String WEEKLY_ALERT_SUFFIX = "_weekly";
+  private static final String ALERTS_CATEGORIES_CATEGORY = "ambra.userAlerts.categories.category";
+  private static final String ALERTS_WEEKLY = "ambra.userAlerts.weekly";
+  private static final String ALERTS_MONTHLY = "ambra.userAlerts.monthly";
 
-  /**
-   * @return All available user alerts
-   */
-  public static Collection<UserAlert> getUserAlerts() {
-    return userAlerts;
-  }
 
   /**
    * Stubs optional user alert data data which may be specified in the configuration. <br>
@@ -78,24 +75,25 @@ public abstract class UserAlertsAction extends UserActionSupport {
    *         &lt;weekly&gt;biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds, plosone&lt;/weekly&gt;
    *       &lt;/userAlerts&gt;
    * </pre>
+   * @return All available user alerts
    */
   @SuppressWarnings("unchecked")
-  private static void initUserAlertData() {
+  public Collection<UserAlert> getUserAlerts() {
+    ArrayList<UserAlert> alerts = new ArrayList<UserAlert>();
 
     final Map<String, String> categoryNames = new HashMap<String, String>();
 
-    ConfigurationStore config = ConfigurationStore.getInstance();
-    HierarchicalConfiguration hc = (HierarchicalConfiguration) config.getConfiguration();
+    HierarchicalConfiguration hc = (HierarchicalConfiguration) configuration;
     List<HierarchicalConfiguration> categories = hc
-        .configurationsAt("ambra.userAlerts.categories.category");
+        .configurationsAt(ALERTS_CATEGORIES_CATEGORY);
     for (HierarchicalConfiguration c : categories) {
       String key = c.getString("[@key]");
       String value = c.getString("");
       categoryNames.put(key, value);
     }
 
-    final String[] weeklyCategories = hc.getStringArray("ambra.userAlerts.weekly");
-    final String[] monthlyCategories = hc.getStringArray("ambra.userAlerts.monthly");
+    final String[] weeklyCategories = hc.getStringArray(ALERTS_WEEKLY);
+    final String[] monthlyCategories = hc.getStringArray(ALERTS_MONTHLY);
 
     final Set<Map.Entry<String, String>> categoryNamesSet = categoryNames.entrySet();
 
@@ -109,20 +107,11 @@ public abstract class UserAlertsAction extends UserActionSupport {
       if (ArrayUtils.contains(monthlyCategories, key)) {
         monthlyCategoryKey = true;
       }
-      userAlerts
+      alerts
           .add(new UserAlert(key, category.getValue(), weeklyCategoryKey, monthlyCategoryKey));
     }
+    return alerts;
   }
-
-  static {
-    initUserAlertData();
-  }
-
-  private String displayName;
-  private String[] monthlyAlerts = new String[]{};
-  private String[] weeklyAlerts = new String[]{};
-  private final String MONTHLY_ALERT_SUFFIX = "_monthly";
-  private final String WEEKLY_ALERT_SUFFIX = "_weekly";
 
   /**
    * Save the alerts.

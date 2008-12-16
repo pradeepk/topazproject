@@ -29,18 +29,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
-import org.topazproject.ambra.configuration.ConfigurationStore;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Base class for all actions.
  */
 public abstract class BaseActionSupport extends ActionSupport {
   private static final Log           log  = LogFactory.getLog(BaseActionSupport.class);
-  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
-  protected static final String feedBasePath    = CONF.getString("ambra.services.feed.basePath", "/article/");
-  private   static final String feedDefaultFile = CONF.getString("ambra.services.feed.defaultFile", "feed");
-  private   static final String feedDefaultName = CONF.getString("ambra.services.feed.defaultName", "New Articles");
+  protected Configuration configuration;
+  private static final String FEED_DEFAULT_NAME = "ambra.services.feed.defaultName";
+  private static final String FEED_BASE_PATH = "ambra.services.feed.basePath";
+  private static final String FEED_DEFAULT_FILE = "ambra.services.feed.defaultFile";
 
   /**
    * This overrides the deprecated super inplementation and returns an empty implementation as we
@@ -78,14 +78,25 @@ public abstract class BaseActionSupport extends ActionSupport {
    * @return the name of the rss feed for a page (will be prefixed by the journal name)
    */
   public String getRssName() {
-    return feedDefaultName;
+    return configuration.getString(FEED_DEFAULT_NAME, "New Articles");
   }
 
   /**
    * @return the URL path for the rss feed for a page
    */
   public String getRssPath() {
-    return feedBasePath + feedDefaultFile;
+    return configuration.getString(FEED_BASE_PATH, "/article/") +
+        configuration.getString(FEED_DEFAULT_FILE, "feed");
+  }
+
+  /**
+   * Setter method for configuration. Injected through Spring.
+   * 
+   * @param configuration Ambra configuration
+   */
+  @Required
+  public void setAmbraConfiguration(Configuration configuration) {
+    this.configuration = configuration;
   }
 
   /**

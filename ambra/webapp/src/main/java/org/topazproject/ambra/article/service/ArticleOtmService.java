@@ -28,11 +28,11 @@ import java.util.Date;
 import java.util.List;
 
 import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.configuration.Configuration;
 
 
 import org.springframework.beans.factory.annotation.Required;
@@ -54,20 +54,16 @@ import com.sun.xacml.PDP;
 public class ArticleOtmService {
   private static final Log log = LogFactory.getLog(ArticleOtmService.class);
 
-  private String         smallImageRep;
-  private String         largeImageRep;
-  private String         mediumImageRep;
+  private String smallImageRep;
+  private String largeImageRep;
+  private String mediumImageRep;
 
-  private ArticlePEP         pep;
-  private Session            session;
+  private ArticlePEP pep;
+  private Session session;
   private PermissionsService permissionsService;
+  private Configuration configuration;
 
   public ArticleOtmService() {
-  }
-
-  @Required
-  public void setArticlesPdp(PDP pdp) {
-    pep = new ArticlePEP(pdp);
   }
 
   /**
@@ -86,8 +82,7 @@ public class ArticleOtmService {
     throws DuplicateArticleIdException, IngestException, IOException {
     pep.checkAccess(ArticlePEP.INGEST_ARTICLE, ArticlePEP.ANY_RESOURCE);
 
-    Article art = ingester.ingest(session, permissionsService, force);
-    return art;
+    return ingester.ingest(configuration, session, permissionsService, force);
   }
 
   /**
@@ -548,6 +543,11 @@ public class ArticleOtmService {
     this.largeImageRep = largeImageRep;
   }
 
+  @Required
+  public void setArticlesPdp(PDP pdp) {
+    pep = new ArticlePEP(pdp);
+  }
+
   /**
    * Set the OTM session. Called by spring's bean wiring.
    *
@@ -565,6 +565,17 @@ public class ArticleOtmService {
   public void setPermissionsService(PermissionsService permissionsService) {
     this.permissionsService = permissionsService;
   }
+
+  /**
+   * Setter method for configuration. Injected through Spring.
+   *
+   * @param configuration Ambra configuration
+   */
+  @Required
+  public void setAmbraConfiguration(Configuration configuration) {
+    this.configuration = configuration;
+  }
+
 
   private static class ByteArrayDataSource implements DataSource {
     private final Representation rep;

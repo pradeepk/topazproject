@@ -44,7 +44,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.cache.Cache;
-import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.search.SearchResultPage;
 import org.topazproject.ambra.user.AmbraUser;
@@ -69,9 +68,7 @@ public class SearchService {
   private static final Map<String, String[]> FIELD_MAP = new HashMap<String, String[]>();
   private static final Map<String, Boolean>  SRCHB_MAP = new HashMap<String, Boolean>();
   private static final Map<String, String>   DT_MAP    = new HashMap<String, String>();
-  private static final Configuration         CONF      =
-                ConfigurationStore.getInstance().getConfiguration();
-  private static final String[]              DEFAULT_FIELDS;
+  private Configuration configuration;
 
   private ArticleOtmService articleService;
   private Session           session;
@@ -150,9 +147,11 @@ public class SearchService {
     DT_MAP.put("date",          "^^<xsd:date>");
     DT_MAP.put("dateSubmitted", "^^<xsd:date>");
     DT_MAP.put("dateAccepted",  "^^<xsd:date>");
+  }
 
-    String[] fields = CONF.getStringArray("ambra.services.search.defaultFields");
-    DEFAULT_FIELDS = (fields != null) ? fields : new String[] { "description", "title", "body" };
+  private String[] getDefaultFields() {
+    String[] fields = configuration.getStringArray("ambra.services.search.defaultFields");
+    return (fields != null) ? fields : new String[] { "description", "title", "body" };
   }
 
   /**
@@ -163,6 +162,7 @@ public class SearchService {
    * @param pageSize  The number of results per page
    * @return A SearchResultPage representing the search results page to be rendered
    * @throws ParseException if <var>query</var> is not valid
+   * @throws OtmException OTM exception
    */
   @Transactional(readOnly = true)
   public SearchResultPage find(final String query, final int startPage, final int pageSize)
@@ -189,7 +189,7 @@ public class SearchService {
 
   private Results doSearch(String queryString) throws ParseException, OtmException {
     // TODO: should we get the analyzer from one of the model's @Searchable defs?
-    Query lq = new MultiFieldQueryParser(DEFAULT_FIELDS, new StandardAnalyzer()).parse(queryString);
+    Query lq = new MultiFieldQueryParser(getDefaultFields(), new StandardAnalyzer()).parse(queryString);
 
     String oql = buildOql(lq);
     if (log.isDebugEnabled())
@@ -284,6 +284,7 @@ public class SearchService {
    * tql minus operator, and 'true' is UNBOUND (generated in the code below by a '0 &lt; 1'
    * constraint).
    */
+  @SuppressWarnings("unchecked")
   private void buildOql(BooleanQuery lq, StringBuilder sel, StringBuilder whr, int[] scnt) {
     if (lq.clauses().size() == 0)
       return;
@@ -366,6 +367,7 @@ public class SearchService {
    *
    * @param bq the boolean-query to simplify
    */
+  @SuppressWarnings("unchecked")
   private static void simplify(BooleanQuery bq) {
     for (BooleanClause c : (List<BooleanClause>) bq.clauses()) {
       if (!(c.getQuery() instanceof BooleanQuery))
@@ -405,6 +407,7 @@ public class SearchService {
     return Occur.MUST_NOT;
   }
 
+  @SuppressWarnings("unchecked")
   private static boolean allNegative(BooleanQuery bq) {
     for (BooleanClause c : (List<BooleanClause>) bq.clauses()) {
       if (!c.isProhibited())
@@ -418,7 +421,7 @@ public class SearchService {
    * searchable then an oql search() function is added to the where clause; otherwise an oql
    * equality lt() and/or a gt() is added.
    *
-   * @param qs   the lucene range query; it's expected to be in &lt;field&gt;:&lt;query&gt; format
+   * @param lq   the lucene range query; it's expected to be in &lt;field&gt;:&lt;query&gt; format
    * @param sel  the oql select clause
    * @param whr  the oql where clause
    * @param scnt the current score-variable counter
@@ -560,4 +563,15 @@ public class SearchService {
   public void setOtmSession(Session session) {
     this.session = session;
   }
+
+  /**
+   * Setter method for configuration. Injected through Spring.
+   *
+   * @param configuration Ambra configuration
+   */
+  @Required
+  public void setAmbraConfiguration(Configuration configuration) {
+    this.configuration = configuration;
+  }
+
 }

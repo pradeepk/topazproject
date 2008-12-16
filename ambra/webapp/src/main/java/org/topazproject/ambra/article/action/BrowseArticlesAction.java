@@ -28,14 +28,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.BrowseService;
-import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.model.article.ArticleInfo;
 import org.topazproject.ambra.model.article.ArticleInfoMostRecentDateComparator;
 import org.topazproject.ambra.model.article.Years;
@@ -47,10 +45,8 @@ import org.topazproject.ambra.model.article.Years;
 public class BrowseArticlesAction extends BaseActionSupport {
 
   private static final Log log  = LogFactory.getLog(BrowseArticlesAction.class);
-  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
-
-  private static final String feedCategoryPrefix =
-                                      CONF.getString("ambra.services.feed.categoryPrefix", "feed?category=");
+  private static final String FEED_BASE_PATH = "ambra.services.feed.basePath";
+  private static final String FEED_CATEGORY_PREFIX = "ambra.services.feed.categoryPrefix";
 
   private static final int    PAGE_SIZE    = 10;
   private static final String DATE_FIELD   = "date";
@@ -96,12 +92,12 @@ public class BrowseArticlesAction extends BaseActionSupport {
       int[] numArt = new int[1];
       articleList = browseService.getArticlesByCategory(catName, startPage, pageSize, numArt);
       if (articleList == null)
-        articleList = Collections.<ArticleInfo>emptyList();
+        articleList = Collections.emptyList();
       else
         Collections.sort(articleList, new ArticleInfoMostRecentDateComparator());
       totalArticles = numArt[0];
     } else {
-      articleList = Collections.<ArticleInfo>emptyList();
+      articleList = Collections.emptyList();
       totalArticles = 0;
     }
 
@@ -319,7 +315,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
     return (catName != null) ? catName : super.getRssName();
   }
 
-  private static String canonicalCategoryPath(String categoryName) {
+  private String canonicalCategoryPath(String categoryName) {
     try {
       return URLEncoder.encode(categoryName, "UTF-8");
     } catch (UnsupportedEncodingException e) {
@@ -329,8 +325,12 @@ public class BrowseArticlesAction extends BaseActionSupport {
 
   @Override
   public String getRssPath() {
-    return (catName != null) ? feedBasePath + feedCategoryPrefix + canonicalCategoryPath(catName) :
-                               super.getRssPath();
+    if (catName != null)
+      return configuration.getString(FEED_BASE_PATH, "/article/")
+        + configuration.getString(FEED_CATEGORY_PREFIX, "feed?category=")
+        + canonicalCategoryPath(catName);
+    else
+      return super.getRssPath();
   }
 
   public void setStartDateParam(String startDateParam) {

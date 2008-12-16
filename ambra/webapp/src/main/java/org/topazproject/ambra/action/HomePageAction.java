@@ -30,7 +30,6 @@ import java.util.SortedMap;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.article.service.BrowseService;
-import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.model.article.ArticleInfo;
 
@@ -49,13 +48,11 @@ public class HomePageAction extends BaseActionSupport {
   private int numArticlesToShow;
 
   private void initRecentArticles() {
-    ConfigurationStore config = ConfigurationStore.getInstance();
     String journalKey = journalService.getCurrentJournalName();
     String rootKey = "ambra.virtualJournals." + journalKey + ".recentArticles";
 
-    numDaysInPast = config.getConfiguration().getInteger(rootKey + ".numDaysInPast", 7).intValue();
-    numArticlesToShow = config.getConfiguration().getInteger(rootKey + ".numArticlesToShow", 5)
-        .intValue();
+    numDaysInPast = configuration.getInteger(rootKey + ".numDaysInPast", 7);
+    numArticlesToShow = configuration.getInteger(rootKey + ".numArticlesToShow", 5);
 
     Calendar startDate = Calendar.getInstance();
     startDate.set(Calendar.HOUR, 0);
@@ -105,8 +102,8 @@ public class HomePageAction extends BaseActionSupport {
    * maxValue(exclusive). If maxValue is less than numValues, will return maxValue items. Guarantees
    * uniqueness of values.
    *
-   * @param numValues
-   * @param maxValue
+   * @param numValues Length of the array
+   * @param maxValue Maximum value of each element of the array
    * @return array of random ints
    */
   public int[] randomNumbers(int numValues, int maxValue) {
