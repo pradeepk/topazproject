@@ -24,8 +24,6 @@ import com.opensymphony.xwork2.mock.MockActionInvocation;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
-import org.topazproject.ambra.user.EnsureUserAccountInterceptor;
-import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.service.UserService;
 
 import java.util.HashMap;

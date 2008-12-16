@@ -55,7 +55,6 @@
 
   <!-- TODO: Update the servicePort url's automatically using maven build process itself-->
   <bean id="articleWebService" class="org.topazproject.ambra.article.service.ArticleWebService">
-    <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
         <entry key="uri" value="${ambra.spring.service.article}"/>
@@ -85,10 +84,8 @@
     <constructor-arg value="TEST"/>
   </bean>
 
-  <bean id="userContext" class="org.topazproject.ambra.web.MockUserContext"/>
 
   <bean id="permissionsService" class="org.topazproject.ambra.permission.service.PermissionsService">
-    <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
         <entry key="uri" value="${ambra.spring.service.permission}"/>
@@ -104,7 +101,6 @@
   </bean>
 
   <bean id="replyService" class="org.topazproject.ambra.annotation.service.ReplyService">
-    <property name="userContext" ref="userContext"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
@@ -117,7 +113,6 @@
   </bean>
 
   <bean id="articleAnnotationService" class="org.topazproject.ambra.annotation.service.AnnotationService">
-    <property name="userContext" ref="userContext"/>
     <property name="articleAnnotationCache" ref="articleAnnotationCache"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
@@ -131,7 +126,6 @@
   </bean>
 
   <bean id="annotationService" class="org.topazproject.ambra.annotation.service.AnnotationService">
-    <property name="userContext" ref="userContext"/>
     <property name="converter" ref="annotationConverter"/>
     <property name="articleAnnotationService" ref="articleAnnotationService"/>
     <property name="replyService" ref="replyService"/>
@@ -139,7 +133,6 @@
   </bean>
 
   <bean id="userWebService" class="org.topazproject.ambra.user.service.UserWebService">
-    <property name="userContext" ref="userContext"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="configurationMap">
       <map>
@@ -150,7 +143,6 @@
   </bean>
 
   <bean id="userRoleWebService" class="org.topazproject.ambra.user.service.UserRoleWebService">
-    <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
         <entry key="uri" value="${service.user-role}"/>
@@ -160,7 +152,6 @@
   </bean>
 
   <bean id="preferencesWebService" class="org.topazproject.ambra.user.service.PreferencesWebService">
-    <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
         <entry key="uri" value="${service.preference}"/>
@@ -170,7 +161,6 @@
   </bean>
 
   <bean id="profileWebService" class="org.topazproject.ambra.user.service.ProfileWebService" >
-    <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
         <entry key="uri" value="${service.profile}"/>
@@ -180,7 +170,6 @@
   </bean>
 
   <bean id="userService" class="org.topazproject.ambra.user.service.UserService">
-    <property name="userContext" ref="userContext"/>
     <property name="userWebService" ref="userWebService"/>
     <property name="userRoleWebService" ref="userRoleWebService"/>
     <property name="profileWebService" ref="profileWebService"/>

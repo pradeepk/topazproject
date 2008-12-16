@@ -51,7 +51,8 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
     if (log.isDebugEnabled())
       log.debug("ensure user account interceptor called");
 
-    final Map<String, Object> sessionMap = getUserSessionMap();
+    Map sessionMap = actionInvocation.getInvocationContext().getSession();
+
     final String userId = (String) sessionMap.get(SINGLE_SIGNON_USER_KEY);
 
     if (null == userId) {
@@ -81,7 +82,7 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
           log.debug("This is a new user with id: " + userId);
         return ReturnCode.NEW_PROFILE;
       } else {
-        updateUserEmailAddress(ambraUser, userId);
+        updateUserEmailAddress(ambraUser, userId, (String) sessionMap.get(SINGLE_SIGNON_EMAIL_KEY));
         sessionMap.put(AMBRA_USER_KEY, ambraUser);
         if (log.isDebugEnabled())
           log.debug("Existing user detected: " + userId);
@@ -100,16 +101,12 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
     }
   }
 
-  protected Map<String, Object> getUserSessionMap() {
-    return userService.getUserContext().getSessionMap();
-  }
-
   public void setUserService(final UserService userService) {
     this.userService = userService;
   }
 
-  private void updateUserEmailAddress(AmbraUser user, String authId) throws ApplicationException {
-    String emailAddress = fetchUserEmailAddress(authId);
+  private void updateUserEmailAddress(AmbraUser user, String authId, String presetEmail) throws ApplicationException {
+    String emailAddress = fetchUserEmailAddress(authId, presetEmail);
     if (emailAddress != null) {
       if (!emailAddress.equals(user.getEmail())) {
         user.setEmail(emailAddress);
@@ -130,8 +127,7 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
     }
   }
 
-  private String fetchUserEmailAddress(String authId) throws ApplicationException {
-    String presetEmail = (String) getUserSessionMap().get(SINGLE_SIGNON_EMAIL_KEY);
+  private String fetchUserEmailAddress(String authId, String presetEmail) throws ApplicationException {
     if (presetEmail != null)
       return presetEmail;
 

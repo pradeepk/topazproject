@@ -131,8 +131,6 @@
     <constructor-arg value="topaz-ambra"/>
   </bean>
 
-  <bean id="userContext" class="org.topazproject.ambra.web.UserContext"/>
-
   <bean id="impliedPermissionsLoader" init-method="load" 
      class="org.topazproject.ambra.permission.service.ImpliedPermissionsLoader"/> 
 

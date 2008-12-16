@@ -19,7 +19,6 @@
 
 package org.topazproject.ambra.action;
 
-import org.topazproject.ambra.web.UserContext;
 import org.apache.struts2.dispatcher.SessionMap;
 
 /**
@@ -29,21 +28,18 @@ import org.apache.struts2.dispatcher.SessionMap;
  * @author Stephen Cheng
  *
  */
-public class LogoutAction extends BaseActionSupport {
+public class LogoutAction extends BaseSessionAwareActionSupport {
+
   private String goTo;
-  private UserContext userContext;
 
   /**
    * Invalidates sesssion and returns SUCCESS if successful, else returns ERROR
    * 
    */
   public String execute() throws Exception {
-    if (userContext != null) {
-      SessionMap session = (SessionMap)userContext.getSessionMap();
-      if (session != null) {
-        session.invalidate();
-        return SUCCESS;
-      }
+    if (session != null) {
+      ((SessionMap) session).invalidate();
+      return SUCCESS;
     }
     return ERROR;
   }
@@ -62,17 +58,4 @@ public class LogoutAction extends BaseActionSupport {
     this.goTo = goTo;
   }
 
-  /**
-   * @return Returns the userContext.
-   */
-  public UserContext getUserContext() {
-    return userContext;
-  }
-
-  /**
-   * @param userContext The userContext to set.
-   */
-  public void setUserContext(UserContext userContext) {
-    this.userContext = userContext;
-  }
 }

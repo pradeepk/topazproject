@@ -35,7 +35,9 @@ import com.googlecode.jsonplugin.annotations.JSON;
  * 
  */
 public class UserActionSupport extends BaseSessionAwareActionSupport {
+
   private static final Log log = LogFactory.getLog(UserActionSupport.class);
+  
   private UserService userService;
 
   /**

@@ -43,7 +43,6 @@ import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.UserProfileGrant;
 import org.topazproject.ambra.user.UsersPEP;
-import org.topazproject.ambra.web.UserContext;
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.Results;
@@ -79,8 +78,6 @@ public class UserService {
 
   private String applicationId;
   private String emailAddressUrl;
-
-  private UserContext userContext;
 
   /**
    * Constructor
@@ -769,18 +766,4 @@ public class UserService {
     this.txManager = txManager;
   }
 
-  /**
-   * Set the user's context which can be used to obtain user's session values/attributes
-   * @param userContext userContext
-   */
-  public void setUserContext(final UserContext userContext) {
-    this.userContext = userContext;
-  }
-
-  /**
-   * @return get user context
-   */
-  public UserContext getUserContext() {
-    return userContext;
-  }
 }
