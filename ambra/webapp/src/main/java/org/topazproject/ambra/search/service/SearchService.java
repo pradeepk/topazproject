@@ -117,7 +117,7 @@ public class SearchService {
     FIELD_MAP.put("body",
                   new String[] { "cast(art.representations, TextRepresentation).body" });
     FIELD_MAP.put("citation",
-                  new String[] { "art.dublinCore.references.title" });// FIXME: any field in Citation?
+                  new String[] { "art.dublinCore.references.title", "art.dublinCore.references.authors.realName" });
     FIELD_MAP.put("editor",
                   new String[] { "art.dublinCore.bibliographicCitation.editors.realName" });
 

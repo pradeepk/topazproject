@@ -244,6 +244,7 @@ public class Citation implements Serializable {
   /**
    * @param title the title of the citation's article
    */
+  @Searchable(index = "lucene")
   @Predicate(uri = "dc:title", dataType = "rdf:XMLLiteral")
   public void setTitle(String title) {
     this.title = title;
