@@ -530,22 +530,10 @@
   <xsl:function name="my:format-name" as="xs:string">
     <xsl:param name="name" as="element(name)"/>
     <xsl:value-of select="
-      if ($name/given-names) then
-        if ($name/@name-style = 'eastern') then
-          if ($name/suffix) then
-            concat($name/surname, ' ', $name/given-names, ' ', $name/suffix)
-          else
-            concat($name/surname, ' ', $name/given-names)
-        else
-          if ($name/suffix) then
-            concat($name/given-names, ' ', $name/surname, ' ', $name/suffix)
-          else
-            concat($name/given-names, ' ', $name/surname)
+      if ($name/@name-style = 'eastern') then
+        string-join(($name/surname, $name/given-names, $name/suffix), ' ')
       else
-        if ($name/suffix) then
-           concat($name/surname, ' ', $name/suffix)
-        else
-           $name/surname
+        string-join(($name/given-names, $name/surname, $name/suffix), ' ')
       "/>
   </xsl:function>
 
