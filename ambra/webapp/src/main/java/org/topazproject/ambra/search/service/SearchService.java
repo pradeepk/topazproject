@@ -112,6 +112,8 @@ public class SearchService {
                   new String[] { "art.dublinCore.bibliographicCitation.volume" });
     FIELD_MAP.put("issue",
                   new String[] { "art.dublinCore.bibliographicCitation.issue" });
+    FIELD_MAP.put("issn",
+                  new String[] { "art.eIssn" });
     FIELD_MAP.put("elocationId",
                   new String[] { "art.dublinCore.bibliographicCitation.eLocationId" });
     FIELD_MAP.put("body",
@@ -139,6 +141,7 @@ public class SearchService {
     SRCHB_MAP.put("journalTitle",  true);
     SRCHB_MAP.put("volume",        true);
     SRCHB_MAP.put("issue",         true);
+    SRCHB_MAP.put("issn",          false);
     SRCHB_MAP.put("elocationId",   false);
     SRCHB_MAP.put("body",          true);
     SRCHB_MAP.put("citation",      true);
