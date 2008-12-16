@@ -149,7 +149,7 @@
         <imageMagick>
           <executablePath>/usr/bin/convert</executablePath>
           <identifyPath>/usr/bin/identify</identifyPath>
-          <tempDirectory>/tmp</tempDirectory>
+          <tempDirectory>${java.io.tmpdir}</tempDirectory>
           <imageSetConfigs>
             <imageSet name="#default">
               <small width="70" quality="80" />
