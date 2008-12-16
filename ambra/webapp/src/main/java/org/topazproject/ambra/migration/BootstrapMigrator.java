@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.topazproject.ambra.bootstrap.migration;
+package org.topazproject.ambra.migration;
 
 import java.net.URI;
 
@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -44,37 +42,13 @@ import org.topazproject.otm.query.Results;
 import org.topazproject.otm.stores.ItqlStore;
 
 /**
- * A listener class for doing migrations on startup.
+ * Does migrations on startup.
  *
  * @author Pradeep Krishnan
  */
-public class Migrator implements ServletContextListener {
-  private static Log    log = LogFactory.getLog(Migrator.class);
-  private static String RI  = Ambra.GRAPH_PREFIX + "ri";
-
-  /**
-   * Shutdown things.
-   *
-   * @param event the destryed event
-   */
-  public void contextDestroyed(ServletContextEvent event) {
-  }
-
-  /**
-   * Initialize things.
-   *
-   * @param event init event
-   *
-   * @throws Error to abort
-   */
-  public void contextInitialized(ServletContextEvent event) {
-    try {
-      migrate();
-    } catch (Exception e) {
-      log.error("Error in data-migration", e);
-      throw new Error("A data-migration operation failed. Aborting ...", e);
-    }
-  }
+public class BootstrapMigrator {
+  private static Log    log = LogFactory.getLog(BootstrapMigrator.class);
+  private static final String RI  = Ambra.GRAPH_PREFIX + "ri";
 
   /**
    * Apply all migrations.
@@ -137,6 +111,8 @@ public class Migrator implements ServletContextListener {
    *
    * @param session the Topaz session
    * @param graphs the list of graphs in mulgara
+   * @return the number of migrations performed
+   * @throws OtmException on an error
    */
   public int dropObsoleteGraphs(Session session, List<String> graphs) throws OtmException {
     String og = Ambra.GRAPH_PREFIX + "str";
@@ -153,6 +129,7 @@ public class Migrator implements ServletContextListener {
    * Add xsd:int to topaz:state.
    *
    * @param sess the otm session to use
+   * @param graphs the list of graphs in mulgara
    * @return the number of migrations performed
    * @throws OtmException on an error
    */

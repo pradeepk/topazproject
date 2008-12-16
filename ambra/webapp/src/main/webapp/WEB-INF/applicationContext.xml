@@ -178,6 +178,9 @@
   <bean id="journalService" class="org.topazproject.ambra.journal.JournalService" 
       depends-on="journalCreator" init-method="init"/>
   
+  <bean id="bootstrapMigrator" class="org.topazproject.ambra.migration.BootstrapMigrator"
+      init-method="migrate"/>
+  
   <!-- OTM setups -->
   <bean name="fedoraBlobStore" class="org.topazproject.fedora.otm.FedoraBlobStore" lazy-init="true">
     <constructor-arg index="0" value="${ambra.topaz.blobStore.fedora.uri}"/>
@@ -188,7 +191,7 @@
     <constructor-arg index="0" value="${ambra.topaz.blobStore.simple.directory}"/>
   </bean>
   <bean id="otmFactory" class="org.topazproject.ambra.configuration.OtmConfiguration"
-      destroy-method="close">
+      destroy-method="close" depends-on="bootstrapMigrator">
     <constructor-arg index="0" value="${ambra.topaz.tripleStore.mulgara.itql.uri}"/>
     <!-- must be one of fedoraBlobStore or simpleBlobStore -->
     <constructor-arg index="1" ref="${ambra.topaz.blobStore.beanName}"/>
