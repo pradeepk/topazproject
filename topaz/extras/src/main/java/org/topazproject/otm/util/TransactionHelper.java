@@ -56,28 +56,58 @@ public class TransactionHelper {
 
   /**
    * Run the given action in a transaction in a new session.
+   * @param <T> the type of return value for action
    *
    * @param sf     the otm session-factory to use
    * @param action the action to run
    * @return the value returned by the action
    */
   public static <T> T doInTx(SessionFactory sf, Action<T> action) {
-    Session session = sf.openSession();
-    try {
-      return doInTx(session, action);
-    } finally {
-      session.close();
-    }
+    return doInTx(sf, false, -1, action);
   }
 
   /**
    * Run the given action within a transaction.
+   * @param <T> the type of value returned by action
    *
    * @param s      the otm session to use
    * @param action the action to run
    * @return the value returned by the action
    */
   public static <T> T doInTx(Session s, Action<T> action) {
+    return doInTx(s, false, -1, action);
+  }
+
+  /**
+   * Run the given action in a transaction in a new session.
+   * @param <T> the type of return value for action
+   *
+   * @param sf     the otm session-factory to use
+   * @param readOnly indicates if the transaction is for readOnly use or not
+   * @param timeOut transaction timeout. -1 to use default.
+   * @param action the action to run
+   * @return the value returned by the action
+   */
+  public static <T> T doInTx(SessionFactory sf, boolean readOnly, int timeOut, Action<T> action) {
+    Session session = sf.openSession();
+    try {
+      return doInTx(session, readOnly, timeOut, action);
+    } finally {
+      session.close();
+    }
+  }
+
+  /**
+   * Run the given action in a transaction in a new session.
+   * @param <T> the type of return value for action
+   *
+   * @param s      the otm session to use
+   * @param readOnly indicates if the transaction is for readOnly use or not
+   * @param timeOut transaction timeout. -1 to use default.
+   * @param action the action to run
+   * @return the value returned by the action
+   */
+  public static <T> T doInTx(Session s, boolean readOnly, int timeOut, Action<T> action) {
     Transaction tx    = null;
     boolean     isNew = true;
 
@@ -85,7 +115,7 @@ public class TransactionHelper {
       tx = s.getTransaction();
 
       if (tx == null)
-        tx = s.beginTransaction();
+        tx = s.beginTransaction(readOnly, timeOut);
       else
         isNew = false;
 
@@ -108,10 +138,13 @@ public class TransactionHelper {
 
   /**
    * Run the given action in a transaction in a new session.
+   * @param <T> the type of return value
+   * @param <E> the type of exception thrown by the action
    *
    * @param sf     the otm session-factory to use
    * @param action the action to run
    * @return the value returned by the action
+   * @throws E exception thrown by {@link ActionE#run}
    */
   public static <T, E extends Throwable> T doInTxE(SessionFactory sf, ActionE<T, E> action)
       throws E {
@@ -125,10 +158,13 @@ public class TransactionHelper {
 
   /**
    * Run the given action within a transaction.
+   * @param <T> the type of return value by action
+   * @param <E> the type of exception thrown by action
    *
    * @param s      the otm session to use
    * @param action the action to run
    * @return the value returned by the action
+   * @throws E the exception thrown by action
    */
   public static <T, E extends Throwable> T doInTxE(Session s, ActionE<T, E> action) throws E {
     Transaction tx    = null;
@@ -161,6 +197,7 @@ public class TransactionHelper {
 
   /**
    * The interface actions must implement.
+   * @param <T> the type of return value from {@link #run}
    */
   public static interface Action<T> {
     /**
@@ -174,6 +211,8 @@ public class TransactionHelper {
 
   /**
    * The interface actions which throw an exception must implement.
+   * @param <T> the type of return value from action
+   * @param <E> the type of exception thrown by action
    */
   public static interface ActionE<T, E extends Throwable> {
     /**
@@ -181,6 +220,7 @@ public class TransactionHelper {
      *
      * @param tx the current transaction
      * @return anything you want
+     * @throws E exception thrown by action
      */
     T run(Transaction tx) throws E;
   }
