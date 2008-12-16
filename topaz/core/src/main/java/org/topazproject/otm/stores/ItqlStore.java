@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,7 +60,6 @@ import org.topazproject.otm.mapping.AbstractMapper;
 import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
-import org.topazproject.otm.mapping.PropertyBinder.Streamer;
 import org.topazproject.otm.mapping.java.AbstractFieldBinder;
 import org.topazproject.otm.metadata.Definition;
 import org.topazproject.otm.metadata.PropertyDefinition;
@@ -115,6 +113,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
    * </ul>
    *
    * @param server  the uri of the iTQL server.
+   * @throws OtmException OTM Exception
    */
   public ItqlStore(URI server) throws OtmException {
     this(server, new DefaultItqlClientFactory());
@@ -125,6 +124,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
    *
    * @param server  the uri of the iTQL server.
    * @param icf     the itql-client-factory to use
+   * @throws OtmException OTM Exception
    */
   public ItqlStore(URI server, ItqlClientFactory icf) throws OtmException {
     serverUri   = server;
@@ -180,7 +180,6 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     if (!deleting && (origBinder.getSerializer() != null))
       return origBinder;
 
-    final Streamer streamer = origBinder.getStreamer();
     // FIXME: this has too many assumptions...
     return new AbstractFieldBinder(null, null, null) {
       public List get(Object o) throws OtmException {
@@ -286,7 +285,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     throw new Error("Unexpected definition type: " + def.getClass() + ": " + def);
   }
 
-
+  @SuppressWarnings("unchecked")
   private void buildInsert(StringBuilder buf, List<? extends Mapper> pList, String id, Object o,
                            Session sess)
       throws OtmException {
@@ -439,7 +438,6 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
         else
           delete.setLength(len);
       }
-      continue;
     }
 
     doDelete(isc, delete.toString());
@@ -777,7 +775,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
       throw new OtmException("error performing rdf:List/rdf:Bag query", ae);
     }
 
-    List<String> res = new ArrayList();
+    List<String> res = new ArrayList<String>();
 
     try {
       // check if we got something useful
