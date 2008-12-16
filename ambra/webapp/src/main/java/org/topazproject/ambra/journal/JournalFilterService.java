@@ -148,6 +148,9 @@ class JournalFilterService {
         getAggregationFilters(j, getFilterPrefix(j.getKey()), s,
                               new HashSet<Aggregation>(), true);
 
+    if (log.isDebugEnabled())
+      log.debug("journal '" + j.getKey() + "' has filters: " + jfds);
+
     // clear old defs
     Set<String> defs = journalFilters.remove(j.getKey());
     if ((defs != null) && !defs.isEmpty()) {
