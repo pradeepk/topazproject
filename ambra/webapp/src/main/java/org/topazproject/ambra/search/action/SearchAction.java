@@ -26,10 +26,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,9 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.BrowseService;
-import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.search.SearchResultPage;
-import org.topazproject.ambra.search.service.Results;
 import org.topazproject.ambra.search.service.SearchHit;
 import org.topazproject.ambra.search.service.SearchService;
 
@@ -51,18 +47,16 @@ import org.topazproject.ambra.search.service.SearchService;
  */
 @SuppressWarnings("serial")
 public class SearchAction extends BaseActionSupport {
-  private static final Log           log  = LogFactory.getLog(SearchAction.class);
-  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
-  private static final DateFormat    luceneDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-  private static final int           DEF_PAGE_SIZE =
-                                                CONF.getInt("ambra.services.search.pageSize", 10);
+  private static final Log log  = LogFactory.getLog(SearchAction.class);
+  private static final DateFormat luceneDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+  private static final String SEARCH_PAGE_SIZE = "ambra.services.search.pageSize";
 
   private SearchService searchService;
   private BrowseService browseService;
 
   private String query;
   private int    startPage = 0;
-  private int    pageSize  = DEF_PAGE_SIZE;
+  private int    pageSize = 0;
 
   private Collection<SearchHit> searchResults;
   private int                   totalNoOfResults;
@@ -122,6 +116,9 @@ public class SearchAction extends BaseActionSupport {
     }
 
     try {
+      if (pageSize == 0)
+        pageSize = configuration.getInt(SEARCH_PAGE_SIZE, 10);
+
       SearchResultPage results = searchService.find(queryString, startPage, pageSize);
       totalNoOfResults = results.getTotalNoOfResults();
       searchResults    = results.getHits();
@@ -283,8 +280,8 @@ public class SearchAction extends BaseActionSupport {
     if ("some".equals(subjectCatOpt)) {
       if ((limitToCategory != null) && (limitToCategory.length > 0)) {
         StringBuilder buf = new StringBuilder("subject:( " );
-        for (int i=0; i < limitToCategory.length; i++) {
-          buf.append("\"").append(escape(limitToCategory[i])).append("\" ");
+        for (String aLimitToCategory : limitToCategory) {
+          buf.append("\"").append(escape(aLimitToCategory)).append("\" ");
         }
         buf.append(")");
         fields.add(buf.toString());
