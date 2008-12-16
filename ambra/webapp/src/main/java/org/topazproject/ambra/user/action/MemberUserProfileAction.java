@@ -24,8 +24,6 @@ import org.topazproject.ambra.user.AmbraUser;
 
 import static org.topazproject.ambra.Constants.AMBRA_USER_KEY;
 
-import java.util.Map;
-
 /**
  * User Profile Action that is called by the member user to update their profile
  * (distinct from the one that might be called by admin to edit a user profile)
@@ -42,8 +40,7 @@ public class MemberUserProfileAction extends UserProfileAction {
     final String statusCode = super.executeSaveUser();
 
     if (SUCCESS.equals(statusCode)) {
-      final Map<String, Object> sessionMap = getSessionMap();
-      sessionMap.put(AMBRA_USER_KEY, super.getSavedAmbraUser());
+      session.put(AMBRA_USER_KEY, super.getSavedAmbraUser());
     }
 
     return statusCode;
@@ -51,13 +48,11 @@ public class MemberUserProfileAction extends UserProfileAction {
 
   @Override
   protected AmbraUser getAmbraUserToUse() {
-    final Map<String, Object> sessionMap = getSessionMap();
-    return (AmbraUser) sessionMap.get(AMBRA_USER_KEY);
+    return getCurrentUser();
   }
 
   @Override
   protected String getUserIdToFetchEmailAddressFor() {
-    final Map<String, Object> sessionMap = getSessionMap();
-    return (String) sessionMap.get(Constants.SINGLE_SIGNON_USER_KEY);
+    return (String) session.get(Constants.SINGLE_SIGNON_USER_KEY);
   }
 }

@@ -80,7 +80,7 @@ public class RateAction extends AbstractRatingAction {
   @SuppressWarnings("unchecked")
   @Transactional(rollbackFor = { Throwable.class })
   public String rateArticle() {
-    final AmbraUser user = AmbraUser.getCurrentUser();
+    final AmbraUser user = getCurrentUser();
     final Date      now  = new Date(System.currentTimeMillis());
     final URI       annotatedArticle;
 
@@ -276,7 +276,7 @@ public class RateAction extends AbstractRatingAction {
   @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public String retrieveRatingsForUser() {
-    final AmbraUser user = AmbraUser.getCurrentUser();
+    final AmbraUser user = getCurrentUser();
 
     if (user == null) {
       log.info("User is null for retrieving user ratings");

@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
 
 /**
  * Provides a way to get a handle on the session objects when running in a web application
+ * TODO: remove this class and use SessionAware interface
  */
 public class UserContext {
   /**

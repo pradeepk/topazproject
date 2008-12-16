@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -32,7 +32,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * Create a flag for a given annotation or reply
  */
 @SuppressWarnings("serial")
-public class CreateFlagAction extends BaseActionSupport {
+public class CreateFlagAction extends BaseSessionAwareActionSupport {
   private String target;
   private String comment;
   private String mimeType = "text/plain";
@@ -46,7 +46,7 @@ public class CreateFlagAction extends BaseActionSupport {
   @Override
   public String execute() throws Exception {
     try {
-      annotationId = annotationService.createFlag(target, reasonCode, comment, mimeType);
+      annotationId = annotationService.createFlag(target, reasonCode, comment, mimeType, getCurrentUser());
     } catch (final Exception e) {
       log.error("Could not create flag for target: " + target, e);
       addActionError("Flag creation failed with error message: " + e.getMessage());

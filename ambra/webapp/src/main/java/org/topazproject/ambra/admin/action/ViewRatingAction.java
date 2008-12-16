@@ -20,12 +20,12 @@
 package org.topazproject.ambra.admin.action;
 
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.rating.service.RatingsService;
 
 @SuppressWarnings("serial")
-public class ViewRatingAction extends BaseActionSupport {
+public class ViewRatingAction extends BaseSessionAwareActionSupport {
   private String ratingId;
   private Rating rating;
   private RatingsService ratingsService;
@@ -33,7 +33,7 @@ public class ViewRatingAction extends BaseActionSupport {
   @Override
   @Transactional(readOnly = true)
   public String execute() throws Exception {
-    rating = getRatingsService().getRating(ratingId);
+    rating = getRatingsService().getRating(ratingId, getCurrentUser());
     return SUCCESS;
   }
 

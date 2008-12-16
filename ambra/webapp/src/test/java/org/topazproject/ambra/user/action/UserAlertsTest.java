@@ -26,10 +26,6 @@ import static org.topazproject.ambra.Constants.AMBRA_USER_KEY;
 import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.user.AmbraUser;
-import org.topazproject.ambra.user.action.MemberUserAlertsAction;
-import org.topazproject.ambra.user.action.MemberUserProfileAction;
-import org.topazproject.ambra.user.action.UserAlertsAction;
-import org.topazproject.ambra.user.action.UserProfileAction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,12 +72,8 @@ public class UserAlertsTest extends BaseAmbraTestCase {
 
   protected UserAlertsAction getMockUserAlertsAction(final String authId, final String topazId) {
     final UserAlertsAction userAlertsAction = super.getMemberUserAlertsAction();
-    final UserAlertsAction newUserAlertsAction = new MemberUserAlertsAction() {
-      private final Map<String, Object> mockSessionMap = createMockSessionMap(authId, topazId);
-      protected Map<String, Object> getSessionMap() {
-        return mockSessionMap;
-      }
-    };
+    final UserAlertsAction newUserAlertsAction = new MemberUserAlertsAction();
+    newUserAlertsAction.setSession(createMockSessionMap(authId, topazId));
 
     newUserAlertsAction.setUserService(userAlertsAction.getUserService());
 
@@ -103,12 +95,8 @@ public class UserAlertsTest extends BaseAmbraTestCase {
 
   protected UserProfileAction getMockCreateUserAction(final String authId) {
     final UserProfileAction createUserAction = super.getMemberUserProfileAction();
-    final UserProfileAction newCreateUserAction = new MemberUserProfileAction() {
-      private Map<String,Object> mockSessionMap = createMockSessionMap(authId, null);
-      protected Map<String, Object> getSessionMap() {
-        return mockSessionMap;
-      }
-    };
+    final UserProfileAction newCreateUserAction = new MemberUserProfileAction();
+    newCreateUserAction.setSession(createMockSessionMap(authId, null));
 
     newCreateUserAction.setUserService(createUserAction.getUserService());
 

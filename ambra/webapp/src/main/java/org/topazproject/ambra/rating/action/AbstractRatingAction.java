@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.model.article.ArticleType;
@@ -36,7 +36,7 @@ import org.topazproject.ambra.models.Article;
  * @author jkirton
  */
 @SuppressWarnings("serial")
-public abstract class AbstractRatingAction extends BaseActionSupport {
+public abstract class AbstractRatingAction extends BaseSessionAwareActionSupport {
 
   protected static final Log log = LogFactory.getLog(AbstractRatingAction.class);
 

@@ -1,4 +1,4 @@
-/* $HeadURL::                                                                            $
+/* $HeadURL$
  * $Id$
  *
  * Copyright (c) 2006-2008 by Topaz, Inc.
@@ -16,13 +16,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.topazproject.ambra.user.action;
 
+package org.topazproject.ambra.action;
+
+import org.apache.struts2.interceptor.SessionAware;
+import static org.topazproject.ambra.Constants.AMBRA_USER_KEY;
 import org.topazproject.ambra.user.AmbraUser;
 
+import java.util.Map;
+
 /**
- * User Alerts Action that is called by the member user to update their alerts preferences
- * (distinct from the one that might be called by admin to edit a user's preferences)
+ * Struts2 action support class that is session aware.
+ *
+ * @author Dragisa krsmanovic
  */
-public class MemberUserAlertsAction extends UserAlertsAction {
+
+public class BaseSessionAwareActionSupport extends BaseActionSupport implements SessionAware {
+
+  protected Map session;
+
+  public void setSession(Map map) {
+    session = map;
+  }
+
+  /**
+   * Get currently logged in user
+   *
+   * @return Logged in user object
+   */
+  protected AmbraUser getCurrentUser() {
+    return (AmbraUser) session.get(AMBRA_USER_KEY);
+  }
+
 }

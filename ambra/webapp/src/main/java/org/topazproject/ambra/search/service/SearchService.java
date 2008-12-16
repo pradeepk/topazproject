@@ -160,14 +160,14 @@ public class SearchService {
    * @param query     The lucene query string the user suplied
    * @param startPage The page number of the search results the user wants
    * @param pageSize  The number of results per page
+   * @param user
    * @return A SearchResultPage representing the search results page to be rendered
    * @throws ParseException if <var>query</var> is not valid
    * @throws OtmException OTM exception
    */
   @Transactional(readOnly = true)
-  public SearchResultPage find(final String query, final int startPage, final int pageSize)
+  public SearchResultPage find(final String query, final int startPage, final int pageSize, AmbraUser user)
       throws ParseException, OtmException {
-    AmbraUser user     = AmbraUser.getCurrentUser();
     String    cacheKey = getCurrentJournal() + "|" + (user == null ? "anon" : user.getUserId()) +
                          "|" + query;
 

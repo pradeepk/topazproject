@@ -125,15 +125,15 @@ public class RatingsService {
    *
    * @param ratingId Rating Id
    *
+   * @param user
    * @return Rating
    */
   @Transactional(readOnly = true)
-  public Rating getRating(final String ratingId) {
+  public Rating getRating(final String ratingId, AmbraUser user) {
     Rating rating = session.get(Rating.class, ratingId);
 
     // the PEP check is against what is rated,
     // e.g. can this user see the ratings for what is rated?
-    AmbraUser user = AmbraUser.getCurrentUser();
     pep.checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()),
                           rating.getAnnotates());
 
@@ -188,8 +188,7 @@ public class RatingsService {
 
   @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
-  public boolean hasRated(String articleURI) {
-    final AmbraUser user = AmbraUser.getCurrentUser();
+  public boolean hasRated(String articleURI, AmbraUser user) {
 
     if (user == null)
       return false;

@@ -67,13 +67,14 @@ public class ReplyService extends BaseAnnotationService {
    * @param mimeType mimeType of the reply body
    * @param body the reply body
    *
+   * @param user
    * @return a new reply
    *
    * @throws Exception on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String createReply(final String root, final String inReplyTo, final String title,
-                            final String mimeType, final String body)
+                            final String mimeType, final String body, AmbraUser user)
                      throws Exception {
     pep.checkAccess(RepliesPEP.CREATE_REPLY, URI.create(root));
 
@@ -81,20 +82,20 @@ public class ReplyService extends BaseAnnotationService {
       pep.checkAccess(RepliesPEP.CREATE_REPLY, URI.create(inReplyTo));
 
     final String contentType = getContentType(mimeType);
-    String       user        = AmbraUser.getCurrentUser().getUserId();
-    ReplyBlob    blob        = new ReplyBlob(contentType);
+    String userId = user.getUserId();
+    ReplyBlob blob = new ReplyBlob(contentType);
 
-    final Reply  r           = new ReplyThread();
+    final Reply r = new ReplyThread();
     r.setMediator(getApplicationId());
     r.setType(getDefaultType());
     r.setRoot(root);
     r.setInReplyTo(inReplyTo);
     r.setTitle(title);
-    r.setCreator(user);
+    r.setCreator(userId);
     r.setBody(blob);
     r.setCreated(new Date());
 
-    String  newId      = session.saveOrUpdate(r);
+    String  newId = session.saveOrUpdate(r);
     // now that the blob is created by OTM, write to it
     blob.getBody().writeAll(body.getBytes(getEncodingCharset()));
 

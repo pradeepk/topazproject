@@ -25,9 +25,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.util.ProfanityCheckingService;
+import org.topazproject.ambra.user.AmbraUser;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -35,7 +36,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * Action for creating a reply.
  */
 @SuppressWarnings("serial")
-public class CreateReplyAction extends BaseActionSupport {
+public class CreateReplyAction extends BaseSessionAwareActionSupport {
   private String replyId;
   private String root;
   private String inReplyTo;
@@ -56,7 +57,7 @@ public class CreateReplyAction extends BaseActionSupport {
       final List<String> profaneWordsInBody = profanityCheckingService.validate(comment);
 
       if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty()) {
-        replyId = replyService.createReply(root, inReplyTo, commentTitle, mimeType, comment);
+        replyId = replyService.createReply(root, inReplyTo, commentTitle, mimeType, comment, getCurrentUser());
       } else {
         addProfaneMessages(profaneWordsInBody, "comment", "comment");
         addProfaneMessages(profaneWordsInTitle, "commentTitle", "title");

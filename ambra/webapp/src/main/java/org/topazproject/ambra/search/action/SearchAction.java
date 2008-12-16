@@ -33,7 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.article.service.BrowseService;
 import org.topazproject.ambra.search.SearchResultPage;
 import org.topazproject.ambra.search.service.SearchHit;
@@ -46,7 +46,7 @@ import org.topazproject.ambra.search.service.SearchService;
  * @author Viru
  */
 @SuppressWarnings("serial")
-public class SearchAction extends BaseActionSupport {
+public class SearchAction extends BaseSessionAwareActionSupport {
   private static final Log log  = LogFactory.getLog(SearchAction.class);
   private static final DateFormat luceneDateFormat = new SimpleDateFormat("yyyy-MM-dd");
   private static final String SEARCH_PAGE_SIZE = "ambra.services.search.pageSize";
@@ -119,7 +119,7 @@ public class SearchAction extends BaseActionSupport {
       if (pageSize == 0)
         pageSize = configuration.getInt(SEARCH_PAGE_SIZE, 10);
 
-      SearchResultPage results = searchService.find(queryString, startPage, pageSize);
+      SearchResultPage results = searchService.find(queryString, startPage, pageSize, getCurrentUser());
       totalNoOfResults = results.getTotalNoOfResults();
       searchResults    = results.getHits();
 

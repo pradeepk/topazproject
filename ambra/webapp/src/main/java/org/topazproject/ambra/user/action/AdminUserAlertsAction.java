@@ -28,11 +28,6 @@ import org.topazproject.ambra.user.AmbraUser;
 public class AdminUserAlertsAction extends UserAlertsAction {
   private String topazId;
 
-  @Override
-  protected AmbraUser getAmbraUserToUse() throws ApplicationException {
-    return getUserService().getUserByTopazId(topazId);
-  }
-
   /**
    * Setter for topazId.
    * @param topazId Value to set for topazId.

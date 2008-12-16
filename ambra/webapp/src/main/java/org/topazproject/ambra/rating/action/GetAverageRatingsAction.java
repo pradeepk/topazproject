@@ -21,6 +21,7 @@ package org.topazproject.ambra.rating.action;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.rating.service.RatingsService;
+import org.topazproject.ambra.user.AmbraUser;
 
 /**
  * General Rating action class to store and retrieve summary ratings on an article.
@@ -44,7 +45,7 @@ public class GetAverageRatingsAction extends AbstractRatingAction {
   @Transactional(readOnly = true)
   public String execute() throws Exception {
     avg = ratingsService.getAverageRatings(articleURI);
-    hasRated = ratingsService.hasRated(articleURI);
+    hasRated = ratingsService.hasRated(articleURI, getCurrentUser());
     isResearchArticle = isResearchArticle(articleURI);
     return SUCCESS;
   }

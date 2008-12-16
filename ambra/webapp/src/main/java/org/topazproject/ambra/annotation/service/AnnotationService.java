@@ -93,14 +93,15 @@ public class AnnotationService extends BaseAnnotationService {
    * @param body body of this annotation
    * @param isPublic to set up public permissions
    *
+   * @param user
    * @return a the new annotation id
    *
    * @throws Exception on an error
    */
   private String createAnnotation(Class<? extends ArticleAnnotation> annotationClass,
-                   final String mimeType, final String target,
-                   final String context, final String olderAnnotation,
-                   final String title, final String body, boolean isPublic)
+                                  final String mimeType, final String target,
+                                  final String context, final String olderAnnotation,
+                                  final String title, final String body, boolean isPublic, AmbraUser user)
                      throws Exception {
 
     pep.checkAccess(AnnotationsPEP.CREATE_ANNOTATION, URI.create(target));
@@ -113,15 +114,15 @@ public class AnnotationService extends BaseAnnotationService {
     if (earlierAnnotation != null)
       throw new UnsupportedOperationException("supersedes is not supported");
 
-    String                  user       = AmbraUser.getCurrentUser().getUserId();
-    AnnotationBlob          blob       = new AnnotationBlob(contentType);
+    String userId = user.getUserId();
+    AnnotationBlob blob = new AnnotationBlob(contentType);
     final ArticleAnnotation annotation = annotationClass.newInstance();
 
     annotation.setMediator(getApplicationId());
     annotation.setAnnotates(URI.create(target));
     annotation.setContext(context);
     annotation.setTitle(title);
-    annotation.setCreator(user);
+    annotation.setCreator(userId);
     annotation.setBody(blob);
     annotation.setCreated(new Date());
 
@@ -131,7 +132,7 @@ public class AnnotationService extends BaseAnnotationService {
 
     if (log.isDebugEnabled())
       log.debug("created annotaion " + newId + " for " + target + " with body in blob "
-                + blob.getId());
+          + blob.getId());
 
     permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
 
@@ -591,6 +592,7 @@ public class AnnotationService extends BaseAnnotationService {
    * @param mimeType mimeType
    * @param body body
    * @param isPublic isPublic
+   * @param user
    * @throws Exception on an error
    * @return unique identifier for the newly created annotation
    */
@@ -598,7 +600,7 @@ public class AnnotationService extends BaseAnnotationService {
   public String createComment(final String target, final String context,
                               final String olderAnnotation, final String title,
                               final String mimeType, final String body,
-                              final boolean isPublic) throws Exception {
+                              final boolean isPublic, AmbraUser user) throws Exception {
 
     if (log.isDebugEnabled()) {
       log.debug("creating Comment for target: " + target + "; context: " + context +
@@ -607,10 +609,9 @@ public class AnnotationService extends BaseAnnotationService {
     }
 
     String annotationId = createAnnotation(Comment.class, mimeType, target, context,
-                                           olderAnnotation, title, body, true);
+                                           olderAnnotation, title, body, true, user);
 
     if (log.isDebugEnabled()) {
-      final AmbraUser user = AmbraUser.getCurrentUser();
       log.debug("Comment created with ID: " + annotationId + " for user: " + user +
                   " for IP: " + ServletActionContext.getRequest().getRemoteAddr());
     }
@@ -665,14 +666,15 @@ public class AnnotationService extends BaseAnnotationService {
    * @param reasonCode reasonCode
    * @param body body
    * @param mimeType mimeType
+   * @param user Logged in user
    * @return unique identifier for the newly created flag
    * @throws Exception on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String createFlag(final String target, final String reasonCode,
-      final String body, final String mimeType) throws Exception {
+                           final String body, final String mimeType, AmbraUser user) throws Exception {
     final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
-    return createComment(target, null, null, null, mimeType, flagBody, true);
+    return createComment(target, null, null, null, mimeType, flagBody, true, user);
   }
 
   private class Invalidator extends AbstractObjectListener {

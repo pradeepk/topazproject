@@ -31,7 +31,6 @@ import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.UserAccountsInterceptor;
 import org.topazproject.ambra.user.UserProfileGrant;
 import org.topazproject.ambra.user.service.DisplayNameAlreadyExistsException;
-import org.topazproject.ambra.user.service.UserAlert;
 import org.topazproject.ambra.util.FileUtils;
 import org.topazproject.ambra.util.ProfanityCheckingService;
 import org.topazproject.ambra.util.TextUtils;
@@ -182,7 +181,6 @@ public abstract class UserProfileAction extends UserActionSupport {
       topazId = getUserService().createUser(authId);
 
       // update the user-id in the session if we just created an account for ourselves
-      Map<String, Object> session = getSessionMap();
       if (authId != null && authId.equals(session.get(UserAccountsInterceptor.AUTH_KEY)))
         session.put(UserAccountsInterceptor.USER_KEY, topazId);
     }
@@ -902,7 +900,7 @@ public abstract class UserProfileAction extends UserActionSupport {
   protected abstract String getUserIdToFetchEmailAddressFor() throws ApplicationException;
 
   protected String fetchUserEmailAddress() throws ApplicationException {
-    String presetEmail = (String) getSessionMap().get(SINGLE_SIGNON_EMAIL_KEY);
+    String presetEmail = (String) session.get(SINGLE_SIGNON_EMAIL_KEY);
     if (presetEmail != null)
       return presetEmail;
 

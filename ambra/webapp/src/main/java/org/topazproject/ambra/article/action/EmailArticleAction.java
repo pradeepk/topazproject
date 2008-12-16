@@ -64,7 +64,7 @@ public class EmailArticleAction extends UserActionSupport {
    */
   @Transactional(readOnly = true)
   public String executeRender() throws Exception {
-    final AmbraUser ambraUser = AmbraUser.getCurrentUser();
+    final AmbraUser ambraUser = getCurrentUser();
     if (null != ambraUser) {
       senderName = ambraUser.getDisplayName();
       emailFrom = ambraUser.getEmail();

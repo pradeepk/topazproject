@@ -22,10 +22,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.struts2.ServletActionContext;
-
-import static org.topazproject.ambra.Constants.AMBRA_USER_KEY;
-
 import org.topazproject.ambra.models.UserAccount;
 import org.topazproject.ambra.models.UserPreferences;
 import org.topazproject.ambra.models.UserProfile;
@@ -59,23 +55,11 @@ public class AmbraUser {
 
 
   /**
-   * Returns the current user. Valid only in a request context.
-   */
-  // TODO: inject AmbraUser through Spring.
-  // This creates dependency on ServletRequest everywhere it is used
-  public static AmbraUser getCurrentUser() {
-    if (ServletActionContext.getRequest() == null)
-      return null;
-    if (ServletActionContext.getRequest().getSession() == null)
-      return null;
-    return (AmbraUser) ServletActionContext.getRequest().getSession()
-                                                              .getAttribute(AMBRA_USER_KEY);
-  }
-
-  /**
    * Initializes a new Ambra user
    *
    * @param ua the user-account
+   * @param appId Application ID
+   * @param pep XACML Policy Enforcement Point 
    */
   public AmbraUser(UserAccount ua, String appId, UsersPEP pep) {
     this.userId   = ua.getId().toString();
@@ -88,7 +72,7 @@ public class AmbraUser {
 
     UserPreferences p;
     try {
-      pep.checkAccess(pep.GET_PREFERENCES, ua.getId());
+      pep.checkAccess(UsersPEP.GET_PREFERENCES, ua.getId());
       p = ua.getPreferences(appId);
     } catch (SecurityException se) {
       if (log.isDebugEnabled())
@@ -127,47 +111,47 @@ public class AmbraUser {
   }
 
   private static void filterProfile(UserProfile prof, URI owner, UsersPEP pep) {
-    if (prof.getDisplayName() != null && !checkAccess(owner, pep.GET_DISP_NAME, pep))
+    if (prof.getDisplayName() != null && !checkAccess(owner, UsersPEP.GET_DISP_NAME, pep))
       prof.setDisplayName(null);
-    if (prof.getRealName() != null && !checkAccess(owner, pep.GET_REAL_NAME, pep))
+    if (prof.getRealName() != null && !checkAccess(owner, UsersPEP.GET_REAL_NAME, pep))
       prof.setRealName(null);
-    if (prof.getGivenNames() != null && !checkAccess(owner, pep.GET_GIVEN_NAMES, pep))
+    if (prof.getGivenNames() != null && !checkAccess(owner, UsersPEP.GET_GIVEN_NAMES, pep))
       prof.setGivenNames(null);
-    if (prof.getSurnames() != null && !checkAccess(owner, pep.GET_SURNAMES, pep))
+    if (prof.getSurnames() != null && !checkAccess(owner, UsersPEP.GET_SURNAMES, pep))
       prof.setSurnames(null);
-    if (prof.getTitle() != null && !checkAccess(owner, pep.GET_TITLE, pep))
+    if (prof.getTitle() != null && !checkAccess(owner, UsersPEP.GET_TITLE, pep))
       prof.setTitle(null);
-    if (prof.getGender() != null && !checkAccess(owner, pep.GET_GENDER, pep))
+    if (prof.getGender() != null && !checkAccess(owner, UsersPEP.GET_GENDER, pep))
       prof.setGender(null);
-    if (prof.getPositionType() != null && !checkAccess(owner, pep.GET_POSITION_TYPE, pep))
+    if (prof.getPositionType() != null && !checkAccess(owner, UsersPEP.GET_POSITION_TYPE, pep))
       prof.setPositionType(null);
-    if (prof.getOrganizationName() != null && !checkAccess(owner, pep.GET_ORGANIZATION_NAME, pep))
+    if (prof.getOrganizationName() != null && !checkAccess(owner, UsersPEP.GET_ORGANIZATION_NAME, pep))
       prof.setOrganizationName(null);
-    if (prof.getOrganizationType() != null && !checkAccess(owner, pep.GET_ORGANIZATION_TYPE, pep))
+    if (prof.getOrganizationType() != null && !checkAccess(owner, UsersPEP.GET_ORGANIZATION_TYPE, pep))
       prof.setOrganizationType(null);
-    if (prof.getPostalAddress() != null && !checkAccess(owner, pep.GET_POSTAL_ADDRESS, pep))
+    if (prof.getPostalAddress() != null && !checkAccess(owner, UsersPEP.GET_POSTAL_ADDRESS, pep))
       prof.setPostalAddress(null);
-    if (prof.getCity() != null && !checkAccess(owner, pep.GET_CITY, pep))
+    if (prof.getCity() != null && !checkAccess(owner, UsersPEP.GET_CITY, pep))
       prof.setCity(null);
-    if (prof.getCountry() != null && !checkAccess(owner, pep.GET_COUNTRY, pep))
+    if (prof.getCountry() != null && !checkAccess(owner, UsersPEP.GET_COUNTRY, pep))
       prof.setCountry(null);
-    if (prof.getEmail() != null && !checkAccess(owner, pep.GET_EMAIL, pep))
+    if (prof.getEmail() != null && !checkAccess(owner, UsersPEP.GET_EMAIL, pep))
       prof.setEmail(null);
-    if (prof.getHomePage() != null && !checkAccess(owner, pep.GET_HOME_PAGE, pep))
+    if (prof.getHomePage() != null && !checkAccess(owner, UsersPEP.GET_HOME_PAGE, pep))
       prof.setHomePage(null);
-    if (prof.getWeblog() != null && !checkAccess(owner, pep.GET_WEBLOG, pep))
+    if (prof.getWeblog() != null && !checkAccess(owner, UsersPEP.GET_WEBLOG, pep))
       prof.setWeblog(null);
-    if (prof.getBiography() != null && !checkAccess(owner, pep.GET_BIOGRAPHY, pep))
+    if (prof.getBiography() != null && !checkAccess(owner, UsersPEP.GET_BIOGRAPHY, pep))
       prof.setBiography(null);
-    if (prof.getInterests() != null && !checkAccess(owner, pep.GET_INTERESTS, pep))
+    if (prof.getInterests() != null && !checkAccess(owner, UsersPEP.GET_INTERESTS, pep))
       prof.setInterests(null);
-    if (prof.getPublications() != null && !checkAccess(owner, pep.GET_PUBLICATIONS, pep))
+    if (prof.getPublications() != null && !checkAccess(owner, UsersPEP.GET_PUBLICATIONS, pep))
       prof.setPublications(null);
-    if (prof.getBiographyText() != null && !checkAccess(owner, pep.GET_BIOGRAPHY_TEXT, pep))
+    if (prof.getBiographyText() != null && !checkAccess(owner, UsersPEP.GET_BIOGRAPHY_TEXT, pep))
       prof.setBiographyText(null);
-    if (prof.getInterestsText() != null && !checkAccess(owner, pep.GET_INTERESTS_TEXT, pep))
+    if (prof.getInterestsText() != null && !checkAccess(owner, UsersPEP.GET_INTERESTS_TEXT, pep))
       prof.setInterestsText(null);
-    if (prof.getResearchAreasText() != null && !checkAccess(owner, pep.GET_RESEARCH_AREAS_TEXT, pep))
+    if (prof.getResearchAreasText() != null && !checkAccess(owner, UsersPEP.GET_RESEARCH_AREAS_TEXT, pep))
       prof.setResearchAreasText(null);
   }
 

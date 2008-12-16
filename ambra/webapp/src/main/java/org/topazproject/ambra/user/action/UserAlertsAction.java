@@ -32,7 +32,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.service.UserAlert;
 
@@ -120,7 +119,7 @@ public abstract class UserAlertsAction extends UserActionSupport {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String saveAlerts() throws Exception {
-    final AmbraUser ambraUser = getAmbraUserToUse();
+    final AmbraUser ambraUser = getCurrentUser();
     if (ambraUser == null) {
       throw new ServletException("Unable to resolve ambra user");
     }
@@ -154,7 +153,7 @@ public abstract class UserAlertsAction extends UserActionSupport {
    */
   @Transactional(readOnly = true)
   public String retrieveAlerts() throws Exception {
-    final AmbraUser ambraUser = getAmbraUserToUse();
+    final AmbraUser ambraUser = getCurrentUser();
     if (ambraUser == null) {
       throw new ServletException("Unable to resolve ambra user");
     }
@@ -183,13 +182,6 @@ public abstract class UserAlertsAction extends UserActionSupport {
     setDisplayName(ambraUser.getDisplayName());
     return SUCCESS;
   }
-
-  /**
-   * Provides a way to get the AmbraUser to edit
-   * @return the AmbraUser to edit
-   * @throws org.topazproject.ambra.ApplicationException ApplicationException
-   */
-  protected abstract AmbraUser getAmbraUserToUse() throws ApplicationException;
 
   /**
    * @return categories that have monthly alerts

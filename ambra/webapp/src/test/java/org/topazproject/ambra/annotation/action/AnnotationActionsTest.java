@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.annotation.Context;
 import org.topazproject.ambra.annotation.ContextFormatter;
 import org.topazproject.ambra.annotation.action.CreateAnnotationAction;
@@ -725,12 +726,13 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     }
 
     final Collection<String> annotationIdList = new ArrayList<String>();
+    AmbraUser ambraUser = new AmbraUser("123");
     annotationIdList.add(
-      service.createComment(subject, context1, null, title, "text/plain", "body", false));
+      service.createComment(subject, context1, null, title, "text/plain", "body", false, ambraUser));
     annotationIdList.add(
-      service.createComment(subject, context2, null, title, "text/plain", "body", false));
+      service.createComment(subject, context2, null, title, "text/plain", "body", false, ambraUser));
     annotationIdList.add(
-      service.createComment(subject, context3, null, title, "text/plain", "body", false));
+      service.createComment(subject, context3, null, title, "text/plain", "body", false, ambraUser));
 
     String annotatedContent = getFetchArticleService().getAnnotatedContent(subject);
     for (final String annotationId : annotationIdList) {
@@ -762,9 +764,10 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
       service.deleteAnnotation(annotation.getId());
     }
 
-    service.createComment(subject, context1, null, title, "text/plain", "body", false);
-    service.createComment(subject, context2, null, title, "text/plain", "body", false);
-    service.createComment(subject, context3, null, title, "text/plain", "body", false);
+    AmbraUser ambraUser = new AmbraUser("123");
+    service.createComment(subject, context1, null, title, "text/plain", "body", false, ambraUser);
+    service.createComment(subject, context2, null, title, "text/plain", "body", false, ambraUser);
+    service.createComment(subject, context3, null, title, "text/plain", "body", false, ambraUser);
 
     String content = getFetchArticleService().getAnnotatedContent(subject);
     log.debug(content);

@@ -58,7 +58,7 @@ public class FeedbackAction extends UserActionSupport {
   }
 
   private void setUserDetailsFromSession() {
-    final AmbraUser ambraUser = AmbraUser.getCurrentUser();
+    final AmbraUser ambraUser = getCurrentUser();
     if (null != ambraUser) {
       name = ambraUser.getDisplayName();
       fromEmailAddress = ambraUser.getEmail();

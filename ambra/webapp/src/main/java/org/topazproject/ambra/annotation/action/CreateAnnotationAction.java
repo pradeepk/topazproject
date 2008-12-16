@@ -26,11 +26,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.topazproject.ambra.action.BaseActionSupport;
+import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.annotation.Context;
 import org.topazproject.ambra.annotation.ContextFormatter;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.util.ProfanityCheckingService;
+import org.topazproject.ambra.user.AmbraUser;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -38,7 +39,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * Action to create an annotation. It also does profanity validation on the user content.
  */
 @SuppressWarnings("serial")
-public class CreateAnnotationAction extends BaseActionSupport {
+public class CreateAnnotationAction extends BaseSessionAwareActionSupport {
   private String target;
   private String commentTitle;
   private String comment;
@@ -72,13 +73,13 @@ public class CreateAnnotationAction extends BaseActionSupport {
 
       if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty()) {
         final String scontext = ContextFormatter.asXPointer(new Context(startPath, startOffset, endPath, endOffset, target));
-        annotationId = annotationService.createComment(target, scontext, supercedes, commentTitle, mimeType, comment, isPublic);
+        annotationId = annotationService.createComment(target, scontext, supercedes, commentTitle, mimeType, comment, isPublic, getCurrentUser());
         if (log.isDebugEnabled()) {
           log.debug("CreateAnnotationAction called and annotation created with id: " + annotationId);
         }
         if ("correction".equals(noteType)) {
           annotationService.createFlag(annotationId, "Create Correction",
-              "Note created and flagged as a correction", mimeType);
+              "Note created and flagged as a correction", mimeType, getCurrentUser());
         }
       } else {
         addProfaneMessages(profaneWordsInBody, "comment", "comment");

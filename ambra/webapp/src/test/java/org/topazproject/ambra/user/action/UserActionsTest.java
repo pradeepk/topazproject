@@ -25,13 +25,6 @@ import static org.topazproject.ambra.Constants.AMBRA_USER_KEY;
 import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.user.AmbraUser;
-import org.topazproject.ambra.user.UserProfileGrant;
-import org.topazproject.ambra.user.action.AdminUserProfileAction;
-import org.topazproject.ambra.user.action.AssignAdminRoleAction;
-import org.topazproject.ambra.user.action.DisplayUserAction;
-import org.topazproject.ambra.user.action.MemberUserProfileAction;
-import org.topazproject.ambra.user.action.SearchUserAction;
-import org.topazproject.ambra.user.action.UserProfileAction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -106,11 +99,6 @@ public class UserActionsTest extends BaseAmbraTestCase {
     createUserAction.setPositionType(POSITION_TYPE);
     createUserAction.setOrganizationType(ORGANIZATION_TYPE);
     createUserAction.setPostalAddress(POSTAL_ADDRESS);
-
-    final String[] privateFields = new String[]{
-            UserProfileGrant.POSTAL_ADDRESS.getFieldName(),
-            UserProfileGrant.COUNTRY.getFieldName(),
-            UserProfileGrant.CITY.getFieldName()};
 
     createUserAction.setExtendedVisibility(UserProfileAction.PRIVATE);
 
@@ -227,11 +215,8 @@ public class UserActionsTest extends BaseAmbraTestCase {
 
   protected AssignAdminRoleAction createMockAssignAdminRoleAction(final String authId, final String topazId) {
     final AssignAdminRoleAction adminRoleActionToClone = super.getAssignAdminRoleAction();
-    final AssignAdminRoleAction newAdminRoleAction = new AssignAdminRoleAction() {
-      protected Map<String, Object> getSessionMap() {
-        return createMockSessionMap(authId, topazId);
-      }
-    };
+    final AssignAdminRoleAction newAdminRoleAction = new AssignAdminRoleAction();
+    newAdminRoleAction.setSession(createMockSessionMap(authId, topazId));
 
     newAdminRoleAction.setUserService(adminRoleActionToClone.getUserService());
 
@@ -240,11 +225,8 @@ public class UserActionsTest extends BaseAmbraTestCase {
 
   protected UserProfileAction getMockCreateUserAction(final String authId) {
     final UserProfileAction createUserAction = super.getMemberUserProfileAction();
-    final UserProfileAction newCreateUserAction = new MemberUserProfileAction() {
-      protected Map<String, Object> getSessionMap() {
-        return createMockSessionMap(authId, null);
-      }
-    };
+    final UserProfileAction newCreateUserAction = new MemberUserProfileAction();
+    newCreateUserAction.setSession(createMockSessionMap(authId, null));
 
     newCreateUserAction.setUserService(createUserAction.getUserService());
     newCreateUserAction.setProfanityCheckingService(createUserAction.getProfanityCheckingService());
