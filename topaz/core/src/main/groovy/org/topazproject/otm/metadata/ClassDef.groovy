@@ -22,9 +22,10 @@ package org.topazproject.otm.metadata;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.mapping.java.ClassBinder;
+import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.EmbeddedMapper;
 import org.topazproject.otm.mapping.RdfMapper;
+import org.topazproject.otm.mapping.java.ClassBinder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -227,12 +228,16 @@ public class ClassDef {
       mappers.addAll(m)
     def idmapper = fields.contains(idField) ? idField.toMapper(rdf, clazz, getIdGen())[0] : null
 
+    def blob = mappers.find{ it instanceof BlobMapper }
+
     clsDef = rdf.classDefsByName[extendsClass]
     while (clsDef) {
       mappers.addAll(clsDef.toClass().getRdfMappers())
       mappers.addAll(clsDef.toClass().getEmbeddedMappers())
       if (!idmapper)
         idmapper = clsDef.toClass().getIdField()
+      if (!blob)
+        blob = clsDef.toClass().getBlobField()
       clsDef = rdf.classDefsByName[clsDef.extendsClass]
     }
 
@@ -245,12 +250,11 @@ public class ClassDef {
          embeds.add(m)
     }
 
-    def blobBinder = null
     def binders = [(EntityMode.POJO) : new ClassBinder(clazz)]
     def ts = (type == null) ? [] as Set : [type] as Set;
     def sups = (extendsClass == null) ? [] as Set : [extendsClass] as Set;
     metadata = new ClassMetadata(binders, getShortName(clazz), ts, allTypes, graph,
-                                 idmapper, rdfs, blobBinder, sups, embeds)
+                                 idmapper, rdfs, blob, sups, embeds)
 
     if (log.debugEnabled)
       log.debug "created metadata for class '${clazz.name}': ${metadata}"

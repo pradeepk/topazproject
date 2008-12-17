@@ -29,15 +29,17 @@ import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
+import org.topazproject.otm.mapping.BlobMapperImpl;
+import org.topazproject.otm.mapping.EmbeddedMapperImpl;
+import org.topazproject.otm.mapping.IdMapperImpl;
+import org.topazproject.otm.mapping.RdfMapperImpl;
 import org.topazproject.otm.mapping.java.ArrayFieldBinder;
 import org.topazproject.otm.mapping.java.CollectionFieldBinder;
 import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
 import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.mapping.java.Property;
+import org.topazproject.otm.mapping.java.PropertyBinderFactory;
 import org.topazproject.otm.mapping.java.ScalarFieldBinder;
-import org.topazproject.otm.mapping.RdfMapperImpl;
-import org.topazproject.otm.mapping.IdMapperImpl;
-import org.topazproject.otm.mapping.EmbeddedMapperImpl;
 import org.topazproject.otm.serializer.Serializer;
 
 import org.apache.commons.logging.Log;
@@ -69,6 +71,8 @@ public class FieldDef {
   Class    javaType
   /** true if this is the id-field */
   boolean  isId        = false
+  /** true if this is the blob-field */
+  boolean  isBlob      = false
   /** max cardinality; use -1 for unbound */
   int      maxCard     = 1
   /** true if the predicate is an "inverse" predicate */
@@ -137,7 +141,7 @@ public class FieldDef {
    */
   protected init(RdfBuilder rdf, ClassDef clsDef) {
     // fix up predicate if needed
-    if (!pred && !isId && !embedded)
+    if (!pred && !isId && !embedded && !isBlob)
       pred = name;
     if (pred && !pred.toURI().isAbsolute()) {
       if (!clsDef.uriPrefix)
@@ -162,6 +166,10 @@ public class FieldDef {
     if (classType)
       type = classType.type
 
+    // set blob type
+    if (!javaType && isBlob)
+      javaType = byte[].class;
+
     // validity checks
     if (embedded && (maxCard < 0 || maxCard > 1))
       throw new OtmException("embedded fields must have max-cardinality 1; " +
@@ -171,6 +179,13 @@ public class FieldDef {
                              "field='${name}', type=${type}")
     if (embedded && pred)
       log.warn "predicate ignored for embedded field; class='${clsDef.className}', " +
+               "field='${name}', pred=${pred}"
+
+    if (isBlob && (maxCard < 0 || maxCard > 1))
+      throw new OtmException("blob fields must have max-cardinality 1; " +
+                             "class='${clsDef.className}', field='${name}', maxCard=${maxCard}")
+    if (isBlob && pred)
+      log.warn "predicate ignored for blob field; class='${clsDef.className}', " +
                "field='${name}', pred=${pred}"
   }
 
@@ -190,7 +205,13 @@ public class FieldDef {
 
     // generate the mapper(s)
     List m;
-    if (maxCard == 1 && embedded) {
+    if (isBlob) {
+      def blobDef = new BlobDefinition(dn, null, null)
+      rdf.sessFactory.addDefinition(blobDef)
+      def property = new Property(cls, name, get, set, f.getType())
+      FieldBinder l = new PropertyBinderFactory(dn, property).createBinder(rdf.sessFactory)
+      m = [new BlobMapperImpl(blobDef, [(EntityMode.POJO) : l])]
+    } else if (maxCard == 1 && embedded) {
       def cm = classType.toClass()
       def metaDef = new EmbeddedDefinition(dn, cm.getName())
       def property = new Property(cls, name, get, set, f.getType())
@@ -208,8 +229,10 @@ public class FieldDef {
       if (isId)
         m = [new IdMapperImpl(new IdDefinition(dn, idGen), [(EntityMode.POJO) : l])];
       else
-        m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, graph, mt, owned, idGen,
-ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [(EntityMode.POJO) : l])]
+        m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, graph, mt,
+                                                 owned, idGen, ct, ft, cm?.getName(),
+                                                 (ser == null) || inverse || propType == "OBJECT"),
+                               [(EntityMode.POJO) : l])]
     } else {
       String     collType = colType ? colType : rdf.defColType
       Class      compType = toJavaClass(getBaseJavaType(), rdf);
@@ -224,9 +247,10 @@ ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [
       else
         l = new CollectionFieldBinder(property, ser);
 
-      m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, graph, mt, owned,
-                             idGen, ct, ft, cm?.getName(),
-                  (ser == null) || inverse || "OBJECT".equals(propType)), [(EntityMode.POJO) : l])]
+      m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, graph, mt,
+                                               owned, idGen, ct, ft, cm?.getName(),
+                                               (ser == null) || inverse || propType == "OBJECT"),
+                             [(EntityMode.POJO) : l])]
     }
 
     // done
@@ -257,7 +281,7 @@ ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [
 
   protected String getBaseJavaType() {
     if (javaType)
-      return javaType.name;
+      return javaType.isArray() ? javaType.componentType.toString() + '[]' : javaType.name;
     else if (classType)
       return classType.className
     else

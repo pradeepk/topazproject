@@ -433,4 +433,25 @@ public class BuilderIntegrationTest extends AbstractTest {
     assertNotNull sel
     assertEquals(obj, sel.sel)
   }
+
+  void testBlobs() {
+    Class t1 = rdf.class("Test1") {
+      uri   (isId:true)
+      state (type:'xsd:int')
+      data  (isBlob:true)
+    }
+
+    def i1 = t1.newInstance(uri:'foo:1', state:1, data:"hello".getBytes())
+
+    doInTx { s -> s.saveOrUpdate(i1) }
+    doInTx { s -> assertEquals(i1, s.get(t1, "foo:1")) }
+
+    i1 = t1.newInstance(uri:'foo:1', state:2, data:"bye".getBytes())
+
+    doInTx { s -> s.saveOrUpdate(i1) }
+    doInTx { s -> assertEquals(i1, s.get(t1, "foo:1")) }
+
+    doInTx { s -> s.delete(i1) }
+    doInTx { s -> assertNull(s.get(t1, "foo:1")) }
+  }
 }
