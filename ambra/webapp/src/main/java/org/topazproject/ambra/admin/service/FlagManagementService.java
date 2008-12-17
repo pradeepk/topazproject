@@ -36,6 +36,7 @@ import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.Reply;
+import org.topazproject.ambra.models.Annotation;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.Results;
@@ -80,13 +81,18 @@ public class FlagManagementService {
       if (flags.size() == 0)
         continue;
 
+
       Annotea<?> a = (Annotea<?>) r.get(0);
       String title = (a instanceof Rating) ? ((Rating)a).getBody().getCommentTitle()
                                            : a.getTitle();
       String root  = (a instanceof Reply) ? ((Reply)a).getRoot() : null;
       String wt    = a.getWebType();
 
+      boolean isGeneralComment = (a instanceof Annotation) && ((Annotation)a).getContext() == null;
+
+
       for (Flag flag : flags) {
+
         FlaggedCommentRecord fcr =
           new FlaggedCommentRecord(
               flag.getId(),
@@ -98,7 +104,8 @@ public class FlagManagementService {
               flag.getCreator(),
               root,
               flag.getReasonCode(),
-              wt);
+              wt,
+              isGeneralComment);
         commentrecords.add(fcr);
       }
     }

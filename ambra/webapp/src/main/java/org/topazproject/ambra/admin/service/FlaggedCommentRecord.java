@@ -33,10 +33,11 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
   private String target;
   private String creatorid;
   private String targetType;
+  private boolean isGeneralComment;
 
   public FlaggedCommentRecord(String flagId, String target, String targetTitle, String flagComment,
       String created, String creator, String creatorid, String root,
-      String reasonCode, String targetType) {
+      String reasonCode, String targetType, boolean isGeneralComment) {
     this.target = target;
     this.targetTitle = targetTitle;
     this.root = root;
@@ -47,6 +48,7 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
     this.flagId = flagId;
     this.creatorid = creatorid;
     this.targetType = targetType;
+    this.isGeneralComment = isGeneralComment;
   }
 
   public String getTargetDisplayURL() {
@@ -95,12 +97,9 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
    * @return true if Flag for an Annotation, else false.
    */
   public boolean getIsAnnotation() {
-    if (Annotea.WEB_TYPE_COMMENT.equals(targetType) ||
+    return Annotea.WEB_TYPE_COMMENT.equals(targetType) ||
         Annotea.WEB_TYPE_NOTE.equals(targetType) ||
-        isCorrection()) {
-      return true;
-    }
-    return false;
+        isCorrection();
   }
 
   /**
@@ -110,12 +109,9 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
    */
   public boolean getIsRating() {
 
-    if (targetType.equals(Annotea.WEB_TYPE_RATING)) {
-      return true;
-    }
+    return targetType.equals(Annotea.WEB_TYPE_RATING);
 
-    return false;
-}
+  }
 
   /**
    * Is this a Flag for a Reply?
@@ -124,11 +120,8 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
    */
   public boolean getIsReply() {
 
-    if (targetType.equals(Annotea.WEB_TYPE_REPLY)) {
-      return true;
-    }
+    return targetType.equals(Annotea.WEB_TYPE_REPLY);
 
-    return false;
   }
 
   public String getRoot() {
@@ -168,6 +161,14 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
 
   public String getCreatorid() {
     return creatorid;
+  }
+
+  public boolean getIsGeneralComment() {
+    return isGeneralComment;
+  }
+
+  public void setIsGeneralComment(boolean generalComment) {
+    this.isGeneralComment = generalComment;
   }
 
   public int compareTo (FlaggedCommentRecord o) {

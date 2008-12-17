@@ -169,25 +169,25 @@
                   <@s.checkbox name="commentsToUnflag" label="Remove Flag" fieldValue="${flaggedComment.target}_${flaggedComment.flagId}_${flaggedComment.targetType}"/>
                   <br/>
                   <@s.checkbox name="commentsToDelete" label="${deleteLabel}" fieldValue="${flaggedComment.root}_${flaggedComment.target}_${flaggedComment.targetType}"/>
-                  <#if flaggedComment.isAnnotation >
+                  <#if flaggedComment.isAnnotation && !flaggedComment.isGeneralComment >
                     <br/>
-                      Convert to:
+                    Convert to:
+                    <br/>
+                    <#if !flaggedComment.isMinorCorrection() >
+                      <@s.checkbox name="convertToMinorCorrection" label="Minor Correction"
+                          fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                       <br/>
+                    </#if>
+                    <#if !flaggedComment.isFormalCorrection() >
+                      <@s.checkbox name="convertToFormalCorrection" label="Formal Correction"
+                          fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
                       <br/>
-                      <#if !flaggedComment.isMinorCorrection() >
-                        <@s.checkbox name="convertToMinorCorrection" label="Minor Correction"
-                            fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
-                          <br/>
-                        </#if>
-                        <#if !flaggedComment.isFormalCorrection() >
-                          <@s.checkbox name="convertToFormalCorrection" label="Formal Correction"
-                              fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
-                          <br/>
-                        </#if>
-                        <#if flaggedComment.isCorrection() >
-                          <@s.checkbox name="convertToNote" label="Note"
-                              fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
-                          <br/>
-                        </#if>
+                    </#if>
+                    <#if flaggedComment.isCorrection() >
+                      <@s.checkbox name="convertToNote" label="Note"
+                          fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                      <br/>
+                    </#if>
                   </#if>
                 </td>
               </tr>
