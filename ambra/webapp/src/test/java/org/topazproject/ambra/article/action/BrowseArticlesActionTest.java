@@ -24,10 +24,14 @@ import static org.easymock.classextension.EasyMock.*;
 import org.topazproject.ambra.article.service.BrowseService;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.model.article.ArticleInfo;
+import org.topazproject.ambra.model.article.Years;
 import org.testng.annotations.*;
 import static org.testng.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.net.URI;
 
 public class BrowseArticlesActionTest {
 
@@ -35,20 +39,62 @@ public class BrowseArticlesActionTest {
   public void testExecuteForName() throws Exception {
     BrowseService browseService = createStrictMock(BrowseService.class);
     BrowseArticlesAction action = new BrowseArticlesAction();
-    action.setCatName("name");
     action.setStartPage(5);
     action.setPageSize(7);
+    action.setCatName("category");
     action.setField("category");
     expect(browseService
         .getCategoryInfos())
         .andReturn(null);
+    ArrayList<ArticleInfo> articleInfos = new ArrayList<ArticleInfo>();
+    ArticleInfo articleInfo = new ArticleInfo();
+    articleInfo.setId(URI.create("http://plos.org"));
+    articleInfo.setDate(new Date());
+    articleInfos.add(articleInfo);
     expect(browseService
-        .getArticlesByCategory(eq("name"), eq(5), eq(7), aryEq(new int[1])))
-        .andReturn(new ArrayList<ArticleInfo>());
+        .getArticlesByCategory(eq("category"), eq(5), eq(7), aryEq(new int[]{0})))
+        .andReturn(articleInfos);
     replay(browseService);
     action.setBrowseService(browseService);
-    assertEquals( action.execute(), BaseActionSupport.SUCCESS);
+    assertEquals(action.execute(), BaseActionSupport.SUCCESS);
+    assertEquals(action.getArticleList(), articleInfos, "Articles not same");
     verify(browseService);
   }
 
+  @Test
+  public void testExecuteForDate() throws Exception {
+    BrowseService browseService = createStrictMock(BrowseService.class);
+    BrowseArticlesAction action = new BrowseArticlesAction();
+    action.setStartPage(5);
+    action.setPageSize(7);
+    action.setCatName("category");
+    action.setField("date");
+    ArrayList<ArticleInfo> articleInfos = new ArrayList<ArticleInfo>();
+    ArticleInfo articleInfo = new ArticleInfo();
+    articleInfo.setId(URI.create("http://plos.org"));
+    articleInfo.setDate(new Date());
+    articleInfos.add(articleInfo);
+
+    Calendar startDate = Calendar.getInstance();
+    startDate.set(Calendar.HOUR_OF_DAY, 0);
+    startDate.set(Calendar.MINUTE,      0);
+    startDate.set(Calendar.SECOND,      0);
+    startDate.set(Calendar.MILLISECOND, 0);
+    Calendar endDate = (Calendar) startDate.clone();
+    startDate.add(Calendar.DATE, -7);
+    endDate.add(Calendar.DATE, 1);
+
+    expect(browseService
+        .getArticlesByDate(eq(startDate), eq(endDate), eq(5), eq(7), aryEq(new int[]{0})))
+        .andReturn(articleInfos);
+    expect(browseService
+        .getArticleDates())
+        .andReturn(new Years());
+
+    replay(browseService);
+    action.setBrowseService(browseService);
+    assertEquals(action.execute(), BaseActionSupport.SUCCESS);
+    assertEquals(action.getArticleList(), articleInfos, "Articles not same");
+    verify(browseService);
+  }
 }
