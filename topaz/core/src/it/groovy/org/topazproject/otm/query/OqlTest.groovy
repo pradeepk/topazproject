@@ -2175,26 +2175,29 @@ public class ResultChecker extends BuilderSupport {
       case 'verify':
         res = value;
         if (attributes?.get('warnings'))
-          test.assertNotNull(res.warnings);
+          test.assertNotNull("Expected warnings but got none", res.warnings);
         else {
           if (res.warnings)
             test.log.error "Got warnings: " +res.warnings.join(System.getProperty("line.separator"))
-          test.assertNull(res.warnings);
+          test.assertNull("Got uexpected warnings", res.warnings);
         }
         break;
 
       case 'row':
-        test.assertTrue(res.next())
+        test.assertTrue("Not enough rows in result", res.next())
         col = 0;
         break;
 
       case 'object':
         def o = res.get(col++);
         for (a in attributes) {
-          if (a.key == 'class')
-            test.assertTrue(a.value.isAssignableFrom(o."${a.key}"))
-          else
+          if (a.key == 'class') {
+            def v = o."${a.key}"
+            test.assertTrue("${v} is not a subclass of ${a.value.name}",
+                            a.value.isAssignableFrom(v))
+          } else {
             test.assertEquals(a.value, a.key.split('\\.').inject(o, { x, f -> x."${f}" }))
+          }
         }
         break;
 
@@ -2215,17 +2218,17 @@ public class ResultChecker extends BuilderSupport {
               (attributes.dt instanceof URI) ? attributes.dt : attributes.dt.toURI(),
               lit.getDatatype());
         else
-          test.assertNull(lit.getDatatype());
+          test.assertNull("datatype on '${lit}' is not null", lit.getDatatype());
 
         if (attributes?.lang)
           test.assertEquals(attributes.lang, lit.getLanguage());
         else
-          test.assertNull(lit.getLanguage());
+          test.assertNull("language-tag on '${lit}' is not null", lit.getLanguage());
 
         break;
 
       case 'nul':
-        test.assertNull(res.get(col++));
+        test.assertNull("column ${col} is not null", res.get(col++));
         break;
 
       case 'subq':
@@ -2247,7 +2250,7 @@ public class ResultChecker extends BuilderSupport {
 
   protected void nodeCompleted(Object parent, Object node) {
     if (parent == null || node == 'subq') {
-      test.assertFalse(res.next())
+      test.assertFalse("Extra rows in result", res.next())
       res.close()
     }
 
@@ -2265,9 +2268,4 @@ private class NonEntity {
   void setBar1(URI bar1) {
     this.bar1 = bar1;
   }
-
-  URI getBar1() {
-    return bar1;
-  }
-
 }
