@@ -169,7 +169,12 @@ public class FilterTest extends AbstractTest {
 
   void testSuperSub() {
     // create data
-    Class clsN = rdf.class('Name') {
+    Class dummy = rdf.class('Dummy', type:null) {
+      fwd ()
+      rev (inverse:true)
+    }
+
+    Class clsN = rdf.class('Name', extendsClass:'Dummy') {
       givenName ()
       surname   ()
     }
@@ -186,6 +191,7 @@ public class FilterTest extends AbstractTest {
           name  (type:'Name',     inverse:inv, fetch:'eager', maxCard: col ? -1 : 1, colMapping:col)
           ename (type:'ExtName',  inverse:inv, fetch:'eager', maxCard: col ? -1 : 1, colMapping:col)
           xname (type:'Ext2Name', inverse:inv, fetch:'eager', maxCard: col ? -1 : 1, colMapping:col)
+          obj   (javaType:dummy,  inverse:inv, fetch:'eager', maxCard: col ? -1 : 1, colMapping:col)
         }
 
         FilterDefinition fd1 = new OqlFilterDefinition('noBobN', 'Name',
@@ -213,13 +219,18 @@ public class FilterTest extends AbstractTest {
         def n3 = clsXN.newInstance(id:"name:3".toURI(), givenName:'Bob', surname:'Cutter',
                                    middleName:'Fritz')
 
+        def dum1 = dummy.newInstance(id:"foo:dum1".toURI(), fwd:'a')
+        def dum2 = dummy.newInstance(id:"foo:dum2".toURI(), rev:'b:b')
+
         def o1 = cls.newInstance(id:"foo:1".toURI(), name:  col ? [n1] : n1)
         def o2 = cls.newInstance(id:"foo:2".toURI(), name:  col ? [n2] : n2)
         def o3 = cls.newInstance(id:"foo:3".toURI(), name:  col ? [n3] : n3)
         def o4 = cls.newInstance(id:"foo:4".toURI(), ename: col ? [n2] : n2)
         def o5 = cls.newInstance(id:"foo:5".toURI(), xname: col ? [n3] : n3)
+        def o6 = cls.newInstance(id:"foo:6".toURI(), obj:   col ? [dum1] : dum1)
+        def o7 = cls.newInstance(id:"foo:7".toURI(), obj:   col ? [dum2] : dum2)
 
-        def objs = [n1, n2, n3, o1, o2, o3, o4, o5]
+        def objs = [n1, n2, n3, o1, o2, o3, o4, o5, o6, o7]
         doInTx { s -> for (o in objs) s.saveOrUpdate(o) }
 
         // run tests
@@ -233,6 +244,8 @@ public class FilterTest extends AbstractTest {
           assertEquals(o3, s.get(cls, o3.id.toString()));
           assertEquals(o4, s.get(cls, o4.id.toString()));
           assertEquals(o5, s.get(cls, o5.id.toString()));
+          assertEquals(o6, s.get(cls, o6.id.toString()));
+          assertEquals(o7, s.get(cls, o7.id.toString()));
         }
 
         doInTx { s ->
@@ -247,6 +260,8 @@ public class FilterTest extends AbstractTest {
           assertEquals(col ? [] : null, s.get(cls, o3.id.toString()).name);
           assertEquals(col ? [] : null, s.get(cls, o4.id.toString()).ename);
           assertEquals(col ? [] : null, s.get(cls, o5.id.toString()).xname);
+          assertEquals(o6, s.get(cls, o6.id.toString()));
+          assertEquals(o7, s.get(cls, o7.id.toString()));
 
           /* TODO: enable when the filter-def is enabled
           for (o in [o1, o2, o3, o4, o5])
@@ -258,6 +273,8 @@ public class FilterTest extends AbstractTest {
           assertNull(s.get(cls, o3.id.toString()));
           assertNull(s.get(cls, o4.id.toString()));
           assertNull(s.get(cls, o5.id.toString()));
+          assertEquals(o6, s.get(cls, o6.id.toString()));
+          assertEquals(o7, s.get(cls, o7.id.toString()));
           */
         }
 
@@ -274,6 +291,8 @@ public class FilterTest extends AbstractTest {
           assertEquals(o3, s.get(cls, o3.id.toString()));
           assertEquals(col ? [] : null, s.get(cls, o4.id.toString()).ename);
           assertEquals(o5, s.get(cls, o5.id.toString()));
+          assertEquals(o6, s.get(cls, o6.id.toString()));
+          assertEquals(o7, s.get(cls, o7.id.toString()));
 
           /* TODO: enable when the filter-def is enabled
           for (o in [o1, o2, o3, o4, o5])
@@ -285,6 +304,8 @@ public class FilterTest extends AbstractTest {
           assertEquals(o3, s.get(cls, o3.id.toString()));
           assertNull(s.get(cls, o4.id.toString()));
           assertEquals(o5, s.get(cls, o5.id.toString()));
+          assertEquals(o6, s.get(cls, o6.id.toString()));
+          assertEquals(o7, s.get(cls, o7.id.toString()));
           */
         }
 

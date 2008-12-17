@@ -224,8 +224,12 @@ public class ItqlCriteria {
      */
     qry.append("((").append(typeMatch).append(" and ");
     buildFilter(f, qry, subject, pfx + "f");
-    qry.append(") or (").append(subject).append(" ").append(pfx).append("a1 ").append(pfx).
-        append("a2 in <").append(graph).append("> minus ").append(typeMatch).append("))");
+    qry.append(") or ((").
+        append(subject).append(" ").append(pfx).append("a1 ").append(pfx).append("a2 in <").
+        append(graph).append("> or ").
+        append(pfx).append("a1 ").append(pfx).append("a2 ").append(subject).append(" in <").
+        append(graph).
+        append(">) minus ").append(typeMatch).append("))");
   }
 
   /**

@@ -252,15 +252,21 @@ options {
        *   var-type-matches and filters or not var-type-matches
        */
       AST res = #([OR, "or"]);
-      res.addChild(#([AND, "and"], types, getFilterAST(f, var, pfx + "f")));
+      res.addChild(#([AND, "and"], astFactory.dupTree(types), getFilterAST(f, var, pfx + "f")));
       res.addChild(#([MINUS, "minus"],
-                     #([TRIPLE, "triple"], ASTUtil.makeVar(var, astFactory),
-                                           ASTUtil.makeVar(pfx + "a1", astFactory),
-                                           ASTUtil.makeVar(pfx + "a2", astFactory),
-                                           ASTUtil.makeID(graph, astFactory)),
+                     #([OR, "or"], makeVarTriple(var, pfx + "a1", pfx + "a2", graph),
+                                   makeVarTriple(pfx + "a1", var, pfx + "a2", graph),
+                                   makeVarTriple(pfx + "a1", pfx + "a2", var, graph)),
                      types));
 
       return res;
+    }
+
+    private AST makeVarTriple(String s, String p, String o, String g) {
+      return #([TRIPLE, "triple"], ASTUtil.makeVar(s, astFactory),
+                                   ASTUtil.makeVar(p, astFactory),
+                                   ASTUtil.makeVar(o, astFactory),
+                                   ASTUtil.makeID(g, astFactory));
     }
 
     private AST getFilterAST(ItqlFilter f, String var, String pfx) {

@@ -72,6 +72,12 @@ public class OqlTest extends AbstractTest {
     rdf.sessFactory.preload(PublicAnnotation.class);
     rdf.sessFactory.preload(Reply.class);
     rdf.sessFactory.validate()
+
+    rdf.sessFactory.setClassMetadata(
+        new ClassMetadata([(EntityMode.POJO):new ClassBinder(Object.class)], "Object",
+                          Collections.EMPTY_SET, Collections.EMPTY_SET, "ri", null,
+                          Collections.EMPTY_SET, null, Collections.EMPTY_SET,
+                          Collections.EMPTY_SET))
   }
 
   void testBasic() {
@@ -302,12 +308,6 @@ public class OqlTest extends AbstractTest {
       }
 
       // unconstrained variables
-      rdf.sessFactory.setClassMetadata(
-          new ClassMetadata([(EntityMode.POJO):new ClassBinder(Object.class)], "Object", 
-                            Collections.EMPTY_SET, Collections.EMPTY_SET, 
-                            "ri", null, Collections.EMPTY_SET, null, Collections.EMPTY_SET,
-                             Collections.EMPTY_SET));
-
       r = s.createQuery("select o from Object o order by o;").execute()
       checker.verify(r) {
         row { object (class:Article.class, uri:id4) }
@@ -1381,6 +1381,7 @@ public class OqlTest extends AbstractTest {
           middleName ()
         }
       }
+      obj (javaType:URI.class)
     }
 
     Class clsEN = rdf.class('ExtName', type:'ExtName', extendsClass:'Name2') {
@@ -1395,9 +1396,10 @@ public class OqlTest extends AbstractTest {
                              info:[name:[givenName:'Billy', surname:'Bob']])
     def o4 = cls.newInstance(id:"foo:4".toURI(), state:3,
                        info:[name:clsEN.newInstance(givenName:'Billy', surname:'Bob', suffix:'Jr')])
+    def o5 = cls.newInstance(id:"foo:5".toURI(), state:4, obj:"bar:5".toURI())
 
     doInTx { s ->
-      for (o in [o1, o2, o3, o4])
+      for (o in [o1, o2, o3, o4, o5])
         s.saveOrUpdate(o)
     }
 
@@ -1443,6 +1445,7 @@ public class OqlTest extends AbstractTest {
           row { object (class:cls, id:o2.id) }
           row { object (class:cls, id:o3.id) }
           row { object (class:cls, id:o4.id) }
+          row { object (class:cls, id:o5.id) }
         }
 
         // with filter(s)
@@ -1460,6 +1463,7 @@ public class OqlTest extends AbstractTest {
         checker.verify(r) {
           row { object (class:cls, id:o1.id) }
           row { object (class:cls, id:o2.id) }
+          row { object (class:cls, id:o5.id) }
         }
 
         s.enableFilter('state').setParameter('state', 2);
@@ -1468,6 +1472,7 @@ public class OqlTest extends AbstractTest {
           row { object (class:cls, id:o1.id) }
           row { object (class:cls, id:o3.id) }
           row { object (class:cls, id:o4.id) }
+          row { object (class:cls, id:o5.id) }
         }
 
         s.enableFilter('noBob');
@@ -1511,8 +1516,14 @@ public class OqlTest extends AbstractTest {
           row { object (class:cls, id:o3.id) }
         }
 
-        // other constraints
         s.disableFilter('noBob');
+        r = s.createQuery(
+            "select obj, x from Test1 obj where x := cast(obj.obj, Object) order by x;").execute()
+        checker.verify(r) {
+          row { object (class:cls, id:o5.id); object () }
+        }
+
+        // other constraints
         assertNotNull(s.enableFilter('noJack'))
         r = s.createQuery(
             "select obj from Test1 obj where obj.state = '3'^^<xsd:int> order by obj;").execute()
@@ -1544,7 +1555,7 @@ public class OqlTest extends AbstractTest {
       doInTx { s ->
         // no filters
         List r = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
-        assertEquals([o1, o2, o3, o4], r)
+        assertEquals([o1, o2, o3, o4, o5], r)
 
         // with filter(s)
         s.enableFilter('noBob');
@@ -1554,11 +1565,11 @@ public class OqlTest extends AbstractTest {
         s.disableFilter('noBob');
         s.enableFilter('state').setParameter('state', 3);
         r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
-        assertEquals([o1, o2], r)
+        assertEquals([o1, o2, o5], r)
 
         s.enableFilter('state').setParameter('state', 2);
         r = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
-        assertEquals([o1, o3, o4], r)
+        assertEquals([o1, o3, o4, o5], r)
 
         s.enableFilter('noBob');
         r = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
@@ -1636,9 +1647,10 @@ public class OqlTest extends AbstractTest {
         row { object (class:cls, id:o2.id) }
         row { object (class:cls, id:o3.id) }
         row { object (class:cls, id:o4.id) }
+        row { object (class:cls, id:o5.id) }
       }
       l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
-      assertEquals([o1, o2, o3, o4], l)
+      assertEquals([o1, o2, o3, o4, o5], l)
 
       s.enableFilter('notBobOrNotState').getFilters('state')[0].setParameter('state', 1);
       r = s.createQuery("select obj from Test1 obj order by obj;").execute()
@@ -1646,9 +1658,10 @@ public class OqlTest extends AbstractTest {
         row { object (class:cls, id:o2.id) }
         row { object (class:cls, id:o3.id) }
         row { object (class:cls, id:o4.id) }
+        row { object (class:cls, id:o5.id) }
       }
       l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
-      assertEquals([o2, o3, o4], l)
+      assertEquals([o2, o3, o4, o5], l)
     }
 
     FilterDefinition ofd5 =
@@ -1703,9 +1716,10 @@ public class OqlTest extends AbstractTest {
         row { object (class:cls, id:o2.id) }
         row { object (class:cls, id:o3.id) }
         row { object (class:cls, id:o4.id) }
+        row { object (class:cls, id:o5.id) }
       }
       l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
-      assertEquals([o2, o3, o4], l)
+      assertEquals([o2, o3, o4, o5], l)
 
       stF.setParameter('state', 2);
       r = s.createQuery("select obj from Test1 obj order by obj;").execute()
@@ -1713,9 +1727,10 @@ public class OqlTest extends AbstractTest {
         row { object (class:cls, id:o1.id) }
         row { object (class:cls, id:o3.id) }
         row { object (class:cls, id:o4.id) }
+        row { object (class:cls, id:o5.id) }
       }
       l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
-      assertEquals([o1, o3, o4], l)
+      assertEquals([o1, o3, o4, o5], l)
 
       stF.setParameter('state', 3);
       r = s.createQuery("select obj from Test1 obj order by obj;").execute()
@@ -1724,9 +1739,10 @@ public class OqlTest extends AbstractTest {
         row { object (class:cls, id:o2.id) }
         row { object (class:cls, id:o3.id) }
         row { object (class:cls, id:o4.id) }
+        row { object (class:cls, id:o5.id) }
       }
       l = s.createCriteria(cls).addOrder(Order.asc('state')).addOrder(Order.asc('id')).list()
-      assertEquals([o1, o2, o3, o4], l)
+      assertEquals([o1, o2, o3, o4, o5], l)
     }
   }
 
