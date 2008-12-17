@@ -274,6 +274,21 @@ options {
       return type.getMeta().getGraph();
     }
 
+    private AST findLastId(AST factor) {
+      switch (factor.getType()) {
+        case PARAM:
+          return factor.getFirstChild();
+
+        case REF:
+          for (factor = factor.getFirstChild(); factor.getNextSibling() != null;
+               factor = factor.getNextSibling())
+            ;
+
+        default:
+          return factor;
+      }
+    }
+
     private void addVar(AST var, AST clazz) throws RecognitionException {
       ExprType type = (clazz != null) ? getTypeForClass(clazz, "from clause") : null;
       addVar(var, type);
@@ -439,7 +454,8 @@ factor[boolean isProj, boolean isComp] returns [ExprType type = null]
     | #(PARAM ID)
     | type=fcall[isProj, isComp]
     | #(REF (   v:ID                 { updateAST(#v, null, type = getTypeForVar(#v), null, true); }
-              | type=c:cast[isProj]  { updateAST(#c, null, type, null, ((OqlAST) #c).isVar()); }
+              | type=c:cast[isProj]  { updateAST(findLastId(#c), null, type, null,
+                                                 ((OqlAST) #c).isVar()); }
             )
             (   ! ID         { type = resolveField(currentAST, type, #ID); }
               | ! URIREF     { type = handlePredicate(currentAST, type, #URIREF); }
