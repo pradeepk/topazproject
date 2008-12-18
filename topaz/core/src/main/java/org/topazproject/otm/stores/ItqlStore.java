@@ -40,6 +40,7 @@ import org.topazproject.mulgara.itql.ItqlClient;
 import org.topazproject.mulgara.itql.ItqlClientFactory;
 import org.topazproject.mulgara.itql.DefaultItqlClientFactory;
 import org.topazproject.otm.AbstractConnection;
+import org.topazproject.otm.Blob;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Connection;
@@ -184,9 +185,9 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     return new AbstractFieldBinder(null, null, null) {
       public List get(Object o) throws OtmException {
 
-        byte[] b = sess.getSessionFactory().getBlobStore()
-                                           .getBlob(cm, id, o, sess.getBlobStoreCon())
-                                           .readAll(deleting);
+        Blob blob = sess.getSessionFactory().getBlobStore()
+                                            .getBlob(cm, id, o, sess.getBlobStoreCon());
+        byte[] b = (!deleting && !blob.exists()) ? null : blob.readAll(deleting);
 
         if ((b == null) || (b.length == 0))
           return Collections.emptyList();
