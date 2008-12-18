@@ -411,6 +411,7 @@
         <configuration>
           <includes>
             <include>**/BrowseArticlesActionTest.java</include>
+            <include>**/BrowseServiceTest.java</include>
           </includes>
         </configuration>
       </plugin>
