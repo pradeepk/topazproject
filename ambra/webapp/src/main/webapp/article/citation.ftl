@@ -27,9 +27,11 @@
       ${author.suffix}</#if>,
   </span>
 </#list>
-<span class="citation_date">${citation.year?string('0000')}</span>
-<span class="citation_article_title"><@articleFormat>${citation.title}</@articleFormat>. </span>
-<span class="citation_journal_title">${citation.journal!} </span>
-<span class="citation_issue">${citation.volume}(${citation.issue}):</span>
+<span class="citation_date"><#if isCorrection>(${citation.year?string('0000')})<#else>${citation.year?string('0000')}</#if></span>
+<span class="citation_article_title"><#if isCorrection>Correction: </#if><@articleFormat>${citation.title}</@articleFormat>. </span>
+<span class="citation_journal_title">${citation.journal!}</span><#if isCorrection>:
+<#else>
+<span class="citation_issue"> ${citation.volume}(${citation.issue}):</span>
 <span class="citation_start_page">${citation.ELocationId!}.</span>
-<span class="citation_doi">doi:${citation.doi}</span>
+</#if>
+<span class="citation_doi"><#if isCorrection>http://dx.doi.org//<#else>doi:</#if><#if doi??>${doi}<#else>${citation.doi}</#if></span>

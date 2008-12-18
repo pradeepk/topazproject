@@ -93,7 +93,7 @@
 			<!-- begin : response body text -->
 			<blockquote>
 				${baseAnnotation.commentWithUrlLinking}
-				<#if citation??><div class="citation"><strong>Citation: </strong><#include "/article/citation.ftl"/></#if>
+				<#if citation??><div class="citation"><strong>Citation: </strong><#assign isCorrection=true/><#assign doi=baseAnnotation.id?replace("info:doi/","") /><#include "/article/citation.ftl"/></#if>
 			</blockquote>
 			<!-- end : response body text -->
 			<!-- begin : toolbar options -->

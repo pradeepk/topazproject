@@ -22,6 +22,7 @@
   <h1>Download Citation</h1>
   <h2>Article:</h2>
   <p class="intro">
+    <#assign isCorrection=false/>
     <#include "citation.ftl"/>
   </p>
   <h2>Download the article citation in the following formats:</h2>
