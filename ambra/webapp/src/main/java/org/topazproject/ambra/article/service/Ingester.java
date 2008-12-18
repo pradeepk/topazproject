@@ -603,7 +603,7 @@ public class Ingester {
    * with regards to subclasses, so we need to do most of the mappings management and lookup
    * ourselves.
    */
-  private static class CollectionMapper extends ImplicitCollectionMapper {
+  public static class CollectionMapper extends ImplicitCollectionMapper {
     private final Map<Class<?>, Set<ImplicitCollectionMapping>> mappings =
                                       new HashMap<Class<?>, Set<ImplicitCollectionMapping>>();
 

@@ -179,6 +179,16 @@
   <bean id="bootstrapMigrator" class="org.topazproject.ambra.migration.BootstrapMigrator"
       init-method="migrate"/>
   
+  <bean id="citationMigrator" class="org.topazproject.ambra.migration.CitationMigrator"
+      init-method="init">
+    <!-- background: set to true to allow web-traffic during migrations -->
+    <property name="background" value="true"/> 
+    <!-- txnTimeout: the txn timeout in seconds -->
+    <property name="txnTimeout" value="600"/> 
+    <!-- blobThrottle: number of articles to migrate per transaction -->
+    <property name="blobThrottle" value="20"/> 
+  </bean>
+  
   <!-- OTM setups -->
   <bean name="fedoraBlobStore" class="org.topazproject.fedora.otm.FedoraBlobStore" lazy-init="true">
     <constructor-arg index="0" value="${ambra.topaz.blobStore.fedora.uri}"/>
