@@ -27,6 +27,17 @@
       ${author.suffix}</#if>,
   </span>
 </#list>
+<#if (citation.authors?size < 4) >
+<#assign max_index = 4-citation.authors?size>
+<#list citation.collaborativeAuthors as collab>
+  <#if (collab_index > max_index) >
+    <span class="citation_author">et al. </span>
+    <#break>
+  </#if>
+  <span class="citation_author">${collab} </span>
+</#list>
+</#if>
+
 <span class="citation_date"><#if isCorrection>(${citation.year?string('0000')})<#else>${citation.year?string('0000')}</#if></span>
 <span class="citation_article_title"><#if isCorrection>Correction: </#if><@articleFormat>${citation.title}</@articleFormat>. </span>
 <span class="citation_journal_title">${citation.journal!}</span><#if isCorrection>:
