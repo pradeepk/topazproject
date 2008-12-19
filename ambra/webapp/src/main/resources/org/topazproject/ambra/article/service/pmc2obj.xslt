@@ -293,7 +293,7 @@
         <xsl:with-param name="authors"
             select="$meta/contrib-group/contrib[@contrib-type = 'author']/name"/>
         <xsl:with-param name="collab-authors"
-            select="$meta/contrib-group/contrib[@contrib-type = 'author']/collab[@collab-type='authors']"/>
+            select="$meta/contrib-group/contrib[@contrib-type = 'author']/collab"/>
         <xsl:with-param name="url"
             select="xs:anyURI(concat($doi-url-prefix, encode-for-uri($article-doi)))"/>
         <xsl:with-param name="doi"

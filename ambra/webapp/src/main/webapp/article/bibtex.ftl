@@ -31,7 +31,8 @@
 <#if citation.collaborativeAuthors?has_content>
   <#assign authorList = authorList + " AND ">
   <#list citation.collaborativeAuthors as collab>
-    <#assign authorList = authorList + collab + ", ">
+    <#assign authorList = authorList + collab>
+    <#if collab_has_next><#assign authorList = authorList + ", "></#if>
   </#list>
 </#if>
 
