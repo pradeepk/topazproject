@@ -409,10 +409,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <includes>
-            <include>**/BrowseArticlesActionTest.java</include>
-            <include>**/BrowseServiceTest.java</include>
-          </includes>
+          <suiteXmlFiles>
+            <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+          </suiteXmlFiles>
         </configuration>
       </plugin>
       <plugin>
