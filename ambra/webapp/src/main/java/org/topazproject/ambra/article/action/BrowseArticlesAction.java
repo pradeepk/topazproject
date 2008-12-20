@@ -315,7 +315,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
     return (catName != null) ? catName : super.getRssName();
   }
 
-  private String canonicalCategoryPath(String categoryName) {
+  private static String canonicalCategoryPath(String categoryName) {
     try {
       return URLEncoder.encode(categoryName, "UTF-8");
     } catch (UnsupportedEncodingException e) {
