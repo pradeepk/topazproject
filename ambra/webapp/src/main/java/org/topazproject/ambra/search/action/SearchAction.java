@@ -171,7 +171,7 @@ public class SearchAction extends BaseSessionAwareActionSupport {
         textSearchField = "description:";
       }
       else if ("refs".equals(textSearchOption)) {
-        textSearchField = "citation:";
+        textSearchField = "reference:";
       }
       else if ("title".equals(textSearchOption)) {
         textSearchField = "title:";

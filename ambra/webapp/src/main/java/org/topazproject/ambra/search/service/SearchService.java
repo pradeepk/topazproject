@@ -115,7 +115,7 @@ public class SearchService {
                   new String[] { "art.dublinCore.bibliographicCitation.eLocationId" });
     FIELD_MAP.put("body",
                   new String[] { "cast(art.representations, TextRepresentation).body" });
-    FIELD_MAP.put("citation",
+    FIELD_MAP.put("reference",
                   new String[] { "art.dublinCore.references.title", "art.dublinCore.references.authors.realName" });
     FIELD_MAP.put("editor",
                   new String[] { "art.dublinCore.bibliographicCitation.editors.realName" });
@@ -141,7 +141,7 @@ public class SearchService {
     SRCHB_MAP.put("issn",          false);
     SRCHB_MAP.put("elocationId",   false);
     SRCHB_MAP.put("body",          true);
-    SRCHB_MAP.put("citation",      true);
+    SRCHB_MAP.put("reference",     true);
     SRCHB_MAP.put("editor",        true);
 
     DT_MAP.put("date",          "^^<xsd:date>");
