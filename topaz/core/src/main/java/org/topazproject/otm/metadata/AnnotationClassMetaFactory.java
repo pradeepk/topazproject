@@ -599,6 +599,11 @@ public class AnnotationClassMetaFactory {
       if ((uri == null) && (ref == null))
         throw new OtmException("Missing attribute 'uri' in @Predicate for " + this);
 
+      String[] superProps = (rdf != null) ? rdf.superProps() : new String[0];
+      for (int idx = 0; idx < superProps.length; idx++) {
+        superProps[idx] = sf.expandAlias(superProps[idx]);
+      }
+
       Boolean inverse        =
         getBooleanProperty(((rdf != null) ? rdf.inverse() : null), ref, Boolean.FALSE);
       Boolean notOwned       =
@@ -655,8 +660,8 @@ public class AnnotationClassMetaFactory {
       if (ft == FetchType.undefined)
         ft = (ref == null) ? FetchType.lazy : null;
 
-      return new RdfDefinition(getName(), ref, supersedes.get(null), uri, dt, inverse, graph, mt,
-                               owned, generator, ct, ft, assoc, objectProperty);
+      return new RdfDefinition(getName(), ref, supersedes.get(null), uri, superProps, dt, inverse, graph,
+                               mt, owned, generator, ct, ft, assoc, objectProperty);
     }
 
     private Boolean getBooleanProperty(Predicate.BT raw, String ref, Boolean dflt) {

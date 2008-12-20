@@ -65,6 +65,10 @@ public class FieldDef {
    */
   String   type
   /**
+   * The list of URI specifying the super-property for this predicate
+   */
+  String[] superProps = [];
+  /**
    * the property type. If maxCard &gt; 1 this is the component type. If null this is defaulted
    * from the rdf type.
    */
@@ -229,8 +233,8 @@ public class FieldDef {
       if (isId)
         m = [new IdMapperImpl(new IdDefinition(dn, idGen), [(EntityMode.POJO) : l])];
       else
-        m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, graph, mt,
-                                                 owned, idGen, ct, ft, cm?.getName(),
+        m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, superProps, dtype, inverse, graph,
+                                                 mt, owned, idGen, ct, ft, cm?.getName(),
                                                  (ser == null) || inverse || propType == "OBJECT"),
                                [(EntityMode.POJO) : l])]
     } else {
@@ -247,7 +251,7 @@ public class FieldDef {
       else
         l = new CollectionFieldBinder(property, ser);
 
-      m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, graph, mt,
+      m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, superProps, dtype, inverse, graph, mt,
                                                owned, idGen, ct, ft, cm?.getName(),
                                                (ser == null) || inverse || propType == "OBJECT"),
                              [(EntityMode.POJO) : l])]
