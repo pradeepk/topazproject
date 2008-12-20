@@ -28,7 +28,7 @@
   </organization>
   <licenses>
     <license>
-      <name>Licensed under the Apache License, Version 2.0</name>
+      <name>The Apache Software License, Version 2.0</name>
       <url>http://www.apache.org/licenses/LICENSE-2.0</url>
       <comments>Copyright (c) 2006-2008 by Topaz, Inc.</comments>
       <distribution>repo</distribution>
