@@ -40,9 +40,7 @@ public class RdfDefinition extends PropertyDefinition {
    * To specify un-typed literal fields in configuration only.
    */
   public static final String UNTYPED = "__untyped__";
-
   private String              uri;
-  private String[]            superProps;
   private Boolean             inverse;
   private Boolean             objectProperty;
   private String              graph;
@@ -59,11 +57,9 @@ public class RdfDefinition extends PropertyDefinition {
    * Creates a new RdfDefinition object.
    *
    * @param name   The name of this definition.
-   * @param reference The definition to refer to resolve undefined attributes or null.
+   * @param reference The definition to refer to resolve undefined attribiutes or null.
    * @param supersedes The definition that this supersedes or null.
    * @param uri the rdf predicate. Null to resolve from reference
-   * @param superProps the list of URI of properties this property is sub-class of or null to resolve
-   *                   from reference
    * @param dataType of literals or null for un-typed or to resolve from reference
    * @param inverse if this field is persisted with an inverse predicate. Null to resolve from reference
    * @param graph  the graph where this field is persisted or null to resolve from reference
@@ -77,10 +73,9 @@ public class RdfDefinition extends PropertyDefinition {
    * @param objectProperty if this is an object property. Null to resolve from reference.
    */
   public RdfDefinition(String name, String reference, String supersedes, String uri,
-                       String [] superProps, String dataType, Boolean inverse, String graph,
-                       CollectionType colType, Boolean entityOwned, IdentifierGenerator generator,
-                       CascadeType[] cascade, FetchType fetchType, String associatedEntity,
-                       Boolean objectProperty) {
+                       String dataType, Boolean inverse, String graph, CollectionType colType,
+                       Boolean entityOwned, IdentifierGenerator generator, CascadeType[] cascade,
+                       FetchType fetchType, String associatedEntity, Boolean objectProperty) {
     super(name, reference, supersedes);
 
     // Normalize undefines
@@ -94,7 +89,6 @@ public class RdfDefinition extends PropertyDefinition {
       fetchType = (reference == null) ? FetchType.lazy : null;
 
     this.uri                = uri;
-    this.superProps         = (superProps == null) ? new String[0] : superProps;
     this.dataType           = dataType;
     this.inverse            = inverse;
     this.graph              = graph;
@@ -118,7 +112,6 @@ public class RdfDefinition extends PropertyDefinition {
   public RdfDefinition(String name, String graph) {
     super(name);
     this.uri                = null;
-    this.superProps         = new String[0];
     this.dataType           = null;
     this.inverse            = false;
     this.graph              = graph;
@@ -136,7 +129,8 @@ public class RdfDefinition extends PropertyDefinition {
    * inherited javadoc
    */
   @Override
-  protected void resolve(SessionFactory sf, Definition def) throws OtmException {
+  protected void resolve(SessionFactory sf, Definition def)
+                  throws OtmException {
     if (def != null) {
       if (!(def instanceof RdfDefinition))
         throw new OtmException("Reference '" + def.getName() + "' in '" + getName()
@@ -150,7 +144,6 @@ public class RdfDefinition extends PropertyDefinition {
       assert ref.getName().equals(getReference()); // this should be right. But just in case
 
       uri                = (uri == null) ? ref.uri : uri;
-      superProps         = (superProps.length == 0) ? ref.superProps : superProps;
       inverse            = (inverse == null) ? ref.inverse : inverse;
       graph              = (graph == null) ? ref.graph : graph;
       dataType           = (dataType == null) ? ref.dataType : dataType;
@@ -213,84 +206,77 @@ public class RdfDefinition extends PropertyDefinition {
   }
 
   /*
-   * @return URI for the predicate
+   * inherited javadoc
    */
   public String getUri() {
     return uri;
   }
 
-  /**
-   * @return List of URI for super-properties of this predicate
-   */
-  public String[] getSuperProps() {
-    return superProps;
-  }
-
   /*
-   * @return true if this is an object property
+   * inherited javadoc
    */
   public boolean typeIsUri() {
     return objectProperty;
   }
 
   /*
-   * @return data type of literals or null for un-typed
+   * inherited javadoc
    */
   public String getDataType() {
     return dataType;
   }
 
   /*
-   * @return true if this is an association
+   * inherited javadoc
    */
   public boolean isAssociation() {
     return associatedEntity != null;
   }
 
   /*
-   * @return true if this is a predicate map
+   * inherited javadoc
    */
   public boolean isPredicateMap() {
     return predicateMap;
   }
 
   /*
-   * @return true if this is an inverse relationship
+   * inherited javadoc
    */
   public boolean hasInverseUri() {
     return inverse;
   }
 
   /*
-   * @return the graph name for the predicate
+   * inherited javadoc
    */
   public String getGraph() {
     return graph;
   }
 
   /*
-   * @return the collection type for the predicate
+   * inherited javadoc
    */
   public CollectionType getColType() {
     return colType;
   }
 
   /*
-   * @return true if this owned by the entity
+   * inherited javadoc
    */
   public boolean isEntityOwned() {
     return entityOwned;
   }
 
   /*
-   * @return the cascase type for the predicate
+   * inherited javadoc
    */
   public Set<CascadeType> getCascade() {
     return cascade;
   }
 
   /*
-   * @return true if this is cascadable
+   * inherited javadoc
    */
   public boolean isCascadable(CascadeType op) {
     for (CascadeType ct : cascade)
@@ -301,33 +287,33 @@ public class RdfDefinition extends PropertyDefinition {
   }
 
   /*
-   * @return the fetch type for the association
+   * inherited javadoc
    */
   public FetchType getFetchType() {
     return fetchType;
   }
 
   /*
-   * @return the identity generator associated with this
+   * inherited javadoc
    */
   public IdentifierGenerator getGenerator() {
     return generator;
   }
 
   /*
-   * @return the associated entity
+   * inherited javadoc
    */
   public String getAssociatedEntity() {
     return associatedEntity;
   }
 
   /*
-   * @return user friendly string for the predicate
+   * inherited javadoc
    */
   public String toString() {
     return getClass().getName() + "[name=" + getName() + ", pred=" + uri + ", dataType="
            + dataType + ", colType=" + colType + ", inverse=" + inverse + ", fetchType=" + fetchType
-           + ", super properties=" + superProps + ", cascade=" + cascade
+           + ", cascade=" + cascade
            + ", generator=" + ((generator != null) ? generator.getClass() : "-null-")
            + ", association=" + associatedEntity + ", objectProperty=" + objectProperty
            + ", graph=" + graph + ",entityOwned=" + entityOwned + "]";

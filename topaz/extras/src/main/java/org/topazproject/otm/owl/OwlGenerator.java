@@ -293,11 +293,6 @@ public class OwlGenerator {
             OWLDescription rangeRestriction = factory.getOWLObjectAllRestriction(prop, domain);
             axiom = new AddAxiom(ontology, factory.getOWLSubClassAxiom(domain, rangeRestriction));
           }
-
-          for (String superProp : defn.getSuperProps()) {
-            OWLObjectProperty sProp = factory.getOWLObjectProperty(URI.create(superProp));
-            ontologyManager.addAxiom(ontology, factory.getOWLSubObjectPropertyAxiom(prop, sProp));
-          }
         }
         ontologyManager.applyChange(axiom);
       }

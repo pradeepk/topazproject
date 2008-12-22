@@ -54,12 +54,6 @@ public @interface Predicate {
   String uri() default "";
 
   /**
-   * The list of URI identifying the predicates this is essentially a sub-class of.  The equivalence
-   * here is to rdfs:subPropertyOf.
-   */
-  String[] superProps() default {};
-
-  /**
    * An enum to configure the property type of this predicate URI. This is similar to the
    * owl:DataProperty and owl:ObjectProperty.
    */
