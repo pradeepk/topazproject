@@ -40,6 +40,7 @@ public class RdfDefinition extends PropertyDefinition {
    * To specify un-typed literal fields in configuration only.
    */
   public static final String UNTYPED = "__untyped__";
+
   private String              uri;
   private Boolean             inverse;
   private Boolean             objectProperty;
@@ -197,86 +198,87 @@ public class RdfDefinition extends PropertyDefinition {
   public boolean refersSameRange(RdfDefinition o) {
     return same(dataType, o.dataType) && same(colType, o.colType)
             && same(objectProperty, o.objectProperty);
-     // TODO: Add equivalence comparison on associated entities rather than name compare
-     //       && same(associatedEntity, o.associatedEntity);
+    /* TODO: Add equivalence comparison on associated entities rather than name compare
+             && same(associatedEntity, o.associatedEntity);
+     */
   }
 
   private boolean same(Object o1, Object o2) {
     return (o1 == null) ? (o2 == null) : o1.equals(o2);
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return the URI associated with the predicate
    */
   public String getUri() {
     return uri;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return true if this is an object property
    */
   public boolean typeIsUri() {
     return objectProperty;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return data type for literals or null if un-typed
    */
   public String getDataType() {
     return dataType;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return true if this is an association
    */
   public boolean isAssociation() {
     return associatedEntity != null;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return true if this is a predicate map
    */
   public boolean isPredicateMap() {
     return predicateMap;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return true if this is an inverse predicate (range and domain swapped)
    */
   public boolean hasInverseUri() {
     return inverse;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return the graph where the range of the predicate are stored
    */
   public String getGraph() {
     return graph;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return the collection type (List, Sequence, etc.)
    */
   public CollectionType getColType() {
     return colType;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return true if the life cycle of this predicate is controlled by the containing class
    */
   public boolean isEntityOwned() {
     return entityOwned;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return the cascase control parameters for this predicate
    */
   public Set<CascadeType> getCascade() {
     return cascade;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return true if the predicate is cascadable
    */
   public boolean isCascadable(CascadeType op) {
     for (CascadeType ct : cascade)
@@ -286,22 +288,22 @@ public class RdfDefinition extends PropertyDefinition {
     return false;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return the fetch type for the associations
    */
   public FetchType getFetchType() {
     return fetchType;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return the identifier generator associated with the field
    */
   public IdentifierGenerator getGenerator() {
     return generator;
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * @return the association name for the entity
    */
   public String getAssociatedEntity() {
     return associatedEntity;
