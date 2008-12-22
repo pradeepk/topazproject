@@ -19,7 +19,6 @@
 
 package org.topazproject.ambra.article.service;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -161,7 +160,7 @@ public class BrowseService {
   public List<ArticleInfo> getArticlesByCategory(final String catName, int pageNum, int pageSize,
                                                  int[] numArt) {
     List<URI> uris = ((SortedMap<String, List<URI>>)
-                        getCatInfo(ARTBYCAT_LIST_KEY, "articles by category ", true)).get(catName);
+                        getCatInfo(ARTBYCAT_LIST_KEY, true)).get(catName);
 
     if (uris == null) {
       numArt[0] = 0;
@@ -221,7 +220,7 @@ public class BrowseService {
   @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public SortedMap<String, Integer> getCategoryInfos() {
-    return (SortedMap<String, Integer>) getCatInfo(CAT_INFO_KEY, "category infos", true);
+    return (SortedMap<String, Integer>) getCatInfo(CAT_INFO_KEY, true);
   }
 
   /**
@@ -249,7 +248,7 @@ public class BrowseService {
   /**
    * Get Issue information inside of a Transaction.
    *
-   * @param issue DOI of Issue.
+   * @param issueDOI DOI of Issue.
    * @return the Issue information.
    */
   private IssueInfo getIssueInfo2(final URI issueDOI) {
@@ -308,7 +307,7 @@ public class BrowseService {
    * Returns the list of ArticleInfos contained in this Issue. The list will contain only
    * ArticleInfos for Articles that the current user has permission to view.
    *
-   * @param issueDOI
+   * @param issueDOI Issue ID
    * @return List of ArticleInfo objects.
    */
   @Transactional(readOnly = true)
@@ -331,7 +330,7 @@ public class BrowseService {
   /**
    * Get a VolumeInfo for the given id. This only works if the volume is in the current journal.
    *
-   * @param id
+   * @param id Volume ID
    * @return VolumeInfo
    */
   @Transactional(readOnly = true)
@@ -414,11 +413,11 @@ public class BrowseService {
     return volumeInfos;
   }
 
-  private Object getCatInfo(String key, String desc, boolean load) {
-    return getCatInfo(key, desc, load, getCurrentJournalName());
+  private Object getCatInfo(String key, boolean load) {
+    return getCatInfo(key, load, getCurrentJournalName());
   }
 
-  private Object getCatInfo(String key, String desc, boolean load, final String jnlName) {
+  private Object getCatInfo(String key, boolean load, final String jnlName) {
     final String jnlkey = key + jnlName;
     return browseCache.get(jnlkey, -1, !load ? null :
         new Cache.SynchronizedLookup<Object, RuntimeException>((CAT_INFO_LOCK + jnlName).intern()) {
@@ -645,7 +644,7 @@ public class BrowseService {
   /**
    * Clear the issue with the given doi from the browseCache.
    *
-   * @param issueDoi
+   * @param issueDoi DOI of the issue
    */
   public void clearIssueInfoCache(URI issueDoi) {
     browseCache.remove(BrowseService.ISSUE_KEY + issueDoi);
