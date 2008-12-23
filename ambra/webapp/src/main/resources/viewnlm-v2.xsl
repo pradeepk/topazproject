@@ -5414,11 +5414,6 @@
   <strong><xsl:apply-templates/></strong>
 </xsl:template>
 
-<xsl:template match="text()">
-  <xsl:value-of select="translate(., '&#8194;&#x200A;&#8764;&#x02236;&#x02208;', '  ~:&#x404;') "/>
-</xsl:template>
-
-
 <!-- ============================================================= -->
 <!--  57. "CITATION-TAG-ENDS"                                      -->
 <!-- ============================================================= -->
