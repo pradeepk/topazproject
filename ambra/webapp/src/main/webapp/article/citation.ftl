@@ -45,4 +45,4 @@
 <span class="citation_issue"> ${citation.volume}(${citation.issue}):</span>
 <span class="citation_start_page">${citation.ELocationId!}.</span>
 </#if>
-<span class="citation_doi"><#if isCorrection>http://dx.doi.org//<#else>doi:</#if><#if doi??>${doi}<#else>${citation.doi}</#if></span>
+<span class="citation_doi"><#if isCorrection>http://dx.doi.org/<#else>doi:</#if><#if doi??>${doi}<#else>${citation.doi}</#if></span>
