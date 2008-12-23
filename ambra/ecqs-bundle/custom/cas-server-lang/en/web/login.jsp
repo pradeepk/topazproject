@@ -44,7 +44,24 @@
 </License>
 </rdf:RDF>
 -->
+<script type="text/javascript" src="../ambra-registration/javascript/prototype.js"></script>
+<script type="text/javascript" src="../ambra-registration/javascript/browserDetection.js"></script>
+<script type="text/javascript" src="../ambra-registration/javascript/config_default.js"></script>
+<script type="text/javascript" src="../ambra-registration/javascript/dojo/dojo.js"></script>
+<script type="text/javascript" src="../ambra-registration/javascript/topaz/topaz.js"></script>
+<script type="text/javascript">
+  dojo.registerModulePath("topaz", "../topaz");
+  dojo.require("topaz.topaz");
+  dojo.require("dojo.html.*");
+  dojo.require("dojo.io.*");
+  dojo.require("dojo.event.*");
+</script>
+<script type="text/javascript" src="../ambra-registration/javascript/topaz/formUtil.js"></script>
 
+<script type="text/javascript" src="../ambra-registration/javascript/topaz/domUtil.js"></script>
+<script type="text/javascript" src="../ambra-registration/javascript/init_global.js"></script>
+<script type="text/javascript" src="../ambra-registration/javascript/init_navigation.js"></script>
+    
 </head>
 <body>
 
@@ -92,7 +109,7 @@
         <% } else if (request.getAttribute("edu.yale.its.tp.cas.badLoginTicket") != null) { %>
           <li><em>Bad Login Ticket: Please check to make sure you are coming from a PLoS site.</em></li>
         <% } else { %>                        
-          <!-- <em>You have requested access to a site that requires authentication.</em> -->               
+          <!-- <em>You have requested accests to a site that requires authentication.</em> -->               
         <% } %>
         <li<%=(loginError?" class=form-error":"")%>>
           <label for="username">E-mail</label>
