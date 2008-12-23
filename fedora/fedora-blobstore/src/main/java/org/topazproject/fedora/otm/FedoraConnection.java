@@ -588,10 +588,10 @@ public class FedoraConnection extends AbstractConnection {
       protected InputStream doGetInputStream() throws OtmException {
         InputStream in =  getBlobStream(fstate, false);
         if (in == null)
-          throw new OtmException("Blob " + getId() + " does not exist. Write to it first to create.");
+          throw new OtmException(this +  " does not exist. Write to it first to create.");
 
         if (log.isTraceEnabled())
-          log.trace("Creating inputstream for " + getId());
+          log.trace("Creating inputstream for " + this);
 
         return in;
       }
@@ -605,7 +605,7 @@ public class FedoraConnection extends AbstractConnection {
             try {
               copy(in, out = getUploadStream(true));
             } catch (IOException e) {
-              throw new OtmException("Failed to backup original content for " + getId());
+              throw new OtmException("Failed to backup original content for " + this);
             }
           }
         } finally {
@@ -615,7 +615,7 @@ public class FedoraConnection extends AbstractConnection {
         create();
 
         if (log.isTraceEnabled())
-          log.trace("Creating outputstream for " + getId());
+          log.trace("Creating outputstream for " + this);
 
         return getUploadStream(false);
       }
@@ -626,7 +626,7 @@ public class FedoraConnection extends AbstractConnection {
         try {
           out = getUploader().getOutputStream(result.getListener(), -1);
         } catch (IOException e) {
-          throw new OtmException("Error while creating output stream for " + getId(), e);
+          throw new OtmException("Error while creating output stream for " + this, e);
         }
 
         return new FilterOutputStream(out) {
@@ -640,9 +640,9 @@ public class FedoraConnection extends AbstractConnection {
               fstate.setUploadedRef(ref);
             if (log.isDebugEnabled()) {
               if (!backup)
-                log.debug("Uploaded content for " + getId() + " into " + ref);
+                log.debug("Uploaded content for " + this + " into " + ref);
               else
-                log.debug("Backed up original content for " + getId() + " into " + ref);
+                log.debug("Backed up original content for " + this + " into " + ref);
             }
           }
 
@@ -656,7 +656,7 @@ public class FedoraConnection extends AbstractConnection {
       @Override
       public void closed(Closeable stream) {
         if (log.isTraceEnabled())
-          log.trace("Closing stream for " + getId());
+          log.trace("Closing stream for " + this);
         super.closed(stream);
       }
 
@@ -666,12 +666,12 @@ public class FedoraConnection extends AbstractConnection {
           case CREATED:
           case NONE:
             if (log.isTraceEnabled())
-              log.trace("Write detected on for " + getId());
+              log.trace("Write detected on " + this);
             fstate.setState(ChangeState.WRITTEN);
             break;
           case DELETED:
             // All streams should be closed on delete.
-            log.error("Writing to deleted Blob " + getId());
+            log.error("Writing to deleted Blob " + this);
         }
       }
 
@@ -681,7 +681,7 @@ public class FedoraConnection extends AbstractConnection {
           case NONE:
             boolean ret = !exists();
             if (log.isTraceEnabled())
-              log.trace("Create requested for " + getId());
+              log.trace("Create requested for " + this);
             fstate.setState(ChangeState.CREATED);
             fstate.setExists(Boolean.TRUE);
             return ret;
@@ -698,13 +698,13 @@ public class FedoraConnection extends AbstractConnection {
               try {
                 stream.close();
               } catch (IOException e) {
-                log.warn("Failed to close a stream for " + getId(), e);
+                log.warn("Failed to close a stream for " + this, e);
               }
             }
             streams.clear();
             boolean ret = exists();
             if (log.isTraceEnabled())
-              log.trace("Delete requested for " + getId());
+              log.trace("Delete requested for " + this);
             fstate.setState(ChangeState.DELETED);
             fstate.setExists(Boolean.FALSE);
             return ret;
@@ -717,7 +717,7 @@ public class FedoraConnection extends AbstractConnection {
           return fstate.getExists();
 
         if (log.isTraceEnabled())
-          log.trace("performing exists() check on " + getId());
+          log.trace("performing exists() check on " + this);
 
         InputStream in = getBlobStream(fstate, true);
         fstate.setExists(in != null);
@@ -743,7 +743,7 @@ public class FedoraConnection extends AbstractConnection {
         ChangeState prev = fstate.mark();
         if (log.isDebugEnabled())
           log.debug("Marking... previous-mark = " + prev
-              + ", state = " + fstate.getState() + ", id = " + getId());
+              + ", state = " + fstate.getState() + ", " + this);
         return prev;
       }
 
@@ -754,7 +754,7 @@ public class FedoraConnection extends AbstractConnection {
           return readAll();
 
         if (log.isTraceEnabled())
-          log.trace("Loading old data for search index removal for " + getId());
+          log.trace("Loading old data for search index removal for " + this);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         InputStream in = null;
@@ -768,6 +768,10 @@ public class FedoraConnection extends AbstractConnection {
           closeAll(in, out);
         }
         return out.toByteArray();
+      }
+
+      public String toString() {
+        return "BlobId = " + getId() + ", " + fstate;
       }
     };
   }
