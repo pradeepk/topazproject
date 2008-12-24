@@ -18,6 +18,7 @@
  */
 package org.topazproject.otm.owl;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
@@ -42,20 +44,26 @@ import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
 import org.semanticweb.owl.apibinding.OWLManager;
 
 import org.semanticweb.owl.io.RDFXMLOntologyFormat;
+import org.semanticweb.owl.io.StreamInputSource;
 
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owl.model.OWLDataPropertyExpression;
 import org.semanticweb.owl.model.OWLDataRange;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntityAnnotationAxiom;
 import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLObjectIntersectionOf;
 import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owl.model.OWLObjectPropertyExpression;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.model.OWLProperty;
+import org.semanticweb.owl.model.OWLPropertyRange;
+import org.semanticweb.owl.model.SetOntologyURI;
 
 import org.semanticweb.owl.util.CollectionFactory;
 
@@ -85,11 +93,8 @@ public class OwlGenerator {
   // Map of created OWL classes for class bindings: Key is the binding name
   HashMap<String, OWLClass> cbMap;
 
-  // Logical URI for generated ontology
-  String logicalURI;
-
   // The OTM side of things
-  SessionFactory otmFactory;
+  SessionFactory topazFactory;
 
   // OWLAPI factories etc.
   OWLOntologyManager ontologyManager;
@@ -144,7 +149,7 @@ public class OwlGenerator {
     OWLConstant cnst = null;
     OWLEntityAnnotationAxiom entityAxiom = null;
     if (entity.getGraph() != null) {
-      cnst = factory.getOWLTypedConstant(otmFactory.getGraph(entity.getGraph()).getUri().toString());
+      cnst = factory.getOWLTypedConstant(topazFactory.getGraph(entity.getGraph()).getUri().toString());
       entityAxiom = factory.getOWLEntityAnnotationAxiom(owlClass, URI.create(MULGARA_NS + "graph"), cnst);
       ontologyManager.applyChange(new AddAxiom(ontology, entityAxiom));
     }
@@ -161,14 +166,15 @@ public class OwlGenerator {
 
   /**
    * Create the generator class with the SessionFactory and graph
-   * configuration.
+   * configuration. Please note: one of logical or physical URI need to be supplied
    *
-   * @param logicalURI the logical URI for the generated ontology
-   * @param metaFactory where OTM class metadata exists
+   * @param logicalURI the logical URI for the generated ontology (can be null)
+   * @param inputStream the input stream to load addtional OWL assertions from (can be null)
+   * @param metaFactory where Topaz class metadata exists
    */
-  public OwlGenerator(String logicalURI, SessionFactory metaFactory) throws OtmException, OWLException {
-      this.logicalURI = logicalURI;
-      initialize(metaFactory);
+  public OwlGenerator(String logicalURI, InputStream inputStream, SessionFactory metaFactory)
+    throws OtmException, OWLException {
+    initialize(logicalURI, inputStream, metaFactory);
   }
 
   /**
@@ -191,21 +197,35 @@ public class OwlGenerator {
   }
 
   /**
-   * Initialize the OWL generator with the information needed.
+   * Initialize the OWL generator with the information needed. Please note: one of logical or
+   * physcial URI need to be supplied.
    *
+   * @param logicalURI  logical URI for the ontology (can be null)
+   * @param inputStream the input stream to load initial OWL statements from (can be null)
    * @param metaFactory where OTM class metadata exists
    */
-  public void initialize(SessionFactory metaFactory) throws OtmException,OWLException {
+  public void initialize(String logicalURI, InputStream inputStream, SessionFactory metaFactory)
+    throws OtmException, OWLException {
+    if ((logicalURI == null) && (inputStream == null))
+      throw new OtmException("One of logical URI or input stream need to be specified.");
+
     log.info("Initialising OwlGenerator...\n");
     classMap = new HashMap<String, OWLClass>();
     cbMap = new HashMap<String, OWLClass>();
 
     // Initialize input (OTM) side of things
-    otmFactory = metaFactory;
+    topazFactory = metaFactory;
 
     // Initialize output (OWLAPI) side of things
     ontologyManager = OWLManager.createOWLOntologyManager();
-    ontology = ontologyManager.createOntology(URI.create(logicalURI));
+    if (inputStream != null) {
+      ontology = ontologyManager.loadOntology(new StreamInputSource(inputStream));
+      if (logicalURI != null) {
+        ontologyManager.applyChange(new SetOntologyURI(ontology, URI.create(logicalURI)));
+      }
+    } else {
+      ontology = ontologyManager.createOntology(URI.create(logicalURI));
+    }
     factory = ontologyManager.getOWLDataFactory();
   }
 
@@ -225,7 +245,7 @@ public class OwlGenerator {
    * relationships.
    */
   public void generateClasses() throws OtmException, OWLException {
-    for (ClassBinding cb: otmFactory.listClassBindings()) {
+    for (ClassBinding cb: topazFactory.listClassBindings()) {
       log.debug("Parsing for class axioms: " + cb.getName());
 
       // Get the corresponding OWL class
@@ -235,7 +255,7 @@ public class OwlGenerator {
 
       EntityDefinition entity = (EntityDefinition)cb.getClassDefinition();
       for (String entityName : entity.getSuperEntities()) {
-        ClassBinding scb = otmFactory.getClassBinding(entityName);
+        ClassBinding scb = topazFactory.getClassBinding(entityName);
         log.debug("Creating super class axiom " + scb.getName() + " for " + cb.getName());
         OWLClass superClass = getOWLClassAxiom(scb);
         if (superClass == null)
@@ -247,6 +267,71 @@ public class OwlGenerator {
   }
 
   /**
+   * @param uri the uri
+   *
+   * @return either the OWLProperty or null associated with the  URI
+   */
+  private OWLProperty getProperty(String uri) throws OWLException, OtmException {
+    URI propURI = URI.create(uri);
+
+    if (ontology.isPunned(propURI))
+      throw new OtmException("Punned URIs not currently supported.");
+
+    if (ontology.containsObjectPropertyReference(propURI)) {
+      return factory.getOWLObjectProperty(propURI);
+    }
+
+    if (ontology.containsDataPropertyReference(propURI)) {
+      return factory.getOWLDataProperty(propURI);
+    }
+
+    return null;
+  }
+
+  /**
+   * @param prop the property
+   * @param defn the RDF definition
+   *
+   * @return the range for the predicate
+   */
+  private OWLPropertyRange getRange (OWLProperty prop, RdfDefinition defn) throws OWLException {
+    if (defn.getColType() != CollectionType.PREDICATE) {
+      OWLProperty member = factory.getOWLObjectProperty(URI.create(Rdf.rdf + "member"));
+      OWLDescription restrict;
+      if (topazFactory.getClassBinding(defn.getAssociatedEntity()) == null) {
+        URI memberURI = (defn.getDataType() == null) ? XSDVocabulary.ANY_TYPE.getURI() :
+                                                       URI.create(defn.getDataType());
+        restrict = factory.getOWLObjectAllRestriction((OWLObjectPropertyExpression)member,
+                                                       factory.getOWLClass(memberURI));
+      } else {
+        restrict = factory.getOWLObjectAllRestriction((OWLObjectPropertyExpression)member,
+            getOWLClassAxiom(topazFactory.getClassBinding(defn.getAssociatedEntity())));
+      }
+      Set<OWLDescription> allClasses = CollectionFactory.createSet();
+      allClasses.add(restrict);
+      return factory.getOWLObjectIntersectionOf(allClasses);
+    }
+
+    if (defn.isAssociation()) {
+      if (topazFactory.getClassBinding(defn.getAssociatedEntity()) == null)
+        return factory.getOWLClass(URI.create(CLASS_NS + defn.getAssociatedEntity()));
+      else
+        return getOWLClassAxiom(topazFactory.getClassBinding(defn.getAssociatedEntity()));
+    }
+    if (prop instanceof OWLObjectProperty) {
+      if (defn.getDataType() == null)
+        return factory.getOWLClass(XSDVocabulary.ANY_TYPE.getURI());
+      else
+        return factory.getOWLClass(URI.create(defn.getDataType()));
+    }
+
+    if (defn.getDataType() == null)
+      return factory.getOWLDataType(XSDVocabulary.ANY_TYPE.getURI());
+    else
+      return factory.getOWLDataType(URI.create(defn.getDataType()));
+  }
+
+  /**
    * Generate the list of properties associated with the class defintions. NOTE: this function can
    * be called in addition to generateClasses() to document the properties of the classes
    */
@@ -254,47 +339,56 @@ public class OwlGenerator {
     if (cbMap.isEmpty())
       generateClasses();
 
-    for (ClassBinding cb: otmFactory.listClassBindings()) {
-      log.debug("Parsing for property axioms: " + cb.getName());
+    for (ClassBinding cb: topazFactory.listClassBindings()) {
       for (String propName : cb.getProperties()) {
-        if (!(otmFactory.getDefinition(propName) instanceof RdfDefinition))
+        if (!(topazFactory.getDefinition(propName) instanceof RdfDefinition))
           continue;
 
-        AddAxiom axiom = null;
-        OWLClass domain = getOWLClassAxiom(cb);
-        RdfDefinition defn = (RdfDefinition)otmFactory.getDefinition(propName);
-        // Literals
-        if (!defn.isAssociation()) {
-          OWLDataRange typeRange = null;
-          OWLDataProperty prop = factory.getOWLDataProperty(URI.create(defn.getUri()));
-
-          if (defn.getDataType() == null) {
-            typeRange = factory.getOWLDataType(XSDVocabulary.ANY_TYPE.getURI());
-          } else {
-            typeRange = factory.getOWLDataType(URI.create(defn.getDataType()));
-          }
-
-          OWLDescription rangeRestriction = factory.getOWLDataAllRestriction(prop, typeRange);
-          axiom = new AddAxiom(ontology, factory.getOWLSubClassAxiom(domain, rangeRestriction));
-        } else { //Association
-          OWLObjectProperty prop = factory.getOWLObjectProperty(URI.create(defn.getUri()));
-          OWLClass range = null;
-
-          if (otmFactory.getClassBinding(defn.getAssociatedEntity()) == null) {
-            range = factory.getOWLClass(URI.create(CLASS_NS + defn.getAssociatedEntity()));
-          } else {
-            range = getOWLClassAxiom(otmFactory.getClassBinding(defn.getAssociatedEntity()));
-          }
-
-          if (!defn.hasInverseUri()) {
-            OWLDescription rangeRestriction = factory.getOWLObjectAllRestriction(prop, range);
-            axiom = new AddAxiom(ontology, factory.getOWLSubClassAxiom(domain, rangeRestriction));
-          } else {
-            OWLDescription rangeRestriction = factory.getOWLObjectAllRestriction(prop, domain);
-            axiom = new AddAxiom(ontology, factory.getOWLSubClassAxiom(domain, rangeRestriction));
+        RdfDefinition defn = (RdfDefinition)topazFactory.getDefinition(propName);
+        URI propURI = URI.create(defn.getUri());
+        if (!((!defn.isAssociation()) && (defn.getColType() == CollectionType.PREDICATE))) { // Assoc.
+          if (!ontology.containsDataPropertyReference(propURI)) {
+            OWLProperty objProp = factory.getOWLObjectProperty(URI.create(defn.getUri()));
+            ontologyManager.applyChange(new AddAxiom(ontology, factory.getOWLDeclarationAxiom(objProp)));
           }
         }
-        ontologyManager.applyChange(axiom);
+      }
+    }
+
+    for (ClassBinding cb: topazFactory.listClassBindings()) {
+      log.debug("Parsing for property axioms: " + cb.getName());
+      for (String propName : cb.getProperties()) {
+        if (!(topazFactory.getDefinition(propName) instanceof RdfDefinition))
+          continue;
+
+        OWLClass domain = getOWLClassAxiom(cb);
+        RdfDefinition defn = (RdfDefinition)topazFactory.getDefinition(propName);
+        OWLProperty prop = getProperty(defn.getUri());
+        if (prop == null) {
+          if ((!defn.isAssociation()) && (defn.getColType() == CollectionType.PREDICATE)) { // Literals
+            prop = factory.getOWLDataProperty(URI.create(defn.getUri()));
+          } else { // Association should have been created
+            throw new OtmException("Internal error: Association not expected here: " + defn.toString());
+          }
+        }
+
+        // Define the range restriction
+        OWLPropertyRange range = getRange(prop, defn);
+        OWLDescription rangeRestriction = null;
+        if (prop instanceof OWLDataProperty) {
+          rangeRestriction = factory.getOWLDataAllRestriction((OWLDataPropertyExpression)prop,
+                                                              (OWLDataRange)range);
+        } else {
+          if (!defn.hasInverseUri()) {
+            rangeRestriction = factory.getOWLObjectAllRestriction((OWLObjectPropertyExpression)prop,
+                                                                  (OWLDescription)range);
+          } else {
+            rangeRestriction = factory.getOWLObjectAllRestriction((OWLObjectPropertyExpression)prop,
+                                                                  (OWLDescription)domain);
+          }
+        }
+        ontologyManager.applyChange(new AddAxiom(ontology,
+                                                 factory.getOWLSubClassAxiom(domain, rangeRestriction)));
       }
     }
   }
