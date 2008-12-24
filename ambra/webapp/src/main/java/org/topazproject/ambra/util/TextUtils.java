@@ -44,7 +44,7 @@ public class TextUtils {
   /**
    * Takes in a String and returns it with all line separators replaced by <br/> tags suitable
    * for display as HTML.
-   * 
+   *
    * @param input
    * @return String with line separators replaced with <br/>
    */
@@ -58,37 +58,60 @@ public class TextUtils {
   /**
    * Linkify any possible web links excepting email addresses and enclosed with <p> tags
    * @param text text
+   * @param maxLength The max length (in displayed characters) of the text to be displayed inside the <a>tag</a>
    * @return hyperlinked text
    */
-  public static String hyperlinkEnclosedWithPTags(final String text) {
+  public static String hyperlinkEnclosedWithPTags(final String text, int maxLength) {
     final StringBuilder retStr = new StringBuilder("<p>");
-    retStr.append(hyperlink(text));
+    retStr.append(hyperlink(text, maxLength));
     retStr.append("</p>");
     return (retStr.toString());
   }
 
   /**
-   * Linkify any possible web links excepting email addresses
+   * Linkify any possible web links excepting email addresses and enclosed with <p> tags
    * @param text text
    * @return hyperlinked text
    */
-  public static String hyperlink(final String text) {
+  public static String hyperlinkEnclosedWithPTags(final String text) {
+    return hyperlinkEnclosedWithPTags(text,0);
+  }
+
+  /**
+   * Linkify any possible web links excepting email addresses
+   *
+   * @param text      text
+   * @param maxLength The max length (in displayed characters) of the text to be displayed inside the <a>tag</a>
+   * @return hyperlinked text
+   */
+  public static String hyperlink(final String text, int maxLength) {
     if (StringUtils.isBlank(text)) {
       return text;
     }
     // HACK: [issue - if the text ends with ')' this is included in the hyperlink]
     // so to avoid this we explicitly guard against it here
-    // NOTE: com.opensymphony.util.TextUtils.linkURL guards against an atomically wrapped url:  
+    // NOTE: com.opensymphony.util.TextUtils.linkURL guards against an atomically wrapped url:
     // "(http://www.domain.com)" but NOT "(see http://www.domain.com)"
-    if(text.indexOf('}') >= 0 || text.indexOf('{') >= 0) {
-      return com.opensymphony.util.TextUtils.linkURL(text);
+    if (text.indexOf('}') >= 0 || text.indexOf('{') >= 0) {
+      return TextUtilsExtended.linkURL(text, maxLength);
     }
     String s = text.replace('(', '{');
     s = s.replace(')', '}');
-    s = com.opensymphony.util.TextUtils.linkURL(s);
+    s = TextUtilsExtended.linkURL(s, maxLength);
     s = StringUtils.replace(s, "{", "(");
     s = StringUtils.replace(s, "}", ")");
     return s;
+    // END HACK
+  }
+
+  /**
+   * Linkify any possible web links excepting email addresses
+   *
+   * @param text text
+   * @return hyperlinked text
+   */
+  public static String hyperlink(final String text) {
+    return hyperlink(text, 0);
     // END HACK
   }
 
@@ -106,13 +129,13 @@ public class TextUtils {
    * @return Return escaped and hyperlinked text
    */
   public static String escapeAndHyperlink(final String bodyContent) {
-    return hyperlinkEnclosedWithPTags(escapeHtml(bodyContent));
+    return hyperlinkEnclosedWithPTags(escapeHtml(bodyContent),0);
   }
 
 
   /**
    * Transforms an org.w3c.dom.Document into a String
-   * 
+   *
    * @param node Document to transform
    * @return String representation of node
    * @throws TransformerException TransformerException
