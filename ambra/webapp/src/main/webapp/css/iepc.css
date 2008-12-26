@@ -65,13 +65,7 @@ IE PC fixes
 * html #content { position: relative; z-index: -1; }
 * html #first div.feature { float: right; } /* fixes overlapping content upon page shift */
 
-
 * html div.response div.close a	{ top: 20px;}
-
-/* fixes figure block height bug */
-/* Hides from IE-mac \*/
-* html div.figure { height: 1%;}
-/* End hide from IE-mac */
 
 * html ul#tabsContainer { margin-bottom: 14px; padding-top: 17px;}
 * html ul#tabsContainer li	{ padding-top: 0; padding-bottom: 0; }

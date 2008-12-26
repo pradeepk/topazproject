@@ -816,7 +816,7 @@
       </xsl:call-template>
       <xsl:apply-templates select="object-id[@pub-id-type='doi']"/></span>
     </xsl:if>
-
+    <div class="clearer" />
   </div>
 </xsl:if>
  <xsl:if test="not(graphic)">
