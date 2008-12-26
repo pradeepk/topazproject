@@ -3702,34 +3702,9 @@
   </xsl:if>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
-  
-<xsl:template match="ref-list[not(ancestor::back)]/title">
-  <a>
-    <xsl:attribute name="id"><xsl:value-of select="replace(lower-case(.),' ','')"/></xsl:attribute>
-    <xsl:attribute name="name"><xsl:value-of select="replace(lower-case(.),' ','')"/></xsl:attribute>
-  </a>
-  <h3>
-    <xsl:call-template name="makeXpathLocation"/>
-    <xsl:apply-templates/>
-  </h3>
-</xsl:template>
 
-<xsl:template match="back/ref-list/title">
-  <a>
-    <xsl:attribute name="id"><xsl:value-of select="replace(lower-case(.),' ','')"/></xsl:attribute>
-    <xsl:attribute name="name"><xsl:value-of select="replace(lower-case(.),' ','')"/></xsl:attribute>
-    <xsl:attribute name="toc"><xsl:value-of select="replace(lower-case(.),' ','')"/></xsl:attribute>
-    <xsl:attribute name="title">
-      <xsl:choose>
-        <xsl:when test="string-length(.) &gt; 0">
-	        <xsl:value-of select="."/>
-	      </xsl:when>
-        <xsl:otherwise>
-		      References
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:attribute>
-  </a>
+<xsl:template match="ref-list/title">
+  <a id="refs" name="refs" toc="refs" title="References"></a>
   <h3>
     <xsl:call-template name="makeXpathLocation"/>
     <xsl:apply-templates/>
