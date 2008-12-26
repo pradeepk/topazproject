@@ -801,11 +801,11 @@
             <xsl:apply-templates select="label"/></span>
       </xsl:element>
       <xsl:if test="caption/title">
+      <xsl:text> </xsl:text>
       <span>
         <xsl:call-template name="makeXpathLocationParam" >
           <xsl:with-param name="node" select="caption/title"/>
         </xsl:call-template>
-        <xsl:text> </xsl:text>
         <xsl:apply-templates select="caption/title"/>
       </span>
       </xsl:if>
