@@ -73,7 +73,7 @@ public abstract class BaseAnnotation<T extends Annotea<? extends Blob>> {
       comment = comment.substring(0, index) + abrsfx;
       assert comment.length() <= TRUNCATED_COMMENT_LENGTH;
     }
-    return TextUtils.hyperlinkEnclosedWithPTags(comment);
+    return TextUtils.hyperlinkEnclosedWithPTags(comment, 25);
   }
 
   /**
