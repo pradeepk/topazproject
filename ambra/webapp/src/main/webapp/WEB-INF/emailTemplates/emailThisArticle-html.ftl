@@ -28,6 +28,9 @@ Read the open-access, full-text article here:<br/>
 ===================================================
 <br/>
 ${title} <br/>
+<br/>
+Abstract:<br/>
+<br/>
 ${description!""} 
 
 

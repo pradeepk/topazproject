@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.EmailValidator;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.email.impl.FreemarkerTemplateMailer;
@@ -31,7 +32,7 @@ import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.service.AmbraMailer;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.action.UserActionSupport;
-
+import org.topazproject.ambra.util.ArticleXMLUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +54,7 @@ public class EmailArticleAction extends UserActionSupport {
   private String description;
   private String journalName;
   private AmbraMailer ambraMailer;
+  private ArticleXMLUtils articleXmlUtils;
   private ArticleOtmService articleOtmService;
   private static final Log log = LogFactory.getLog(EmailArticleAction.class);
   private static final int MAX_TO_EMAIL = 5;
@@ -90,16 +92,16 @@ public class EmailArticleAction extends UserActionSupport {
     mapFields.put("title", title);
     mapFields.put("description", description);
     mapFields.put("journalName", journalName);
-    mapFields.put("subject", "An Article from " + journalName);
+    mapFields.put("subject", "An Article from " + journalName + ": " + title);
     ambraMailer.sendEmailThisArticleEmail(emailTo, emailFrom, mapFields);
 
     return SUCCESS;
   }
 
-  private void setArticleTitleAndDesc(final String articleURI) throws NoSuchArticleIdException {
+  private void setArticleTitleAndDesc(final String articleURI) throws NoSuchArticleIdException, ApplicationException {
     final ObjectInfo articleInfo = articleOtmService.getArticle(URI.create(articleURI));
     title = articleInfo.getDublinCore().getTitle();
-    description = articleInfo.getDublinCore().getDescription();
+    description = articleXmlUtils.transformArticleDescriptionToHtml(articleInfo.getDublinCore().getDescription());
   }
 
   private boolean validates() {
@@ -262,6 +264,14 @@ public class EmailArticleAction extends UserActionSupport {
     this.articleOtmService = articleOtmService;
   }
 
+  /**
+   * @param articleXmlUtils The articleXmlUtils to set.
+   */
+  @Required
+  public void setArticleXmlUtils(ArticleXMLUtils articleXmlUtils) {
+    this.articleXmlUtils = articleXmlUtils;
+  }
+  
   /**
    * Getter for description.
    * @return Value of description.

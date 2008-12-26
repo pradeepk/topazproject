@@ -29,4 +29,6 @@ ${url}${articleURI?replace("info:doi/","")}
 
 ${title}
 
+Abstract:
+
 ${description!""}
