@@ -194,10 +194,19 @@
       </a>
     </xsl:when>
     <xsl:otherwise>
-      <span class="capture-id">
-        <xsl:call-template name="make-id"/>
-        <xsl:apply-templates/>
-      </span>
+      <xsl:if test="@content-type">
+        <span>
+          <xsl:attribute name="class"><xsl:value-of select="@content-type" /></xsl:attribute>
+          <xsl:call-template name="make-id"/>
+          <xsl:apply-templates/>
+        </span>
+      </xsl:if>
+      <xsl:if test="not(@content-type)">
+        <span class="capture-id">
+          <xsl:call-template name="make-id"/>
+          <xsl:apply-templates/>
+        </span>
+       </xsl:if>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>

@@ -187,4 +187,4 @@ a.previous.hidden { background-image: url(../images/icon_previous_off.gif); colo
 a.larger			{ background-image: url(../images/icon_larger.gif); }
 div.figure-next		{ text-align: center; border-bottom: 1px solid #CCC; margin-right: 10px; margin-bottom: 5px; padding-bottom: 5px; position: relative; }
 div.figure-next a	{ font-weight: bold; text-decoration: none; font-size: .85em; text-transform: uppercase; }
-
+span.genus-species { font-style:italic; }
