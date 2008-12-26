@@ -774,6 +774,9 @@ public class ArticleFeedService {
       List<String> oldArticles = updates.getOldValue("simpleCollection");
       List<URI> curArticles = journal.getSimpleCollection();
 
+      if ((oldArticles == null) || (curArticles==null))
+        return;
+
       if ( oldArticles.size() != curArticles.size() )
         invalidateFeedCacheForJournalArticle(journal);
     }
@@ -914,8 +917,7 @@ public class ArticleFeedService {
      * startDate   endDate           matche
      *
      * @param key cache key
-     * @param dc  Dublincore field from the article
-     *
+     * @param dc  Dublincore field from the articleean 
      * @return boolean true if the article date falls between the start and end date
      */
     private boolean matchesDates(Key key, DublinCore dc) {
