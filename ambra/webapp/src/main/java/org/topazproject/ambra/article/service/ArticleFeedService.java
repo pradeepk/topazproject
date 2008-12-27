@@ -917,7 +917,8 @@ public class ArticleFeedService {
      * startDate   endDate           matche
      *
      * @param key cache key
-     * @param dc  Dublincore field from the articleean 
+     * @param dc  Dublincore field from the article
+     *
      * @return boolean true if the article date falls between the start and end date
      */
     private boolean matchesDates(Key key, DublinCore dc) {
