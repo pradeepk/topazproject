@@ -63,7 +63,6 @@ import org.topazproject.otm.Interceptor;
  * and <code>feedCache</code>.
  */
 public class ArticleFeedService {
-
   private static final Log log = LogFactory.getLog(ArticleFeedService.class);
 
   private AnnotationService  annotationService;   // Annotation service Spring injected.
@@ -164,7 +163,7 @@ public class ArticleFeedService {
       webAnnot = converter.convert(annotations,true, needBody);
     } catch (Exception ex) {
       throw new ApplicationException(ex);
-    } 
+    }
     return webAnnot;
   }
 
@@ -189,7 +188,7 @@ public class ArticleFeedService {
     } catch (Exception ex) {
       throw new ApplicationException(ex);
     }
-    return  annotIds;                                                                        
+    return  annotIds;
   }
 
   /**
@@ -282,6 +281,7 @@ public class ArticleFeedService {
 
     return IDs;
   }
+
   /**
    * @param journalService   Journal Service
    */
@@ -911,10 +911,7 @@ public class ArticleFeedService {
 
     /**
      * Check to see if the article date is between the start and end date specified in the key. If
-     * it is then return true and the entry for this key should be removed. the following table
-     * shows the return value based on startDate and 
-     *
-     * startDate   endDate           matche
+     * it is then return true and the entry for this key should be removed.
      *
      * @param key cache key
      * @param dc  Dublincore field from the article
