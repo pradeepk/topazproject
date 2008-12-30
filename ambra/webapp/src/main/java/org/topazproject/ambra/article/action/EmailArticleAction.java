@@ -101,7 +101,14 @@ public class EmailArticleAction extends UserActionSupport {
   private void setArticleTitleAndDesc(final String articleURI) throws NoSuchArticleIdException, ApplicationException {
     final ObjectInfo articleInfo = articleOtmService.getArticle(URI.create(articleURI));
     title = articleInfo.getDublinCore().getTitle();
-    description = articleXmlUtils.transformArticleDescriptionToHtml(articleInfo.getDublinCore().getDescription());
+
+    description = articleInfo.getDublinCore().getDescription();
+
+    if(description != null && description.trim().length() > 0) {
+      description = articleXmlUtils.transformArticleDescriptionToHtml(description);
+    } else {
+      description = "";
+    }
   }
 
   private boolean validates() {
