@@ -92,7 +92,7 @@ public class EmailArticleAction extends UserActionSupport {
     mapFields.put("title", title);
     mapFields.put("description", description);
     mapFields.put("journalName", journalName);
-    mapFields.put("subject", "An Article from " + journalName + ": " + title);
+    mapFields.put("subject", "An Article from PLoS");
     ambraMailer.sendEmailThisArticleEmail(emailTo, emailFrom, mapFields);
 
     return SUCCESS;
