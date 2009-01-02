@@ -575,8 +575,6 @@ public class AmbraFeedResult extends Feed implements Result {
         }
         if (authorProfiles.size() > 1)
           person.setName(author + " et al.");
-
-        authors.add(person);
       }
     } else {
       // This should only happen for older, unmigrated articles
