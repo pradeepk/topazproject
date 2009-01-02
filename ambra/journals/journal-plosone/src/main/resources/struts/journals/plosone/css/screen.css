@@ -414,6 +414,7 @@ div#articleMenu ul li { border-bottom: 1px solid #ccc; margin:0; padding:1px 0; 
 div#articleMenu ul li a:link,
 div#articleMenu ul li a:visited { background-color:transparent; background-position:5% 50%; background-repeat:no-repeat; padding:2px 0 2px 25px; color:#666; text-decoration:none; }
 div#articleMenu ul li a:hover { text-decoration:underline; color:#008ED5; }
+div#socialBookmarks a { padding:2px 0 2px 5px!important; } 
 
 /* Related articles at top of right column on article pages */
 div#sideNav dl.related { margin:0 0 20px 0; padding:9px 0 .5em 0; border-bottom:1px solid #999; background-color:#fff; }
