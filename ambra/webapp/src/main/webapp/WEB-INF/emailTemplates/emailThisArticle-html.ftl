@@ -17,21 +17,21 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-${senderName} has sent you an open-access article from ${journalName}.<br/>
-<br/>
+${senderName} has sent you an open-access article from ${journalName}. <br/>
+
 The sender added this:<br/>
-<br/>
 ${note}<br/>
 <br/>
 Read the open-access, full-text article here:<br/>
-<a href="${url}${articleURI?replace("info:doi/","")}">${url}${articleURI?replace("info:doi/","")}</a>
-<br/>
-<br/>
+<a href="${url}${articleURI?replace("info:doi/","")}">${url}${articleURI?replace("info:doi/","")}</a> <br/>
+
 ===================================================
 <br/>
 ${title} <br/>
 <br/>
-Abstract: ${description!""} 
+Abstract:<br/>
+<br/>
+${description!""} 
 
 
 

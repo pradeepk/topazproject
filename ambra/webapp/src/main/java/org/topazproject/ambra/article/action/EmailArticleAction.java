@@ -92,7 +92,7 @@ public class EmailArticleAction extends UserActionSupport {
     mapFields.put("title", title);
     mapFields.put("description", description);
     mapFields.put("journalName", journalName);
-    mapFields.put("subject", "An Article from PLoS: " + title);
+    mapFields.put("subject", "An Article from PLoS");
     ambraMailer.sendEmailThisArticleEmail(emailTo, emailFrom, mapFields);
 
     return SUCCESS;
@@ -104,15 +104,11 @@ public class EmailArticleAction extends UserActionSupport {
 
     description = articleInfo.getDublinCore().getDescription();
 
-    log.debug(description);
-
     if(description != null && description.trim().length() > 0) {
       description = articleXmlUtils.transformArticleDescriptionToHtml(description);
     } else {
       description = "";
     }
-
-    log.debug(description);
   }
 
   private boolean validates() {
