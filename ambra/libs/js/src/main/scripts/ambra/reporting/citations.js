@@ -68,8 +68,8 @@ dojo.require("ambra.reporting.base");
 		{
 			var i = charts.length;
 			
-			dojo.byId(objectID).innerHTML = "<div class=\"doi\">" + doi + "</div>"; //test
-			  
+			dojo.byId(objectID).innerHTML = "<div class=\"doi\">" + doi + "</div>"; 
+			
 			charts[i] = new dojox.charting.Chart2D(objectID);
 			charts[i].addPlot("default", {
 					type: "Pie",
