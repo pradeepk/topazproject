@@ -107,7 +107,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
 
   private        ArticleFeedService  articleFeedService; // Feed Service Spring injected.
   private        Key                 cacheKey;           // The cache key and action data model
-  private        List<String>        Ids;                // List of Article IDs; result of search
+  private        List<String>        articleIds;         // List of Article IDs; result of search
 
   /**
    * Try and find the query in the feed cache or query the Article OTM Service if nothing
@@ -118,26 +118,26 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   @Transactional(readOnly = true)
   public String execute() throws Exception {
     List<String> annotTypes = new ArrayList<String>();
-    FEED_TYPES t = cacheKey.feed_type();
+    FEED_TYPES t = cacheKey.feedType();
 
     switch (t) {
       case Annotation :
-        Ids = articleFeedService.getAnnotationIds(cacheKey, null);
+        articleIds = articleFeedService.getAnnotationIds(cacheKey, null);
         break;
       case FormalCorrectionAnnot :
-        annotTypes.add(t.rdf_type()) ;
-        Ids = articleFeedService.getAnnotationIds(cacheKey,annotTypes);
+        annotTypes.add(t.rdfType()) ;
+        articleIds = articleFeedService.getAnnotationIds(cacheKey,annotTypes);
         break;
       case MinorCorrectionAnnot :
-        annotTypes.add(t.rdf_type()) ;
-        Ids = articleFeedService.getAnnotationIds(cacheKey,annotTypes);
+        annotTypes.add(t.rdfType()) ;
+        articleIds = articleFeedService.getAnnotationIds(cacheKey,annotTypes);
         break;
      case CommentAnnot :
-        annotTypes.add(t.rdf_type()) ;
-        Ids = articleFeedService.getAnnotationIds(cacheKey,annotTypes);
+        annotTypes.add(t.rdfType()) ;
+        articleIds = articleFeedService.getAnnotationIds(cacheKey,annotTypes);
         break;
       case Article :
-        Ids = articleFeedService.getArticleIds(cacheKey);
+        articleIds = articleFeedService.getArticleIds(cacheKey);
         break;
     }
 
@@ -174,7 +174,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    * @return the list of article ID's returned from the query.
    */
   public List<String> getIds() {
-    return Ids;
+    return articleIds;
   }
 
   /**

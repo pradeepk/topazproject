@@ -188,18 +188,18 @@ public class AmbraFeedResult extends Feed implements Result {
 
     // Get the article IDs that were cached by the feed.
     Key cacheKey = (Key)ai.getStack().findValue("cacheKey");
-    List<String> IDs = (List<String>) ai.getStack().findValue("Ids");
-    FEED_TYPES t =  cacheKey.feed_type();
+    List<String> articleIds = (List<String>) ai.getStack().findValue("Ids");
+    FEED_TYPES t =  cacheKey.feedType();
 
     switch (t) {
       case Annotation:
       case FormalCorrectionAnnot:
       case MinorCorrectionAnnot:
       case CommentAnnot:
-        annotations = articleFeedService.getAnnotations(IDs);
+        annotations = articleFeedService.getAnnotations(articleIds);
         break;
       case Article :
-        articles = articleFeedService.getArticles(IDs);
+        articles = articleFeedService.getArticles(articleIds);
     }
 
     String xmlBase = (cacheKey.getRelativeLinks() ? "" : JOURNAL_URI);

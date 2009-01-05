@@ -79,18 +79,18 @@ public class ArticleFeedService {
    * feed types.
    */
   public enum FEED_TYPES {
-    Article                { public String rdf_type() { return null;                       } },
-    Annotation             { public String rdf_type() { return ArticleAnnotation.RDF_TYPE; } },
-    CommentAnnot           { public String rdf_type() { return Comment.RDF_TYPE;           } },
-    FormalCorrectionAnnot  { public String rdf_type() { return FormalCorrection.RDF_TYPE;  } },
-    MinorCorrectionAnnot   { public String rdf_type() { return MinorCorrection.RDF_TYPE;   } },
-    RatingAnnot            { public String rdf_type() { return Rating.RDF_TYPE;            } },
-    RatingSummaryAnnot     { public String rdf_type() { return RatingSummary.RDF_TYPE;     } },
-    ReplyAnnot             { public String rdf_type() { return Reply.RDF_TYPE;             } },
+    Article                { public String rdfType() { return null;                       } },
+    Annotation             { public String rdfType() { return ArticleAnnotation.RDF_TYPE; } },
+    CommentAnnot           { public String rdfType() { return Comment.RDF_TYPE;           } },
+    FormalCorrectionAnnot  { public String rdfType() { return FormalCorrection.RDF_TYPE;  } },
+    MinorCorrectionAnnot   { public String rdfType() { return MinorCorrection.RDF_TYPE;   } },
+    RatingAnnot            { public String rdfType() { return Rating.RDF_TYPE;            } },
+    RatingSummaryAnnot     { public String rdfType() { return RatingSummary.RDF_TYPE;     } },
+    ReplyAnnot             { public String rdfType() { return Reply.RDF_TYPE;             } },
     // Invalid must remain last.
-    Invalid                { public String rdf_type() { return null;                       } };
+    Invalid                { public String rdfType() { return null;                       } };
 
-    public abstract String rdf_type();
+    public abstract String rdfType();
   }
 
   /**
@@ -540,7 +540,7 @@ public class ArticleFeedService {
         sDate = eDate;
 
       // If there is garbage in the type default to Article
-      if (feed_type() == FEED_TYPES.Invalid)
+      if (feedType() == FEED_TYPES.Invalid)
         type = FEED_TYPES.Article.toString();
 
       // Need a positive non-zero number of results
@@ -561,7 +561,7 @@ public class ArticleFeedService {
      *          type field contains a string that does not match
      *          any of the types)
      */
-    public FEED_TYPES feed_type() {
+    public FEED_TYPES feedType() {
       FEED_TYPES t;
       try {
         t = FEED_TYPES.valueOf(type);
