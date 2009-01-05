@@ -33,6 +33,7 @@ import org.topazproject.ambra.service.AmbraMailer;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.action.UserActionSupport;
 import org.topazproject.ambra.util.ArticleXMLUtils;
+import org.topazproject.otm.search.XmlTagStripper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,8 +83,13 @@ public class EmailArticleAction extends UserActionSupport {
    */
   @Transactional(readOnly = true)
   public String executeSend() throws Exception {
-    if (!validates()) return INPUT;
+    XmlTagStripper xmlTS = new XmlTagStripper();
+
+    if (!validates())
+      return INPUT;
+
     setArticleTitleAndDesc(articleURI);
+
     final Map<String, String> mapFields = new HashMap<String, String>();
     mapFields.put("articleURI", articleURI);
     mapFields.put("senderName", senderName);
@@ -92,7 +98,8 @@ public class EmailArticleAction extends UserActionSupport {
     mapFields.put("title", title);
     mapFields.put("description", description);
     mapFields.put("journalName", journalName);
-    mapFields.put("subject", "An Article from PLoS: " + title);
+    mapFields.put("subject", "An Article from PLoS: " + xmlTS.process(null, null, "<title>" + title + "</title>"));
+    
     ambraMailer.sendEmailThisArticleEmail(emailTo, emailFrom, mapFields);
 
     return SUCCESS;
