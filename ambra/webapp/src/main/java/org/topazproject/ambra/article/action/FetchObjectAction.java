@@ -25,22 +25,23 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.util.FileUtils;
+import org.topazproject.ambra.struts2.TransactionAware;
 
 
 import java.io.IOException;
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 /**
- * Fetch the object for a given uri
+ * Fetch the object for a given uri.
+ * Returns either inputStream or inputByteArray. If returning inputStream, contentLength
+ * needs to be passed too.
  */
-public class FetchObjectAction extends BaseActionSupport {
+public class FetchObjectAction extends BaseActionSupport implements TransactionAware {
   private ArticleOtmService articleOtmService;
   private String uri;
   private String representation;
@@ -49,6 +50,8 @@ public class FetchObjectAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(FetchObjectAction.class);
   private String contentType;
   private byte[] inputByteArray;
+  private InputStream inputStream;
+  private Long contentLength;
   private Date lastModified;
 
   /**
@@ -56,7 +59,6 @@ public class FetchObjectAction extends BaseActionSupport {
    * @return webwork status code
    * @throws Exception Exception
    */
-  @Transactional(readOnly = true)
   public String execute() throws Exception {
     if (StringUtils.isEmpty(representation)) {
       addActionMessage("No representation specified");
@@ -87,7 +89,6 @@ public class FetchObjectAction extends BaseActionSupport {
    * @return webwork status code
    * @throws Exception Exception
    */
-  @Transactional(readOnly = true)
   public String fetchSingleRepresentation() throws Exception {
     final ObjectInfo objectInfo = articleOtmService.getObjectInfo(uri);
 
@@ -110,7 +111,9 @@ public class FetchObjectAction extends BaseActionSupport {
   }
 
   private void setOutputStreamAndAttributes(final Representation rep) throws IOException {
-    inputByteArray = rep.getBody().readAll();
+
+    inputStream = rep.getBody().getInputStream();
+    contentLength = rep.getSize();
 
     contentType = rep.getContentType();
     if (contentType == null)
@@ -173,6 +176,18 @@ public class FetchObjectAction extends BaseActionSupport {
    */
   public byte[] getInputByteArray() {
     return inputByteArray;
+  }
+
+  /**
+   * Returns the InputStream of the Fedora object
+   * @return the InputStream of the Fedora object.
+   */
+  public InputStream getInputStream() {
+    return inputStream;
+  }
+
+  public Long getContentLength() {
+    return contentLength;
   }
 
   /**

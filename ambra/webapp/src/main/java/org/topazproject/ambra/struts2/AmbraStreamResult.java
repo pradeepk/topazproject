@@ -18,7 +18,6 @@
  */
 package org.topazproject.ambra.struts2;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -43,55 +42,96 @@ import com.opensymphony.xwork2.ActionInvocation;
  * Custom webwork result class to stream back objects from OTM blobs. Takes appropriate http
  * headers and sets them the response stream as well as taking in an optional parameter indicating
  * whether to set the content-diposition to an attachment.
+ *
+ * Reading inputStream requires a transaction. That can be acomplished if action implements
+ * TransactionAware interface.
+ * 
+ * @see TransactionAware
  */
 public class AmbraStreamResult extends StreamResult {
-  private boolean            isAttachment = false;
-  private static final Log   log          = LogFactory.getLog(AmbraStreamResult.class);
-  private HttpResourceServer server       = new HttpResourceServer();
+
+  private boolean isAttachment = false;
+  private static final Log log = LogFactory.getLog(AmbraStreamResult.class);
+  private HttpResourceServer server = new HttpResourceServer();
 
   /*
    * inherited javadoc
    */
   protected void doExecute(String finalLocation, ActionInvocation invocation)
-                    throws Exception {
-    final byte[] objRep = (byte[]) invocation.getStack().findValue("inputByteArray");
-    Date         date   = (Date) invocation.getStack().findValue("lastModified");
+      throws Exception {
 
-    if (objRep == null)
-      throw new IllegalArgumentException("'inputByteArray' must be set in '"
-                                         + invocation.getAction().getClass());
+    final InputStream inputStream = (InputStream) invocation.getStack().findValue("inputStream");
+    Date date = (Date) invocation.getStack().findValue("lastModified");
 
-    long                lastModified = (date == null) ? System.currentTimeMillis() : date.getTime();
+    HttpResourceServer.Resource resource;
+    long lastModified = (date == null) ? System.currentTimeMillis() : date.getTime();
+    
+    if (log.isDebugEnabled()) {
+      log.debug("LastModified "+new Date(lastModified));
+    }
+
 
     HttpServletResponse oResponse    =
       (HttpServletResponse) invocation.getInvocationContext().get(HTTP_RESPONSE);
-    HttpServletRequest  oRequest     =
-      (HttpServletRequest) invocation.getInvocationContext().get(HTTP_REQUEST);
 
-    String              contentType  = getProperty("contentType", this.contentType, invocation);
-
-    String              name = "--unnamed--";
-
+    String name = "--unnamed--";
     // Set the content-disposition
     if (this.contentDisposition != null) {
-      name                           = getProperty("contentDisposition", this.contentDisposition,
-                                                   invocation);
+      name = getProperty("contentDisposition", this.contentDisposition, invocation);
       oResponse.addHeader("Content-disposition", (isAttachment ? "attachment; " : "") + name);
     } else if (isAttachment) {
       oResponse.addHeader("Content-disposition", "attachment;");
     }
 
-    server.serveResource(oRequest, oResponse,
-                         new HttpResourceServer.Resource(name, contentType, objRep.length,
-                                                         lastModified) {
+    String contentType = getProperty("contentType", this.contentType, invocation);
+
+    if (inputStream == null) {
+
+      final byte[] objRep = (byte[]) invocation.getStack().findValue("inputByteArray");
+
+      if (objRep == null)
+        throw new IllegalArgumentException("'inputByteArray' must be set in '"
+            + invocation.getAction().getClass());
+
+      log.debug("Received byte array");
+
+      resource = new HttpResourceServer.Resource(name, contentType, objRep.length, lastModified) {
         public byte[] getContent() {
           return objRep;
         }
 
         public InputStream streamContent() throws IOException {
-          return new ByteArrayInputStream(objRep);
+          return null;
         }
-      });
+      };
+
+    } else {
+
+
+      Long contentLength = (Long) invocation.getStack().findValue("contentLength");
+      if (contentLength == null)
+        throw new IllegalArgumentException("'contentLength' must be set in '"
+            + invocation.getAction().getClass());
+
+      if (log.isDebugEnabled())
+        log.debug("Received InputStream of length="+contentLength);
+
+      resource = new HttpResourceServer.Resource(name, contentType, contentLength, lastModified) {
+        public byte[] getContent() {
+          return null;
+        }
+
+        public InputStream streamContent() throws IOException {
+          return inputStream;
+        }
+      };
+    }
+
+    HttpServletRequest  oRequest     =
+      (HttpServletRequest) invocation.getInvocationContext().get(HTTP_REQUEST);
+
+    server.serveResource(oRequest, oResponse,
+        resource);
   }
 
   private String getProperty(final String propertyName, final String param,
