@@ -62,6 +62,7 @@
     </result-types>
 
     <interceptors>
+      <interceptor name="otmTransactionInterceptor" class="org.topazproject.ambra.struts2.TransactionInterceptor"/>
       <interceptor name="journalSessionSetup" class="org.topazproject.ambra.journal.SessionFiltersInterceptor"/>
       <interceptor name="ensureUserAccount" class="org.topazproject.ambra.user.EnsureUserAccountInterceptor"/>
       <interceptor name="ensureAdmin" class="org.topazproject.ambra.user.EnsureRoleInterceptor"/>
@@ -100,6 +101,7 @@
         <interceptor-ref name="strutsBaseStack"/>
         <interceptor-ref name="journalSessionSetup"/>
         <interceptor-ref name="ambraUserLookup"/>
+        <interceptor-ref name="otmTransactionInterceptor"/>
       </interceptor-stack>
 
       <interceptor-stack name="ambraUserStack">

@@ -285,6 +285,8 @@
     </tx:attributes>
   </tx:advice>
 
+  <bean id="txActionInvoker" class="org.topazproject.ambra.struts2.TransactionInterceptor$TransactionalActionInvoker"/>
+
   <!-- cache manager configs -->
   <bean id="txCacheManagerFactory" class="org.topazproject.ambra.cache.CacheManagerFactory">
     <constructor-arg index="0" ref="otmSessionFactory"/>
