@@ -39,7 +39,6 @@ public class TransactionInterceptor extends AbstractInterceptor {
 
   private TransactionalActionInvoker txActionInvoker;
 
-  @Transactional(readOnly = true)
   public String intercept(ActionInvocation actionInvocation) throws Exception {
     Action action = (Action) actionInvocation.getAction();
 
