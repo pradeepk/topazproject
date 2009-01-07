@@ -101,12 +101,12 @@
         <interceptor-ref name="strutsBaseStack"/>
         <interceptor-ref name="journalSessionSetup"/>
         <interceptor-ref name="ambraUserLookup"/>
-        <interceptor-ref name="otmTransactionInterceptor"/>
       </interceptor-stack>
 
       <interceptor-stack name="ambraUserStack">
         <interceptor-ref name="ambraBaseStack" />
         <interceptor-ref name="ensureUserAccount" />
+        <interceptor-ref name="otmTransactionInterceptor"/>
       </interceptor-stack>
 
       <interceptor-stack name="ambraAdminStack">
