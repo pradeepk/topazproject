@@ -42,8 +42,12 @@ public class TransactionInterceptor extends AbstractInterceptor {
   public String intercept(ActionInvocation actionInvocation) throws Exception {
     Action action = (Action) actionInvocation.getAction();
 
-    if (action instanceof TransactionAware) {
-      return txActionInvoker.invoke(actionInvocation);
+    TransactionAware annotation = action.getClass().getAnnotation(TransactionAware.class);
+    if (annotation != null) {
+      if (annotation.readOnly())
+        return txActionInvoker.invokeReadOnly(actionInvocation);
+      else
+        return txActionInvoker.invoke(actionInvocation);
     } else {
       return actionInvocation.invoke();
     }
@@ -73,6 +77,11 @@ public class TransactionInterceptor extends AbstractInterceptor {
      * @throws Exception
      */
     @Transactional(readOnly = true)
+    public String invokeReadOnly(ActionInvocation actionInvocation) throws Exception {
+      return actionInvocation.invoke();
+    }
+
+    @Transactional(rollbackFor = { Throwable.class })
     public String invoke(ActionInvocation actionInvocation) throws Exception {
       return actionInvocation.invoke();
     }

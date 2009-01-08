@@ -19,14 +19,25 @@
 
 package org.topazproject.ambra.struts2;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * Struts action that implements this interface will signal to TransactionInterceptor that it
+ * Struts action that are marked with this annotation signal to TransactionInterceptor that it
  * needs to wrap transaction around action invocation. Use when you want transaction to span beyond
  * action and into results.
  *
  * @see TransactionInterceptor
  * @author Dragisa Krsmanovic
  */
-public interface TransactionAware {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface TransactionAware {
 
+  /**
+   * @return true if transaction is read-only, false if it's read-write
+   */
+  boolean readOnly() default false;
 }

@@ -44,7 +44,8 @@ import org.springframework.beans.factory.annotation.Required;
  * Returns either inputStream or inputByteArray. If returning inputStream, contentLength
  * needs to be passed too.
  */
-public class FetchObjectAction extends BaseActionSupport implements TransactionAware {
+@TransactionAware(readOnly = true)
+public class FetchObjectAction extends BaseActionSupport {
   private static final Log    log             = LogFactory.getLog(FetchObjectAction.class);
   private static final String SMALL_BLOB_SIZE = "ambra.cache.smallBlobSize";
 
