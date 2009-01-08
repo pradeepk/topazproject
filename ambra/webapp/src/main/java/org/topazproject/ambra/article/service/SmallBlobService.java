@@ -16,24 +16,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.ambra.article.service;
 
 import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.cache.AbstractObjectListener;
+
 import org.topazproject.otm.Session;
 import org.topazproject.otm.ClassMetadata;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service class for handling small Blobs.
+ * Service class to provide small blobs from cache or from blob store. This has been added to
+ * improve the render performance where the article contains a lot of small images.
  *
  * @author Dragisa Krsmanovic
  */
 public class SmallBlobService {
-
   private Cache smallBlobCache;
   private Invalidator invalidator;
 
@@ -48,12 +49,10 @@ public class SmallBlobService {
 
     if (invalidator == null)
       smallBlobCache.getCacheManager().registerListener(invalidator = new Invalidator());
-
   }
 
   @Transactional(readOnly = true)
   public byte[] getSmallBlob(final Representation representation) throws Exception {
-
     String lock = representation.getId().intern();
 
     // Small blob. Look in the cache first
@@ -70,7 +69,6 @@ public class SmallBlobService {
    * via a listener registered with the small blob cache.
    */
   public class Invalidator extends AbstractObjectListener {
-
     /**
      * Notify that a Representation is being removed.
      *
@@ -87,10 +85,6 @@ public class SmallBlobService {
       if (object instanceof Representation) {
         smallBlobCache.remove(((Representation)object).getId());
       }
-
     }
-
   }
-
-
 }

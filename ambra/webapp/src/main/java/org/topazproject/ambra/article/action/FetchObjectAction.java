@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,11 +20,15 @@ package org.topazproject.ambra.article.action;
 
 import java.util.Date;
 import java.util.Set;
+import java.io.IOException;
+import java.io.InputStream;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.SmallBlobService;
@@ -32,11 +36,8 @@ import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.util.FileUtils;
 import org.topazproject.ambra.struts2.TransactionAware;
+
 import org.springframework.beans.factory.annotation.Required;
-
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Fetch the object for a given uri.
@@ -44,19 +45,19 @@ import java.io.InputStream;
  * needs to be passed too.
  */
 public class FetchObjectAction extends BaseActionSupport implements TransactionAware {
-  private ArticleOtmService articleOtmService;
-  private SmallBlobService smallBlobService;
-  private String uri;
-  private String representation;
-
-  private String contentDisposition;
-  private static final Log log = LogFactory.getLog(FetchObjectAction.class);
-  private String contentType;
-  private byte[] inputByteArray;
-  private InputStream inputStream;
-  private Long contentLength;
-  private Date lastModified;
+  private static final Log    log             = LogFactory.getLog(FetchObjectAction.class);
   private static final String SMALL_BLOB_SIZE = "ambra.cache.smallBlobSize";
+
+  private ArticleOtmService articleOtmService;
+  private SmallBlobService  smallBlobService;
+  private String            uri;
+  private String            representation;
+  private String            contentDisposition;
+  private String            contentType;
+  private byte[]            inputByteArray;
+  private InputStream       inputStream;
+  private Long              contentLength;
+  private Date              lastModified;
 
   /**
    * Return the object for a given uri and representation
@@ -64,7 +65,6 @@ public class FetchObjectAction extends BaseActionSupport implements TransactionA
    * @throws Exception Exception
    */
   public String execute() throws Exception {
-
     if (StringUtils.isEmpty(representation)) {
       addActionMessage("No representation specified");
       return ERROR;
@@ -93,16 +93,13 @@ public class FetchObjectAction extends BaseActionSupport implements TransactionA
    * @throws Exception
    */
   private void handleBlob(final Representation rep) throws Exception {
-
     setResponseParams(rep);
     contentLength = rep.getSize();
 
     long smallBlobSizeBytes = configuration.getLong(SMALL_BLOB_SIZE, 0l) * 1024l;
 
     if (rep.getSize() <= smallBlobSizeBytes) {
-
       inputByteArray = smallBlobService.getSmallBlob(rep);
-
     } else {
       // Large blob. Do not cache.
       inputStream = rep.getBody().getInputStream();
