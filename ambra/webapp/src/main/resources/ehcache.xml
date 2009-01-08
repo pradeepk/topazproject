@@ -652,4 +652,20 @@
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
                 properties="replicatePuts=false,replicateUpdatesViaCopy=false"/>
     </cache>
+    <!--
+    OTM Second-Level cache for small binary object. Size of objects that qualifies for caching
+    is defined in ambra.topaz.blobStore.smallBlobSize configuration parameter
+    -->
+    <cache name="SmallBlobCache"
+           maxElementsInMemory="2000"
+           eternal="false"
+           timeToIdleSeconds="10800"
+           timeToLiveSeconds="0"
+           memoryStoreEvictionPolicy="LFU"
+           overflowToDisk="true"
+           diskPersistent="false">
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicatePuts=false,replicateUpdatesViaCopy=false"/>
+    </cache>
 </ehcache>

@@ -27,10 +27,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
+import org.topazproject.ambra.article.service.SmallBlobService;
 import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.util.FileUtils;
 import org.topazproject.ambra.struts2.TransactionAware;
+import org.springframework.beans.factory.annotation.Required;
 
 
 import java.io.IOException;
@@ -43,6 +45,7 @@ import java.io.InputStream;
  */
 public class FetchObjectAction extends BaseActionSupport implements TransactionAware {
   private ArticleOtmService articleOtmService;
+  private SmallBlobService smallBlobService;
   private String uri;
   private String representation;
 
@@ -53,6 +56,7 @@ public class FetchObjectAction extends BaseActionSupport implements TransactionA
   private InputStream inputStream;
   private Long contentLength;
   private Date lastModified;
+  private static final String SMALL_BLOB_SIZE = "ambra.cache.smallBlobSize";
 
   /**
    * Return the object for a given uri and representation
@@ -60,6 +64,7 @@ public class FetchObjectAction extends BaseActionSupport implements TransactionA
    * @throws Exception Exception
    */
   public String execute() throws Exception {
+
     if (StringUtils.isEmpty(representation)) {
       addActionMessage("No representation specified");
       return ERROR;
@@ -77,8 +82,31 @@ public class FetchObjectAction extends BaseActionSupport implements TransactionA
       return ERROR;
     }
 
-    setOutputStreamAndAttributes(rep);
+    handleBlob(rep);
     return SUCCESS;
+  }
+
+  /**
+   * If size of Representation object is less than what is specified in small blob size config
+   * parameter, blob will be fetched as byte array and stored in cache.
+   * @param rep Representation object.
+   * @throws Exception
+   */
+  private void handleBlob(final Representation rep) throws Exception {
+
+    setResponseParams(rep);
+    contentLength = rep.getSize();
+
+    long smallBlobSizeBytes = configuration.getLong(SMALL_BLOB_SIZE, 0l) * 1024l;
+
+    if (rep.getSize() <= smallBlobSizeBytes) {
+
+      inputByteArray = smallBlobService.getSmallBlob(rep);
+
+    } else {
+      // Large blob. Do not cache.
+      inputStream = rep.getBody().getInputStream();
+    }
   }
 
   /**
@@ -106,15 +134,12 @@ public class FetchObjectAction extends BaseActionSupport implements TransactionA
       log.warn("Found " + representations.size() + " representations for '" + uri +
                "' where only one was expected");
 
-    setOutputStreamAndAttributes(representations.iterator().next());
+    handleBlob(representations.iterator().next());
+
     return SUCCESS;
   }
 
-  private void setOutputStreamAndAttributes(final Representation rep) throws IOException {
-
-    inputStream = rep.getBody().getInputStream();
-    contentLength = rep.getSize();
-
+  private void setResponseParams(Representation rep) throws IOException {
     contentType = rep.getContentType();
     if (contentType == null)
       contentType = "application/octet-stream";
@@ -134,14 +159,6 @@ public class FetchObjectAction extends BaseActionSupport implements TransactionA
 
   private String getFileExtension(final String contentType) throws IOException {
     return FileUtils.getDefaultFileExtByMimeType(contentType);
-  }
-
-  /**
-   * Set articleOtmService
-   * @param articleOtmService articleOtmService
-   */
-  public void setArticleOtmService(final ArticleOtmService articleOtmService) {
-    this.articleOtmService = articleOtmService;
   }
 
   @RequiredStringValidator(message = "Object URI is required.")
@@ -209,5 +226,23 @@ public class FetchObjectAction extends BaseActionSupport implements TransactionA
    */
   public Date getLastModified() {
     return lastModified;
+  }
+
+  /**
+   * Spring setter method to inject articleOtmService
+   * @param articleOtmService articleOtmService
+   */
+  @Required
+  public void setArticleOtmService(final ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
+  }
+
+  /**
+   * Spring setter method to inject small objects cache
+   * @param smallBlobService Small blob service
+   */
+  @Required
+  public void setSmallBlobService(SmallBlobService smallBlobService) {
+    this.smallBlobService = smallBlobService;
   }
 }

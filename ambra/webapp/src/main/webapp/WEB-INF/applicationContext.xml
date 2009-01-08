@@ -163,6 +163,8 @@
 
   <bean id="browseService" class="org.topazproject.ambra.article.service.BrowseService"/>
 
+  <bean id="smallBlobService" class="org.topazproject.ambra.article.service.SmallBlobService"/>
+  
   <!-- Add all your constants to the map with a key and a value/ref -->
   <util:map id="otherConstants" map-class="java.util.HashMap">
     <entry key="countries" value-ref="countries"/>
@@ -303,6 +305,10 @@
     <constructor-arg index="0" ref="txCacheManager"/>
     <constructor-arg index="1" ref="repEhcache"/>
   </bean>
+  <bean id="smallBlobCache" class="org.topazproject.ambra.cache.EhcacheProvider">
+    <constructor-arg index="0" ref="txCacheManager"/>
+    <constructor-arg index="1" ref="smallBlobEhcache"/>
+  </bean>
   <bean id="otmInterceptor" class="org.topazproject.ambra.cache.OtmInterceptor">
     <constructor-arg index="0" ref="txCacheManager"/>
     <constructor-arg index="1" ref="objectCache"/>
@@ -385,6 +391,10 @@
 
   <bean id="repEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
     <property name="cacheName" value="RepresentationCache"/>
+  </bean>
+
+  <bean id="smallBlobEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName" value="SmallBlobCache"/>
   </bean>
 
   <bean id="grantsEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">

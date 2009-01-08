@@ -489,6 +489,13 @@
         </page>
       </journal>
     </freemarker>
+
+    <!-- Ambra caching parameters -->
+    <cache>
+      <!-- Maximum size of small blobs to be cached. In kilobytes. -->
+      <smallBlobSize>64</smallBlobSize>
+    </cache>
+
   </ambra>
 
   <!-- See the AmbraStruts2Filter dispatcher on how struts constants are configured -->
