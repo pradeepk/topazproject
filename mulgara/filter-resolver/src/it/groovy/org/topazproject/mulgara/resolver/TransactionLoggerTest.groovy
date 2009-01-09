@@ -39,7 +39,7 @@ class TransactionLoggerTest extends AbstractTest {
     def script = getClass().getResource("/transaction-logger-test.tql")
     script.eachLine { l -> itql.execute(l) }
 
-    Thread.sleep(20);
+    Thread.sleep(50);
 
     def exp = script.getText().replaceAll('\\s*\\bselect .*?;', '')
     assertEquals(exp, log.getText())
