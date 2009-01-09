@@ -56,65 +56,60 @@ public class TransactionInterceptor extends AbstractInterceptor {
     String methodName = actionProxy.getMethod();
 
     Span span = getAnnotation(action.getClass(), methodName, Span.class);
-
-    if (span != null) {
-
-      if (log.isDebugEnabled())
-        log.debug("Interceped " + action.getClass().getName() + "." + methodName + "(...)");
-
-      final Transactional transactional = span.value();
-
-      TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-      txTemplate.setReadOnly(transactional.readOnly());
-      txTemplate.setTimeout(transactional.timeout());
-      txTemplate.setIsolationLevel(transactional.isolation().value());
-      txTemplate.setPropagationBehavior(transactional.propagation().value());
-
-      CallbackResult callbackResult = (CallbackResult) txTemplate.execute(new TransactionCallback() {
-        public CallbackResult doInTransaction(TransactionStatus transactionStatus) {
-          CallbackResult result = new CallbackResult();
-          try {
-            result.setResult(actionInvocation.invoke());
-          } catch (Exception e) {
-
-            /*
-            Callback does not throw exception. We need to pass Exception object in the return
-            parameter so we can throw it in the calling method.
-            */
-
-            boolean noRollback = false;
-
-            if (transactional.noRollbackFor() != null) {
-              for (Class<? extends Throwable> exception : transactional.noRollbackFor()) {
-                if (exception.isInstance(e)) {
-                  noRollback = true;
-                  break;
-                }
-              }
-            }
-
-            if (!noRollback && transactional.rollbackFor() != null) {
-              for (Class<? extends Throwable> exception : transactional.rollbackFor()) {
-                if (exception.isInstance(e)) {
-                  transactionStatus.setRollbackOnly();
-                  break;
-                }
-              }
-            }
-            result.setException(e);
-          }
-          return result;
-        }
-      });
-
-      if (callbackResult.getException() != null)
-        throw callbackResult.getException();
-
-      return callbackResult.getResult();
-
-    } else {
+    if (span == null) {
       return actionInvocation.invoke();
     }
+
+    if (log.isDebugEnabled())
+      log.debug("Interceped " + action.getClass().getName() + "." + methodName + "(...)");
+
+    final Transactional transactional = span.value();
+
+    TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+    txTemplate.setReadOnly(transactional.readOnly());
+    txTemplate.setTimeout(transactional.timeout());
+    txTemplate.setIsolationLevel(transactional.isolation().value());
+    txTemplate.setPropagationBehavior(transactional.propagation().value());
+
+    CallbackResult callbackResult = (CallbackResult) txTemplate.execute(new TransactionCallback() {
+      public CallbackResult doInTransaction(TransactionStatus transactionStatus) {
+        CallbackResult result = new CallbackResult();
+        try {
+          result.setResult(actionInvocation.invoke());
+        } catch (Exception e) {
+          /* 
+           * Callback does not throw exception. We need to pass Exception object in the return
+           * parameter so we can throw it in the calling method.
+           */
+          boolean noRollback = false;
+
+          if (transactional.noRollbackFor() != null) {
+            for (Class<? extends Throwable> exception : transactional.noRollbackFor()) {
+              if (exception.isInstance(e)) {
+                noRollback = true;
+                break;
+              }
+            }
+          }
+
+          if (!noRollback && transactional.rollbackFor() != null) {
+            for (Class<? extends Throwable> exception : transactional.rollbackFor()) {
+              if (exception.isInstance(e)) {
+                transactionStatus.setRollbackOnly();
+                break;
+              }
+            }
+          }
+          result.setException(e);
+        }
+        return result;
+      }
+    });
+
+    if (callbackResult.getException() != null)
+      throw callbackResult.getException();
+
+    return callbackResult.getResult();
   }
 
   private <A extends Annotation> A getAnnotation(Class<? extends Action> actionClass,
