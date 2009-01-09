@@ -350,10 +350,7 @@ public class SearchMigrator implements Runnable {
     if (getSd(cm, cm.getBlobField()) != null)
       return null;
 
-    URI sm = sf.getGraph("sm").getUri();
     URI lucene = sf.getGraph("lucene").getUri();
-    String st = sf.getClassMetadata(SearchMarker.class).getTypes().iterator().next();
-
     Map<URI, Set<RdfMapper>> gms = new HashMap<URI, Set<RdfMapper>>();
     for (RdfMapper m : cm.getRdfMappers()) {
       SearchableDefinition sd = getSd(cm, m);
@@ -381,10 +378,9 @@ public class SearchMigrator implements Runnable {
         q.append("$pidx <mulgara:equals> <").append(m.getUri()).append("> or ");
 
       q.setLength(q.length() - 4);
-      q.append(") and ((");
+      q.append(") and (");
       buildWhere(q, cm);
-      q.append(") minus ($s <rdf:type> <").append(st).append("> in <").append(sm)
-        .append(">)) into <").append(lucene).append(">;");
+      q.append(") into <").append(lucene).append(">;");
     }
 
     return q.toString();
