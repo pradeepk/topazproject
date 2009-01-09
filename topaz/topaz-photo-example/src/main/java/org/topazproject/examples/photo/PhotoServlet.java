@@ -1,0 +1,137 @@
+package org.topazproject.examples.photo;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
+
+public class PhotoServlet extends HttpServlet {
+  private static final Log    log  = LogFactory.getLog(PhotoServlet.class);
+  private SessionFactory factory;
+  private PhotoService   photoService;
+
+  @Override
+  public void init() throws ServletException {
+    TopazConfigurator conf = new TopazConfigurator();
+    factory        = conf.getSessionFactory();
+    photoService   = new PhotoService();
+  }
+
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp)
+             throws ServletException, IOException {
+    process(req, resp);
+  }
+
+  @Override
+  public void doPost(HttpServletRequest req, HttpServletResponse resp)
+              throws ServletException, IOException {
+    process(req, resp);
+  }
+
+  protected void process(HttpServletRequest req, HttpServletResponse resp)
+                  throws ServletException, IOException {
+    Session session = null;
+
+    try {
+      session = factory.openSession();
+      session.beginTransaction();
+      process(req, resp, session);
+      session.getTransaction().commit();
+    } catch (OtmException e) {
+      throw new ServletException("Processing error", e);
+    } finally {
+      try {
+        session.close();
+      } catch (Throwable t) {
+      }
+    }
+  }
+
+  protected void process(HttpServletRequest req, HttpServletResponse resp,
+      Session session) throws IOException, OtmException {
+    String action = req.getParameter("action");
+
+    if ((action == null) || "list".equals(action)) {
+      respond(session, resp, null, null);
+    } else {
+      String id = req.getParameter("id");
+      if (id != null)
+        id = id.trim();
+      if (id.length() == 0)
+        id = null;
+
+      if (id == null) {
+        respond(session, resp, "id must be specified", "red");
+      } else if ("create".equals(action) || "update".equals(action)) {
+        try {
+          URI uri = new URI(id);
+          if (!uri.isAbsolute())
+            respond(session, resp, "id must be an absolute URI", "red");
+          else {
+            log.info("About to " + action + " photo with id = " + id);
+            photoService.createPhoto(session, uri, req.getParameter("title"));
+            respond(session, resp, action + "d photo with id : " + id, "green");
+          }
+        } catch (URISyntaxException e) {
+          respond(session, resp, "id must be a valid URI", "red");
+        }
+      } else if ("delete".equals(action)) {
+        log.info("About to " + action + " photo with id = " + id);
+        Photo photo = session.get(Photo.class, id);
+
+        if (photo != null)
+          session.delete(photo);
+
+        respond(session, resp, action + "d photo with id : " + id, "green");
+      } else {
+        respond(session, resp, "unknown action '" + action + "'", "red");
+      }
+    }
+  }
+
+  protected void respond(Session session, HttpServletResponse resp,
+      String message, String color) throws IOException, OtmException {
+    PrintWriter out = resp.getWriter();
+    out.println("<html><head><title>Photo Manager</title></head><body>");
+
+    out.println("<h2>Photo Manager</h2>");
+    if (message != null)
+      out.println("<b><i><font color='" + color + "'>"  + message 
+                  + "</font></i></b>");
+
+    out.println("<table border='2'>");
+    out.println("<tr><th>id</th><th>title</th><th>action</th></tr>");
+    out.println("<tr><form method='post'>");
+    out.println("<td><input name='id'></td><td><input name='title'></td>");
+    out.println("<td><input type='submit' name='action' value='create'></td>");
+    out.println("</form></tr>");
+
+    for (Photo photo : photoService.listPhotos(session)) {
+      out.println("<tr><form method='post'>");
+      out.println("<td><input name='id' type='hidden' value='" + photo.getId() + "'>"
+                  + photo.getId() + "</td>");
+      out.println("<td><input name='title' value='" + photo.getTitle() + "'></td>");
+      out.println("<td><input type='submit' name='action' value='update'>");
+      out.println("<input type='submit' name='action' value='delete'></td>");
+      out.println("</form></tr>");
+    }
+
+    out.println("</table></body></html>");
+
+    out.flush();
+  }
+}

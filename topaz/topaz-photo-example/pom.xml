@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.topazproject</groupId>
+  <artifactId>topaz-photo-example</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <name>Topaz Photo Example</name>
+  <description>Simple photo management using Topaz.</description>
+
+  <!-- 
+       Topaz and Mulgara are not currently available on standard maven
+       repositories. However they are hosted on Topaz maven repository.
+       The following section lets maven know where that is.
+   -->
+  <repositories>
+    <repository>
+      <id>topaz</id>
+      <name>Maven 2 Repository for Topaz</name>
+      <url>http://maven.topazproject.org/maven2/</url>
+    </repository>
+  </repositories>
+
+  <!--
+      Maven defaults to java 1.3 on its compiler config.
+      Our examples all need Java 1.5 annotations. So
+      let Maven know about our requirements.
+   -->
+  <properties>
+    <maven.compiler.source>1.5</maven.compiler.source>
+    <maven.compiler.target>1.5</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <!-- The Topaz core jar file. -->
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>otm</artifactId>
+      <version>0.9.1-SNAPSHOT</version>
+    </dependency>
+    <!-- The Mulgara client driver. -->
+    <dependency>
+      <groupId>org.mulgara</groupId>
+      <artifactId>driver</artifactId>
+      <version>2.0.7</version>
+    </dependency>
+    <!-- The Embedded Mulgara triple-store. 
+         Only required during run time. -->
+    <dependency>
+      <groupId>org.mulgara</groupId>
+      <artifactId>mulgara</artifactId>
+      <version>2.0.7</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- A Mulgara Resolver that provides support
+         for string comparisons (lt, gt, le, ge).
+         Only required during run time. -->   
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>string-compare-resolver</artifactId>
+      <version>0.9.1-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Servlet api is required to compile the servlets -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <finalName>topaz-photo-example</finalName>
+    <plugins>
+      <!-- Run the web-app in jetty: 'mvn clean jetty:run' -->
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+        <version>6.1.14</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>
