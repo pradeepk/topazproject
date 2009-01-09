@@ -290,7 +290,7 @@ public class SearchMigrator implements Runnable {
 
     String is = this.getInsertSelect(cm, throttle);
     if (is != null) {
-      log.info("Performing insert select of " + cm);
+      log.info("Performing insert select of " + cm + " using : " + is);
       session.doNativeUpdate(is);
       return -1; // indicates 'countless' instances migrated
     }
@@ -308,8 +308,7 @@ public class SearchMigrator implements Runnable {
       try {
         Object o = session.get(cm.getName(), id);
         if (isInstance(o, cm)) {
-          if (log.isDebugEnabled())
-            log.debug("Creating search indexes for " + cm + " with id: " + id);
+          log.info("Creating search indexes for " + cm + " with id: " + id);
           ss.index(cm, fields, id, o, con);
           count++;
         }
