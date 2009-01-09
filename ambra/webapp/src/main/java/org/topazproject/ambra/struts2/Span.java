@@ -21,11 +21,11 @@ package org.topazproject.ambra.struts2;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
 import java.lang.annotation.Target;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.ElementType;
 
 /**
  * Struts action that are marked with this annotation signal to TransactionInterceptor that it
@@ -38,8 +38,8 @@ import java.lang.annotation.Retention;
  * @see TransactionInterceptor
  * @author Dragisa Krsmanovic
  */
-@Retention(RUNTIME)
-@Target({TYPE, METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Inherited
 public @interface Span {
 
