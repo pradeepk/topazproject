@@ -46,7 +46,7 @@ import com.opensymphony.xwork2.ActionInvocation;
  * Reading inputStream requires a transaction. That can be acomplished if action implements
  * TransactionAware interface.
  * 
- * @see TransactionAware
+ * @see Span
  */
 public class AmbraStreamResult extends StreamResult {
 

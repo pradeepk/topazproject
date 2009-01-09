@@ -35,16 +35,19 @@ import org.topazproject.ambra.article.service.SmallBlobService;
 import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.util.FileUtils;
-import org.topazproject.ambra.struts2.TransactionAware;
+import org.topazproject.ambra.struts2.Span;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Fetch the object for a given uri.
  * Returns either inputStream or inputByteArray. If returning inputStream, contentLength
  * needs to be passed too.
+ *
+ * All transactions will be spanning over to results.
  */
-@TransactionAware(readOnly = true)
+@Span(@Transactional(readOnly = true))
 public class FetchObjectAction extends BaseActionSupport {
   private static final Log    log             = LogFactory.getLog(FetchObjectAction.class);
   private static final String SMALL_BLOB_SIZE = "ambra.cache.smallBlobSize";
@@ -98,6 +101,7 @@ public class FetchObjectAction extends BaseActionSupport {
     contentLength = rep.getSize();
 
     long smallBlobSizeBytes = configuration.getLong(SMALL_BLOB_SIZE, 0l) * 1024l;
+                                                                                                                                                     
 
     if (rep.getSize() <= smallBlobSizeBytes) {
       inputByteArray = smallBlobService.getSmallBlob(rep);

@@ -22,68 +22,162 @@ package org.topazproject.ambra.struts2;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionProxy;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.beans.factory.annotation.Required;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.lang.annotation.Annotation;
 
 /**
- * Struts interceptor will wrap read-only transaction around actions that implement
- * OtmTransactionAware interface.
- *
+ * Struts interceptor that will wrap a Spring managed transaction around action and result.
+ * Transaction parameters are specified in nested annotation.
+ * <p/>
  * Use when you want transaction to span beyond your action method into result.
  *
  * @author Dragisa Krsmanovic
  */
 public class TransactionInterceptor extends AbstractInterceptor {
 
-  private TransactionalActionInvoker txActionInvoker;
+  private static final Log log = LogFactory.getLog(TransactionInterceptor.class);
 
-  public String intercept(ActionInvocation actionInvocation) throws Exception {
+  private PlatformTransactionManager txManager;
+
+  public String intercept(final ActionInvocation actionInvocation) throws Exception {
+
     Action action = (Action) actionInvocation.getAction();
+    ActionProxy actionProxy = actionInvocation.getProxy();
+    String methodName = actionProxy.getMethod();
 
-    TransactionAware annotation = action.getClass().getAnnotation(TransactionAware.class);
-    if (annotation != null) {
-      if (annotation.readOnly())
-        return txActionInvoker.invokeReadOnly(actionInvocation);
-      else
-        return txActionInvoker.invoke(actionInvocation);
+    Span span = getAnnotation(action.getClass(), methodName, Span.class);
+
+    if (span != null) {
+
+      if (log.isDebugEnabled())
+        log.debug("Interceped " + action.getClass().getName() + "." + methodName + "(...)");
+
+      final Transactional transactional = span.value();
+
+      TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+      txTemplate.setReadOnly(transactional.readOnly());
+      txTemplate.setTimeout(transactional.timeout());
+      txTemplate.setIsolationLevel(transactional.isolation().value());
+      txTemplate.setPropagationBehavior(transactional.propagation().value());
+
+      CallbackResult callbackResult = (CallbackResult) txTemplate.execute(new TransactionCallback() {
+        public CallbackResult doInTransaction(TransactionStatus transactionStatus) {
+          CallbackResult result = new CallbackResult();
+          try {
+            result.setResult(actionInvocation.invoke());
+          } catch (Exception e) {
+
+            /*
+            Callback does not throw exception. We need to pass Exception object in the return
+            parameter so we can throw it in the calling method.
+            */
+
+            boolean noRollback = false;
+
+            if (transactional.noRollbackFor() != null) {
+              for (Class<? extends Throwable> exception : transactional.noRollbackFor()) {
+                if (exception.isInstance(e)) {
+                  noRollback = true;
+                  break;
+                }
+              }
+            }
+
+            if (!noRollback && transactional.rollbackFor() != null) {
+              for (Class<? extends Throwable> exception : transactional.rollbackFor()) {
+                if (exception.isInstance(e)) {
+                  transactionStatus.setRollbackOnly();
+                  break;
+                }
+              }
+            }
+            result.setException(e);
+          }
+          return result;
+        }
+      });
+
+      if (callbackResult.getException() != null)
+        throw callbackResult.getException();
+
+      return callbackResult.getResult();
+
     } else {
       return actionInvocation.invoke();
     }
   }
 
+  private <A extends Annotation> A getAnnotation(Class<? extends Action> actionClass,
+    String methodName, Class<A> annotationType) throws Exception {
+    A annotation = actionClass.getAnnotation(annotationType);
+    if (annotation == null) {
+      annotation = getMethodAnnotation(actionClass, methodName, annotationType);
+    }
+
+    return annotation;
+  }
+
+  private <A extends Annotation> A getMethodAnnotation(Class<? extends Action> actionClass,
+    String methodName, Class<A> annotationType) {
+    try {
+      Method method = actionClass.getDeclaredMethod(methodName);
+      A annotation = method.getAnnotation(annotationType);
+      if (annotation == null) {
+        Class parent = actionClass.getSuperclass();
+        if (Action.class.isAssignableFrom(parent)) {
+          annotation = getMethodAnnotation((Class<? extends Action>) parent,
+              methodName, annotationType);
+        }
+      }
+      return annotation;
+    } catch (NoSuchMethodException e) {
+      return null;
+    }
+  }
+
   /**
-   * Spring setter method. Sets external class for invoking Transactional method.
+   * Spring setter method. Sets Spring transaction manager
    *
-   * @param txActionInvoker Class that has transactional method for invoking Struts action.
+   * @param txManager Transaction manager
    */
   @Required
-  public void setTxActionInvoker(TransactionalActionInvoker txActionInvoker) {
-    this.txActionInvoker = txActionInvoker;
+  public void setTxManager(PlatformTransactionManager txManager) {
+    this.txManager = txManager;
   }
 
   /**
-   * Spring managed bean that allows actionInvocation.invoke() to be invoked withing transaction.
-   *
-   * @author Dragisa Krsmanovic
+   * Return value from TransactionTemplate callback. Encapsulates possible Exception.
    */
-  public static class TransactionalActionInvoker implements Serializable {
+  private class CallbackResult {
 
-    /**
-     * Invoke action inside a transaction.
-     * @param actionInvocation Struts Interceptor action invocation object.
-     * @return Struts result.
-     * @throws Exception
-     */
-    @Transactional(readOnly = true)
-    public String invokeReadOnly(ActionInvocation actionInvocation) throws Exception {
-      return actionInvocation.invoke();
+    private String result;
+    private Exception exception;
+
+    public String getResult() {
+      return result;
     }
 
-    @Transactional(rollbackFor = { Throwable.class })
-    public String invoke(ActionInvocation actionInvocation) throws Exception {
-      return actionInvocation.invoke();
+    public void setResult(String result) {
+      this.result = result;
+    }
+
+    public Exception getException() {
+      return exception;
+    }
+
+    public void setException(Exception exception) {
+      this.exception = exception;
     }
   }
+
 }

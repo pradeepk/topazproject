@@ -19,25 +19,30 @@
 
 package org.topazproject.ambra.struts2;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.springframework.transaction.annotation.Transactional;
+
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
 import java.lang.annotation.Target;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
 
 /**
  * Struts action that are marked with this annotation signal to TransactionInterceptor that it
- * needs to wrap transaction around action invocation. Use when you want transaction to span beyond
- * action and into results.
+ * needs to wrap transaction around action invocation.
+ * <p/>
+ * Use when you want transaction to span beyond action and into results. Transaction parameters are
+ * specified in the nested Transactional annotation. Can be applied to whole Action class or
+ * to individual methods.
  *
  * @see TransactionInterceptor
  * @author Dragisa Krsmanovic
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface TransactionAware {
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@Inherited
+public @interface Span {
 
-  /**
-   * @return true if transaction is read-only, false if it's read-write
-   */
-  boolean readOnly() default false;
+  Transactional value();
+  
 }
