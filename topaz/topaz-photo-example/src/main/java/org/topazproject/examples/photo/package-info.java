@@ -5,12 +5,14 @@
          type = Rdf.mulgara + "XMLSchemaModel"),
   @Graph(id = "prefix", uri = "local:///topazproject#prefix",
          type = Rdf.mulgara + "PrefixGraph"),
-  @Graph(id = "photo", uri = "local:///topazproject#photo")
+  @Graph(id = "photo", uri = "local:///topazproject#photo"),
+  @Graph(id = "foaf",  uri = "local:///topazproject#foaf")
 })
 
 @Aliases({
   @Alias(alias = "dc",       value = Rdf.dc),
-  @Alias(alias = "topaz",    value = Rdf.topaz)
+  @Alias(alias = "topaz",    value = Rdf.topaz),
+  @Alias(alias = "foaf",     value = Rdf.foaf)
 })
 
 package org.topazproject.examples.photo;

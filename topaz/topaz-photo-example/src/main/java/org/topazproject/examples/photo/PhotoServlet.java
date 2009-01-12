@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,12 +23,14 @@ public class PhotoServlet extends HttpServlet {
   private static final Log    log  = LogFactory.getLog(PhotoServlet.class);
   private SessionFactory factory;
   private PhotoService   photoService;
+  private PersonService  personService;
 
   @Override
   public void init() throws ServletException {
     TopazConfigurator conf = new TopazConfigurator();
     factory        = conf.getSessionFactory();
     photoService   = new PhotoService();
+    personService  = new PersonService();
   }
 
   @Override
@@ -77,30 +80,72 @@ public class PhotoServlet extends HttpServlet {
       if (id == null) {
         respond(session, resp, "id must be specified", "red");
       } else if ("create".equals(action) || "update".equals(action)) {
-        try {
-          URI uri = new URI(id);
-          if (!uri.isAbsolute())
-            respond(session, resp, "id must be an absolute URI", "red");
-          else {
-            log.info("About to " + action + " photo with id = " + id);
-            photoService.createPhoto(session, uri, req.getParameter("title"));
-            respond(session, resp, action + "d photo with id : " + id, "green");
-          }
-        } catch (URISyntaxException e) {
-          respond(session, resp, "id must be a valid URI", "red");
-        }
+        processCreate(id, action, req, resp, session);
       } else if ("delete".equals(action)) {
-        log.info("About to " + action + " photo with id = " + id);
+        log.info("About to " + action + " object with id = " + id);
         Photo photo = session.get(Photo.class, id);
-
         if (photo != null)
           session.delete(photo);
 
-        respond(session, resp, action + "d photo with id : " + id, "green");
+        FoafPerson person = session.get(FoafPerson.class, id);
+        if (person != null)
+          session.delete(person);
+
+        respond(session, resp, action + "d object with id : " + id, "green");
       } else {
         respond(session, resp, "unknown action '" + action + "'", "red");
       }
     }
+  }
+
+  protected void processCreate(String id, String action, HttpServletRequest req
+                               , HttpServletResponse resp, Session session)
+                               throws IOException, OtmException {
+    URI uri;
+    try {
+      uri = new URI(id);
+    } catch (URISyntaxException e) {
+      respond(session, resp, "id must be a valid URI", "red");
+      return;
+    }
+
+    if (!uri.isAbsolute()) {
+      respond(session, resp, "id must be an absolute URI", "red");
+      return;
+    }
+
+    String givenname = req.getParameter("givenname");
+    String surname = req.getParameter("surname");
+    // Try an exact match first
+    List<FoafPerson> people = personService.findPeople(session, givenname,
+                                                       surname, false);
+    FoafPerson creator;
+    boolean wild = false;
+    if (people.size() == 0) {
+      // Try a wild match
+      people = personService.findPeople(session, givenname, surname, true);
+      wild = true;
+    }
+
+    switch(people.size()) {
+      case 0:
+        creator = personService.newPerson(givenname, surname);
+        break;
+      case 1:
+        creator = people.get(0);
+        break;
+      default:
+        creator = wild ? personService.newPerson(givenname, surname)
+                       : people.get(0);
+    }
+
+    if ((creator != null) && (creator.getId() == null))
+      log.info("About to create a new FoafPerson with name = " 
+               + creator.getGivenname() + " " + creator.getSurname());
+
+    log.info("About to " + action + " photo with id = " + id);
+    photoService.createPhoto(session, uri, req.getParameter("title"), creator);
+    respond(session, resp, action + "d photo with id : " + id, "green");
   }
 
   protected void respond(Session session, HttpServletResponse resp,
@@ -108,30 +153,74 @@ public class PhotoServlet extends HttpServlet {
     PrintWriter out = resp.getWriter();
     out.println("<html><head><title>Photo Manager</title></head><body>");
 
-    out.println("<h2>Photo Manager</h2>");
     if (message != null)
       out.println("<b><i><font color='" + color + "'>"  + message 
                   + "</font></i></b>");
 
+    printPhotos(session, out);
+    printPeople(session, out);
+
+    out.println("</body></html>");
+    out.flush();
+  }
+
+  protected void printPhotos(Session session, PrintWriter out)
+    throws IOException, OtmException {
+    out.println("<h2>Photo Manager</h2>");
     out.println("<table border='2'>");
-    out.println("<tr><th>id</th><th>title</th><th>action</th></tr>");
+    out.println("<tr><th>id</th><th>title</th><th>givenname</th>");
+    out.println("<th>surname</th><th>action</th></tr>");
     out.println("<tr><form method='post'>");
     out.println("<td><input name='id'></td><td><input name='title'></td>");
+    out.println("<td><input name='givenname'></td>");
+    out.println("<td><input name='surname'></td>");
     out.println("<td><input type='submit' name='action' value='create'></td>");
     out.println("</form></tr>");
 
     for (Photo photo : photoService.listPhotos(session)) {
+      FoafPerson creator = photo.getCreator();
+      String gn = (creator == null) ? "" : creator.getGivenname();
+      String sn = (creator == null) ? "" : creator.getSurname();
+      if (gn == null)
+        gn = "";
+      if (sn == null)
+        sn = "";
       out.println("<tr><form method='post'>");
       out.println("<td><input name='id' type='hidden' value='" + photo.getId() + "'>"
                   + photo.getId() + "</td>");
       out.println("<td><input name='title' value='" + photo.getTitle() + "'></td>");
+      out.println("<td><input name='givenname' value='" + gn + "'></td>");
+      out.println("<td><input name='surname' value='" + sn + "'></td>");
       out.println("<td><input type='submit' name='action' value='update'>");
       out.println("<input type='submit' name='action' value='delete'></td>");
       out.println("</form></tr>");
     }
 
-    out.println("</table></body></html>");
+    out.println("</table>");
+  }
 
-    out.flush();
+  protected void printPeople(Session session, PrintWriter out)
+    throws IOException, OtmException {
+    out.println("<h2>People Manager</h2>");
+    out.println("<table border='2'>");
+    out.println("<tr><th>givenname</th>");
+    out.println("<th>surname</th><th>action</th></tr>");
+
+    for (FoafPerson person : personService.findPeople(session, null, null, true)) {
+      String gn = person.getGivenname();
+      String sn = person.getSurname();
+      if (gn == null)
+        gn = "";
+      if (sn == null)
+        sn = "";
+      out.println("<tr><form method='post'>");
+      out.println("<td>" + gn + "</td>");
+      out.println("<td>" + sn + "</td>");
+      out.println("<td><input type='hidden' name='id' value='" + person.getId() +"'>");
+      out.println("<input type='submit' name='action' value='delete'></td>");
+      out.println("</form></tr>");
+    }
+
+    out.println("</table>");
   }
 }

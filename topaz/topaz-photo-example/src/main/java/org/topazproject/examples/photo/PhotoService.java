@@ -12,7 +12,8 @@ import org.topazproject.otm.query.Results;
 
 public class PhotoService {
 
-  public void createPhoto(Session session, URI id, String title) throws OtmException {
+  public void createPhoto(Session session, URI id, String title, 
+      FoafPerson creator) throws OtmException {
     Photo photo = session.get(Photo.class, id.toString());
     if (photo == null) {
       photo = new Photo();
@@ -20,6 +21,7 @@ public class PhotoService {
     }
     photo.setTitle(title);
     photo.setDate(new Date());
+    photo.setCreator(creator);
     if (!session.contains(photo))
       session.saveOrUpdate(photo);
   }

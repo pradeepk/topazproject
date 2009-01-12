@@ -3,6 +3,8 @@ package org.topazproject.examples.photo;
 import java.net.URI;
 import java.util.Date;
 
+import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
@@ -12,6 +14,7 @@ public class Photo {
   private URI id;
   private String title;
   private Date date;
+  private FoafPerson creator;
 
   public URI getId() {return id;}
   @Id
@@ -24,4 +27,8 @@ public class Photo {
   public Date getDate(){return date;}
   @Predicate(uri="dc:date")
   public void setDate(Date date) {this.date = date;}
+
+  public FoafPerson getCreator(){return creator;}
+  @Predicate(uri="dc:creator", cascade={CascadeType.peer}, fetch=FetchType.lazy)
+  public void setCreator(FoafPerson creator) {this.creator = creator;}
 }
