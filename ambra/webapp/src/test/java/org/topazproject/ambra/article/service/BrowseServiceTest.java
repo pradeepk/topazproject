@@ -20,8 +20,8 @@
 package org.topazproject.ambra.article.service;
 
 import org.testng.annotations.Test;
-import static org.testng.Assert.*;
-import static org.easymock.classextension.EasyMock.*;
+import org.testng.Assert;
+import org.easymock.classextension.EasyMock;
 import org.easymock.classextension.IMocksControl;
 import org.topazproject.ambra.model.article.Years;
 import org.topazproject.ambra.cache.CacheManager;
@@ -37,7 +37,7 @@ public class BrowseServiceTest {
   @Test
   public void testGetArticleDates() throws Exception{
 
-    IMocksControl ctrl = createStrictControl();
+    IMocksControl ctrl = EasyMock.createStrictControl();
 
     JournalService journalService = ctrl.createMock(JournalService.class);
     CacheManager cacheManager = ctrl.createMock(CacheManager.class);
@@ -48,18 +48,18 @@ public class BrowseServiceTest {
     MockCache cache = new MockCache();
     cache.setCacheManager(cacheManager);
 
-    cacheManager.registerListener(isA(AbstractObjectListener.class));
-    expectLastCall().times(0,1);
-    expect(journalService.getCurrentJournalName()).andReturn("this-test");
-    expect(session.createQuery("select a.dublinCore.date from Article a;")).andReturn(query);
-    expect(query.execute()).andReturn(results);
+    cacheManager.registerListener(EasyMock.isA(AbstractObjectListener.class));
+    EasyMock.expectLastCall().times(0,1);
+    EasyMock.expect(journalService.getCurrentJournalName()).andReturn("this-test");
+    EasyMock.expect(session.createQuery("select a.dublinCore.date from Article a;")).andReturn(query);
+    EasyMock.expect(query.execute()).andReturn(results);
     results.beforeFirst();
-    expectLastCall();
-    expect(results.next()).andReturn(true);
-    expect(results.getString(0)).andReturn("2008-02-22");
-    expect(results.next()).andReturn(true);
-    expect(results.getString(0)).andReturn("2008-11-01");
-    expect(results.next()).andReturn(false);
+    EasyMock.expectLastCall();
+    EasyMock.expect(results.next()).andReturn(true);
+    EasyMock.expect(results.getString(0)).andReturn("2008-02-22");
+    EasyMock.expect(results.next()).andReturn(true);
+    EasyMock.expect(results.getString(0)).andReturn("2008-11-01");
+    EasyMock.expect(results.next()).andReturn(false);
 
     ctrl.replay();
 
@@ -74,7 +74,7 @@ public class BrowseServiceTest {
     dates.getMonths(2008).getDays(2).add(22);
     dates.getMonths(2008).getDays(11).add(1);
 
-    assertEquals(result, dates);
+    Assert.assertEquals(result, dates);
     ctrl.verify();
   }
 }
