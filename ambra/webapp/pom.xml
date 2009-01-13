@@ -159,6 +159,12 @@
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-core</artifactId>
       <version>2.0.11.2</version>
+      <exclusions>
+        <exclusion>
+          <groupId>freemarker</groupId>
+          <artifactId>freemarker</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -345,11 +351,11 @@
     <plugins>
       <!--
         mvn clean jetty:run to run the webapp.
-        
+
         To enable remote debug on port 4000
         export MAVEN_OPTS="-Xdebug -Xnoagent -Djava.compiler=NONE \
                             -Xrunjdwp:transport=dt_socket,address=4000,server=y,suspend=n"
-        
+
         If you supply suspend=n instead of suspend=y you can start immediately without running the
         debugger and launch the debugger at anytime you really wish to debug.
         -->
