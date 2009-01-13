@@ -56,27 +56,27 @@ public class HttpResourceServer {
   /**
    * The input buffer size to use when serving resources.
    */
-  protected int input = 2048;
+  private static final int INPUT_BUFFER_SIZE = 2048;
 
   /**
    * The output buffer size to use when serving resources.
    */
-  protected int output = 2048;
+  private static final int OUTPUT_BUFFER_SIZE = 2048;
 
   /**
    * File encoding to be used when reading static files. If none is specified  UTF-8 is used.
    */
-  protected String fileEncoding = "UTF-8";
+  private static final String FILE_ENCODING = "UTF-8";
 
   /**
    * Full range marker.
    */
-  protected static final ArrayList<Range> FULL = new ArrayList<Range>();
+  private static final ArrayList<Range> FULL = new ArrayList<Range>();
 
   /**
    * MIME multipart separation string
    */
-  protected static final String mimeSeparation = "AMBRA_MIME_BOUNDARY";
+  private static final String MIME_SEPARATION = "AMBRA_MIME_BOUNDARY";
 
   /**
    * Serve the specified resource, optionally including the data content.
@@ -185,11 +185,11 @@ public class HttpResourceServer {
           }
         }
       } else {
-        response.setContentType("multipart/byteranges; boundary=" + mimeSeparation);
+        response.setContentType("multipart/byteranges; boundary=" + MIME_SEPARATION);
 
         if (content) {
           try {
-            response.setBufferSize(output);
+            response.setBufferSize(OUTPUT_BUFFER_SIZE);
           } catch (IllegalStateException e) {
             // Silent catch
           }
@@ -230,7 +230,7 @@ public class HttpResourceServer {
     // Copy the input stream to our output stream (if requested)
     if (content) {
       try {
-        response.setBufferSize(output);
+        response.setBufferSize(OUTPUT_BUFFER_SIZE);
       } catch (IllegalStateException e) {
         // Silent catch
       }
@@ -311,7 +311,7 @@ public class HttpResourceServer {
    *
    * @throws IOException on an error
    */
-  protected ArrayList parseRange(HttpServletRequest request, HttpServletResponse response,
+  protected ArrayList<Range> parseRange(HttpServletRequest request, HttpServletResponse response,
                                  Resource resource) throws IOException {
     // Checking If-Range
     String headerValue = request.getHeader("If-Range");
@@ -669,7 +669,7 @@ public class HttpResourceServer {
 
     InputStream resourceInputStream = resource.streamContent();
 
-    InputStream istream = new BufferedInputStream(resourceInputStream, input);
+    InputStream istream = new BufferedInputStream(resourceInputStream, INPUT_BUFFER_SIZE);
 
     // Copy the input stream to the output stream
     IOException exception = copyRange(istream, ostream);
@@ -696,13 +696,7 @@ public class HttpResourceServer {
 
     InputStream resourceInputStream = resource.streamContent();
 
-    Reader reader;
-
-    if (fileEncoding == null) {
-      reader                        = new InputStreamReader(resourceInputStream);
-    } else {
-      reader = new InputStreamReader(resourceInputStream, fileEncoding);
-    }
+    Reader reader = new InputStreamReader(resourceInputStream, FILE_ENCODING);
 
     // Copy the input stream to the output stream
     IOException exception = copyRange(reader, writer);
@@ -729,7 +723,7 @@ public class HttpResourceServer {
                throws IOException {
 
     InputStream resourceInputStream = resource.streamContent();
-    InputStream istream             = new BufferedInputStream(resourceInputStream, input);
+    InputStream istream             = new BufferedInputStream(resourceInputStream, INPUT_BUFFER_SIZE);
     IOException exception           = copyRange(istream, ostream, range.start, range.end);
 
     // Clean up the input stream
@@ -755,13 +749,7 @@ public class HttpResourceServer {
 
     InputStream resourceInputStream = resource.streamContent();
 
-    Reader      reader;
-
-    if (fileEncoding == null) {
-      reader                        = new InputStreamReader(resourceInputStream);
-    } else {
-      reader = new InputStreamReader(resourceInputStream, fileEncoding);
-    }
+    Reader      reader = new InputStreamReader(resourceInputStream, FILE_ENCODING);
 
     IOException exception = copyRange(reader, writer, range.start, range.end);
 
@@ -790,13 +778,13 @@ public class HttpResourceServer {
 
     while ((exception == null) && (ranges.hasNext())) {
       InputStream resourceInputStream = resource.streamContent();
-      InputStream istream             = new BufferedInputStream(resourceInputStream, input);
+      InputStream istream             = new BufferedInputStream(resourceInputStream, INPUT_BUFFER_SIZE);
 
       Range       currentRange        = (Range) ranges.next();
 
       // Writing MIME header.
       ostream.println();
-      ostream.println("--" + mimeSeparation);
+      ostream.println("--" + MIME_SEPARATION);
 
       if (contentType != null)
         ostream.println("Content-Type: " + contentType);
@@ -812,7 +800,7 @@ public class HttpResourceServer {
     }
 
     ostream.println();
-    ostream.print("--" + mimeSeparation + "--");
+    ostream.print("--" + MIME_SEPARATION + "--");
 
     // Rethrow any exception that has occurred
     if (exception != null)
@@ -837,19 +825,13 @@ public class HttpResourceServer {
     while ((exception == null) && (ranges.hasNext())) {
       InputStream resourceInputStream = resource.streamContent();
 
-      Reader      reader;
-
-      if (fileEncoding == null) {
-        reader                        = new InputStreamReader(resourceInputStream);
-      } else {
-        reader = new InputStreamReader(resourceInputStream, fileEncoding);
-      }
+      Reader      reader = new InputStreamReader(resourceInputStream, FILE_ENCODING);
 
       Range currentRange = (Range) ranges.next();
 
       // Writing MIME header.
       writer.println();
-      writer.println("--" + mimeSeparation);
+      writer.println("--" + MIME_SEPARATION);
 
       if (contentType != null)
         writer.println("Content-Type: " + contentType);
@@ -865,7 +847,7 @@ public class HttpResourceServer {
     }
 
     writer.println();
-    writer.print("--" + mimeSeparation + "--");
+    writer.print("--" + MIME_SEPARATION + "--");
 
     // Rethrow any exception that has occurred
     if (exception != null)
@@ -884,7 +866,7 @@ public class HttpResourceServer {
   protected IOException copyRange(InputStream istream, ServletOutputStream ostream) {
     // Copy the input stream to the output stream
     IOException exception = null;
-    byte[]      buffer    = new byte[input];
+    byte[]      buffer    = new byte[INPUT_BUFFER_SIZE];
     int         len;
 
     while (true) {
@@ -916,7 +898,7 @@ public class HttpResourceServer {
   protected IOException copyRange(Reader reader, PrintWriter writer) {
     // Copy the input stream to the output stream
     IOException exception = null;
-    char[]      buffer    = new char[input];
+    char[]      buffer    = new char[INPUT_BUFFER_SIZE];
     int         len;
 
     while (true) {
@@ -961,7 +943,7 @@ public class HttpResourceServer {
     IOException exception   = null;
     long        bytesToRead = end - start + 1;
 
-    byte[]      buffer      = new byte[input];
+    byte[]      buffer      = new byte[INPUT_BUFFER_SIZE];
     int         len         = buffer.length;
 
     while ((bytesToRead > 0) && (len >= buffer.length)) {
@@ -1008,7 +990,7 @@ public class HttpResourceServer {
     IOException exception   = null;
     long        bytesToRead = end - start + 1;
 
-    char[]      buffer      = new char[input];
+    char[]      buffer      = new char[INPUT_BUFFER_SIZE];
     int         len         = buffer.length;
 
     while ((bytesToRead > 0) && (len >= buffer.length)) {
