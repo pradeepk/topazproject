@@ -1,7 +1,9 @@
 package org.topazproject.examples.photo;
 
 import java.net.URI;
+import java.util.Set;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -13,6 +15,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 public class FoafPerson {
   private URI id;
   private String givenname, surname;
+  private Set<Photo> myPhotos;
 
   public URI getId() {return id;}
   @Id
@@ -26,5 +29,10 @@ public class FoafPerson {
   public String getSurname() {return surname;}
   @Predicate()
   public void setSurname(String name) {this.surname = name;}
+
+  public Set<Photo> getMyPhotos() {return myPhotos;}
+  @Predicate(uri="dc:creator", inverse=Predicate.BT.TRUE,
+             cascade = {CascadeType.child})
+  public void setMyPhotos(Set<Photo> myPhotos) {this.myPhotos = myPhotos;}
 }
 

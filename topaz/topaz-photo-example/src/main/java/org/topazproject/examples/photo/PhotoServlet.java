@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -204,9 +205,18 @@ public class PhotoServlet extends HttpServlet {
     out.println("<h2>People Manager</h2>");
     out.println("<table border='2'>");
     out.println("<tr><th>givenname</th>");
-    out.println("<th>surname</th><th>action</th></tr>");
+    out.println("<th>surname</th>");
+    out.println("<th>my photos</th>");
+    out.println("<th>action</th></tr>");
 
     for (FoafPerson person : personService.findPeople(session, null, null, true)) {
+      /*
+       * Since we didn't update the myPhotos list on create/delete, we'll ask 
+       * Topaz to refresh. Note that all changes are automatically flush()ed
+       * before executing a query. (like the query executed by findPeople()
+       * above for example)
+       */
+      session.refresh(person);
       String gn = person.getGivenname();
       String sn = person.getSurname();
       if (gn == null)
@@ -216,11 +226,25 @@ public class PhotoServlet extends HttpServlet {
       out.println("<tr><form method='post'>");
       out.println("<td>" + gn + "</td>");
       out.println("<td>" + sn + "</td>");
+      out.println("<td>" + myPhotoList(person.getMyPhotos()) + "</td>");
       out.println("<td><input type='hidden' name='id' value='" + person.getId() +"'>");
       out.println("<input type='submit' name='action' value='delete'></td>");
       out.println("</form></tr>");
     }
 
     out.println("</table>");
+  }
+
+  protected String myPhotoList(Set<Photo> photos) {
+    if ((photos == null) || (photos.size() == 0))
+      return "";
+
+    StringBuilder s = new StringBuilder();
+    for (Photo p : photos)
+      s.append(p.getId()).append("<br/>");
+
+    s.setLength(s.length() - 5);
+
+    return s.toString();
   }
 }
