@@ -534,7 +534,7 @@
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
- 
+
     <!--
       ArticleAnnotationCache.
       This cache stores Article(transformed)/ArticleInfo/Annotation/Citation.
@@ -595,7 +595,7 @@
            maxElementsInMemory="10000"
            eternal="false"
            timeToIdleSeconds="0"
-           timeToLiveSeconds="82800" 
+           timeToLiveSeconds="82800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
@@ -632,29 +632,14 @@
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
     <!--
-    OTM Second-Level cache for Representation objects (article blobs). 
-    This cache does not replicate or bootstrap from peers. But changes are 
+    Ambra cache for small binary object. Size of objects that qualifies for caching is defined in
+    ambra.cache.smallBlobSize configuration parameter.
+    This cache does not replicate or bootstrap from peers. But changes are
     notified to the peers. (eg. from re-ingest or delete of Articles).
     This is also not an eternal cache. That was done to make sure that
-    the cache doesn't fill up the disk with large blobs. An idle timeout
+    the cache doesn't fill up the disk with blobs. An idle timeout
     is added so that frequently used blobs will always remain in cache.
-    Adjust this timer to control the size of the cache. 
-    -->
-    <cache name="RepresentationCache"
-           maxElementsInMemory="2000"
-           eternal="false"
-           timeToIdleSeconds="1800"
-           timeToLiveSeconds="0"
-           memoryStoreEvictionPolicy="LFU"
-           overflowToDisk="true"
-           diskPersistent="false">
-        <cacheEventListenerFactory
-                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-                properties="replicatePuts=false,replicateUpdatesViaCopy=false"/>
-    </cache>
-    <!--
-    Ambra cache for small binary object. Size of objects that qualifies for caching is defined in
-    ambra.cache.smallBlobSize configuration parameter
+    Adjust this timer to control the size of the cache.
     -->
     <cache name="SmallBlobCache"
            maxElementsInMemory="2000"

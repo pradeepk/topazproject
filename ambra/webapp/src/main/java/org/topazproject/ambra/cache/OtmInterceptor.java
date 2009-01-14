@@ -58,20 +58,18 @@ public class OtmInterceptor implements Interceptor {
   private static final String  NO_JOURNAL     = "__NO_JOURNAL__";
   private final CacheManager   cacheManager;
   private final Cache          objCache;
-  private final Cache          repCache;
   private final JournalService journalService;
 
   /**
    * Creates a new OtmInterceptor object.
    *
+   * @param cacheManager Cache manager
    * @param objCache the object cache
    * @param journalService the journal service
    */
-  public OtmInterceptor(CacheManager cacheManager, Cache objCache, Cache repCache,
-                        JournalService journalService) {
+  public OtmInterceptor(CacheManager cacheManager, Cache objCache, JournalService journalService) {
     this.cacheManager                         = cacheManager;
     this.objCache                             = objCache;
-    this.repCache                             = repCache;
     this.journalService                       = journalService;
   }
 
@@ -114,7 +112,7 @@ public class OtmInterceptor implements Interceptor {
       }
     }
 
-    Cache.Item val = getCache(cm).get(id);
+    Cache.Item val = objCache.get(id);
 
     if (val == null) {
       if (log.isDebugEnabled())
@@ -139,8 +137,7 @@ public class OtmInterceptor implements Interceptor {
       return; // since we can't safely invalidate
 
     if (instance != null) {
-      Cache cache = getCache(cm);
-      Cache.Item item = cache.get(id);
+      Cache.Item item = objCache.get(id);
       Object     val  = (item == null) ? null : item.getValue();
       Entry      e;
 
@@ -153,7 +150,7 @@ public class OtmInterceptor implements Interceptor {
       }
 
       e.set(session, cm, id, instance, fields, blob);
-      cache.put(id, e);
+      objCache.put(id, e);
     }
 
     if (isFiltered(session, cm)) {
@@ -227,7 +224,7 @@ public class OtmInterceptor implements Interceptor {
     if (log.isDebugEnabled())
       log.debug(cm.getName() + " with id <" + id + "> is deleted.");
 
-    getCache(cm).remove(id);
+    objCache.remove(id);
 
     if (isFiltered(session, cm)) {
       for (String journal : journalService.getAllJournalNames())
@@ -269,10 +266,6 @@ public class OtmInterceptor implements Interceptor {
     }
 
     return false;
-  }
-
-  private Cache getCache(ClassMetadata cm) {
-    return "Representation".equals(cm.getName()) ? repCache : objCache;
   }
 
   private void journalChanged(String journal, boolean deleted) {

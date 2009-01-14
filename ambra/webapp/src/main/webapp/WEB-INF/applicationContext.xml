@@ -299,10 +299,6 @@
     <constructor-arg index="0" ref="txCacheManager"/>
     <constructor-arg index="1" ref="objectEhcache"/>
   </bean>
-  <bean id="repCache" class="org.topazproject.ambra.cache.EhcacheProvider">
-    <constructor-arg index="0" ref="txCacheManager"/>
-    <constructor-arg index="1" ref="repEhcache"/>
-  </bean>
   <bean id="smallBlobCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0" ref="txCacheManager"/>
     <constructor-arg index="1" ref="smallBlobEhcache"/>
@@ -310,8 +306,7 @@
   <bean id="otmInterceptor" class="org.topazproject.ambra.cache.OtmInterceptor">
     <constructor-arg index="0" ref="txCacheManager"/>
     <constructor-arg index="1" ref="objectCache"/>
-    <constructor-arg index="2" ref="repCache"/>
-    <constructor-arg index="3" ref="journalService"/>
+    <constructor-arg index="2" ref="journalService"/>
   </bean>
   <bean id="browseCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0" ref="txCacheManager"/>
@@ -385,10 +380,6 @@
 
   <bean id="objectEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
     <property name="cacheName" value="ObjectCache"/>
-  </bean>
-
-  <bean id="repEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-    <property name="cacheName" value="RepresentationCache"/>
   </bean>
 
   <bean id="smallBlobEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
