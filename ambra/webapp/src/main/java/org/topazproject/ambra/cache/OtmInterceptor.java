@@ -149,7 +149,7 @@ public class OtmInterceptor implements Interceptor {
         blob          = cm.getBlobField();
       }
 
-      e.set(session, cm, id, instance, fields, blob);
+      e.set(session, cm, instance, fields, blob);
       objCache.put(id, e);
     }
 
@@ -374,7 +374,7 @@ public class OtmInterceptor implements Interceptor {
       return true;
     }
 
-    public void set(Session sess, ClassMetadata cm, String id, Object instance,
+    public void set(Session sess, ClassMetadata cm, Object instance,
                     Collection<RdfMapper> fields, BlobMapper blobField) {
       types.addAll(cm.getAllTypes());
 
@@ -410,7 +410,7 @@ public class OtmInterceptor implements Interceptor {
           // cache predicate-map values
           Map<String, List<String>> pmap = (Map<String, List<String>>) b.getRawValue(instance, true);
           for (String uri : pmap.keySet())
-            fvalues.put(uri, new ArrayList(pmap.get(uri)));
+            fvalues.put(uri, new ArrayList<String>(pmap.get(uri)));
           break;
         }
       }
@@ -437,7 +437,7 @@ public class OtmInterceptor implements Interceptor {
           nv = b.get(instance);
         else {
           List          a  = b.get(instance);
-          List<String>  v  = new ArrayList(a.size());
+          List<String>  v  = new ArrayList<String>(a.size());
           ClassMetadata am =
             sess.getSessionFactory().getClassMetadata(m.getAssociatedEntity());
 
@@ -480,7 +480,7 @@ public class OtmInterceptor implements Interceptor {
       Map<String, List<String>> dest = new HashMap<String, List<String>>(src.size());
 
       for (String name : src.keySet())
-        dest.put(name, new ArrayList(src.get(name)));
+        dest.put(name, new ArrayList<String>(src.get(name)));
 
       return dest;
     }
