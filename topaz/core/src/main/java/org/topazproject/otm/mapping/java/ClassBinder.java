@@ -254,18 +254,20 @@ public class ClassBinder<T> implements EntityBinder {
     for (RdfMapper m : cm.getRdfMappers()) {
       List<String> v = m.hasInverseUri() ? rvalues.get(m.getUri()) : fvalues.get(m.getUri());
 
-      if ((v == null) || (v.size() == 0))
-        continue;
+      if (v == null)
+        v = Collections.emptyList();
 
-      if ((pmap != null) && !m.hasInverseUri())
-        pmap.remove(m.getUri());
+      if (!v.isEmpty()) {
+        if ((pmap != null) && !m.hasInverseUri())
+          pmap.remove(m.getUri());
 
-      if (!m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
-        v = loadCollection(id, m, session);
+        if (!m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
+          v = loadCollection(id, m, session);
+      }
 
       PropertyBinder b = m.getBinder(EntityMode.POJO);
 
-      if ((lh == null) || !m.isAssociation())
+      if ((lh == null) || !m.isAssociation() || v.isEmpty())
         b.load(instance, v, m, session);
       else {
         lh.setRawFieldData(b = getLocal(b), newRawFieldData((LazyLoaded) instance, v, result));

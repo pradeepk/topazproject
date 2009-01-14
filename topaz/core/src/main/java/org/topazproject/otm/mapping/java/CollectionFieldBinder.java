@@ -85,11 +85,11 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
    */
   public void set(Object o, List vals) throws OtmException {
     Collection value = (getGetter() == null) ? null: (Collection) getRawValue(o, false);
-    boolean create = (value == null);
+    boolean create = (value == null) && !vals.isEmpty();
 
     if (create)
       value = newInstance();
-    else
+    else if (value != null)
       value.clear();
 
     for (Object v : vals)

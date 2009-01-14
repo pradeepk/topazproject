@@ -255,11 +255,11 @@ public class FilterTest extends AbstractTest {
           assertNull(s.get(clsN, n1.id.toString()));
           assertNull(s.get(clsEN, n2.id.toString()));
           assertNull(s.get(clsXN, n3.id.toString()));
-          assertEquals(col ? [] : null, s.get(cls, o1.id.toString()).name);
-          assertEquals(col ? [] : null, s.get(cls, o2.id.toString()).name);
-          assertEquals(col ? [] : null, s.get(cls, o3.id.toString()).name);
-          assertEquals(col ? [] : null, s.get(cls, o4.id.toString()).ename);
-          assertEquals(col ? [] : null, s.get(cls, o5.id.toString()).xname);
+          assertEquals(null, s.get(cls, o1.id.toString()).name);
+          assertEquals(null, s.get(cls, o2.id.toString()).name);
+          assertEquals(null, s.get(cls, o3.id.toString()).name);
+          assertEquals(null, s.get(cls, o4.id.toString()).ename);
+          assertEquals(null, s.get(cls, o5.id.toString()).xname);
           assertEquals(o6, s.get(cls, o6.id.toString()));
           assertEquals(o7, s.get(cls, o7.id.toString()));
 
@@ -287,9 +287,9 @@ public class FilterTest extends AbstractTest {
           assertEquals(n3, s.get(clsXN, n3.id.toString()));
 
           assertEquals(o1, s.get(cls, o1.id.toString()));
-          assertEquals(col ? [] : null, s.get(cls, o2.id.toString()).name);
+          assertEquals(null, s.get(cls, o2.id.toString()).name);
           assertEquals(o3, s.get(cls, o3.id.toString()));
-          assertEquals(col ? [] : null, s.get(cls, o4.id.toString()).ename);
+          assertEquals(null, s.get(cls, o4.id.toString()).ename);
           assertEquals(o5, s.get(cls, o5.id.toString()));
           assertEquals(o6, s.get(cls, o6.id.toString()));
           assertEquals(o7, s.get(cls, o7.id.toString()));
