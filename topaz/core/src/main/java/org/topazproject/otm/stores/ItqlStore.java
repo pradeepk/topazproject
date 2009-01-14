@@ -702,7 +702,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     for (Pair<Filter,Boolean> i : finfos) {
       qry.append("(");
       ItqlCriteria.buildFilter((AbstractFilterImpl) i.first(), i.second(), qry, var,
-                               "$gof" + idx++, session);
+                               "$gof" + idx++, session, cm);
       qry.append(") or ");
     }
 
