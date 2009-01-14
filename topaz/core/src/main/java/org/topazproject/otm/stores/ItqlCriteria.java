@@ -210,8 +210,9 @@ public class ItqlCriteria {
 
     StringBuilder typeMatch =  buildTypeMatch(fcm.getTypes(), subject, graph);
 
-    /* the filter applies only if the item has the proper type, i.e. the filter becomes
-     *   subj-type-matches and filters or not subj-type-matches
+    /* 
+     * The filter applies only if the item has the proper type, i.e. the filter becomes
+     * subj-type-matches and filters or not subj-type-matches
      */
     qry.append("((").append(typeMatch).append(" and ");
     buildFilter(f, qry, subject, pfx + "f");
@@ -219,11 +220,11 @@ public class ItqlCriteria {
     types.removeAll(cm.getTypes());
     if (cm.getTypes().isEmpty() || types.isEmpty()) {
       qry.append(") or ((").
-         append(subject).append(" ").append(pfx).append("a1 ").append(pfx).append("a2 in <").
-          append(graph).append("> or ").
-          append(pfx).append("a1 ").append(pfx).append("a2 ").append(subject).append(" in <").
-          append(graph).
-          append(">) minus ").append(typeMatch).append("))");
+        append(subject).append(" ").append(pfx).append("a1 ").append(pfx).append("a2 in <").
+        append(graph).append("> or ").
+        append(pfx).append("a1 ").append(pfx).append("a2 ").append(subject).append(" in <").
+        append(graph).
+        append(">) minus ").append(typeMatch).append("))");
     } else {
       qry.append(") or (").
         append(subject).append(" <rdf:type> ").append(pfx).append("a1 in <").append(graph).
@@ -359,7 +360,6 @@ public class ItqlCriteria {
    * @throws OtmException on an error
    */
   List createResults(List<Answer> ans) throws OtmException {
-    // parse
     List          results = new ArrayList();
     ClassMetadata cm      = criteria.getClassMetadata();
 
