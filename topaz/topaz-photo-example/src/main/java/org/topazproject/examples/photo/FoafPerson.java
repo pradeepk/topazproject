@@ -1,6 +1,7 @@
 package org.topazproject.examples.photo;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.topazproject.otm.CascadeType;
@@ -15,7 +16,8 @@ import org.topazproject.otm.annotations.UriPrefix;
 public class FoafPerson {
   private URI id;
   private String givenname, surname;
-  private Set<Photo> myPhotos;
+  private Set<Photo> myPhotos = new HashSet<Photo>();
+  private Set<Photo> depictedIn = new HashSet<Photo>();
 
   public URI getId() {return id;}
   @Id
@@ -34,5 +36,10 @@ public class FoafPerson {
   @Predicate(uri="dc:creator", inverse=Predicate.BT.TRUE,
              cascade = {CascadeType.child})
   public void setMyPhotos(Set<Photo> myPhotos) {this.myPhotos = myPhotos;}
+
+  public Set<Photo> getDepictedIn() {return depictedIn;}
+  @Predicate(uri="foaf:depicts", inverse=Predicate.BT.TRUE,
+             cascade = {CascadeType.child})
+  public void setDepictedIn(Set<Photo> depictedIn) {this.depictedIn = depictedIn;}
 }
 

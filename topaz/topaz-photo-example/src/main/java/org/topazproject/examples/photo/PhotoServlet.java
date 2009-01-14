@@ -93,10 +93,43 @@ public class PhotoServlet extends HttpServlet {
           session.delete(person);
 
         respond(session, resp, action + "d object with id : " + id, "green");
+      } else if ("create depiction".equals(action) || "delete depiction".equals(action))  {
+        processDepiction(id, action, req, resp, session);
       } else {
         respond(session, resp, "unknown action '" + action + "'", "red");
       }
     }
+  }
+
+  protected FoafPerson personFromName(Session session, String givenname, String surname) {
+    // Try an exact match first
+    List<FoafPerson> people = personService.findPeople(session, givenname,
+                                                       surname, false);
+    FoafPerson person;
+    boolean wild = false;
+    if (people.size() == 0) {
+      // Try a wild match
+      people = personService.findPeople(session, givenname, surname, true);
+      wild = true;
+    }
+
+    switch(people.size()) {
+      case 0:
+        person = personService.newPerson(givenname, surname);
+        break;
+      case 1:
+        person = people.get(0);
+        break;
+      default:
+        person = wild ? personService.newPerson(givenname, surname)
+                       : people.get(0);
+    }
+
+    if ((person != null) && (person.getId() == null))
+      log.info("About to create a new FoafPerson with name = " 
+               + person.getGivenname() + " " + person.getSurname());
+
+    return person;
   }
 
   protected void processCreate(String id, String action, HttpServletRequest req
@@ -117,36 +150,50 @@ public class PhotoServlet extends HttpServlet {
 
     String givenname = req.getParameter("givenname");
     String surname = req.getParameter("surname");
-    // Try an exact match first
-    List<FoafPerson> people = personService.findPeople(session, givenname,
-                                                       surname, false);
-    FoafPerson creator;
-    boolean wild = false;
-    if (people.size() == 0) {
-      // Try a wild match
-      people = personService.findPeople(session, givenname, surname, true);
-      wild = true;
-    }
-
-    switch(people.size()) {
-      case 0:
-        creator = personService.newPerson(givenname, surname);
-        break;
-      case 1:
-        creator = people.get(0);
-        break;
-      default:
-        creator = wild ? personService.newPerson(givenname, surname)
-                       : people.get(0);
-    }
-
-    if ((creator != null) && (creator.getId() == null))
-      log.info("About to create a new FoafPerson with name = " 
-               + creator.getGivenname() + " " + creator.getSurname());
-
+    FoafPerson creator = personFromName(session, givenname, surname);
     log.info("About to " + action + " photo with id = " + id);
     photoService.createPhoto(session, uri, req.getParameter("title"), creator);
     respond(session, resp, action + "d photo with id : " + id, "green");
+  }
+
+  protected void processDepiction(String id, String action,
+                           HttpServletRequest req,HttpServletResponse resp,
+                           Session session) throws IOException, OtmException {
+    URI uri;
+    try {
+      uri = new URI(id);
+    } catch (URISyntaxException e) {
+      respond(session, resp, "id must be a valid URI", "red");
+      return;
+    }
+
+    if (!uri.isAbsolute()) {
+      respond(session, resp, "id must be an absolute URI", "red");
+      return;
+    }
+
+    Photo photo = session.get(Photo.class, id);
+    if (photo == null) {
+      respond(session, resp, "no photo exists with id: " + id, "red");
+      return;
+    }
+
+    String givenname = req.getParameter("givenname");
+    String surname = req.getParameter("surname");
+    FoafPerson depicted = personFromName(session, givenname, surname);
+
+    if (depicted == null) {
+      respond(session, resp, "must enter a name for the depicted person", "red");
+      return;
+    }
+
+    log.info("About to " + action + " for photo with id = " + id);
+    if (action.equals("create depiction"))
+      photo.getDepictedPeople().add(depicted);
+    else
+      photo.getDepictedPeople().remove(depicted);
+
+    respond(session, resp, action + " completed for photo with id : " + id, "green");
   }
 
   protected void respond(Session session, HttpServletResponse resp,
@@ -159,6 +206,7 @@ public class PhotoServlet extends HttpServlet {
                   + "</font></i></b>");
 
     printPhotos(session, out);
+    printDepictions(session, out);
     printPeople(session, out);
 
     out.println("</body></html>");
@@ -207,6 +255,7 @@ public class PhotoServlet extends HttpServlet {
     out.println("<tr><th>givenname</th>");
     out.println("<th>surname</th>");
     out.println("<th>my photos</th>");
+    out.println("<th>depicted in</th>");
     out.println("<th>action</th></tr>");
 
     for (FoafPerson person : personService.findPeople(session, null, null, true)) {
@@ -227,6 +276,7 @@ public class PhotoServlet extends HttpServlet {
       out.println("<td>" + gn + "</td>");
       out.println("<td>" + sn + "</td>");
       out.println("<td>" + myPhotoList(person.getMyPhotos()) + "</td>");
+      out.println("<td>" + myPhotoList(person.getDepictedIn()) + "</td>");
       out.println("<td><input type='hidden' name='id' value='" + person.getId() +"'>");
       out.println("<input type='submit' name='action' value='delete'></td>");
       out.println("</form></tr>");
@@ -247,4 +297,44 @@ public class PhotoServlet extends HttpServlet {
 
     return s.toString();
   }
+
+  protected void printDepictions(Session session, PrintWriter out)
+    throws IOException, OtmException {
+    out.println("<h2>Photo Depictions</h2>");
+    out.println("<table border='2'>");
+    out.println("<tr><th rowspan='2'>photo id</th>");
+    out.println("<th colspan='2'>Depicted person</th>");
+    out.println("<th rowspan='2'>action</th></tr>");
+    out.println("<tr><th>givenname</th>");
+    out.println("<th>surname</th></tr>");
+    out.println("<tr><form method='post'>");
+    out.println("<td><input name='id'></td>");
+    out.println("<td><input name='givenname'></td>");
+    out.println("<td><input name='surname'></td>");
+    out.println("<td><input type='submit' name='action' value='create depiction'></td>");
+    out.println("</form></tr>");
+
+    for (Photo photo : photoService.listPhotos(session)) {
+      for (FoafPerson person : photo.getDepictedPeople()) {
+        String gn = person.getGivenname();
+        String sn = person.getSurname();
+        if (gn == null)
+          gn = "";
+        if (sn == null)
+          sn = "";
+        out.println("<tr><form method='post'>");
+        out.println("<td><input name='id' type='hidden' value='" 
+                  + photo.getId() + "'>"
+                  + photo.getId() + "</td>");
+        out.println("<td><input name='givenname' value='" + gn + "'></td>");
+        out.println("<td><input name='surname' value='" + sn + "'></td>");
+        out.println("<td><input type='submit' name='action' " 
+            + "value='delete depiction'></td>");
+        out.println("</form></tr>");
+      }
+    }
+
+    out.println("</table>");
+  }
+
 }

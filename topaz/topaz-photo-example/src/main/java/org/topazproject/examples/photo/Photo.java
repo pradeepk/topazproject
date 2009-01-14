@@ -2,6 +2,8 @@ package org.topazproject.examples.photo;
 
 import java.net.URI;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.FetchType;
@@ -15,6 +17,7 @@ public class Photo {
   private String title;
   private Date date;
   private FoafPerson creator;
+  private Set<FoafPerson> depictedPeople = new HashSet<FoafPerson>();
 
   public URI getId() {return id;}
   @Id
@@ -31,4 +34,12 @@ public class Photo {
   public FoafPerson getCreator(){return creator;}
   @Predicate(uri="dc:creator", cascade={CascadeType.peer}, fetch=FetchType.lazy)
   public void setCreator(FoafPerson creator) {this.creator = creator;}
+
+  public Set<FoafPerson> getDepictedPeople(){
+    return depictedPeople;
+  }
+  @Predicate(uri="foaf:depicts", cascade={CascadeType.peer}, fetch=FetchType.lazy)
+  public void setDepictedPeople(Set<FoafPerson> depictedPeople) {
+    this.depictedPeople = depictedPeople;
+  }
 }
