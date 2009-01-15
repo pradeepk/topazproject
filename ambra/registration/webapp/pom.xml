@@ -11,7 +11,6 @@
     <groupId>org.topazproject</groupId>
     <artifactId>ambra-registration</artifactId>
     <version>0.9.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <dependencies>

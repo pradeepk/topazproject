@@ -10,7 +10,6 @@
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra</artifactId>
-    <relativePath>../pom.xml</relativePath>
     <version>0.9.1-SNAPSHOT</version>
   </parent>
 

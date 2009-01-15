@@ -9,7 +9,6 @@
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>journals</artifactId>
-    <relativePath>../pom.xml</relativePath>
     <version>0.9.1-SNAPSHOT</version>
   </parent>
 
