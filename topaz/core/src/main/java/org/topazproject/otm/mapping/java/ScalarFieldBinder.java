@@ -19,7 +19,9 @@
 package org.topazproject.otm.mapping.java;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.serializer.Serializer;
@@ -30,6 +32,18 @@ import org.topazproject.otm.serializer.Serializer;
  * @author Pradeep Krishnan
  */
 public class ScalarFieldBinder extends AbstractFieldBinder {
+  private static Map<Class, Object> primitiveNulls = new HashMap<Class, Object>();
+  static {
+    primitiveNulls.put(Byte.TYPE, (byte) 0);
+    primitiveNulls.put(Short.TYPE, (short) 0);
+    primitiveNulls.put(Integer.TYPE, 0);
+    primitiveNulls.put(Long.TYPE, 0L);
+    primitiveNulls.put(Float.TYPE, 0.0f);
+    primitiveNulls.put(Double.TYPE, 0.0d);
+    primitiveNulls.put(Character.TYPE, '\u0000');
+    primitiveNulls.put(Boolean.TYPE, false);
+  }
+
   /**
    * Creates a new FunctionalMapper object.
    *
@@ -71,7 +85,14 @@ public class ScalarFieldBinder extends AbstractFieldBinder {
       throw new OtmException("Too many values for '" + getSetter().toGenericString() + "' : "
                              + vals);
 
-    Object value = (size == 0) ? null : deserialize(vals.get(0));
+    Object value = (size == 0) ? nullValue(getComponentType()) : deserialize(vals.get(0));
     setRawValue(o, value);
+  }
+
+  static Object nullValue(Class<?> clazz) throws OtmException {
+    if (!clazz.isPrimitive())
+      return null;
+
+    return primitiveNulls.get(clazz);
   }
 }

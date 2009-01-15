@@ -83,11 +83,8 @@ public abstract class AbstractFieldBinder implements FieldBinder {
     try {
       getSetter().invoke(o, value);
     } catch (Exception e) {
-      if ((value == null) && property.getPropertyType().isPrimitive())
-        setRawValue(o, 0);
-      else
-        throw new OtmException("Failed to set a value for '" + getSetter().toGenericString() + "'",
-                               e);
+      throw new OtmException("Failed to set value '" + value + "' for '" 
+                              + getSetter().toGenericString() + "'", e);
     }
   }
 
