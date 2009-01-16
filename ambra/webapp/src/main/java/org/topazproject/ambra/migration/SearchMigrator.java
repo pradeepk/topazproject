@@ -375,7 +375,7 @@ public class SearchMigrator implements Runnable {
        .append(e.getKey())
        .append("> where $s $pidx $oidx  and (");
       for (RdfMapper m : e.getValue())
-        q.append("$pidx <mulgara:equals> <").append(m.getUri()).append("> or ");
+        q.append("$pidx <mulgara:is> <").append(m.getUri()).append("> or ");
 
       q.setLength(q.length() - 4);
       q.append(") and (");
