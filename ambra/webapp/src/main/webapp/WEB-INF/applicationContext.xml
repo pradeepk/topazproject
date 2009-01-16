@@ -196,15 +196,15 @@
     <!-- reIndex: set to true to re-build search-index. Will re-build all indexes even if
          all search-migrations were completed and 'finalized'. -->
     <property name="reIndex" value="false"/>      
-    <!-- finalize: set to true to write a marker on success to denote completion of all migrations.
-         The default value of 'false' is really for test environments. For production
-         the recommendation is to set this to 'true'.
+    <!-- finalize: set to 'true' to write a marker on success to denote completion of all migrations.
+         Setting to 'false' is really for running a migration elsewhere and copy the data to a 
+         real instance. For everywhere else the recommendation is to set this to 'true'.
     -->
-    <property name="finalize" value="false"/> 
+    <property name="finalize" value="true"/> 
     <!-- background: set to true to allow web-traffic during migrations -->
     <property name="background" value="true"/> 
     <!-- txnTimeout: the txn timeout in seconds -->
-    <property name="txnTimeout" value="600"/> 
+    <property name="txnTimeout" value="1800"/> 
     <!-- blobThrottle: number of blobs to index per transaction -->
     <property name="blobThrottle" value="20"/> 
     <!-- rdfThrottle: number of mulgara only entity instances (eg. Citation) to index per transaction -->

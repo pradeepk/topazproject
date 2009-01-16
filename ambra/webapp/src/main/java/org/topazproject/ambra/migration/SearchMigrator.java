@@ -70,8 +70,8 @@ public class SearchMigrator implements Runnable {
   private OtmInterceptor oi;
   private int rdfThrottle = 3000;
   private int blobThrottle = 100;
-  private int txnTimeout = 600;
-  private boolean finalize = false;
+  private int txnTimeout = 1800;
+  private boolean finalize = true;
   private boolean reIndex = false;
   private boolean background = true;
   private Set<String> errorSet = new HashSet<String>();
@@ -239,6 +239,9 @@ public class SearchMigrator implements Runnable {
       }
     }
 
+    if ((finalize == false) && (mm != null))
+      mm.setSearchMigrated(0);
+
     if ((mm == null) || (mm.getSearchMigrated() == 0)) {
       s.createGraph("sm");
       return 0;
@@ -257,8 +260,6 @@ public class SearchMigrator implements Runnable {
         MigrationMarker mm = new MigrationMarker();
         mm.setSearchMigrated(1);
         s.saveOrUpdate(mm);
-        s.dropGraph("sm");
-        s.dropGraph("sm-real");
         return null;
       }
     });
