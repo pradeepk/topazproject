@@ -1,18 +1,15 @@
 package org.topazproject.examples.photo;
 
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.query.Results;
 
 public class PersonService {
 
-  public List<FoafPerson> findPeople(Session session, String givenname, 
+  public List<FoafPerson> findPeople(Session session, String givenname,
 		  String surname, boolean wildmatch) throws OtmException {
     givenname = (givenname != null) ? givenname.trim() : "";
     surname = (surname != null) ? surname.trim() : "";

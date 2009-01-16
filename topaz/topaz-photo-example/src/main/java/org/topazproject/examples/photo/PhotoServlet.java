@@ -20,6 +20,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 
+@SuppressWarnings("serial")
 public class PhotoServlet extends HttpServlet {
   private static final Log    log  = LogFactory.getLog(PhotoServlet.class);
   private SessionFactory factory;
@@ -126,7 +127,7 @@ public class PhotoServlet extends HttpServlet {
     }
 
     if ((person != null) && (person.getId() == null))
-      log.info("About to create a new FoafPerson with name = " 
+      log.info("About to create a new FoafPerson with name = "
                + person.getGivenname() + " " + person.getSurname());
 
     return person;
@@ -202,7 +203,7 @@ public class PhotoServlet extends HttpServlet {
     out.println("<html><head><title>Photo Manager</title></head><body>");
 
     if (message != null)
-      out.println("<b><i><font color='" + color + "'>"  + message 
+      out.println("<b><i><font color='" + color + "'>"  + message
                   + "</font></i></b>");
 
     printPhotos(session, out);
@@ -260,7 +261,7 @@ public class PhotoServlet extends HttpServlet {
 
     for (FoafPerson person : personService.findPeople(session, null, null, true)) {
       /*
-       * Since we didn't update the myPhotos list on create/delete, we'll ask 
+       * Since we didn't update the myPhotos list on create/delete, we'll ask
        * Topaz to refresh. Note that all changes are automatically flush()ed
        * before executing a query. (like the query executed by findPeople()
        * above for example)
@@ -323,12 +324,12 @@ public class PhotoServlet extends HttpServlet {
         if (sn == null)
           sn = "";
         out.println("<tr><form method='post'>");
-        out.println("<td><input name='id' type='hidden' value='" 
+        out.println("<td><input name='id' type='hidden' value='"
                   + photo.getId() + "'>"
                   + photo.getId() + "</td>");
         out.println("<td><input name='givenname' value='" + gn + "'></td>");
         out.println("<td><input name='surname' value='" + sn + "'></td>");
-        out.println("<td><input type='submit' name='action' " 
+        out.println("<td><input type='submit' name='action' "
             + "value='delete depiction'></td>");
         out.println("</form></tr>");
       }

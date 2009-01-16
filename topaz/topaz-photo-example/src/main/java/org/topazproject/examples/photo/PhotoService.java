@@ -7,12 +7,11 @@ import java.util.List;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.query.Results;
 
 public class PhotoService {
 
-  public void createPhoto(Session session, URI id, String title, 
+  public void createPhoto(Session session, URI id, String title,
       FoafPerson creator) throws OtmException {
     Photo photo = session.get(Photo.class, id.toString());
     if (photo == null) {
