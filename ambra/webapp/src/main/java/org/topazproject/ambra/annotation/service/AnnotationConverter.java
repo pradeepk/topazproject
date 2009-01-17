@@ -40,7 +40,7 @@ import org.topazproject.otm.OtmException;
  * Annotations and Replies
  */
 public class AnnotationConverter {
-  private static final Log log = LogFactory.getLog(WebAnnotation.class);
+  private static final Log log = LogFactory.getLog(AnnotationConverter.class);
   private UserService userService;
 
   /**
