@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -104,8 +104,7 @@ public class ItqlCriteria {
     return qry.toString();
   }
 
-  private boolean buildProjections(Criteria criteria, StringBuilder qry, String subject,
-                                   boolean isTop) {
+  private boolean buildProjections(Criteria criteria, StringBuilder qry, String subject, boolean isTop) {
     int    i      = 0;
     String prefix = " " + subject + "o";
 
@@ -120,7 +119,6 @@ public class ItqlCriteria {
     }
 
     i = 0;
-
     for (Criteria cr : criteria.getChildren())
       hasOrder |= buildProjections(cr, qry, subject + "c" + i++, false);
 
@@ -153,9 +151,7 @@ public class ItqlCriteria {
     }
 
     i = 0;
-
     String tmp = pfx + "t";
-
     for (Criterion c : criteria.getCriterionList())
       qry.append(c.toItql(criteria, subject, tmp + i++)).append(" and ");
 
@@ -171,7 +167,6 @@ public class ItqlCriteria {
     }
 
     i = 0;
-
     for (Criteria cr : criteria.getChildren()) {
       String child = pfx + "c" + i++;
       buildPredicateWhere(cr.isReferrer() ? cr.getClassMetadata() : cm, cr,
@@ -220,9 +215,9 @@ public class ItqlCriteria {
       typeMatch.setLength(0);
     }
 
-    /* the filter applies only if the item has the proper type, i.e. the filter becomes
-     *
-     *   (subj-type-matches) and (filters) or (not subj-type-matches)
+    /* 
+     * The filter applies only if the item has the proper type, i.e. the filter becomes
+     * (subj-type-matches) and (filters) or (not subj-type-matches)
      */
     qry.append("((").append(typeMatch).append(" and ");
     buildFilter(f, qry, subject, pfx + "f");
@@ -291,7 +286,7 @@ public class ItqlCriteria {
   private static void buildOrderBy(Criteria criteria, List<String> orders, String subject) {
     int    i      = 0;
     String prefix = subject + "o";
-    String id = criteria.getClassMetadata().getIdField().getName();
+    String id     = criteria.getClassMetadata().getIdField().getName();
 
     for (Order o : criteria.getOrderList()) {
       int pos = criteria.getOrderPosition(o);
@@ -304,7 +299,6 @@ public class ItqlCriteria {
     }
 
     i = 0;
-
     for (Criteria cr : criteria.getChildren())
       buildOrderBy(cr, orders, subject + "c" + i++);
   }
@@ -323,9 +317,8 @@ public class ItqlCriteria {
   }
 
   private static Boolean isFilterApplicable(Criteria current, Filter f) throws OtmException {
-    ClassMetadata fcm =
-        current.getSession().getSessionFactory()
-               .getClassMetadata(f.getFilterDefinition().getFilteredClass());
+    ClassMetadata fcm = current.getSession().getSessionFactory()
+                               .getClassMetadata(f.getFilterDefinition().getFilteredClass());
     ClassMetadata cm = current.getClassMetadata();
     EntityMode    mode = current.getSession().getEntityMode();
 
@@ -344,7 +337,6 @@ public class ItqlCriteria {
    * @throws OtmException on an error
    */
   List createResults(List<Answer> ans) throws OtmException {
-    // parse
     List          results = new ArrayList();
     ClassMetadata cm      = criteria.getClassMetadata();
 
