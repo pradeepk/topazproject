@@ -659,22 +659,24 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     qry.append("select $p $o from ").append(graphs).append(" where ");
     qry.append("<").append(id).append("> $p $o");
     if (filterObj) {
-      if (applyObjectFilters(qry, cm, "$s", filters, isc.getSession()))
-        qry.append(" and $s <mulgara:is> <").append(id).append(">");
+      String subjConstr = " and $s <mulgara:is> <" + id + ">";
+      if (applyObjectFilters(qry, cm, "$s", subjConstr, filters, isc.getSession()))
+        qry.append(subjConstr);
     }
 
     qry.append("; select $p $s from ").append(graphs).append(" where ");
     qry.append("$s $p <").append(id).append(">");
     if (filterObj) {
-      if (applyObjectFilters(qry, cm, "$o", filters, isc.getSession()))
-        qry.append(" and $o <mulgara:is> <").append(id).append(">");
+      String subjConstr = " and $o <mulgara:is> <" + id + ">";
+      if (applyObjectFilters(qry, cm, "$o", subjConstr, filters, isc.getSession()))
+        qry.append(subjConstr);
     }
     qry.append(";");
 
     return qry.toString();
   }
 
-  private boolean applyObjectFilters(StringBuilder qry, ClassMetadata cm, String var,
+  private boolean applyObjectFilters(StringBuilder qry, ClassMetadata cm, String var, String constr,
                                      List<Filter> filters, Session session) throws OtmException {
     // avoid work if possible
     if (filters == null || filters.size() == 0)
@@ -701,8 +703,8 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     int idx = 0;
     for (Pair<Filter,Boolean> i : finfos) {
       qry.append("(");
-      ItqlCriteria.buildFilter((AbstractFilterImpl) i.first(), i.second(), qry, var,
-                               "$gof" + idx++, session, cm);
+      ItqlCriteria.buildFilter((AbstractFilterImpl) i.first(), i.second(), qry, var, constr,
+                               "$gof" + idx++, session);
       qry.append(") or ");
     }
 

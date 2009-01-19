@@ -20,9 +20,7 @@ package org.topazproject.otm.stores;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
@@ -165,8 +163,8 @@ public class ItqlCriteria {
       for (Filter f : criteria.getFilters()) {
         Boolean isAppl = isFilterApplicable(criteria, f);
         if (isAppl != null) {
-          buildFilter((AbstractFilterImpl) f, isAppl, qry, subject, pfx + "f" + i++,
-                      criteria.getSession(), cm);
+          buildFilter((AbstractFilterImpl) f, isAppl, qry, subject, "", pfx + "f" + i++,
+                      criteria.getSession());
           qry.append(" and ");
         }
       }
@@ -190,12 +188,12 @@ public class ItqlCriteria {
    *                subclass
    * @param qry     the query to which to attach the fragment
    * @param subject the query variable being filtered
+   * @param constr  an extra constraint on subject to be added in various places
    * @param pfx     the prefix to use for variables
    * @param session the current session
-   * @param cm      the filtered entity
    */
   static void buildFilter(AbstractFilterImpl f, boolean isSuper, StringBuilder qry, String subject,
-                          String pfx, Session session, ClassMetadata cm)
+                          String constr, String pfx, Session session)
        throws OtmException {
     // if the filter is on a same-or-super type we can just apply it directly
     if (isSuper) {
@@ -208,37 +206,12 @@ public class ItqlCriteria {
         session.getSessionFactory().getClassMetadata(f.getFilterDefinition().getFilteredClass());
     String        graph = getGraphUri(session, fcm.getGraph());
 
-    StringBuilder typeMatch =  buildTypeMatch(fcm.getTypes(), subject, graph);
-
-    /* 
-     * The filter applies only if the item has the proper type, i.e. the filter becomes
-     * subj-type-matches and filters or not subj-type-matches
-     */
-    qry.append("((").append(typeMatch).append(" and ");
-    buildFilter(f, qry, subject, pfx + "f");
-    Set<String> types = new HashSet<String>(fcm.getTypes());
-    types.removeAll(cm.getTypes());
-    if (cm.getTypes().isEmpty() || types.isEmpty()) {
-      qry.append(") or ((").
-        append(subject).append(" ").append(pfx).append("a1 ").append(pfx).append("a2 in <").
-        append(graph).append("> or ").
-        append(pfx).append("a1 ").append(pfx).append("a2 ").append(subject).append(" in <").
-        append(graph).
-        append(">) minus ").append(typeMatch).append("))");
-    } else {
-      qry.append(") or (").
-        append(subject).append(" <rdf:type> ").append(pfx).append("a1 in <").append(graph).
-        append("> minus ").append(buildTypeMatch(types, subject, graph)).append("))");
-    }
-  }
-
-  private static StringBuilder buildTypeMatch(Set<String> types, String subject, String graph) {
-    StringBuilder typeMatch = new StringBuilder(types.size() * 150);
+    StringBuilder typeMatch = new StringBuilder(fcm.getTypes().size() * 150);
     typeMatch.append("(");
 
-    for (String type : types)
+    for (String type : fcm.getTypes())
       typeMatch.append(subject).append(" <rdf:type> <").append(type).append("> in <").append(graph).
-                append("> and ");
+                append(">").append(constr).append(" and ");
 
     if (typeMatch.length() > 1) {
       typeMatch.setLength(typeMatch.length() - 5);
@@ -247,7 +220,18 @@ public class ItqlCriteria {
       typeMatch.setLength(0);
     }
 
-    return typeMatch;
+    /* the filter applies only if the item has the proper type, i.e. the filter becomes
+     *
+     *   (subj-type-matches) and (filters) or (not subj-type-matches)
+     */
+    qry.append("((").append(typeMatch).append(" and ");
+    buildFilter(f, qry, subject, pfx + "f");
+    qry.append(") or ((").
+        append(subject).append(" ").append(pfx).append("a1 ").append(pfx).append("a2 in <").
+        append(graph).append(">").append(constr).append(" or ").
+        append(pfx).append("a1 ").append(pfx).append("a2 ").append(subject).append(" in <").
+        append(graph).append(">").append(constr).
+        append(") minus ").append(typeMatch).append("))");
   }
 
   /**
@@ -360,6 +344,7 @@ public class ItqlCriteria {
    * @throws OtmException on an error
    */
   List createResults(List<Answer> ans) throws OtmException {
+    // parse
     List          results = new ArrayList();
     ClassMetadata cm      = criteria.getClassMetadata();
 
