@@ -288,12 +288,9 @@
   </tx:advice>
 
   <!-- cache manager configs -->
-  <bean id="txCacheManagerFactory" class="org.topazproject.ambra.cache.CacheManagerFactory">
+  <bean id="txCacheManager" class="org.topazproject.ambra.cache.CacheManager">
     <constructor-arg index="0" ref="otmSessionFactory"/>
-  </bean>
-  <bean id="txCacheManager"
-      factory-bean="txCacheManagerFactory" factory-method="createCacheManager">
-    <constructor-arg index="0" value="20"/> <!-- seconds to wait for the write lock -->
+    <constructor-arg index="1" value="20"/> <!-- seconds to wait for the write lock -->
   </bean>
   <bean id="objectCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0" ref="txCacheManager"/>

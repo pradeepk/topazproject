@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
 
 /**
  * Manages transactions across a set of caches. It also brokers the event notifications from
@@ -50,7 +51,7 @@ import org.topazproject.otm.Session;
 public class CacheManager implements CacheListener, ObjectListener {
   private static final Log                   log             =
     LogFactory.getLog(CacheManager.class);
-  private final CacheManagerFactory          factory;
+  private final SessionFactory               otmSessionFactory;
   private final long                         lockWaitSeconds;
   private final Lock                         updateLock      = new ReentrantLock();
   private final List<Listener>               listeners       = new ArrayList<Listener>();
@@ -60,11 +61,11 @@ public class CacheManager implements CacheListener, ObjectListener {
   /**
    * Creates a new CacheManager object.
    *
-   * @param factory the factory that created this.
+   * @param otmSessionFactory the factory that created this.
    * @param lockWaitSeconds seconds to wait on the lock before aborting
    */
-  CacheManager(CacheManagerFactory factory, long lockWaitSeconds) {
-    this.factory           = factory;
+  CacheManager(SessionFactory otmSessionFactory, long lockWaitSeconds) {
+    this.otmSessionFactory = otmSessionFactory;
     this.lockWaitSeconds   = lockWaitSeconds;
   }
 
@@ -88,7 +89,7 @@ public class CacheManager implements CacheListener, ObjectListener {
     Transaction txn;
 
     try {
-      txn = factory.getTransactionManager().getTransaction();
+      txn = otmSessionFactory.getTransactionManager().getTransaction();
     } catch (Exception e) {
       throw new RuntimeException("Error getting current transaction", e);
     }
