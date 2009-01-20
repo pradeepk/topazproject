@@ -18,6 +18,7 @@ public class Photo {
   private Date date;
   private FoafPerson creator;
   private Set<FoafPerson> depictedPeople = new HashSet<FoafPerson>();
+  private Set<Representation> representations = new HashSet<Representation>();
 
   public URI getId() {return id;}
   @Id
@@ -41,5 +42,22 @@ public class Photo {
   @Predicate(uri="foaf:depicts", cascade={CascadeType.peer}, fetch=FetchType.lazy)
   public void setDepictedPeople(Set<FoafPerson> depictedPeople) {
     this.depictedPeople = depictedPeople;
+  }
+
+  public Set<Representation> getRepresentations() {
+    return representations;
+  }
+  @Predicate(uri="topaz:representation", cascade={CascadeType.child})
+  public void setRepresentations(Set<Representation> representations) {
+    this.representations = representations;
+  }
+
+  public Representation findRepresentation(String tag) {
+    for (Representation rep : representations)
+      for (String t : rep.getTags())
+        if (t.equals(tag))
+          return rep;
+
+    return null;
   }
 }

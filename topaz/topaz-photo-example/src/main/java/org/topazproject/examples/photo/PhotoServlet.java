@@ -1,10 +1,13 @@
 package org.topazproject.examples.photo;
 
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.OutputStream;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +16,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.util.Streams;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -58,6 +67,8 @@ public class PhotoServlet extends HttpServlet {
       session.getTransaction().commit();
     } catch (OtmException e) {
       throw new ServletException("Processing error", e);
+    } catch (FileUploadException e) {
+      throw new ServletException("Processing error", e);
     } finally {
       try {
         session.close();
@@ -67,7 +78,14 @@ public class PhotoServlet extends HttpServlet {
   }
 
   protected void process(HttpServletRequest req, HttpServletResponse resp,
-      Session session) throws IOException, OtmException {
+      Session session) throws IOException, OtmException, FileUploadException {
+
+ // Check that we have a file upload request
+    if (ServletFileUpload.isMultipartContent(req)) {
+      processUpload(req, resp, session);
+      return;
+    }
+
     String action = req.getParameter("action");
 
     if ((action == null) || "list".equals(action)) {
@@ -96,6 +114,8 @@ public class PhotoServlet extends HttpServlet {
         respond(session, resp, action + "d object with id : " + id, "green");
       } else if ("create depiction".equals(action) || "delete depiction".equals(action))  {
         processDepiction(id, action, req, resp, session);
+      } else if ("show image".equals(action) || "delete image".equals(action))  {
+        processImage(id, action, req, resp, session);
       } else {
         respond(session, resp, "unknown action '" + action + "'", "red");
       }
@@ -197,6 +217,130 @@ public class PhotoServlet extends HttpServlet {
     respond(session, resp, action + " completed for photo with id : " + id, "green");
   }
 
+  protected void processImage(String id, String action,
+                                  HttpServletRequest req,HttpServletResponse resp,
+                                  Session session) throws IOException, OtmException {
+    Representation rep = session.get(Representation.class, id);
+    if (rep == null) {
+      respond(session, resp, "no representation exists with id: " + id, "red");
+      return;
+    }
+
+    if ("delete image".equals(action)) {
+      /**
+       * Note that we only need to remove the reference to this representation
+       * from Photo. Topaz translates that to a removal from the triple-store.
+       * This is because it is tracking changes to all attached objects to the
+       * Session.
+       */
+      rep.getPhoto().getRepresentations().remove(rep);
+      respond(session, resp, action + " completed for representation with id : " + id, "green");
+      return;
+    }
+
+    if (!rep.getImage().exists()) {
+      respond(session, resp, "no image has been uploaded for representation with id: " + id, "red");
+      return;
+    }
+
+    resp.setContentType(rep.getContentType());
+    OutputStream out;
+    IOUtils.copyLarge(rep.getImage().getInputStream(), out = resp.getOutputStream());
+    out.flush();
+  }
+
+  protected void processUpload(HttpServletRequest req, HttpServletResponse resp,
+                               Session session) throws IOException, OtmException,
+                               FileUploadException {
+    ServletFileUpload upload = new ServletFileUpload();
+    FileItemIterator iter = upload.getItemIterator(req);
+
+    String id = null;
+    Set<String> tset = new HashSet<String>();
+    Photo photo = null;
+    Representation rep = null;
+    OutputStream out = null;
+
+    while (iter.hasNext()) {
+      FileItemStream item = iter.next();
+      String name = item.getFieldName();
+      InputStream stream = item.openStream();
+      if (!item.isFormField()) {
+        if (photo == null) {
+          respond(session, resp, "no photo id specified", "red");
+          return;
+        }
+        if (rep == null) {
+          respond(session, resp, "no tags specified", "red");
+          return;
+        }
+        rep.setContentType(item.getContentType());
+        // Topaz blobs are txn scoped and therefore are saved only on a commit.
+        IOUtils.copyLarge(stream, out = rep.getImage().getOutputStream());
+        out.close();
+      } else {
+        String val = Streams.asString(stream);
+        if (name.equals("id")) {
+          id = val;
+          photo = session.get(Photo.class, id);
+          if (photo == null)
+            break;
+        }
+        else if (name.equals("tags")) {
+          if (photo == null)
+            break;
+          String[] tags = val.split(",");
+          for (String tag : tags) {
+            tag = tag.trim();
+            if (!tag.isEmpty())
+              tset.add(tag);
+          }
+          if (tset.isEmpty())
+            break;
+          for (String tag : tset) {
+            rep = photo.findRepresentation(tag);
+            if (rep != null) {
+              rep.getTags().addAll(tset);
+              break;
+            }
+          }
+          if (rep == null) {
+            rep = new Representation();
+            rep.setPhoto(photo);
+            rep.setTags(tset);
+            /*
+             * Need to explicitly save here so that Topaz allocates the Blob.
+             * For streaming Blobs, Topaz is the factory. If we had used a
+             * byte[] for the blob, then there was no need to save here. The
+             * addition to representations-set of the Photo object would have
+             * been sufficient in that case. (See object state tracking in Topaz)
+             */
+            session.saveOrUpdate(rep);
+            photo.getRepresentations().add(rep);
+          }
+        }
+      }
+    }
+
+    if (out != null) {
+      respond(session, resp, "successfully saved image representations "
+          + rep.getTags() + " for photo " + id, "green");
+    } else if (rep != null) {
+      if (rep.getImage().exists())
+       respond(session, resp, "successfully updated representation "
+           + rep.getTags() + " for photo " + id, "green");
+      else
+        respond(session, resp, "representation " + rep.getTags() + " without an image "
+            + " created/updated for photo " + id, "yellow");
+    } else if (photo != null) {
+        respond(session, resp, "missing tag for image. upload rejected.", "red");
+    } else if (id != null) {
+      respond(session, resp, "no such photo with id : " + id, "red");
+    } else {
+      respond(session, resp, "must specify a photo id", "red");
+    }
+  }
+
   protected void respond(Session session, HttpServletResponse resp,
       String message, String color) throws IOException, OtmException {
     PrintWriter out = resp.getWriter();
@@ -207,6 +351,7 @@ public class PhotoServlet extends HttpServlet {
                   + "</font></i></b>");
 
     printPhotos(session, out);
+    printImages(session, out);
     printDepictions(session, out);
     printPeople(session, out);
 
@@ -338,4 +483,40 @@ public class PhotoServlet extends HttpServlet {
     out.println("</table>");
   }
 
+  void printImages(Session session, PrintWriter out)
+    throws IOException, OtmException {
+    out.println("<h2>Images</h2>");
+    out.println("<table border='2'>");
+    out.println("<tr><th>photo id</th>");
+    out.println("<th>tags</th>");
+    out.println("<th>image</th>");
+    out.println("<th>action</th></tr>");
+    out.println("<tr><form method='post' enctype='multipart/form-data'>");
+    out.println("<td><input name='id'></td>");
+    out.println("<td><input name='tags'></td>");
+    out.println("<td><input name='image' type='file'></td>");
+    out.println("<td><input type='submit' name='action' value='upload image'></td>");
+    out.println("</form></tr>");
+
+    for (Photo photo : photoService.listPhotos(session)) {
+      for (Representation rep : photo.getRepresentations()) {
+        out.println("<tr><form method='post'>");
+        out.println("<td><input name='id' type='hidden' value='"
+                  + rep.getId() + "'>"
+                  + photo.getId() + "</td>");
+        out.println("<td>");
+        String sep = "";
+        for (String tag : rep.getTags()) {
+          out.print(sep + tag);
+          sep = ",";
+        }
+        out.println("</td>");
+        out.println("<td><input type='submit' name='action' "
+            + "value='show image'></td><td><input type='submit' name='action' "
+            + "value='delete image'></td>");
+        out.println("</form></tr>");
+      }
+    }
+    out.println("</table>");
+  }
 }

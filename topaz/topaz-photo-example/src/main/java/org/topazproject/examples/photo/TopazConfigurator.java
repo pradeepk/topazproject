@@ -9,6 +9,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.stores.ItqlStore;
+import org.topazproject.otm.stores.SimpleBlobStore;
 
 public class TopazConfigurator {
   private SessionFactory factory = new SessionFactoryImpl();
@@ -18,6 +19,10 @@ public class TopazConfigurator {
     tqlFactory.setDbDir(System.getProperty("java.io.tmpdir") + "/triple-db");
     ItqlStore tripleStore = new ItqlStore(URI.create("local:///topazproject"), tqlFactory);
     factory.setTripleStore(tripleStore);
+
+    SimpleBlobStore blobStore = new SimpleBlobStore(System.getProperty("java.io.tmpdir") + "/blob-db");
+    factory.setBlobStore(blobStore);
+
     factory.preloadFromClasspath();
     factory.validate();
     createGraphs();
