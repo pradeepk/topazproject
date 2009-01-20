@@ -1,7 +1,7 @@
 /* $$HeadURL::                                                                            $$
  * $$Id$$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,8 +26,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.annotation.service.AnnotationService;
@@ -37,13 +39,16 @@ import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.models.Annotation;
+
 import org.topazproject.otm.Query;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.Results;
 
 /**
+ * Manage flagged annotations on the server. This allows for administration follow-up of community
+ * feedback/comments etc.
+ *
  * @author alan
- * Manage documents on server. Ingest and access ingested documents.
  */
 public class FlagManagementService {
   private static final Log log = LogFactory.getLog(FlagManagementService.class);
@@ -89,26 +94,17 @@ public class FlagManagementService {
         continue;
 
       Annotea<?> a = (Annotea<?>) r.get(1);
-      String title = (a instanceof Rating) ? ((Rating)a).getBody().getCommentTitle()
-                                           : a.getTitle();
+      String title = (a instanceof Rating) ? ((Rating)a).getBody().getCommentTitle() : a.getTitle();
       String root  = (a instanceof Reply) ? ((Reply)a).getRoot() : null;
       String wt    = a.getWebType();
 
       boolean isGeneralComment = (a instanceof Annotation) && ((Annotation)a).getContext() == null;
 
-      FlaggedCommentRecord fcr =
-        new FlaggedCommentRecord(
-            flag.getId(),
-            flag.getAnnotates(),
-            title,
-            flag.getComment(),
-            flag.getCreated(),
-            flag.getCreatorName(),
-            flag.getCreator(),
-            root,
-            flag.getReasonCode(),
-            wt,
-            isGeneralComment);
+      FlaggedCommentRecord fcr = new FlaggedCommentRecord(flag.getId(), flag.getAnnotates(), title,
+                                                          flag.getComment(), flag.getCreated(),
+                                                          flag.getCreatorName(), flag.getCreator(),
+                                                          root, flag.getReasonCode(), wt,
+                                                          isGeneralComment);
       commentrecords.add(fcr);
     }
 
@@ -116,8 +112,7 @@ public class FlagManagementService {
     return commentrecords;
   }
 
-  public void setAnnotationService(
-      AnnotationService annotationService) {
+  public void setAnnotationService(AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 
@@ -135,5 +130,4 @@ public class FlagManagementService {
   public void setAnnotationConverter(AnnotationConverter converter) {
     this.converter = converter;
   }
-
 }
