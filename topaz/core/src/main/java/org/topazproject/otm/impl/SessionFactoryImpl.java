@@ -58,7 +58,6 @@ import bitronix.tm.resource.common.XAStatefulHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.mapping.BinderFactory;
