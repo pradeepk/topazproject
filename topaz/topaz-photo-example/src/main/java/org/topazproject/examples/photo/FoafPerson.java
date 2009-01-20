@@ -1,28 +1,17 @@
 package org.topazproject.examples.photo;
 
-import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.GeneratedValue;
-import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.UriPrefix;
 
-@Entity(graph="foaf", types={"foaf:Person", "foaf:Agent"})
-@UriPrefix("foaf:")
-public class FoafPerson {
-  private URI id;
+@Entity(types={"foaf:Person"})
+public class FoafPerson extends FoafAgent {
   private String givenname, surname;
   private Set<Photo> myPhotos = new HashSet<Photo>();
   private Set<Photo> depictedIn = new HashSet<Photo>();
-
-  public URI getId() {return id;}
-  @Id
-  @GeneratedValue(uriPrefix="foaf:Person/Id/")
-  public void setId(URI id) {this.id = id;}
 
   public String getGivenname() {return givenname;}
   @Predicate()
