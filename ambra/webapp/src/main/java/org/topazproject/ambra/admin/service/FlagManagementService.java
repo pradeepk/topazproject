@@ -55,34 +55,40 @@ public class FlagManagementService {
   public Collection<FlaggedCommentRecord> getFlaggedComments() throws ApplicationException {
     ArrayList<FlaggedCommentRecord> commentrecords = new ArrayList<FlaggedCommentRecord>();
 
-    // Note that Annotea does not have an rdf:type. So we check exists(annotea:body).
-    // FIXME: the 'order by' hack is really to force a check like exists(a.body)
-    Query query = session.createQuery(
-        "select a, (select f.id from Comment f where f.annotates = a), b "
-        + "from Annotea a where b := a.body order by b;");
+    // Check flags on Annotation (and therefore Ratings) and Replies.
+    // TODO: add 'instanceof' in Oql (eg. 'a instanceof Annotation or a instanceof Reply')
+    StringBuilder sb = new StringBuilder(500);
+    sb.append("select f.id, a from Comment f, Annotea a where f.annotates = a and ((");
+    for (String type : session.getSessionFactory().getClassMetadata(Annotation.class).getTypes()) {
+      sb.append("a.<rdf:type> = <").append(type).append("> and ");
+    }
+    sb.setLength(sb.length()-5);
+    sb.append(") or (");
+    for (String type : session.getSessionFactory().getClassMetadata(Reply.class).getTypes()) {
+      sb.append("a.<rdf:type> = <").append(type).append("> and ");
+    }
+    sb.setLength(sb.length()-5);
+    sb.append("));");
 
+    Query query = session.createQuery(sb.toString());
     Results r = query.execute();
 
     while (r.next()) {
-      Results f = r.getSubQueryResults(1);
-      List<Flag> flags = new ArrayList<Flag>();
-      while (f.next()) {
-        String id = f.getString(0);
-        try {
-          ArticleAnnotation ann = annotationService.getAnnotation(id);
-          if (ann != null)
-            flags.add(new Flag(converter.convert(ann, true, true)));
-        } catch (SecurityException e) {
-          if (log.isInfoEnabled())
-            log.info("No permission to load Flag: " + id, e);
-        }
+      String id = r.getString(0);
+      Flag flag = null;
+      try {
+        ArticleAnnotation ann = annotationService.getAnnotation(id);
+        if (ann != null)
+          flag = new Flag(converter.convert(ann, true, true));
+      } catch (SecurityException e) {
+        if (log.isInfoEnabled())
+          log.info("No permission to load Flag: " + id, e);
       }
 
-      if (flags.size() == 0)
+      if (flag == null)
         continue;
 
-
-      Annotea<?> a = (Annotea<?>) r.get(0);
+      Annotea<?> a = (Annotea<?>) r.get(1);
       String title = (a instanceof Rating) ? ((Rating)a).getBody().getCommentTitle()
                                            : a.getTitle();
       String root  = (a instanceof Reply) ? ((Reply)a).getRoot() : null;
@@ -90,24 +96,20 @@ public class FlagManagementService {
 
       boolean isGeneralComment = (a instanceof Annotation) && ((Annotation)a).getContext() == null;
 
-
-      for (Flag flag : flags) {
-
-        FlaggedCommentRecord fcr =
-          new FlaggedCommentRecord(
-              flag.getId(),
-              flag.getAnnotates(),
-              title,
-              flag.getComment(),
-              flag.getCreated(),
-              flag.getCreatorName(),
-              flag.getCreator(),
-              root,
-              flag.getReasonCode(),
-              wt,
-              isGeneralComment);
-        commentrecords.add(fcr);
-      }
+      FlaggedCommentRecord fcr =
+        new FlaggedCommentRecord(
+            flag.getId(),
+            flag.getAnnotates(),
+            title,
+            flag.getComment(),
+            flag.getCreated(),
+            flag.getCreatorName(),
+            flag.getCreator(),
+            root,
+            flag.getReasonCode(),
+            wt,
+            isGeneralComment);
+      commentrecords.add(fcr);
     }
 
     Collections.sort(commentrecords);
