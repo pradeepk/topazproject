@@ -6,7 +6,9 @@
   @Graph(id = "prefix", uri = "local:///topazproject#prefix",
          type = Rdf.mulgara + "PrefixGraph"),
   @Graph(id = "photo", uri = "local:///topazproject#photo"),
-  @Graph(id = "foaf",  uri = "local:///topazproject#foaf")
+  @Graph(id = "foaf",  uri = "local:///topazproject#foaf"),
+  @Graph(id = "lucene", uri = "local:///topazproject#lucene",
+         type = Rdf.mulgara + "LuceneModel")
 })
 
 @Aliases({

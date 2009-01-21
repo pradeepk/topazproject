@@ -17,11 +17,18 @@ public class PersonService {
     String query = "select p from FoafPerson p";
     String next = " where ";
     if (givenname.length() > 0) {
-      query = query + next + " p.givenname = '" + givenname + "'";
+      if (wildmatch)
+        query = query + next + "search(p.givenname, '" + givenname + "')";
+      else
+	query = query + next + "p.givenname = '" + givenname + "'";
       next = " and ";
     }
-    if (surname.length() > 0)
-      query = query + next + " p.surname = '" + surname + "'";
+    if (surname.length() > 0) {
+      if (wildmatch)
+        query = query + next + "search(p.surname, '" + surname + "')";
+      else
+        query = query + next + "p.surname = '" + surname + "'";
+    }
 
     Results results = session.createQuery(query + ";").execute();
 

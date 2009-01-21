@@ -10,6 +10,7 @@ import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.Searchable;
 
 @Entity(graph="photo", types={"topaz:Photo"})
 public class Photo {
@@ -26,6 +27,7 @@ public class Photo {
 
   public String getTitle() {return title;}
   @Predicate(uri="dc:title")
+  @Searchable(index="lucene")
   public void setTitle(String title) {this.title = title;}
 
   public Date getDate(){return date;}
