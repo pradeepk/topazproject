@@ -66,9 +66,8 @@ public class UserPreferences implements Serializable {
    *
    * @return the application id
    */
-  public String getAppId()
-  {
-      return appId;
+  public String getAppId() {
+    return appId;
   }
 
   /**
@@ -77,9 +76,8 @@ public class UserPreferences implements Serializable {
    * @param appId the application id to set.
    */
   @Predicate(uri = "dcterms:mediator")
-  public void setAppId(String appId)
-  {
-      this.appId = appId;
+  public void setAppId(String appId) {
+    this.appId = appId;
   }
 
   /**

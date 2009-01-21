@@ -73,9 +73,8 @@ public class UserRole implements Serializable {
    *
    * @return role as String.
    */
-  public String getRole()
-  {
-      return role;
+  public String getRole() {
+    return role;
   }
 
   /**
@@ -84,8 +83,7 @@ public class UserRole implements Serializable {
    * @param role the value to set.
    */
   @Predicate(uri = "topaz:role")
-  public void setRole(String role)
-  {
-      this.role = role;
+  public void setRole(String role) {
+    this.role = role;
   }
 }
