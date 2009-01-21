@@ -747,29 +747,6 @@ public class FedoraConnection extends AbstractConnection {
         return prev;
       }
 
-      public byte[] readAll(boolean original) {
-        if (!original ||
-            ((fstate.getState() != ChangeState.DELETED)
-                && (fstate.getState() != ChangeState.WRITTEN)))
-          return readAll();
-
-        if (log.isTraceEnabled())
-          log.trace("Loading old data for search index removal for " + this);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        InputStream in = null;
-        try {
-          in = getBlobStream(fstate, true);
-          if (in != null)
-            copy(in, out);
-        } catch (IOException e) {
-          throw new OtmException("Error while reading original blob content", e);
-        } finally {
-          closeAll(in, out);
-        }
-        return out.toByteArray();
-      }
-
       public String toString() {
         return "BlobId = " + getId() + ", " + fstate;
       }

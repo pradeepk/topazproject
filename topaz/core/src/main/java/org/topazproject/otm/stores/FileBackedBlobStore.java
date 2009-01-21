@@ -446,18 +446,6 @@ public abstract class FileBackedBlobStore implements BlobStore {
         return prev;
       }
 
-      // TODO: remove this hack
-      public byte[] readAll(boolean original) throws OtmException {
-        if (!original || ((state != ChangeState.DELETED) && (state != ChangeState.WRITTEN)))
-          return readAll();
-        if (log.isTraceEnabled())
-          log.trace("Loading old data for search index removal for " + getId());
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        copyFromStore(out, true);
-        return out.toByteArray();
-      }
-
       @Override
       public InputStream doGetInputStream() throws OtmException {
         if (!exists())

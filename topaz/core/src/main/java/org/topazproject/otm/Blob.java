@@ -139,15 +139,4 @@ public interface Blob {
    * @throws OtmException If an I/O error occurred
    */
   public boolean delete() throws OtmException;
-
-  /**
-   * Hack for Search indexing. DO NOT USE.
-   *
-   * TODO: get rid of this as soon as possible.
-   *
-   * @param original the original data before the mods from this txn
-   *
-   * @return  the data data
-   */
-  public byte[] readAll(boolean original);
 }

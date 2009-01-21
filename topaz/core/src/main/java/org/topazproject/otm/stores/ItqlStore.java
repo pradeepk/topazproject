@@ -161,7 +161,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
         propertyBinders.putAll(m.getBinders());
       } else {
         Session sess = ((ItqlStoreConnection) con).getSession();
-        propertyBinders.put(sess.getEntityMode(), getBlobBinder(cm, sess, id, false));
+        propertyBinders.put(sess.getEntityMode(), getBlobBinder(cm, sess, id));
       }
 
       m = new AbstractMapper(propertyBinders) {
@@ -176,9 +176,9 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
   }
 
   private static PropertyBinder getBlobBinder(final ClassMetadata cm, final Session sess,
-                                              final String id, final boolean deleting) {
+                                              final String id) {
     final PropertyBinder origBinder = cm.getBlobField().getBinder(sess);
-    if (!deleting && (origBinder.getSerializer() != null))
+    if (origBinder.getSerializer() != null)
       return origBinder;
 
     // FIXME: this has too many assumptions...
@@ -187,7 +187,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
 
         Blob blob = sess.getSessionFactory().getBlobStore()
                                             .getBlob(cm, id, o, sess.getBlobStoreCon());
-        byte[] b = (!deleting && !blob.exists()) ? null : blob.readAll(deleting);
+        byte[] b = blob.exists() ? blob.readAll() : null;
 
         if ((b == null) || (b.length == 0))
           return Collections.emptyList();

@@ -386,10 +386,6 @@ abstract class AbstractSession implements Session {
         return getRealBlob().readAll();
       }
 
-      public byte[] readAll(boolean original) {
-        return getRealBlob().readAll(original);
-      }
-
       public void writeAll(byte[] b) throws OtmException {
         getRealBlob().writeAll(b);
       }
