@@ -52,7 +52,6 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Interceptor;
-import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.SearchStore;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.Session;
@@ -627,25 +626,6 @@ public class SessionImpl extends AbstractSession {
     }
   }
 
-  private SearchableDefinition getSearchableDef(ClassMetadata cm, Mapper m) {
-    /* should be using getDefinition(SearchableDefinition.NS + m.getDefinition().getName())
-     * but that breaks with embedded mappers.
-     */
-    SearchableDefinition sd = (SearchableDefinition)
-        sessionFactory.getDefinition(SearchableDefinition.NS + cm.getName() + ':' + m.getName());
-    if (sd != null)
-      return sd;
-
-    for (String sup : cm.getSuperEntities()) {
-      sd = (SearchableDefinition)
-          sessionFactory.getDefinition(SearchableDefinition.NS + sup + ':' + m.getName());
-      if (sd != null)
-        return sd;
-    }
-
-    return null;
-  }
-
   private Wrapper getFromStore(Id id, Object instance, boolean filterObj) throws OtmException {
     Wrapper w = currentGets.get(id);
     if (w != null)
@@ -1049,7 +1029,7 @@ public class SessionImpl extends AbstractSession {
 
     PropertyBinder b   = idField.getBinder(getEntityMode());
     List           ids = b.get(o);
-    String         id  = null;
+    String         id;
 
     if (ids.size() == 0) {
       IdentifierGenerator generator = idField.getGenerator();
@@ -1082,8 +1062,7 @@ public class SessionImpl extends AbstractSession {
       if ((trace.length - offset) < levels)
         levels = trace.length - offset;
       StackTraceElement[] copy = new StackTraceElement[levels];
-      for (int i = 0; i < levels; i++)
-        copy[i] = trace[i+offset];
+      System.arraycopy(trace, offset, copy, 0, levels);
       t.setStackTrace(copy);
     }
     return t;
@@ -1113,7 +1092,7 @@ public class SessionImpl extends AbstractSession {
     }
 
     public boolean equals(Object other) {
-      return (other instanceof Wrapper) ? id.equals(((Wrapper) other).id) : false;
+      return (other instanceof Wrapper) && id.equals(((Wrapper) other).id);
     }
   }
 }
