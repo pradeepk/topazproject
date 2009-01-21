@@ -461,19 +461,11 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
                          Connection con) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
-    PropertyBinder binder = getBlobBinder(cm, isc.getSession(), id, true);
+    String g = getGraphUri(field.getIndex(), isc);
+    String c = "<" + id + "> <" + field.getUri() + "> $o";
 
-    List vals = binder.get(o);
-
-    String text = (vals.size() == 1) ? (String) vals.get(0) : null;
-    if (text != null) {
-      if (field.getPreProcessor() != null)
-        text = field.getPreProcessor().process(o, field, text);
-
-      String tql = "delete <" + id + "> <" + field.getUri() + "> '" + RdfUtil.escapeLiteral(text) +
-                   "' from <" + getGraphUri(field.getIndex(), isc) + ">;";
-      doDelete(isc, tql);
-    }
+    String tql = "delete select " + c + " from <" + g + "> where " + c + " from <" + g + ">;";
+    doDelete(isc, tql);
   }
 
   private void doDelete(ItqlStoreConnection isc, String delete) throws OtmException {
