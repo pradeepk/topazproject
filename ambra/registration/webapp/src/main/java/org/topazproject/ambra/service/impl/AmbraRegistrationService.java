@@ -47,22 +47,20 @@ public class AmbraRegistrationService implements RegistrationService {
 
   public User createUser(final String loginName, final String password)
     throws UserAlreadyExistsException, PasswordServiceException {
-    if (null == getUserWithLoginName(loginName)) {
-      final User user = new UserImpl(
-                              loginName,
-                              passwordDigestService.getDigestPassword(password));
 
-      user.setEmailVerificationToken(TokenGenerator.getUniqueToken());
-      user.setVerified(false);
-      user.setActive(true);
-
-      saveUser(user);
-      mailer.sendEmailAddressVerificationEmail(user);
-
-      return user;
-    } else {
+    if (getUserWithLoginName(loginName) != null) {
       throw new UserAlreadyExistsException(loginName);
     }
+
+    final User user = new UserImpl(loginName, passwordDigestService.getDigestPassword(password));
+    user.setEmailVerificationToken(TokenGenerator.getUniqueToken());
+    user.setVerified(false);
+    user.setActive(true);
+
+    saveUser(user);
+    mailer.sendEmailAddressVerificationEmail(user);
+
+    return user;
   }
 
   /**
