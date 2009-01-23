@@ -21,8 +21,10 @@ package org.topazproject.ambra.web;
 import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.service.NoUserFoundWithGivenLoginNameException;
 import org.topazproject.ambra.service.RegistrationService;
@@ -31,11 +33,10 @@ import org.topazproject.ambra.service.RegistrationService;
  * Used when a user makes a forgot password request.
  */
 public class ForgotPasswordAction extends BaseAction {
+  private static final Log log = LogFactory.getLog(ForgotPasswordAction.class);
 
   private RegistrationService registrationService;
   private String loginName;
-
-  private static final Log log = LogFactory.getLog(ForgotPasswordAction.class);
 
   public String execute() throws Exception {
     try {

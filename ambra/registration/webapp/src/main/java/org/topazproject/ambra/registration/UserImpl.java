@@ -19,8 +19,10 @@
 package org.topazproject.ambra.registration;
 
 import org.hibernate.annotations.Index;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.util.TokenGenerator;
 
 import javax.persistence.Column;
@@ -33,7 +35,6 @@ import java.sql.Timestamp;
 /**
  * Implementation of Ambra Registered User
  */
-
 @Entity
 @Table (name = "plos_user")
 public class UserImpl implements User {
@@ -68,11 +69,11 @@ public class UserImpl implements User {
   }
 
   /**
-    * Creates a new UserImpl object.
-    *
-    * @param loginName The user login name
-    * @param password The user password
-    */
+   * Creates a new UserImpl object.
+   *
+   * @param loginName The user login name
+   * @param password The user password
+   */
   public UserImpl(final String loginName, final String password) {
     this.loginName = loginName;
     this.password = password;

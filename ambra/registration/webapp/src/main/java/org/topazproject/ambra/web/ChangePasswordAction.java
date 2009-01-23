@@ -23,8 +23,10 @@ import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.service.NoUserFoundWithGivenLoginNameException;
 import org.topazproject.ambra.service.PasswordInvalidException;

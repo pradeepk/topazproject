@@ -36,7 +36,6 @@ public interface UserDAO {
    */
   void delete(final User user);
 
-
   /**
    * Find user with a given login name.
    * @param loginName

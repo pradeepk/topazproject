@@ -19,9 +19,9 @@
 package org.topazproject.ambra;
 
 /**
- *
+ * General application exception
  */
- public class ApplicationException extends RuntimeException {
+public class ApplicationException extends RuntimeException {
   public ApplicationException() {
   }
 

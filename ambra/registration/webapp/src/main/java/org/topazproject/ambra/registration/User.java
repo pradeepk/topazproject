@@ -32,9 +32,9 @@ public interface User {
   String getLoginName();
 
   /**
-    * Set the Users Login Name
-    * @param email  Set User Login Name
-    */
+   * Set the Users Login Name
+   * @param email  Set User Login Name
+   */
   void setLoginName(String email);
 
   /**
@@ -44,9 +44,9 @@ public interface User {
   String getNewLoginName();
 
   /**
-    * Set the User's replacement Login Name
-    * @param email  Set User Login Name
-    */
+   * Set the User's replacement Login Name
+   * @param email  Set User Login Name
+   */
   void setNewLoginName(String email);
 
   /**
@@ -56,15 +56,15 @@ public interface User {
   String getPassword();
 
   /**
-    * Set the User Password
-    * @param password password
-    */
+   * Set the User Password
+   * @param password password
+   */
   void setPassword(String password);
 
   /**
-    * Set the User to varified
-    * @param  verified verified
-    */
+   * Set the User to varified
+   * @param  verified verified
+   */
   void setVerified(final boolean verified);
 
   /**
@@ -74,9 +74,9 @@ public interface User {
   boolean isVerified();
 
   /**
-    * Set the User to active
-    * @param active active
-    */
+   * Set the User to active
+   * @param active active
+   */
   void setActive(final boolean active);
 
   /**
@@ -92,9 +92,9 @@ public interface User {
   String getId();
 
   /**
-    * Set the User Id
-    * @param id id
-    */
+   * Set the User Id
+   * @param id id
+   */
   void setId(final String id);
 
   /**
@@ -104,9 +104,9 @@ public interface User {
   String getEmailVerificationToken();
 
   /**
-    * Set the Email Verification Token
-    * @param emailVerificationToken emailVerificationToken
-    */
+   * Set the Email Verification Token
+   * @param emailVerificationToken emailVerificationToken
+   */
   void setEmailVerificationToken(String emailVerificationToken);
 
   /**
@@ -116,9 +116,9 @@ public interface User {
   Timestamp getCreatedOn();
 
   /**
-    * Set the Timestamp the User was created
-    * @param createdOn createdOn
-    */
+   * Set the Timestamp the User was created
+   * @param createdOn createdOn
+   */
   void setCreatedOn(final Timestamp createdOn);
 
   /**
@@ -128,9 +128,9 @@ public interface User {
   Timestamp getUpdatedOn();
 
   /**
-    * Set the Timestamp of last update
-    * @param updatedOn updatedOn
-    */
+   * Set the Timestamp of last update
+   * @param updatedOn updatedOn
+   */
   void setUpdatedOn(final Timestamp updatedOn);
 
   /**
@@ -140,8 +140,8 @@ public interface User {
   String getResetPasswordToken();
 
   /**
-    * Set the Reset Password Token
-    * @param resetPasswordToken resetPasswordToken
-    */
+   * Set the Reset Password Token
+   * @param resetPasswordToken resetPasswordToken
+   */
   void setResetPasswordToken(final String resetPasswordToken);
 }

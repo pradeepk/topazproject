@@ -22,8 +22,10 @@ import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.registration.User;
 import org.topazproject.ambra.service.RegistrationMailer;
@@ -37,6 +39,8 @@ import static org.topazproject.ambra.Constants.Length.PASSWORD_MIN;
  * Uses use this to register as a new user. Verification stage is separate from this.
  */
 public class RegisterAction extends BaseAction {
+  private static final Log log = LogFactory.getLog(RegisterAction.class);
+
   private String loginName1;
   private String loginName2;
   private String password1;
@@ -44,7 +48,6 @@ public class RegisterAction extends BaseAction {
 
   private RegistrationMailer registrationVerificationMailer;
   private RegistrationService registrationService;
-  private static final Log log = LogFactory.getLog(RegisterAction.class);
 
   public String execute() throws Exception {
     try {

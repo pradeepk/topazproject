@@ -21,8 +21,10 @@ package org.topazproject.ambra.web;
 import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.service.NoUserFoundWithGivenLoginNameException;
 import org.topazproject.ambra.service.RegistrationService;
@@ -35,6 +37,8 @@ import static org.topazproject.ambra.Constants.Length.PASSWORD_MIN;
  * Used to present the user with reset password facility after having forgotten their password.
  */
 public class ForgotPasswordChangePasswordAction extends BaseAction {
+  private static final Log log = LogFactory.getLog(ForgotPasswordChangePasswordAction.class);
+
   private String loginName;
   private String resetPasswordToken;
   private String password1;
@@ -42,13 +46,10 @@ public class ForgotPasswordChangePasswordAction extends BaseAction {
 
   private RegistrationService registrationService;
 
-  private static final Log log = LogFactory.getLog(ForgotPasswordChangePasswordAction.class);
-
   public String execute() throws Exception {
     try {
       if (validatePassword()) {
-        registrationService
-                .resetPassword(loginName, resetPasswordToken, password1);
+        registrationService.resetPassword(loginName, resetPasswordToken, password1);
       } else {
         return INPUT;
       }

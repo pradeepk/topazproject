@@ -56,7 +56,6 @@ public class PasswordDigestService {
     return getDigestPassword(password, createRandomSalt());
   }
 
-
   /**
    * Return a digest of the password also known as hashing. Use the salt as provided to make the
    * deduction of the original password more time consuming.

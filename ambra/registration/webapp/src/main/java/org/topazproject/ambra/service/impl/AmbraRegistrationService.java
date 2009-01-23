@@ -18,9 +18,9 @@
  */
 package org.topazproject.ambra.service.impl;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.registration.User;
 import org.topazproject.ambra.registration.UserImpl;
 import org.topazproject.ambra.service.NoUserFoundWithGivenLoginNameException;
@@ -86,12 +86,12 @@ public class AmbraRegistrationService implements RegistrationService {
    */
   public void changeLogin (final String loginName, final String password, final String newLogin)
     throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException,
-                    PasswordServiceException, UserAlreadyExistsException {
+           PasswordServiceException, UserAlreadyExistsException {
     final User user = findExistingUser(loginName);
 
     final boolean validPassword = passwordDigestService.verifyPassword(password, user.getPassword());
     if (validPassword) {
-      if (null == getUserWithLoginName(newLogin)) {
+      if (getUserWithLoginName(newLogin) == null) {
         user.setNewLoginName(newLogin);
         user.setEmailVerificationToken(TokenGenerator.getUniqueToken());
         saveUser(user);
@@ -132,7 +132,7 @@ public class AmbraRegistrationService implements RegistrationService {
    */
   public void verifyUser(final String loginName, final String emailVerificationToken)
     throws VerificationTokenInvalidException, UserAlreadyVerifiedException,
-                    NoUserFoundWithGivenLoginNameException {
+           NoUserFoundWithGivenLoginNameException {
     final User user = getUserWithLoginName(loginName);
     if (null == user) {
       throw new NoUserFoundWithGivenLoginNameException(loginName);
@@ -155,7 +155,7 @@ public class AmbraRegistrationService implements RegistrationService {
    */
   public void verifyChangeUser(final String loginName, final String emailVerificationToken)
     throws VerificationTokenInvalidException, NoUserFoundWithGivenLoginNameException,
-                    UserAlreadyExistsException {
+           UserAlreadyExistsException {
     final User user = getUserWithLoginName(loginName);
     if (null == user) {
       throw new NoUserFoundWithGivenLoginNameException(loginName);
@@ -180,7 +180,6 @@ public class AmbraRegistrationService implements RegistrationService {
   private void activateUser(final User user) {
     user.setVerified(true);
     user.setEmailVerificationToken(null);
-    //user.setActive(true);
   }
 
   /**
@@ -201,7 +200,7 @@ public class AmbraRegistrationService implements RegistrationService {
    */
   public void changePassword(final String loginName, final String oldPassword, final String newPassword)
     throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException, UserNotVerifiedException,
-                    PasswordServiceException {
+           PasswordServiceException {
     final User user = findExistingUser(loginName);
 
     if (user.isVerified()) {
@@ -220,7 +219,7 @@ public class AmbraRegistrationService implements RegistrationService {
 
   private User findExistingUser(String loginName) throws NoUserFoundWithGivenLoginNameException {
     final User user = getUserDAO().findUserWithLoginName(loginName);
-    if (null == user) {
+    if (user == null) {
       throw new NoUserFoundWithGivenLoginNameException(loginName);
     }
     return user;

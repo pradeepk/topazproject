@@ -20,13 +20,16 @@ package org.topazproject.ambra.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+
 import org.topazproject.ambra.registration.User;
 import org.topazproject.ambra.service.DuplicateLoginNameException;
 import org.topazproject.ambra.service.UserDAO;

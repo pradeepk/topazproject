@@ -85,7 +85,7 @@ public class RegistrationMailer extends FreemarkerTemplateMailer {
     newMapFields.put("name", getFromEmailName());
     if (log.isDebugEnabled()) {
       log.debug("sending change email address verification for " +
-          ((user != null) ? user.getNewLoginName() : null));
+                ((user != null) ? user.getNewLoginName() : null));
     }
     sendEmail(user.getNewLoginName(), newMapFields);
   }

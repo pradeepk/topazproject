@@ -56,5 +56,4 @@ public class TestHibernate extends BaseAmbraRegistrationTestCase {
     user = userDao.findUserWithLoginName("deleteuser@home.com");
     assertNull(user);
   }
-
 }

@@ -38,12 +38,12 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  *
  */
 public class ResendRegistrationAction extends BaseAction {
+  private static final Log log = LogFactory.getLog(ResendRegistrationAction.class);
 
   private String loginName;
 
   private RegistrationService registrationService;
   private RegistrationMailer registrationVerificationMailer;
-  private static final Log log = LogFactory.getLog(ResendRegistrationAction.class);
 
   public String execute() throws Exception {
     try {

@@ -20,8 +20,10 @@ package org.topazproject.ambra.web;
 
 import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.service.NoUserFoundWithGivenLoginNameException;
 import org.topazproject.ambra.service.RegistrationService;
@@ -32,17 +34,15 @@ import org.topazproject.ambra.service.VerificationTokenInvalidException;
  * Action for verifying a user.
  */
 public class ConfirmationAction extends BaseAction {
+  private static final Log log = LogFactory.getLog(ConfirmationAction.class);
+
   private String emailVerificationToken;
   private String loginName;
   private RegistrationService registrationService;
 
-  private static final Log log = LogFactory.getLog(ConfirmationAction.class);
-
   public String execute() throws Exception {
-
     try {
-      registrationService
-              .verifyUser(loginName, emailVerificationToken);
+      registrationService.verifyUser(loginName, emailVerificationToken);
     } catch (final UserAlreadyVerifiedException e) {
       addActionMessage("User already verified:" + loginName);
       return SUCCESS;
