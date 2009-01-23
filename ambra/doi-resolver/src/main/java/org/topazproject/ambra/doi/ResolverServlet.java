@@ -93,32 +93,33 @@ public class ResolverServlet extends HttpServlet {
     for (int i = 0; i < numJournals; i++) {
       urls[i] = myConfig.getString("ambra.services.doiResolver.mappings.journalMapping(" + i + ").url");
 
-      StringBuilder pat =
-        new StringBuilder("/").append(myConfig.getString("ambra.services.doiResolver.mappings.journalMapping(" + i
-                                                         + ").regex"));
+      StringBuilder pat = new StringBuilder("/").
+        append(myConfig.getString("ambra.services.doiResolver.mappings.journalMapping(" + i + ").regex"));
       journalRegExs[i]   = Pattern.compile(pat.toString());
-      pat = new StringBuilder("/").append(myConfig.getString("ambra.services.doiResolver.mappings.journalMapping(" + i
-                                                         + ").figureRegex"));
+      pat = new StringBuilder("/").append(myConfig.
+          getString("ambra.services.doiResolver.mappings.journalMapping(" + i + ").figureRegex"));
       figureRegExs[i]    = Pattern.compile(pat.toString());
     }
-
-    errorPage = myConfig.getString("ambra.platform.webserverUrl") + myConfig.getString("ambra.platform.errorPage");
+    errorPage = myConfig.getString("ambra.platform.webserverUrl") + 
+                myConfig.getString("ambra.platform.errorPage");
 
     if (log.isTraceEnabled()) {
       for (int i = 0; i < numJournals; i++) {
-        log.trace("JournalRegEx: " + journalRegExs[i].toString() + "  ; figureRegEx: "
-                  + figureRegExs[i].toString() + "  ; url: " + urls[i]);
+        log.trace("JournalRegEx: " + journalRegExs[i].toString() + "  ; figureRegEx: " +
+                  figureRegExs[i].toString() + "  ; url: " + urls[i]);
       }
 
       log.trace(("Error Page is: " + errorPage));
     }
 
     try {
-      resolver = new DOITypeResolver(new URI(myConfig.getString("ambra.topaz.tripleStore.mulgara.itql.uri")), null);
-      log.trace("Created resolver, server='" + myConfig.getString("ambra.topaz.tripleStore.mulgara.itql.uri") + "'");
+      resolver = new DOITypeResolver(
+          new URI(myConfig.getString("ambra.topaz.tripleStore.mulgara.itql.uri")), null);
+      log.trace("Created resolver, server='" +
+                myConfig.getString("ambra.topaz.tripleStore.mulgara.itql.uri") + "'");
     } catch (Exception e) {
-      log.error("Error creating doi-type-resolver, server='"
-                + myConfig.getString("ambra.topaz.tripleStore.mulgara.itql.uri") + "'", e);
+      log.error("Error creating doi-type-resolver, server='" +
+                myConfig.getString("ambra.topaz.tripleStore.mulgara.itql.uri") + "'", e);
       throw new RuntimeException("Error creating doi-type-resolver", e);
     }
   }
@@ -204,8 +205,8 @@ public class ResolverServlet extends HttpServlet {
     Pattern       figureRegEx;
 
     for (int i = 0; i < numJournals; i++) {
-      journalRegEx   = journalRegExs[i];
-      figureRegEx    = figureRegExs[i];
+      journalRegEx = journalRegExs[i];
+      figureRegEx  = figureRegExs[i];
 
       if (journalRegEx.matcher(doi).matches()) {
         rdfTypes = lookupDOI(doi);
@@ -214,16 +215,16 @@ public class ResolverServlet extends HttpServlet {
           redirectURL = new StringBuilder(urls[i]);
 
           try {
-            redirectURL.append(myConfig.getString("ambra.platform.articleAction"))
-              .append(URLEncoder.encode(INFO_DOI_PREFIX, "UTF-8"))
-              .append(URLEncoder.encode(doi, "UTF-8"));
+            redirectURL.append(myConfig.getString("ambra.platform.articleAction")).
+                        append(URLEncoder.encode(INFO_DOI_PREFIX, "UTF-8")).
+                        append(URLEncoder.encode(doi, "UTF-8"));
           } catch (UnsupportedEncodingException uee) {
             if (log.isDebugEnabled()) {
               log.debug("Couldn't encode URL with UTF-8 encoding", uee);
             }
 
-            redirectURL.append(myConfig.getString("ambra.platform.articleAction"))
-              .append(URLEncoder.encode(INFO_DOI_PREFIX)).append(URLEncoder.encode(doi));
+            redirectURL.append(myConfig.getString("ambra.platform.articleAction")).
+                        append(URLEncoder.encode(INFO_DOI_PREFIX)).append(URLEncoder.encode(doi));
           }
 
           if (log.isDebugEnabled()) {
@@ -240,9 +241,9 @@ public class ResolverServlet extends HttpServlet {
 
         if ((rdfTypes != null) && rdfTypes.contains(RDF_TYPE_ARTICLE)) {
           redirectURL = new StringBuilder(urls[i]);
-          redirectURL.append(myConfig.getString("ambra.platform.figureAction1")).append(INFO_DOI_PREFIX)
-            .append(possibleArticleDOI).append(myConfig.getString("ambra.platform.figureAction2"))
-            .append(INFO_DOI_PREFIX).append(doi);
+          redirectURL.append(myConfig.getString("ambra.platform.figureAction1")).append(INFO_DOI_PREFIX).
+                      append(possibleArticleDOI).append(myConfig.getString("ambra.platform.figureAction2")).
+                      append(INFO_DOI_PREFIX).append(doi);
 
           if (log.isDebugEnabled()) {
             log.debug("Matched: " + doi + "; redirecting to: " + redirectURL.toString());
@@ -254,7 +255,6 @@ public class ResolverServlet extends HttpServlet {
     }
 
     rdfTypes = lookupDOI(doi);
-
     String doiUriStr = INFO_DOI_PREFIX + doi;
 
     if (rdfTypes.contains(RDF_TYPE_ANNOTATION)) {
@@ -264,14 +264,13 @@ public class ResolverServlet extends HttpServlet {
 
         if (rootUri != null) {
           StringBuilder urlBuf = new StringBuilder(rootUri);
-          urlBuf.append(myConfig.getString("ambra.platform.annotationAction"))
-                 .append(URLEncoder.encode(doiUriStr, "UTF-8"));
+          urlBuf.append(myConfig.getString("ambra.platform.annotationAction")).
+                 append(URLEncoder.encode(doiUriStr, "UTF-8"));
 
           return urlBuf.toString();
         }
       } catch (Exception e) {
-        log.error("Exception occurred attempting to resolve doi '" + doiUriStr
-                  + "' to an annotation", e);
+        log.error("Exception occurred attempting to resolve doi '" + doiUriStr + "' to an annotation", e);
 
         return errorPage;
       }
