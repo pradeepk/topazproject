@@ -22,7 +22,10 @@ import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import static org.testng.AssertJUnit.*;
+
+import static org.testng.AssertJUnit.assertNull;
+import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.assertEquals;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -49,16 +52,12 @@ import org.topazproject.otm.stores.MemStore;
  */
 public class FedoraBlobTest {
   private static final Log log       = LogFactory.getLog(FedoraBlobTest.class);
-  private SessionFactory   factory   = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
-  private FedoraBlobStore  blobStore =
-    new FedoraBlobStore("http://localhost:9090/fedora/services/management", "fedoraAdmin",
-                        "fedoraAdmin");
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
+  private SessionFactory   factory   =
+    new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+  private FedoraBlobStore  blobStore =
+    new FedoraBlobStore("http://localhost:9090/fedora/services/management", "fedoraAdmin", "fedoraAdmin");
+
   @BeforeClass
   public void setUp() throws OtmException {
     try {
@@ -76,11 +75,6 @@ public class FedoraBlobTest {
     }
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @throws Exception DOCUMENT ME!
-   */
   @Test
   public void testCrud() throws Exception {
     log.info("Testing basic CRUD operations ...");
@@ -169,7 +163,7 @@ public class FedoraBlobTest {
    *
    * @param action the action to run
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException
    */
   protected void doInSession(Action action) throws OtmException {
     Session     session = factory.openSession();
@@ -187,7 +181,7 @@ public class FedoraBlobTest {
         log.warn("rollback failed", re);
       }
 
-      throw e; // or display error message
+      throw e;
     } finally {
       try {
         session.close();
@@ -197,7 +191,7 @@ public class FedoraBlobTest {
     }
   }
 
-/**
+  /**
    * The interface actions must implement.
    */
   protected static interface Action {
@@ -206,7 +200,7 @@ public class FedoraBlobTest {
      *
      * @param session the current transaction
      *
-     * @throws OtmException DOCUMENT ME!
+     * @throws OtmException
      */
     void run(Session session) throws OtmException;
   }
@@ -231,7 +225,7 @@ public class FedoraBlobTest {
      */
     @Id
     @GeneratedValue(generatorClass = "org.topazproject.fedora.otm.FedoraIdGenerator",
-        uriPrefix = "info:fedora/test1/")
+                    uriPrefix = "info:fedora/test1/")
     public void setId(String id) {
       this.id = id;
     }
