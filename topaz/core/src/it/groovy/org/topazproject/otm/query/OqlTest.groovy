@@ -2179,7 +2179,7 @@ public class ResultChecker extends BuilderSupport {
         else {
           if (res.warnings)
             test.log.error "Got warnings: " +res.warnings.join(System.getProperty("line.separator"))
-          test.assertNull("Got uexpected warnings", res.warnings);
+          test.assertNull("Got unexpected warnings", res.warnings);
         }
         break;
 
