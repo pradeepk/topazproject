@@ -41,6 +41,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 @Entity(types = {"foaf:Person"})
 public class FoafPerson implements Serializable, Cloneable {
   private static final long serialVersionUID = -1344807042297539903L;
+
   private URI      id;
   private String   realName;
   private String   givenNames;

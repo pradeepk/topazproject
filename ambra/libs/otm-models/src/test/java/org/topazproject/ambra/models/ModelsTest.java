@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-
-
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -54,11 +52,10 @@ public class ModelsTest {
                   Category.class, Citation.class, Comment.class, Correction.class, DublinCore.class,
                   FoafPerson.class, ObjectInfo.class, Ambra.class, Rating.class, RatingContent.class,
                   RatingSummary.class, RatingSummaryContent.class, RelatedArticle.class,
-                  License.class, Reply.class,
-                  ReplyThread.class, UserAccount.class, UserPreference.class, UserPreferences.class,
-                  UserProfile.class, UserRole.class, Journal.class, Issue.class, Aggregation.class,
-                  EditorialBoard.class, Correction.class, FormalCorrection.class, Blob.class,
-                  ReplyBlob.class, AnnotationBlob.class
+                  License.class, Reply.class, ReplyThread.class, UserAccount.class, UserPreference.class,
+                  UserPreferences.class, UserProfile.class, UserRole.class, Journal.class, Issue.class,
+                  Aggregation.class, EditorialBoard.class, Correction.class, FormalCorrection.class,
+                  Blob.class, ReplyBlob.class, AnnotationBlob.class
     };
 
   /**
@@ -127,7 +124,6 @@ public class ModelsTest {
    */
   @Test
   public void serializationTest() throws ClassNotFoundException, IOException {
-
     // persist to file
     Article article = new Article();
     FormalCorrection correction = new FormalCorrection();

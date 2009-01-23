@@ -38,12 +38,13 @@ import org.topazproject.otm.mapping.Mapper;
 @Entity(graph = "ri", types = {"topaz:Representation"})
 public class Representation extends Blob implements PostLoadEventListener, PreInsertEventListener {
   private static final long serialVersionUID = 8927830952382002736L;
-  private String                                                           id;
-  private String                                                           name;
-  private String                                                           contentType;
-  private long                                                             size;
-  private Date                                                             lastModified;
-  private ObjectInfo                                                       object;
+
+  private String     id;
+  private String     name;
+  private String     contentType;
+  private long       size;
+  private Date       lastModified;
+  private ObjectInfo object;
 
   private transient boolean modified = true;
 

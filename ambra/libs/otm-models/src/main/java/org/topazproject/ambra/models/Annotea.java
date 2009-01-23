@@ -216,11 +216,12 @@ public abstract class Annotea<T> implements Serializable {
    */
   public String toString() {
     String name = getClass().getName();
-    return name.substring(1+name.lastIndexOf('.')) + ": {"
-            + "id: " + getId()
-            + ", created: " + getCreated()
-            + ", creator: " + getCreator()
-            + ", title: "   + getTitle() + "}";
+    return name.substring(1 + name.lastIndexOf('.')) +
+                          ": {" + "id: " + getId() +
+                          ", created: " + getCreated() +
+                          ", creator: " + getCreator() +
+                          ", title: " + getTitle() +
+                          "}";
   }
 
   /**

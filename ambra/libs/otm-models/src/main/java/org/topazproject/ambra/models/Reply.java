@@ -41,9 +41,10 @@ public class Reply extends Annotea<ReplyBlob> {
    * Thread Namespace
    */
   public static final String NS = "http://www.w3.org/2001/03/thread#";
-  private URI                                                           id;
-  private String                                                       root;
-  private String                                                       inReplyTo;
+
+  private URI    id;
+  private String root;
+  private String inReplyTo;
   private String type;
 
   /**

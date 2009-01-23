@@ -44,6 +44,7 @@ import org.topazproject.otm.criterion.DetachedCriteria;
 @Entity(types = {"http://purl.org/dc/dcmitype/Collection"}, graph = "ri")
 public class Aggregation implements Serializable {
   private static final long serialVersionUID = -5388685823985053203L;
+
   private URI                            id;
   private EditorialBoard                 editorialBoard;
   private DublinCore                     dublinCore;
@@ -193,11 +194,11 @@ public class Aggregation implements Serializable {
    */
   @Override
   public String toString() {
-    return "Aggregation: ["
-            + "id: " + getId()
-            + ", simpleCollection: " + getSimpleCollection()
-            + ", " + getSmartCollectionRules()
-            + ", " + getDublinCore()
-            + "]";
+    return "Aggregation: [" +
+           "id: " + getId() +
+           ", simpleCollection: " + getSimpleCollection() +
+           ", " + getSmartCollectionRules() +
+           ", " + getDublinCore() +
+           "]";
   }
 }

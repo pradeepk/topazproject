@@ -33,11 +33,12 @@ import org.topazproject.otm.annotations.Predicate;
 @Entity(types = {"plos:Journal"}, graph = "ri")
 public class Journal extends Aggregation {
   private static final long serialVersionUID = -934335511929534393L;
-  private String  key;
-  private String  eIssn;
-  private URI currentIssue;
+
+  private String    key;
+  private String    eIssn;
+  private URI       currentIssue;
   private List<URI> volumes = new ArrayList<URI>();
-  private URI image;
+  private URI       image;
 
   /**
    * Get the internal key used to identify this journal.
@@ -143,13 +144,13 @@ public class Journal extends Aggregation {
    */
   @Override
   public String toString() {
-    return "Journal: ["
-            + "eIssn: " + geteIssn()
-            + ", key: " + getKey()
-            + ", image: " + getImage()
-            + ", currentIssue: " + getCurrentIssue()
-            + ", volumes: " + getVolumes()
-            + ", " + super.toString()
-            + "]";
+    return "Journal: [" +
+           "eIssn: " + geteIssn() +
+           ", key: " + getKey() +
+           ", image: " + getImage() +
+           ", currentIssue: " + getCurrentIssue() +
+           ", volumes: " + getVolumes() +
+           ", " + super.toString() +
+           "]";
   }
 }

@@ -32,7 +32,8 @@ import org.topazproject.otm.annotations.Id;
 @Entity(types = {"cc:License"}, graph = "ri")
 public abstract class License implements Serializable {
   private static final long serialVersionUID = -1683324743024065570L;
-  private URI   id;
+
+  private URI id;
 
   /**
    * Creates a new license object.

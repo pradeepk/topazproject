@@ -47,11 +47,11 @@ public class Article extends ObjectInfo {
   /** Active article states */
   public static final int[] ACTIVE_STATES = {STATE_ACTIVE};
 
-  private List<ObjectInfo> parts = new ArrayList<ObjectInfo>();
-  private Set<URI> articleType;
+  private List<ObjectInfo>    parts = new ArrayList<ObjectInfo>();
+  private Set<URI>            articleType;
   private Set<RelatedArticle> relatedArticles;
-  private Set<Category> categories = new HashSet<Category>();
-  private int state;
+  private Set<Category>       categories = new HashSet<Category>();
+  private int                 state;
 
   /** 
    * @return the different parts of the article 

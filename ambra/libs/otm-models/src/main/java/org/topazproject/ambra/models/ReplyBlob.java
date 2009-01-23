@@ -64,7 +64,7 @@ public class ReplyBlob extends Blob {
    */
   @Id
   @GeneratedValue(uriPrefix = "info:fedora/",
-      generatorClass = "org.topazproject.ambra.models.support.BlobIdGenerator")
+                  generatorClass = "org.topazproject.ambra.models.support.BlobIdGenerator")
   public void setId(String id) {
     this.id = id;
   }

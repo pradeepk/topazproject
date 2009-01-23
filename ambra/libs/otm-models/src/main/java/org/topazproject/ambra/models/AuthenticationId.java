@@ -39,7 +39,7 @@ public class AuthenticationId implements Serializable {
 
   private static final String DEF_REALM = "local";
 
-  private URI id;
+  private URI    id;
   private String realm = DEF_REALM;
   private String value;
 

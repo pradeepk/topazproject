@@ -41,12 +41,12 @@ import org.topazproject.otm.annotations.Predicate;
 public class ObjectInfo implements Serializable {
   private static final long serialVersionUID = 4074534426473235595L;
 
-  private URI id;
-  private DublinCore dublinCore = new DublinCore();
-  private Article isPartOf;
+  private URI                 id;
+  private DublinCore          dublinCore = new DublinCore();
+  private Article             isPartOf;
   private Set<Representation> representations = new HashSet<Representation>();
-  private String contextElement;
-  private String eIssn;
+  private String              contextElement;
+  private String              eIssn;
 
   /**
    * Return the context for the object
@@ -177,9 +177,9 @@ public class ObjectInfo implements Serializable {
   }
 
   public String toString() {
-    return "ObjectInfo: ["
-            + "id: " + getId()
-            + ", contextElement: " + getContextElement()
-            + "]";
+    return "ObjectInfo: [" +
+           "id: " + getId() +
+           ", contextElement: " + getContextElement() +
+           "]";
   }
 }

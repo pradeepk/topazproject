@@ -21,7 +21,6 @@ package org.topazproject.ambra.models.support.fedora;
 import java.net.URI;
 import java.util.BitSet;
 
-
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Representation;
 import org.topazproject.fedora.otm.FedoraBlob;
@@ -90,11 +89,8 @@ public class RepresentationFedoraBlobFactory implements FedoraBlobFactory {
                              instance.getClass() + " (" + cm + ")");
 
     Representation r      = (Representation) instance;
-
-    String         cModel =
-      (r.getObject() instanceof Article) ? "AmbraArticle" : "AmbraArticleSecObj";
-
-    String pid = toPid(r.getObject().getId());
+    String         cModel = (r.getObject() instanceof Article) ? "AmbraArticle" : "AmbraArticleSecObj";
+    String         pid    = toPid(r.getObject().getId());
 
     return new RepresentationFedoraBlob(cm, pid, r.getName(), r.getContentType(), cModel);
   }
@@ -114,8 +110,7 @@ public class RepresentationFedoraBlobFactory implements FedoraBlobFactory {
   /*
    * inherited javadoc
    */
-  public String generateId(ClassMetadata cm, FedoraConnection con)
-                    throws OtmException {
+  public String generateId(ClassMetadata cm, FedoraConnection con) throws OtmException {
     throw new OtmException("Unsupported (for now)");
   }
 }

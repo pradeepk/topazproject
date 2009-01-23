@@ -313,7 +313,8 @@ public class RatingSummaryContent implements Serializable {
       singleRatingTotal      -= value;
     } else {
       // should never happen
-      String errorMessage = "Invalid type, " + ratingType + ", when removing a Rating from a RatingSummary.";
+      String errorMessage = "Invalid type, " + ratingType +
+                            ", when removing a Rating from a RatingSummary.";
       log.error(errorMessage);
       throw new RuntimeException(errorMessage);
     }
@@ -337,7 +338,8 @@ public class RatingSummaryContent implements Serializable {
       return singleRatingTotal / singleRatingNumRatings;
     } else {
       // should never happen
-      String errorMessage = "Invalid type, " + ratingType + ", when retrieving the average Rating from a RatingSummary.";
+      String errorMessage = "Invalid type, " + ratingType +
+                            ", when retrieving the average Rating from a RatingSummary.";
       log.error(errorMessage);
       throw new RuntimeException(errorMessage);
     }
@@ -361,7 +363,8 @@ public class RatingSummaryContent implements Serializable {
       singleRatingNumRatings = numRatings;
     } else {
       // should never happen
-      String errorMessage = "Invalid type, " + ratingType + ", when assigning the number of Ratings for a RatingSummary.";
+      String errorMessage = "Invalid type, " + ratingType +
+                            ", when assigning the number of Ratings for a RatingSummary.";
       log.error(errorMessage);
       throw new RuntimeException(errorMessage);
     }
@@ -385,7 +388,8 @@ public class RatingSummaryContent implements Serializable {
       return singleRatingNumRatings;
     } else {
       // should never happen
-      String errorMessage = "Invalid type, " + ratingType + ", when retriving the number of Ratings for a RatingSummary.";
+      String errorMessage = "Invalid type, " + ratingType +
+                            ", when retriving the number of Ratings for a RatingSummary.";
       log.error(errorMessage);
       throw new RuntimeException(errorMessage);
     }
@@ -409,7 +413,8 @@ public class RatingSummaryContent implements Serializable {
       singleRatingTotal = total;
     } else {
       // should never happen
-      String errorMessage = "Invalid type, " + ratingType + ", when assigning a total Ratings value for a RatingSummary.";
+      String errorMessage = "Invalid type, " + ratingType +
+                            ", when assigning a total Ratings value for a RatingSummary.";
       log.error(errorMessage);
       throw new RuntimeException(errorMessage);
     }
@@ -433,7 +438,8 @@ public class RatingSummaryContent implements Serializable {
       return singleRatingTotal;
     } else {
       // should never happen
-      String errorMessage = "Invalid type, " + ratingType + ", when retrieving a total Ratings value for a RatingSummary.";
+      String errorMessage = "Invalid type, " + ratingType +
+                            ", when retrieving a total Ratings value for a RatingSummary.";
       log.error(errorMessage);
       throw new RuntimeException(errorMessage);
     }

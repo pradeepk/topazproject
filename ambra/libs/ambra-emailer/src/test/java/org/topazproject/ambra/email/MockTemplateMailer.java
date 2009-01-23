@@ -21,16 +21,20 @@ package org.topazproject.ambra.email;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+
 import org.topazproject.ambra.email.MailerUser;
 import org.topazproject.ambra.email.TemplateMailer;
 
 import java.util.Map;
 
 public class MockTemplateMailer implements TemplateMailer {
-  public void mail(final String toEmailAddress, final String fromEmailAddress, final String subject, final Map<String, Object> context, final String textTemplateFilename, final String htmlTemplateFilename) {
+  public void mail(final String toEmailAddress, final String fromEmailAddress, final String subject,
+                   final Map<String, Object> context, final String textTemplateFilename,
+                   final String htmlTemplateFilename) {
   }
 
-  public void massMail(final Map<String, Map<String, Object>> emailAddressContextMap, final String subject, final String textTemplateFilename, final String htmlTemplateFilename) {
+  public void massMail(final Map<String, Map<String, Object>> emailAddressContextMap, final String subject,
+                       final String textTemplateFilename, final String htmlTemplateFilename) {
   }
 
   public void sendEmailAddressVerificationEmail(final MailerUser user) {
@@ -61,7 +65,7 @@ public class MockTemplateMailer implements TemplateMailer {
     return null;
   }
 
-  public void setForgotPasswordVerificationEmailMap(final Map<String, String> forgotPasswordVerificationEmailMap) {
+  public void setForgotPasswordVerificationEmailMap(
+      final Map<String, String> forgotPasswordVerificationEmailMap) {
   }
-
 }

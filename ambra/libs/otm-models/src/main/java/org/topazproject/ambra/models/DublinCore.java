@@ -42,31 +42,31 @@ import org.topazproject.otm.annotations.Searchable;
 public class DublinCore implements Serializable {
   private static final long serialVersionUID = -3010297971167417038L;
 
-  private String title;
-  private String description;
-  private Set<String> creators = new HashSet<String>();
-  private Date date;
-  private String identifier;
-  private String rights;
-  private URI type;
-  private Set<String> contributors = new HashSet<String>();
-  private Set<String> subjects = new HashSet<String>();
-  private String language;
-  private String publisher;
-  private String format;
-  private Object source;
-  private Date available;
-  private Date issued;
-  private Date submitted;
-  private Date accepted;
-  private Integer copyrightYear;
-  private Set<String> summary;
-  private Citation bibliographicCitation;
-  private Date created;
-  private Set<License> license;
-  private Date modified;
+  private String         title;
+  private String         description;
+  private Set<String>    creators = new HashSet<String>();
+  private Date           date;
+  private String         identifier;
+  private String         rights;
+  private URI            type;
+  private Set<String>    contributors = new HashSet<String>();
+  private Set<String>    subjects = new HashSet<String>();
+  private String         language;
+  private String         publisher;
+  private String         format;
+  private Object         source;
+  private Date           available;
+  private Date           issued;
+  private Date           submitted;
+  private Date           accepted;
+  private Integer        copyrightYear;
+  private Set<String>    summary;
+  private Citation       bibliographicCitation;
+  private Date           created;
+  private Set<License>   license;
+  private Date           modified;
   private List<Citation> references;
-  private URI conformsTo;
+  private URI            conformsTo;
 
   /**
    * Empty contructor

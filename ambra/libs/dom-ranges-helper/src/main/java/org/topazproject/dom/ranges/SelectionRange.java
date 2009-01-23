@@ -208,11 +208,13 @@ public class SelectionRange {
         if (end)
           r.setEnd(n, range.getEndOffset());
 
-        // Optimization rule
-        //
-        // Rule 1: text nodes of same parent can be appended to previous range
-        if ((type == Node.TEXT_NODE) && (prev != null) && (prev.getNodeType() == Node.TEXT_NODE)
-             && (n.getParentNode() == prev.getParentNode())) {
+        /*
+         * Optimization rule
+         *
+         * Rule 1: text nodes of same parent can be appended to previous range
+         */
+        if ((type == Node.TEXT_NODE) && (prev != null) && (prev.getNodeType() == Node.TEXT_NODE) &&
+            (n.getParentNode() == prev.getParentNode())) {
           // Note: we may have appended complete non-text nodes before; but that is fine
           last.setEnd(r.getEndContainer(), r.getEndOffset());
 

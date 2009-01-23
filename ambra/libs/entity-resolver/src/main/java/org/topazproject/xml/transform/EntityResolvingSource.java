@@ -21,6 +21,7 @@ package org.topazproject.xml.transform;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
+
 import org.xml.sax.helpers.XMLReaderFactory;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;

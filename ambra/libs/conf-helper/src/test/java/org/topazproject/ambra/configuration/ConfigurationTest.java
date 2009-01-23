@@ -34,7 +34,8 @@ public class ConfigurationTest extends TestCase {
     ConfigurationStore store = ConfigurationStore.getInstance();
     store.loadConfiguration(null);
     conf = store.getConfiguration();
-    /* We want to use a test version of global-defaults.
+    /*
+     * We want to use a test version of global-defaults.
      * However there is no way to override it. So we add this
      * at the end (last place looked).
      */

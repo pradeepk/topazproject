@@ -31,8 +31,9 @@ import org.topazproject.otm.annotations.Predicate;
 @Entity(types = {"plos:Issue"}, graph = "ri")
 public class Issue extends Aggregation {
   private static final long serialVersionUID = -4532961080689709771L;
+
   private String displayName;
-  private URI image;
+  private URI    image;
 
   /**
    * Get the image for this Issue.
@@ -82,10 +83,10 @@ public class Issue extends Aggregation {
    */
   @Override
   public String toString() {
-    return "Issue: ["
-            + "displayName: " + getDisplayName()
-            + ", image: " + getImage()
-            + ", " + super.toString()
-            + "]";
+    return "Issue: [" +
+           "displayName: " + getDisplayName() +
+           ", image: " + getImage() +
+           ", " + super.toString() +
+           "]";
   }
 }

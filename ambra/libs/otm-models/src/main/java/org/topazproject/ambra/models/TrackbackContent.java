@@ -42,7 +42,7 @@ public class TrackbackContent implements Serializable {
 
   private String id;
   private String title;
-  private URL url;
+  private URL    url;
   private String blog_name;
   private String excerpt;
 

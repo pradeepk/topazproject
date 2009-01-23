@@ -25,7 +25,8 @@ import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
 
-import static org.testng.AssertJUnit.*;
+import static org.testng.AssertJUnit.assertEquals;
+
 import org.testng.annotations.Test;
 
 import org.topazproject.otm.OtmException;
@@ -47,7 +48,6 @@ public class DOITypeResolverTest {
   private DOITypeResolver          doiResolver;
   private Map<String, Set<String>> types       = new HashMap<String, Set<String>>();
   private Map<String, Set<String>> anns        = new HashMap<String, Set<String>>();
-
 
   /**
    * Creates a new DOITypeResolverTest object.

@@ -90,11 +90,9 @@ public class WebAppListener implements ServletContextListener {
       // Setup an application scope attribute that something like freemarker or struts might use
       context.setAttribute("config", ConfigurationStore.getInstance().getConfiguration());
     } catch (MalformedURLException e) {
-      // Bad config file url. Try to abort.
       log.fatal(config.name + " defined by " + config.source + " is not a valid URL or resource", e);
       throw new Error("Failed to load configuration", e);
     } catch (ConfigurationException e) {
-      // Bad config file. Try to abort.
       log.fatal("Failed to initialize configuration factory.", e);
       throw new Error("Failed to load configuration", e);
     }
@@ -105,16 +103,14 @@ public class WebAppListener implements ServletContextListener {
     String name = System.getProperty(ConfigurationStore.CONFIG_URL);
 
     if (name != null)
-      return new FactoryConfig(name, "JVM System property " +
-                               ConfigurationStore.CONFIG_URL);
+      return new FactoryConfig(name, "JVM System property " + ConfigurationStore.CONFIG_URL);
 
     // Now look for a config specified in web.xml
     name = context.getInitParameter(ConfigurationStore.CONFIG_URL);
 
     if (name != null)
-      return new FactoryConfig(name,
-                               "Web-app context initialization parameter "
-                               + ConfigurationStore.CONFIG_URL);
+      return new FactoryConfig(name, "Web-app context initialization parameter " +
+                                     ConfigurationStore.CONFIG_URL);
 
     // Return a default
     return new FactoryConfig(ConfigurationStore.DEFAULT_CONFIG_URL, "default");

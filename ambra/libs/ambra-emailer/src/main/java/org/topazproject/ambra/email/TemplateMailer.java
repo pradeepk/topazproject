@@ -25,7 +25,6 @@ import java.util.Map;
  * A contract for all template based emailers.
  */
 public interface TemplateMailer {
-
   /**
    * Send a mail with both a text and a HTML version.
    * @param toEmailAddress          the email address where to send the email
@@ -35,7 +34,9 @@ public interface TemplateMailer {
    * @param textTemplateFilename textTemplateFilename
    * @param htmlTemplateFilename htmlTemplateFilename
    */
-  void mail(final String toEmailAddress, final String fromEmailAddress, final String subject, final Map<String, Object> context, final String textTemplateFilename, final String htmlTemplateFilename);
+  void mail(final String toEmailAddress, final String fromEmailAddress, final String subject,
+            final Map<String, Object> context, final String textTemplateFilename,
+            final String htmlTemplateFilename);
 
   /**
    * Mail to multiple email addresses with both a text and a HTML version.
@@ -45,5 +46,6 @@ public interface TemplateMailer {
    * @param textTemplateFilename textTemplateFilename
    * @param htmlTemplateFilename htmlTemplateFilename
    */
-  void massMail(final Map<String, Map<String, Object>> emailAddressContextMap, final String subject, final String textTemplateFilename, final String htmlTemplateFilename);
+  void massMail(final Map<String, Map<String, Object>> emailAddressContextMap, final String subject,
+                final String textTemplateFilename, final String htmlTemplateFilename);
 }

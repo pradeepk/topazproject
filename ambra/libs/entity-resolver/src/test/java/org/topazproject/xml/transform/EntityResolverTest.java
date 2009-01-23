@@ -20,9 +20,11 @@
 package org.topazproject.xml.transform;
 
 import java.io.ByteArrayOutputStream;
+
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
+
 import org.xml.sax.InputSource;
 
 import junit.framework.TestCase;

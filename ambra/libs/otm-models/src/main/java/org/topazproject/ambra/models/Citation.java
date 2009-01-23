@@ -45,29 +45,29 @@ import org.topazproject.otm.annotations.UriPrefix;
 public class Citation implements Serializable {
   private static final long serialVersionUID = 6405781304940950306L;
 
-  private URI   id;
-  private String key;
-  private Integer year;
-  private String displayYear;
-  private String month;
-  private String day;
-  private Integer volumeNumber;
-  private String volume;
-  private String issue;
-  private String title;
-  private String publisherLocation;
-  private String publisherName;
-  private String pages;
-  private String eLocationId;
-  private String journal;
-  private String note;
+  private URI               id;
+  private String            key;
+  private Integer           year;
+  private String            displayYear;
+  private String            month;
+  private String            day;
+  private Integer           volumeNumber;
+  private String            volume;
+  private String            issue;
+  private String            title;
+  private String            publisherLocation;
+  private String            publisherName;
+  private String            pages;
+  private String            eLocationId;
+  private String            journal;
+  private String            note;
   private List<UserProfile> editors = new ArrayList<UserProfile>();
   private List<UserProfile> authors = new ArrayList<UserProfile>();
-  private List<String> collaborativeAuthors = new ArrayList<String>();
-  private String url;
-  private String doi;
-  private String summary;
-  private String citationType;
+  private List<String>      collaborativeAuthors = new ArrayList<String>();
+  private String            url;
+  private String            doi;
+  private String            summary;
+  private String            citationType;
 
   /**
    * Get id.

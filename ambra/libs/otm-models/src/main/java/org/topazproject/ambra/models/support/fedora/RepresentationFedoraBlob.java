@@ -40,11 +40,11 @@ public class RepresentationFedoraBlob extends DefaultFedoraBlob {
    * @param ct the content type
    * @param cModel content model (in Fedora's domain)
    */
-  public RepresentationFedoraBlob(ClassMetadata cm, String pid, String dsId,
-                                  String ct, String cModel) {
+  public RepresentationFedoraBlob(ClassMetadata cm, String pid, String dsId, String ct, String cModel) {
     super(cm, pid, dsId);
-    this.contentType                    = ct;
-    this.contentModel                   = cModel;
+
+    this.contentType  = ct;
+    this.contentModel = cModel;
   }
 
   /**

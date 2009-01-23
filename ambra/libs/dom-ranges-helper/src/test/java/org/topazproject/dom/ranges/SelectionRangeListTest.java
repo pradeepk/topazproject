@@ -57,7 +57,6 @@ public class SelectionRangeListTest extends TestCase {
     + " <x:a xmlns:x=\"foo\"> <x:a xmlns:x=\"bar\"/> </x:a> "
     + " <testid id=\"id1\"> <testid id=\"id2\"/> </testid> </doc>";
 
-  //
   private Document document;
   private Regions  regions;
 
@@ -356,7 +355,6 @@ public class SelectionRangeListTest extends TestCase {
         assertEquals("surroundable[" + i + "][" + j + "]", expectedSurrounds[i][j],
                      sub[j].toString());
     }
-    //System.out.println("");
   }
 
   private static class Regions extends SelectionRangeList {

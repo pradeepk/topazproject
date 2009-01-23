@@ -20,6 +20,7 @@ package org.topazproject.ambra.models.support.fedora;
 
 import org.topazproject.ambra.models.AnnotationBlob;
 import org.topazproject.ambra.models.ReplyBlob;
+
 import org.topazproject.fedora.otm.DefaultFedoraBlob;
 
 import org.topazproject.otm.ClassMetadata;
@@ -71,8 +72,8 @@ public class AnnotationFedoraBlob extends DefaultFedoraBlob {
     if (ReplyBlob.class.isAssignableFrom(c))
       return "Reply";
 
-    throw new Error("Expecting " + AnnotationBlob.class + " or " + ReplyBlob.class
-                    + " only. Instead found " + c);
+    throw new Error("Expecting " + AnnotationBlob.class + " or " + ReplyBlob.class +
+                    " only. Instead found " + c);
   }
 
   /**
@@ -93,8 +94,8 @@ public class AnnotationFedoraBlob extends DefaultFedoraBlob {
     if (ReplyBlob.class.isAssignableFrom(c))
       return "Reply Body";
 
-    throw new Error("Expecting " + AnnotationBlob.class + " or " + ReplyBlob.class
-                    + " only. Instead found " + c);
+    throw new Error("Expecting " + AnnotationBlob.class + " or " + ReplyBlob.class +
+                    " only. Instead found " + c);
   }
 
   public INGEST_OP getFirstIngestOp() {

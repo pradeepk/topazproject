@@ -81,7 +81,7 @@ public class CachedSource extends EntityResolvingSource implements Source {
   public CachedSource(InputSource src) throws SAXException {
     super(src, resolver);
   }
-  
+
   /**
    * @return the EntityResolver.
    */

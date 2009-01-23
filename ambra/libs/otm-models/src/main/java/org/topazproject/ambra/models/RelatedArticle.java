@@ -42,8 +42,8 @@ import org.topazproject.otm.annotations.GeneratedValue;
 public class RelatedArticle  implements Serializable {
   private static final long serialVersionUID = -4229157024423830497L;
 
-  private URI id;
-  private URI article;
+  private URI    id;
+  private URI    article;
   private String relationType;
 
   /**

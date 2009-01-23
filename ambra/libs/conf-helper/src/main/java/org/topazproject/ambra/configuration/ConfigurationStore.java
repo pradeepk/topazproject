@@ -187,8 +187,8 @@ public class ConfigurationStore {
     addResources(root, GLOBAL_DEFAULTS_RESOURCE);
 
     if (log.isDebugEnabled())
-      log.debug("Configuration dump: " + System.getProperty("line.separator")
-          + ConfigurationUtils.toString(root));
+      log.debug("Configuration dump: " + System.getProperty("line.separator") +
+                ConfigurationUtils.toString(root));
   }
 
   /**
@@ -252,7 +252,6 @@ public class ConfigurationStore {
         }
         log.info("Added " + cnt + " instances of resource '" + resource + "' to configuration");
       } catch (IOException ioe) {
-        // Don't understand how this could ever happen
         throw new Error("Unexpected error", ioe);
       }
     }

@@ -93,8 +93,7 @@ public class RatingContent implements Serializable {
    * @param commentTitle the comment title
    * @param commentValue the comment body
    */
-  public RatingContent(int insight, int reliability, int style, String commentTitle,
-                       String commentValue) {
+  public RatingContent(int insight, int reliability, int style, String commentTitle, String commentValue) {
     this.insightValue       = insight;
     this.reliabilityValue   = reliability;
     this.styleValue         = style;

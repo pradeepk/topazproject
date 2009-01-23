@@ -20,6 +20,7 @@ package org.topazproject.xml.transform;
 
 import java.util.Properties;
 import java.io.IOException;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,8 +57,7 @@ public class ResourceURLRetriever implements URLRetriever {
     String resource = (id != null) ? urlMap.getProperty(id) : null;
 
     if (log.isDebugEnabled())
-      log.debug("Resource retriever ('" + id + "'): " +
-                (resource != null ? "found" : "not found"));
+      log.debug("Resource retriever ('" + id + "'): " + (resource != null ? "found" : "not found"));
 
     if (resource == null)
       return (delegate != null) ? delegate.retrieve(url, id) : null;

@@ -31,7 +31,8 @@ import org.topazproject.otm.annotations.Predicate;
  * simpleCollection defined there as it's order is not preserved. 
  * Instead, we use issueList to handle the aggregated issues. 
  *
- * @author Jeff Suttor, Alex Worden
+ * @author Jeff Suttor
+ * @author Alex Worden
  */
 @Entity(types = {"plos:Volume"}, graph = "ri")
 public class Volume extends Aggregation {
@@ -39,8 +40,12 @@ public class Volume extends Aggregation {
   private String displayName;
   private URI image;
 
+  /*
+   * TODO - "issueList" should probably not be prefixed with dcterms. We'll need a data migration to
+   * change this :(
+   */
+
   // The ordered list of DOIs of issues contained in this volume. 
-  // TODO - "issueList" should probably not be prefixed with dcterms. We'll need a data migration to change this :(
   private List<URI> issueList = new ArrayList<URI>();
 
   /**
@@ -91,12 +96,12 @@ public class Volume extends Aggregation {
    */
   @Override
   public String toString() {
-    return "Volume: ["
-            + "displayName: " + getDisplayName()
-            + ", image: " + getImage()
-            + ", issueList: " + getIssueList()
-            + ", " + super.toString()
-            + "]";
+    return "Volume: [" +
+           "displayName: " + getDisplayName() +
+           ", image: " + getImage() +
+           ", issueList: " + getIssueList() +
+           ", " + super.toString() +
+           "]";
   }
 
   /**
