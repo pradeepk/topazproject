@@ -32,14 +32,13 @@ import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 public class RdfDefTest extends TestCase {
-  private SessionFactory sf = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+  private SessionFactory sf = new SessionFactoryImpl();
   private RdfDefinition ap1,ap2,ap3,bp1,bp2,bp3;
 
   public void setUp() throws OtmException {

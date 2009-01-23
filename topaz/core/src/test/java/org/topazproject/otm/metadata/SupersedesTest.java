@@ -32,14 +32,13 @@ import org.topazproject.otm.FetchType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 public class SupersedesTest extends TestCase {
-  private SessionFactory sf = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+  private SessionFactory sf = new SessionFactoryImpl();
 
   private void compare(RdfDefinition def, Object[] vals) {
     String message = "Testing '" + def.getName() + "': ";

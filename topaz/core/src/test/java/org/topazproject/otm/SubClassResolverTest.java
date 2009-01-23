@@ -32,10 +32,9 @@ import junit.framework.TestCase;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 
 public class SubClassResolverTest extends TestCase {
-  private SessionFactory sf = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());;
+  private SessionFactory sf = new SessionFactoryImpl();;
 
   public void testSubClassMetadata() {
     sf.preload(Sub.class);

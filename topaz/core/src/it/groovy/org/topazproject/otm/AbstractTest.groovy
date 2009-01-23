@@ -44,23 +44,19 @@ public abstract class AbstractTest extends GroovyTestCase {
 
   void setUp() {
     store = new ItqlStore("local:///topazproject".toURI(),
-                          new DefaultItqlClientFactory(dbDir: "target/mulgara-db"))
+        new DefaultItqlClientFactory(dbDir: "target/mulgara-db"))
     blobStore = new SimpleBlobStore("target/blob-store");
 
-    def sessionfactory = new SessionFactoryImpl(
-        tripleStore: store,
-        blobStore: blobStore,
-        transactionManager: TransactionManagerHelper.getTransactionManager())
-
     rdf = new RdfBuilder(
-        sessFactory:sessionfactory, defGraph:'ri',
-        defUriPrefix:'topaz:')
+        sessFactory: new SessionFactoryImpl(tripleStore: store, blobStore: blobStore),
+        defGraph: 'ri',
+        defUriPrefix: 'topaz:')
 
     for (c in graphs) {
       def g = new GraphConfig(c[0], "local:///topazproject#${c[1]}".toURI(), c[2])
       rdf.sessFactory.addGraph(g)
-      try { doInTx(true) { s -> s.dropGraph(g.getId()) } } catch (OtmException e) { }
-      doInTx { s -> s.createGraph(g.getId()) }
+      try { doInTx(true) {s -> s.dropGraph(g.getId()) } } catch (OtmException e) { }
+      doInTx {s -> s.createGraph(g.getId()) }
     }
   }
 

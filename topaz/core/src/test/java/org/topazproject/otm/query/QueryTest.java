@@ -36,7 +36,6 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
@@ -169,7 +168,7 @@ public class QueryTest extends TestCase {
 
   private Session getSession() throws OtmException {
     if (session == null) {
-      SessionFactory factory = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+      SessionFactory factory = new SessionFactoryImpl();
       factory.preload(Article.class);
       factory.preload(Reply.class);
       factory.validate();
@@ -477,7 +476,7 @@ public class QueryTest extends TestCase {
     /**
      * Set id.
      *
-     * @param uri the value to set.
+     * @param id the value to set.
      */
     @Id
     public void setId(URI id) {

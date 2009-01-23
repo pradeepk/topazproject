@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.mulgara.itql.DefaultItqlClientFactory;
 
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 
 import org.topazproject.otm.samples.Annotea.Body;
 import org.topazproject.otm.stores.ItqlStore;
@@ -53,7 +52,7 @@ public abstract class AbstractOtmTest {
 
   protected void initFactory() throws OtmException {
 
-    factory = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+    factory = new SessionFactoryImpl();
 
     log.info("initializing otm session factory ...");
     GraphConfig[] graphs = new GraphConfig[] {

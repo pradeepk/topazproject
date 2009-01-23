@@ -60,7 +60,6 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.Criterion;
@@ -93,7 +92,7 @@ import org.topazproject.otm.stores.ItqlStore;
  */
 public class AmbraDAO {
   private static final Log log     = LogFactory.getLog(AmbraDAO.class);
-  private SessionFactory   factory = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+  private SessionFactory   factory = new SessionFactoryImpl();
 
   /**
    * DOCUMENT ME!

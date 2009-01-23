@@ -34,7 +34,6 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.ambra.models.support.fedora.AnnotationFedoraBlob;
 import org.topazproject.ambra.models.support.fedora.AnnotationFedoraBlobFactory;
@@ -70,7 +69,7 @@ public class ModelsTest {
 
   @BeforeClass
   public void setUp() {
-    factory = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+    factory = new SessionFactoryImpl();
   }
 
   @Test

@@ -34,10 +34,7 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.stores.ItqlStore;
-
-import javax.transaction.TransactionManager;
 
 /**
  * Test for DOI resolver.
@@ -75,9 +72,8 @@ public class DOITypeResolverTest {
       anns.put("doi:article" + i, s);
     }
 
-    TransactionManager txManager = TransactionManagerHelper.getTransactionManager();
-    doiResolver = new DOITypeResolver(storeUri, graph, txManager);
-    SessionFactory factory = new SessionFactoryImpl(txManager);
+    doiResolver = new DOITypeResolver(storeUri, graph);
+    SessionFactory factory = new SessionFactoryImpl();
     factory.setTripleStore(new ItqlStore(storeUri));
 
     GraphConfig mc = new GraphConfig("ri", URI.create(graph), null);

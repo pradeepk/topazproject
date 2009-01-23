@@ -73,6 +73,7 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.SearchStore;
 import org.topazproject.otm.SubClassResolver;
 import org.topazproject.otm.TripleStore;
+import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 
 import org.topazproject.util.FileProcessor;
 import org.topazproject.util.DirProcessor;
@@ -182,11 +183,9 @@ public class SessionFactoryImpl implements SessionFactory {
     subClasses.put(null, new HashSet<ClassMetadata>());
   }
 
-  public SessionFactoryImpl(TransactionManager txMgr) {
-    this.txMgr = txMgr;
-  }/*
-   * inherited javadoc
-   */
+  /*
+  * inherited javadoc
+  */
   public Session openSession() {
     return openSession(null);
   }
@@ -656,8 +655,18 @@ public class SessionFactoryImpl implements SessionFactory {
     this.txMgr = tm;
   }
 
+  /**
+   * Get JTA transaction manager. If non is set in setTransactionManager, use the default.
+   *
+   * @return JTA transaction manager
+   * @throws OtmException
+   */
   public TransactionManager getTransactionManager() throws OtmException {
-    return txMgr;
+    if (txMgr != null) {
+      return txMgr;
+    } else {
+      return TransactionManagerHelper.getTransactionManager();
+    }
   }
 
 

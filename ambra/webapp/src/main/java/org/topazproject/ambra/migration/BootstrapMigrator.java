@@ -40,9 +40,6 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.stores.ItqlStore;
-import org.springframework.beans.factory.annotation.Required;
-
-import javax.transaction.TransactionManager;
 
 /**
  * Does migrations on startup.
@@ -52,7 +49,6 @@ import javax.transaction.TransactionManager;
 public class BootstrapMigrator {
   private static Log    log = LogFactory.getLog(BootstrapMigrator.class);
   private static final String RI  = Ambra.GRAPH_PREFIX + "ri";
-  private TransactionManager jtaTransactionManager;
 
   /**
    * Apply all migrations.
@@ -68,7 +64,7 @@ public class BootstrapMigrator {
       URI           service = new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql.uri"));
 
       log.info("Checking and performing data-migrations ...");
-      SessionFactory factory = new SessionFactoryImpl(jtaTransactionManager);
+      SessionFactory factory = new SessionFactoryImpl();
       factory.setTripleStore(new ItqlStore(service, WebappItqlClientFactory.getInstance()));
 
       sess = factory.openSession();
@@ -207,8 +203,4 @@ public class BootstrapMigrator {
     return map.size();
   }
 
-  @Required
-  public void setJtaTransactionManager(TransactionManager jtaTransactionManager) {
-    this.jtaTransactionManager = jtaTransactionManager;
-  }
 }

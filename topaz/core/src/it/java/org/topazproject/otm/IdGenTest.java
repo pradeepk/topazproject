@@ -25,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.stores.ItqlStore;
 
-import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Entity;
@@ -234,7 +233,7 @@ public class IdGenTest {
 
   @BeforeClass
   public void setUpFactory() throws OtmException {
-    factory = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+    factory = new SessionFactoryImpl();
     factory.setTripleStore(new ItqlStore(URI.create("local:///topazproject")));
 
     GraphConfig idtest = new GraphConfig("idtest", URI.create("local:///topazproject#idtest"), null);

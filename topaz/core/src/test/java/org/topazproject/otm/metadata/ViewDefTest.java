@@ -26,7 +26,6 @@ import junit.framework.TestCase;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
@@ -35,7 +34,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.View;
 
 public class ViewDefTest extends TestCase {
-  private SessionFactory sf = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+  private SessionFactory sf = new SessionFactoryImpl();
 
   public void testNoGettersView() throws OtmException {
     sf.preload(A.class);

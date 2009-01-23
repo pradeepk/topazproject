@@ -52,7 +52,6 @@ public class OtmConfiguration {
   private GraphConfig[]       graphs = new GraphConfig[0];
   private Map<String, String> aliases = new HashMap<String, String>();
   private static final Log log = LogFactory.getLog(OtmConfiguration.class);
-  private TransactionManager  jtaTransactionManager;
 
   /**
    * Creates a new OtmConfiguration object.
@@ -61,10 +60,9 @@ public class OtmConfiguration {
    * @param blobStore the blob-store to use
    * @param jtaTransactionManager JTA transaction manager
    */
-  public OtmConfiguration(String tripleStoreUrl, BlobStore blobStore, TransactionManager jtaTransactionManager) {
+  public OtmConfiguration(String tripleStoreUrl, BlobStore blobStore) {
     this.tripleStoreUrl = tripleStoreUrl;
     this.blobStore = blobStore;
-    this.jtaTransactionManager = jtaTransactionManager;
   }
 
   /**
@@ -164,7 +162,7 @@ public class OtmConfiguration {
     if (log.isDebugEnabled())
       log.debug("Creating new SessionFactory instance ...");
 
-    SessionFactory factory = new SessionFactoryImpl(jtaTransactionManager);
+    SessionFactory factory = new SessionFactoryImpl();
 
     if (log.isDebugEnabled())
       log.debug("Adding aliases: " + aliases);

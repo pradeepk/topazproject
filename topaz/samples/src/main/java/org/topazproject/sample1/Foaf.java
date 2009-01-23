@@ -38,7 +38,6 @@ import org.topazproject.otm.TripleStore;
 import org.topazproject.mulgara.itql.DefaultItqlClientFactory;
 
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 
 import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.stores.SimpleBlobStore;
@@ -164,7 +163,7 @@ public class Foaf {
    */
   public static void main(String[] args) {
     try {
-      SessionFactory factory = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+      SessionFactory factory = new SessionFactoryImpl();
 
       // Initialize the triple store
       DefaultItqlClientFactory tqlFactory = new DefaultItqlClientFactory();

@@ -42,7 +42,6 @@ import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.stores.MemStore;
 
 /**
@@ -53,8 +52,7 @@ import org.topazproject.otm.stores.MemStore;
 public class FedoraBlobTest {
   private static final Log log       = LogFactory.getLog(FedoraBlobTest.class);
 
-  private SessionFactory   factory   =
-    new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+  private SessionFactory   factory   =  new SessionFactoryImpl();
   private FedoraBlobStore  blobStore =
     new FedoraBlobStore("http://localhost:9090/fedora/services/management", "fedoraAdmin", "fedoraAdmin");
 
