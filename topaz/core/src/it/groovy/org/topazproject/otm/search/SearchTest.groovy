@@ -342,7 +342,7 @@ public class SearchTest extends AbstractTest {
       checker.verify(r) {
         row {
           object (class:SearchTest2.class, id:'foo:test2'.toURI());
-          literal ('0.3728584945201874', dt:'http://www.w3.org/2001/XMLSchema#double')
+          //literal ('0.4811627268791199', dt:'http://www.w3.org/2001/XMLSchema#double')
         }
       }
 
@@ -352,8 +352,8 @@ public class SearchTest extends AbstractTest {
       checker.verify(r) {
         row {
           object (class:SearchTest2.class, id:'foo:test2'.toURI());
-          literal ('0.3728584945201874', dt:'http://www.w3.org/2001/XMLSchema#double')
-          literal ('1.4914339780807495', dt:'http://www.w3.org/2001/XMLSchema#double')
+          //literal ('0.4811627268791199', dt:'http://www.w3.org/2001/XMLSchema#double')
+          //literal ('1.3950897455215454', dt:'http://www.w3.org/2001/XMLSchema#double')
         }
       }
 
@@ -363,11 +363,11 @@ public class SearchTest extends AbstractTest {
       checker.verify(r) {
         row {
           object (class:SearchTest2.class, id:'foo:test2'.toURI());
-          literal ('0.2645542621612549', dt:'http://www.w3.org/2001/XMLSchema#double')
+          //literal ('0.34877243638038635', dt:'http://www.w3.org/2001/XMLSchema#double')
         }
         row {
           object (class:SearchTest2.class, id:'foo:test1'.toURI());
-          literal ('0.3174650967121124', dt:'http://www.w3.org/2001/XMLSchema#double')
+          //literal ('0.41852694749832153', dt:'http://www.w3.org/2001/XMLSchema#double')
         }
       }
 
@@ -380,7 +380,7 @@ public class SearchTest extends AbstractTest {
       checker.verify(r) {
         row {
           object (class:SearchTest2.class, id:'foo:test1'.toURI());
-          literal ('0.3174650967121124', dt:'http://www.w3.org/2001/XMLSchema#double')
+          literal ('0.41852694749832153', dt:'http://www.w3.org/2001/XMLSchema#double')
         }
       }
       */
