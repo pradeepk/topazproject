@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.ambra.configuration.ConfigurationStore;
+import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 
 /**
  * The ResolverServlet attempts to translate the DOI in the incoming request into a URI on the ambra
@@ -114,7 +115,7 @@ public class ResolverServlet extends HttpServlet {
     }
 
     try {
-      resolver = new DOITypeResolver(new URI(myConfig.getString("ambra.topaz.tripleStore.mulgara.itql.uri")), null);
+      resolver = new DOITypeResolver(new URI(myConfig.getString("ambra.topaz.tripleStore.mulgara.itql.uri")), null, TransactionManagerHelper.getTransactionManager());
       log.trace("Created resolver, server='" + myConfig.getString("ambra.topaz.tripleStore.mulgara.itql.uri") + "'");
     } catch (Exception e) {
       log.error("Error creating doi-type-resolver, server='"

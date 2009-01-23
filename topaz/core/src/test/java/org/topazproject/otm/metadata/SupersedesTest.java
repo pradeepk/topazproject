@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,14 +32,14 @@ import org.topazproject.otm.FetchType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 public class SupersedesTest extends TestCase {
-  private SessionFactory sf = new SessionFactoryImpl();
-
+  private SessionFactory sf = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
 
   private void compare(RdfDefinition def, Object[] vals) {
     String message = "Testing '" + def.getName() + "': ";

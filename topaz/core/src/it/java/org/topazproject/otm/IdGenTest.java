@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                                     $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,8 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.stores.ItqlStore;
 
-import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
+import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Entity;
@@ -44,7 +43,7 @@ import org.topazproject.otm.samples.ReplyThread;
 
 public class IdGenTest {
   private static final Log log = LogFactory.getLog(IdGenTest.class);
-  private SessionFactory factory = new SessionFactoryImpl();
+  private SessionFactory factory;
   private Session session = null;
   private Transaction tx = null;
 
@@ -235,8 +234,8 @@ public class IdGenTest {
 
   @BeforeClass
   public void setUpFactory() throws OtmException {
-    factory.setTripleStore(
-      new ItqlStore(URI.create("local:///topazproject")));
+    factory = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+    factory.setTripleStore(new ItqlStore(URI.create("local:///topazproject")));
 
     GraphConfig idtest = new GraphConfig("idtest", URI.create("local:///topazproject#idtest"), null);
     GraphConfig ri = new GraphConfig("ri", URI.create("local:///topazproject#idgentest-ri"), null);

@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,6 +37,8 @@ import org.topazproject.fedora.otm.FedoraBlobStore;
 import org.topazproject.fedora.otm.FedoraBlobFactory;
 import org.topazproject.mulgara.itql.EmbeddedClient;
 
+import javax.transaction.TransactionManager;
+
 /**
  * Convenience class to manage configuration of OTM Session Factory
  *
@@ -50,16 +52,19 @@ public class OtmConfiguration {
   private GraphConfig[]       graphs = new GraphConfig[0];
   private Map<String, String> aliases = new HashMap<String, String>();
   private static final Log log = LogFactory.getLog(OtmConfiguration.class);
+  private TransactionManager  jtaTransactionManager;
 
   /**
    * Creates a new OtmConfiguration object.
    *
    * @param tripleStoreUrl the URL for the store
    * @param blobStore the blob-store to use
+   * @param jtaTransactionManager JTA transaction manager
    */
-  public OtmConfiguration(String tripleStoreUrl, BlobStore blobStore) {
+  public OtmConfiguration(String tripleStoreUrl, BlobStore blobStore, TransactionManager jtaTransactionManager) {
     this.tripleStoreUrl = tripleStoreUrl;
     this.blobStore = blobStore;
+    this.jtaTransactionManager = jtaTransactionManager;
   }
 
   /**
@@ -159,7 +164,7 @@ public class OtmConfiguration {
     if (log.isDebugEnabled())
       log.debug("Creating new SessionFactory instance ...");
 
-    SessionFactory factory = new SessionFactoryImpl();
+    SessionFactory factory = new SessionFactoryImpl(jtaTransactionManager);
 
     if (log.isDebugEnabled())
       log.debug("Adding aliases: " + aliases);

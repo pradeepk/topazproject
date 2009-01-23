@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@ import org.topazproject.otm.impl.SessionFactoryImpl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 
 /**
  * Common superclass for integration tests.
@@ -46,8 +47,13 @@ public abstract class AbstractTest extends GroovyTestCase {
                           new DefaultItqlClientFactory(dbDir: "target/mulgara-db"))
     blobStore = new SimpleBlobStore("target/blob-store");
 
+    def sessionfactory = new SessionFactoryImpl(
+        tripleStore: store,
+        blobStore: blobStore,
+        transactionManager: TransactionManagerHelper.getTransactionManager())
+
     rdf = new RdfBuilder(
-        sessFactory:new SessionFactoryImpl(tripleStore:store, blobStore:blobStore), defGraph:'ri',
+        sessFactory:sessionfactory, defGraph:'ri',
         defUriPrefix:'topaz:')
 
     for (c in graphs) {

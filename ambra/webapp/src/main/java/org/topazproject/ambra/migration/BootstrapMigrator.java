@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,6 +40,9 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.stores.ItqlStore;
+import org.springframework.beans.factory.annotation.Required;
+
+import javax.transaction.TransactionManager;
 
 /**
  * Does migrations on startup.
@@ -49,6 +52,7 @@ import org.topazproject.otm.stores.ItqlStore;
 public class BootstrapMigrator {
   private static Log    log = LogFactory.getLog(BootstrapMigrator.class);
   private static final String RI  = Ambra.GRAPH_PREFIX + "ri";
+  private TransactionManager jtaTransactionManager;
 
   /**
    * Apply all migrations.
@@ -64,7 +68,7 @@ public class BootstrapMigrator {
       URI           service = new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql.uri"));
 
       log.info("Checking and performing data-migrations ...");
-      SessionFactory factory = new SessionFactoryImpl();
+      SessionFactory factory = new SessionFactoryImpl(jtaTransactionManager);
       factory.setTripleStore(new ItqlStore(service, WebappItqlClientFactory.getInstance()));
 
       sess = factory.openSession();
@@ -201,5 +205,10 @@ public class BootstrapMigrator {
     log.warn("Added ^^<xsd:int> to " + map.size() + " <topaz:state> literals.");
 
     return map.size();
+  }
+
+  @Required
+  public void setJtaTransactionManager(TransactionManager jtaTransactionManager) {
+    this.jtaTransactionManager = jtaTransactionManager;
   }
 }

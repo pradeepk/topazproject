@@ -1,7 +1,7 @@
 /* $HeadURL:: $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,6 +40,8 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.stores.ItqlStore;
 
+import javax.transaction.TransactionManager;
+
 /**
  * Resolver for the rdf:type of a DOI-URI.
  *
@@ -59,18 +61,18 @@ public class DOITypeResolver {
   public static final String GRAPH = "local:///topazproject#filter:graph=ri";
 
   private final SessionFactory sf;
-  private String               graph;
 
   /**
    * Creates a new DOITypeResolver object.
    *
    * @param mulgaraUri the mulgara service uri
    * @param graph      the graph to use
+   * @param transactionManager JTA TransactionManager
    * 
    * @throws OtmException if an error occurred talking to the web-service
    */
-  public DOITypeResolver(URI mulgaraUri, String graph) throws OtmException {
-    sf = new SessionFactoryImpl();
+  public DOITypeResolver(URI mulgaraUri, String graph, TransactionManager transactionManager) throws OtmException {
+    sf = new SessionFactoryImpl(transactionManager);
     sf.setTripleStore(new ItqlStore(mulgaraUri));
     sf.preload(Resource.class);
     sf.preload(Annotation.class);

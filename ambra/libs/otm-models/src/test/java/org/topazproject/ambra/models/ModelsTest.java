@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                                      $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,46 +27,15 @@ import java.io.ObjectOutputStream;
 
 
 
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.mapping.RdfMapper;
-import org.topazproject.ambra.models.Aggregation;
-import org.topazproject.ambra.models.Annotation;
-import org.topazproject.ambra.models.AnnotationBlob;
-import org.topazproject.ambra.models.Annotea;
-import org.topazproject.ambra.models.Article;
-import org.topazproject.ambra.models.AuthenticationId;
-import org.topazproject.ambra.models.Blob;
-import org.topazproject.ambra.models.Category;
-import org.topazproject.ambra.models.Citation;
-import org.topazproject.ambra.models.Comment;
-import org.topazproject.ambra.models.Correction;
-import org.topazproject.ambra.models.DublinCore;
-import org.topazproject.ambra.models.EditorialBoard;
-import org.topazproject.ambra.models.FoafPerson;
-import org.topazproject.ambra.models.FormalCorrection;
-import org.topazproject.ambra.models.Issue;
-import org.topazproject.ambra.models.Journal;
-import org.topazproject.ambra.models.License;
-import org.topazproject.ambra.models.ObjectInfo;
-import org.topazproject.ambra.models.Ambra;
-import org.topazproject.ambra.models.Rating;
-import org.topazproject.ambra.models.RatingContent;
-import org.topazproject.ambra.models.RatingSummary;
-import org.topazproject.ambra.models.RatingSummaryContent;
-import org.topazproject.ambra.models.RelatedArticle;
-import org.topazproject.ambra.models.Reply;
-import org.topazproject.ambra.models.ReplyBlob;
-import org.topazproject.ambra.models.ReplyThread;
-import org.topazproject.ambra.models.UserAccount;
-import org.topazproject.ambra.models.UserPreference;
-import org.topazproject.ambra.models.UserPreferences;
-import org.topazproject.ambra.models.UserProfile;
-import org.topazproject.ambra.models.UserRole;
 import org.topazproject.ambra.models.support.fedora.AnnotationFedoraBlob;
 import org.topazproject.ambra.models.support.fedora.AnnotationFedoraBlobFactory;
 import org.topazproject.fedora.otm.FedoraBlob;
@@ -79,7 +48,7 @@ import org.topazproject.fedora.otm.FedoraBlobFactory;
  * @author Pradeep Krishnan
  */
 public class ModelsTest {
-  private SessionFactory factory = new SessionFactoryImpl();
+  private SessionFactory factory;
   private Class<?>[]        classes =
     new Class<?>[] {
                   Annotation.class, Annotea.class, Article.class, AuthenticationId.class,
@@ -98,6 +67,12 @@ public class ModelsTest {
    *
    * @throws OtmException on an error
    */
+
+  @BeforeClass
+  public void setUp() {
+    factory = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+  }
+
   @Test
   public void preloadTest() throws OtmException {
     factory.addAlias("annoteaBodyId", "info:fedora/");

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (c) 2006-2008 by Topaz, Inc.
+  Copyright (c) 2006-2009 by Topaz, Inc.
   http://topazproject.org
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -220,11 +220,20 @@
   <bean name="simpleBlobStore" class="org.topazproject.otm.stores.SimpleBlobStore" lazy-init="true">
     <constructor-arg index="0" value="${ambra.topaz.blobStore.simple.directory}"/>
   </bean>
+
+  <bean id="xaResourceProvider" class="org.topazproject.otm.impl.btm.SimpleXAResourceProducer"
+        factory-method="create"/>
+
+  <bean id="jtaTransactionManager" class="bitronix.tm.TransactionManagerServices"
+        factory-method="getTransactionManager" depends-on="xaResourceProvider"
+        destroy-method="shutdown"/>
+
   <bean id="otmFactory" class="org.topazproject.ambra.configuration.OtmConfiguration"
       destroy-method="close" depends-on="bootstrapMigrator">
     <constructor-arg index="0" value="${ambra.topaz.tripleStore.mulgara.itql.uri}"/>
     <!-- must be one of fedoraBlobStore or simpleBlobStore -->
     <constructor-arg index="1" ref="${ambra.topaz.blobStore.beanName}"/>
+    <constructor-arg index="2" ref="jtaTransactionManager"/>
     <property name="fedoraBlobFactories">
       <list>
         <bean name="annotationFedoraBlobFactory"
@@ -289,7 +298,7 @@
 
   <!-- cache manager configs -->
   <bean id="txCacheManager" class="org.topazproject.ambra.cache.CacheManager">
-    <constructor-arg index="0" ref="otmSessionFactory"/>
+    <constructor-arg index="0" ref="jtaTransactionManager"/>
     <constructor-arg index="1" value="20"/> <!-- seconds to wait for the write lock -->
   </bean>
   <bean id="objectCache" class="org.topazproject.ambra.cache.EhcacheProvider">

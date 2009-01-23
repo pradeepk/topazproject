@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,6 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +41,6 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.SessionFactory;
 
 /**
  * Manages transactions across a set of caches. It also brokers the event notifications from
@@ -51,7 +51,7 @@ import org.topazproject.otm.SessionFactory;
 public class CacheManager implements CacheListener, ObjectListener {
   private static final Log                   log             =
     LogFactory.getLog(CacheManager.class);
-  private final SessionFactory               otmSessionFactory;
+  private final TransactionManager           jtaTransactionManager;
   private final long                         lockWaitSeconds;
   private final Lock                         updateLock      = new ReentrantLock();
   private final List<Listener>               listeners       = new ArrayList<Listener>();
@@ -61,11 +61,11 @@ public class CacheManager implements CacheListener, ObjectListener {
   /**
    * Creates a new CacheManager object.
    *
-   * @param otmSessionFactory the factory that created this.
+   * @param jtaTransactionManager JTA transaction manager
    * @param lockWaitSeconds seconds to wait on the lock before aborting
    */
-  CacheManager(SessionFactory otmSessionFactory, long lockWaitSeconds) {
-    this.otmSessionFactory = otmSessionFactory;
+  CacheManager(TransactionManager jtaTransactionManager, long lockWaitSeconds) {
+    this.jtaTransactionManager = jtaTransactionManager;
     this.lockWaitSeconds   = lockWaitSeconds;
   }
 
@@ -89,7 +89,7 @@ public class CacheManager implements CacheListener, ObjectListener {
     Transaction txn;
 
     try {
-      txn = otmSessionFactory.getTransactionManager().getTransaction();
+      txn = jtaTransactionManager.getTransaction();
     } catch (Exception e) {
       throw new RuntimeException("Error getting current transaction", e);
     }

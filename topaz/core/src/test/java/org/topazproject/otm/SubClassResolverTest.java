@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,9 +32,10 @@ import junit.framework.TestCase;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 
 public class SubClassResolverTest extends TestCase {
-  private SessionFactory sf = new SessionFactoryImpl();
+  private SessionFactory sf = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());;
 
   public void testSubClassMetadata() {
     sf.preload(Sub.class);

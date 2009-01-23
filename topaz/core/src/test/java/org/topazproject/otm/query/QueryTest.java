@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,6 +36,7 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
@@ -168,7 +169,7 @@ public class QueryTest extends TestCase {
 
   private Session getSession() throws OtmException {
     if (session == null) {
-      SessionFactory factory = new SessionFactoryImpl();
+      SessionFactory factory = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
       factory.preload(Article.class);
       factory.preload(Reply.class);
       factory.validate();

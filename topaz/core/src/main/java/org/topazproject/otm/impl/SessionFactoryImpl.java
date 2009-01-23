@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
 package org.topazproject.otm.impl;
 
 import java.lang.annotation.Annotation;
-import java.lang.ref.WeakReference;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +29,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,22 +36,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
-import javax.naming.Reference;
 import javax.transaction.TransactionManager;
-import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
-
-import bitronix.tm.BitronixTransactionManager;
-import bitronix.tm.TransactionManagerServices;
-import bitronix.tm.internal.XAResourceHolderState;
-import bitronix.tm.resource.ResourceRegistrar;
-import bitronix.tm.resource.common.AbstractXAResourceHolder;
-import bitronix.tm.resource.common.ResourceBean;
-import bitronix.tm.resource.common.XAResourceHolder;
-import bitronix.tm.resource.common.XAResourceProducer;
-import bitronix.tm.resource.common.XAStatefulHolder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -108,9 +92,6 @@ import org.topazproject.util.JarProcessor;
  */
 public class SessionFactoryImpl implements SessionFactory {
   private static final Log log = LogFactory.getLog(SessionFactory.class);
-
-  private static BitronixTransactionManager defTxnMgr;
-  private static Object                     txnMgrCleaner;
 
   /**
    * The default marker resource to use when searching for Entity definitions on the classpath.
@@ -201,7 +182,9 @@ public class SessionFactoryImpl implements SessionFactory {
     subClasses.put(null, new HashSet<ClassMetadata>());
   }
 
-  /*
+  public SessionFactoryImpl(TransactionManager txMgr) {
+    this.txMgr = txMgr;
+  }/*
    * inherited javadoc
    */
   public Session openSession() {
@@ -674,31 +657,9 @@ public class SessionFactoryImpl implements SessionFactory {
   }
 
   public TransactionManager getTransactionManager() throws OtmException {
-    if (txMgr == null) {
-      try {
-        txMgr = getDefaultTransactionManager();
-      } catch (RuntimeException re) {
-        throw new OtmException("Failed to create default transaction-manager", re);
-      }
-    }
-
     return txMgr;
   }
 
-  private static synchronized TransactionManager getDefaultTransactionManager() {
-    if (defTxnMgr == null) {
-      defTxnMgr = TransactionManagerServices.getTransactionManager();
-      txnMgrCleaner = new Object() {
-        protected void finalize() {
-          defTxnMgr.shutdown();
-        }
-      };
-
-      ResourceRegistrar.register(new SimpleXAResourceProducer());
-    }
-
-    return defTxnMgr;
-  }
 
   /*
    * inherited javadoc
@@ -898,127 +859,6 @@ public class SessionFactoryImpl implements SessionFactory {
 
       if (m != null)
         m.getBinders().put(bf.getEntityMode(), bf.createBinder(SessionFactoryImpl.this));
-    }
-  }
-
-  private static class SimpleXAResourceProducer implements XAResourceProducer {
-    private final Map<XAResource, WeakReference<XAResourceHolder>> xaresHolders =
-                                    new WeakHashMap<XAResource, WeakReference<XAResourceHolder>>();
-
-    public void init() {
-    }
-
-    public void close() {
-    }
-
-    public String getUniqueName() {
-      return "OTM-Simple-Resource-Producer";
-    }
-
-    public XAResourceHolderState startRecovery() {
-      return createResHolder(new RecoveryXAResource()).getXAResourceHolderState();
-    }
-
-    public void endRecovery() {
-    }
-
-    public Reference getReference() {
-      return null;
-    }
-
-    public XAStatefulHolder createPooledConnection(Object xaFactory, ResourceBean bean) {
-      return null;
-    }
-
-    public XAResourceHolder findXAResourceHolder(final XAResource xaResource) {
-      WeakReference<XAResourceHolder> resHolderRef = xaresHolders.get(xaResource);
-      XAResourceHolder resHolder = (resHolderRef != null) ? resHolderRef.get() : null;
-
-      if (resHolder == null)
-        xaresHolders.put(xaResource,
-                         new WeakReference<XAResourceHolder>(resHolder = createResHolder(xaResource)));
-
-      return resHolder;
-    }
-
-    private static XAResourceHolder createResHolder(XAResource xaResource) {
-      ResourceBean rb = new ResourceBean() { };
-      rb.setUniqueName(xaResource.getClass().getName() + System.identityHashCode(xaResource));
-      rb.setApplyTransactionTimeout(true);
-
-      XAResourceHolder resHolder = new SimpleXAResourceHolder(xaResource);
-      resHolder.setXAResourceHolderState(new XAResourceHolderState(resHolder, rb));
-
-      return resHolder;
-    }
-
-    private static class SimpleXAResourceHolder extends AbstractXAResourceHolder {
-      private final XAResource xares;
-
-      SimpleXAResourceHolder(XAResource xares) {
-        this.xares = xares;
-      }
-
-      public void close() {
-      }
-
-      public Object getConnectionHandle() {
-        return null;
-      }
-
-      public Date getLastReleaseDate() {
-        return null;
-      }
-
-      public List getXAResourceHolders() {
-        return null;
-      }
-
-      public boolean isEmulatingXA() {
-        return false;
-      }
-
-      public XAResource getXAResource() {
-        return xares;
-      }
-    }
-
-    private static class RecoveryXAResource implements XAResource {
-      public void start(Xid xid, int flags) {
-      }
-
-      public void end(Xid xid, int flags) {
-      }
-
-      public int prepare(Xid xid) {
-        return XA_OK;
-      }
-
-      public void commit(Xid xid, boolean onePhase) {
-      }
-
-      public void rollback(Xid xid) {
-      }
-
-      public Xid[] recover(int flag) {
-        // recovery not supported (yet)
-        return null;
-      }
-
-      public void forget(Xid xid) {
-      }
-
-      public int getTransactionTimeout() {
-        return 10;
-      }
-
-      public boolean setTransactionTimeout(int transactionTimeout) {
-        return false;
-      }
-
-      public boolean isSameRM(XAResource xaResource) {
-        return xaResource == this;
-      }
     }
   }
 

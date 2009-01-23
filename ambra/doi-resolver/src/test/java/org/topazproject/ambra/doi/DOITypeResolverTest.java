@@ -1,7 +1,7 @@
 /* $HeadURL:: $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,15 +28,16 @@ import java.util.HashMap;
 import static org.testng.AssertJUnit.*;
 import org.testng.annotations.Test;
 
-import org.topazproject.ambra.doi.DOITypeResolver;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
-import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.GraphConfig;
 import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 import org.topazproject.otm.stores.ItqlStore;
+
+import javax.transaction.TransactionManager;
 
 /**
  * Test for DOI resolver.
@@ -49,6 +50,7 @@ public class DOITypeResolverTest {
   private DOITypeResolver          doiResolver;
   private Map<String, Set<String>> types       = new HashMap<String, Set<String>>();
   private Map<String, Set<String>> anns        = new HashMap<String, Set<String>>();
+
 
   /**
    * Creates a new DOITypeResolverTest object.
@@ -73,10 +75,10 @@ public class DOITypeResolverTest {
       anns.put("doi:article" + i, s);
     }
 
-    doiResolver = new DOITypeResolver(storeUri, graph);
-    SessionFactory factory     = new SessionFactoryImpl();
-    TripleStore    tripleStore = new ItqlStore(storeUri);
-    factory.setTripleStore(tripleStore);
+    TransactionManager txManager = TransactionManagerHelper.getTransactionManager();
+    doiResolver = new DOITypeResolver(storeUri, graph, txManager);
+    SessionFactory factory = new SessionFactoryImpl(txManager);
+    factory.setTripleStore(new ItqlStore(storeUri));
 
     GraphConfig mc = new GraphConfig("ri", URI.create(graph), null);
     factory.addGraph(mc);

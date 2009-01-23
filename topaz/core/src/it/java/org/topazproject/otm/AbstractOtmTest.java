@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                                     $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.mulgara.itql.DefaultItqlClientFactory;
 
 import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.otm.impl.btm.TransactionManagerHelper;
 
 import org.topazproject.otm.samples.Annotea.Body;
 import org.topazproject.otm.stores.ItqlStore;
@@ -48,9 +49,12 @@ public abstract class AbstractOtmTest {
   /**
    * Shared session factory
    */
-  protected SessionFactory factory = new SessionFactoryImpl();
+  protected SessionFactory factory;
 
   protected void initFactory() throws OtmException {
+
+    factory = new SessionFactoryImpl(TransactionManagerHelper.getTransactionManager());
+
     log.info("initializing otm session factory ...");
     GraphConfig[] graphs = new GraphConfig[] {
       new GraphConfig("ri", URI.create("local:///topazproject#otmtest" + graphCnt++), null),
@@ -128,7 +132,6 @@ public abstract class AbstractOtmTest {
  /**
    * Run the given action within a session.
    *
-   * @param s      the otm session to use
    * @param action the action to run
    * @return the value returned by the action
    */
