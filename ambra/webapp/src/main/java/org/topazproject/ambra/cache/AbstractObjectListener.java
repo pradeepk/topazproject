@@ -35,6 +35,7 @@ public abstract class AbstractObjectListener implements ObjectListener {
   public void objectRemoved(Session session, ClassMetadata cm, String id, Object object) {
   }
 
-  public void removing(Session session, ClassMetadata cm, String id, Object object) throws Exception {
+  public void removing(Session session, ClassMetadata cm, String id, Object object)
+    throws Exception {
   }
 }

@@ -26,13 +26,16 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.annotation.Commentary;
 import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Blob;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.user.service.UserService;
+
 import org.topazproject.otm.OtmException;
 
 /**

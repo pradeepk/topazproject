@@ -23,8 +23,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.BrowseService;
@@ -33,6 +35,7 @@ import org.topazproject.ambra.model.IssueInfo;
 import org.topazproject.ambra.model.VolumeInfo;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.util.ArticleXMLUtils;
+
 import org.topazproject.otm.Session;
 
 public class BrowseVolumeAction extends BaseActionSupport {
@@ -69,22 +72,23 @@ public class BrowseVolumeAction extends BaseActionSupport {
           issueNum++;
         }
       }
-      
+
       // Translate the currentIssue description to HTML
       if (currentIssue.getDescription() != null) {
         try {
-          currentIssueDescription = articleXmlUtils.transformArticleDescriptionToHtml(currentIssue.getDescription());
+          currentIssueDescription =
+            articleXmlUtils.transformArticleDescriptionToHtml(currentIssue.getDescription());
         } catch (ApplicationException e) {
           log.error("Failed to translate issue description to HTML.", e);
-          currentIssueDescription = currentIssue.getDescription(); // Just use the untranslated issue description
+          // Just use the untranslated issue description
+          currentIssueDescription = currentIssue.getDescription();
         }
       } else {
         log.error("The currentIssue description was null. Issue DOI='"+currentIssue.getId()+"'");
         currentIssueDescription = "No description found for this issue";
       }
-      
     }
-    
+
     return SUCCESS;
   }
 

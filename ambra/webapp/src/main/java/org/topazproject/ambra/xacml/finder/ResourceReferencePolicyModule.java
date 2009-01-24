@@ -24,7 +24,6 @@ import java.io.IOException;
 
 import java.util.List;
 
-
 /**
  * Policy Finder module that loads policy files from a thread-context classloader. This version
  * supports look up of policied by id reference.

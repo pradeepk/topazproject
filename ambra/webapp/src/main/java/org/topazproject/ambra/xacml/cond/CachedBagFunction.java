@@ -107,20 +107,20 @@ public class CachedBagFunction implements Function {
     Evaluatable eval = (Evaluatable) inputs.get(0);
 
     if (eval.evaluatesToBag())
-      throw new IllegalArgumentException("illegal argument type for arg1 of " + identifier
-                                         + ". Bags are not supported for cache-name");
+      throw new IllegalArgumentException("illegal argument type for arg1 of " + identifier +
+                                         ". Bags are not supported for cache-name");
 
     eval = (Evaluatable) inputs.get(1);
 
     if (eval.evaluatesToBag())
-      throw new IllegalArgumentException("illegal argument type for arg2 of " + identifier
-                                         + ". Bags are not supported for cache-key");
+      throw new IllegalArgumentException("illegal argument type for arg2 of " + identifier +
+                                         ". Bags are not supported for cache-key");
 
     eval = (Evaluatable) inputs.get(2);
 
     if (!eval.evaluatesToBag())
-      throw new IllegalArgumentException("illegal argument type for arg3 of " + identifier
-                                         + ". Expecting a bag for value-bag");
+      throw new IllegalArgumentException("illegal argument type for arg3 of " + identifier +
+                                         ". Expecting a bag for value-bag");
   }
 
   /*

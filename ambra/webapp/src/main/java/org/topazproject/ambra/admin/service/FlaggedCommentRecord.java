@@ -22,7 +22,6 @@ package org.topazproject.ambra.admin.service;
 import org.topazproject.ambra.models.Annotea;
 
 public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
-
   private String root;
   private String creator;
   private String created;
@@ -36,8 +35,8 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
   private boolean isGeneralComment;
 
   public FlaggedCommentRecord(String flagId, String target, String targetTitle, String flagComment,
-      String created, String creator, String creatorid, String root,
-      String reasonCode, String targetType, boolean isGeneralComment) {
+                              String created, String creator, String creatorid, String root,
+                              String reasonCode, String targetType, boolean isGeneralComment) {
     this.target = target;
     this.targetTitle = targetTitle;
     this.root = root;
@@ -52,7 +51,6 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
   }
 
   public String getTargetDisplayURL() {
-
     if (getIsAnnotation()) {
       return "viewAnnotation.action?annotationId=" + target;
     } else if (getIsRating()) {

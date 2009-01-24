@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import org.topazproject.ambra.permission.service.Permissions;
 import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.otm.Session;
@@ -119,8 +120,8 @@ public abstract class PermissionFunction implements Function {
       Evaluatable eval = (Evaluatable) it.next();
 
       if (eval.evaluatesToBag())
-        throw new IllegalArgumentException("illegal argument type. bags are not supported for "
-                                           + identifier);
+        throw new IllegalArgumentException("illegal argument type. bags are not supported for " +
+                                           identifier);
     }
   }
 
@@ -174,9 +175,8 @@ public abstract class PermissionFunction implements Function {
 
       return new EvaluationResult(BooleanAttribute.getInstance(ret));
     } catch (Exception e) {
-      String msg =
-        "Failed to execute " + identifier + "(" + resource + ", " + permission + ", " + principal
-        + ")";
+      String msg = "Failed to execute " + identifier + "(" + resource + ", " + permission +
+                   ", " + principal + ")";
       log.warn(msg, e);
 
       return makeProcessingError(msg + ". " + e.getMessage());
@@ -259,8 +259,8 @@ public abstract class PermissionFunction implements Function {
       super(FUNCTION_IS_GRANTED);
     }
 
-    protected boolean execute(Permissions impl, String resource, String permission, String principal)
-                       throws Exception {
+    protected boolean execute(Permissions impl, String resource, String permission,
+                              String principal) throws Exception {
       return impl.isGranted(resource, permission, principal);
     }
   }
@@ -270,8 +270,8 @@ public abstract class PermissionFunction implements Function {
       super(FUNCTION_IS_REVOKED);
     }
 
-    protected boolean execute(Permissions impl, String resource, String permission, String principal)
-                       throws Exception {
+    protected boolean execute(Permissions impl, String resource, String permission,
+                              String principal) throws Exception {
       return impl.isRevoked(resource, permission, principal);
     }
   }

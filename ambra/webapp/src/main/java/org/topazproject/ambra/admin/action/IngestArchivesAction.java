@@ -23,11 +23,14 @@ import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
+
 import org.topazproject.ambra.admin.service.DocumentManagementService;
 import org.topazproject.ambra.article.service.DuplicateArticleIdException;
 import org.topazproject.ambra.article.service.Ingester;
 import org.topazproject.ambra.models.Article;
+
 import org.topazproject.otm.Session;
 
 @SuppressWarnings("serial")

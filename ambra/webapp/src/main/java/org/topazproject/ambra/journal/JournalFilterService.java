@@ -32,6 +32,7 @@ import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.models.Aggregation;
 import org.topazproject.ambra.models.Journal;
+
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Interceptor.Updates;
@@ -45,7 +46,6 @@ import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.filter.OqlFilterDefinition;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.mapping.java.ClassBinder;
-
 
 /**
  * This service manages the journal filters that are to be applied to the Session. The filter
@@ -91,16 +91,15 @@ class JournalFilterService {
 
     filterCache.getCacheManager().registerListener(new AbstractObjectListener() {
       public void objectChanged(Session s, ClassMetadata cm, String id, Object o, Updates updates) {
-        /* Note: if a smart-collection rule was updated as opposed to
+        /*
+         * Note: if a smart-collection rule was updated as opposed to
          * new rules added or deleted, we wouldn't be able to detect it.
          * In that case we need to be explicitly told. But currently
          * journal definitions are not updated on the fly. So even
          * this attempt to detect a change is not likely to be hit.
          */
-        if ((o instanceof Journal)
-             && ((updates == null)
-                 || updates.isChanged("smartCollectionRules")
-                 || updates.isChanged("simpleCollection")))
+        if ((o instanceof Journal) && ((updates == null) ||
+            updates.isChanged("smartCollectionRules") || updates.isChanged("simpleCollection")))
           invalidateFilterCache((Journal)o);
       }
       public void objectRemoved(Session s, ClassMetadata cm, String id, Object o) {
@@ -174,8 +173,10 @@ class JournalFilterService {
 
     journalFilters.put(j.getKey(), defs);
 
-    // Note: We are using rawPut instead of the transactional put since 'load' is
-    //       considered a 'populate' operation. ie. it is not a result of a write
+    /*
+     * Note: We are using rawPut instead of the transactional put since 'load' is
+     * considered a 'populate' operation. ie. it is not a result of a write
+     */
     log.warn("Updating filter-cache for journal '" + j.getKey() + "' with " + defs);
     filterCache.rawPut(keyPrefix + j.getKey(), new Cache.Item(defs));
 
@@ -309,7 +310,8 @@ class JournalFilterService {
                                                                boolean addSelf) {
     // FIXME: handle 'addSelf'
 
-    /* get all the rdf:type's for each object.
+    /*
+     * Get all the rdf:type's for each object.
      * Note to the unwary: this may look Article specific, but it isn't.
      */
     String typeQry = "select id, (select o.<rdf:type> from Object x) from Object o, Aggregation a "+

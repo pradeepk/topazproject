@@ -32,8 +32,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.annotation.FlagUtil;
 import org.topazproject.ambra.article.service.FetchArticleService;
@@ -46,6 +48,7 @@ import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Comment;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
+
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
@@ -101,14 +104,15 @@ public class AnnotationService extends BaseAnnotationService {
   private String createAnnotation(Class<? extends ArticleAnnotation> annotationClass,
                                   final String mimeType, final String target,
                                   final String context, final String olderAnnotation,
-                                  final String title, final String body, boolean isPublic, AmbraUser user)
+                                  final String title, final String body,
+                                  boolean isPublic, AmbraUser user)
                      throws Exception {
 
     pep.checkAccess(AnnotationsPEP.CREATE_ANNOTATION, URI.create(target));
 
     final String contentType = getContentType(mimeType);
 
-    //Ensure that it is null if the olderAnnotation is empty
+    // Ensure that it is null if the olderAnnotation is empty
     final String earlierAnnotation = StringUtils.isEmpty(olderAnnotation) ? null : olderAnnotation;
 
     if (earlierAnnotation != null)
@@ -257,8 +261,8 @@ public class AnnotationService extends BaseAnnotationService {
       String mediator, List<String> annotType,int[] states, boolean ascending,
       int maxResults) throws ParseException, URISyntaxException {
 
-    List<String> annotationIds = getAnnotationIds(articleId, startDate, endDate,
-                                   mediator, annotType, states, ascending, maxResults);
+    List<String> annotationIds = getAnnotationIds(articleId, startDate, endDate, mediator,
+                                                  annotType, states, ascending, maxResults);
 
     return getAnnotations(annotationIds);
   }

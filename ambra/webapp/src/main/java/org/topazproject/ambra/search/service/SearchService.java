@@ -42,6 +42,7 @@ import org.apache.struts2.ServletActionContext;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.models.Article;
@@ -116,7 +117,9 @@ public class SearchService {
     FIELD_MAP.put("body",
                   new String[] { "cast(art.representations, TextRepresentation).body" });
     FIELD_MAP.put("reference",
-                  new String[] { "art.dublinCore.references.title", "art.dublinCore.references.authors.realName" });
+                  new String[] { "art.dublinCore.references.title",
+                                 "art.dublinCore.references.authors.realName"
+                               });
     FIELD_MAP.put("editor",
                   new String[] { "art.dublinCore.bibliographicCitation.editors.realName" });
 
@@ -166,8 +169,9 @@ public class SearchService {
    * @throws OtmException OTM exception
    */
   @Transactional(readOnly = true)
-  public SearchResultPage find(final String query, final int startPage, final int pageSize, AmbraUser user)
-      throws ParseException, OtmException {
+  public SearchResultPage find(final String query, final int startPage,
+                               final int pageSize, AmbraUser user)
+  throws ParseException, OtmException {
     String    cacheKey = getCurrentJournal() + "|" + (user == null ? "anon" : user.getUserId()) +
                          "|" + query;
 
@@ -189,7 +193,8 @@ public class SearchService {
 
   private Results doSearch(String queryString) throws ParseException, OtmException {
     // TODO: should we get the analyzer from one of the model's @Searchable defs?
-    Query lq = new MultiFieldQueryParser(getDefaultFields(), new StandardAnalyzer()).parse(queryString);
+    Query lq = new MultiFieldQueryParser(getDefaultFields(),
+                                         new StandardAnalyzer()).parse(queryString);
 
     String oql = buildOql(lq);
     if (log.isDebugEnabled())
@@ -573,5 +578,4 @@ public class SearchService {
   public void setAmbraConfiguration(Configuration configuration) {
     this.configuration = configuration;
   }
-
 }

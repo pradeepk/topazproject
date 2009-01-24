@@ -81,17 +81,20 @@ public class TextUtils {
    * Linkify any possible web links excepting email addresses
    *
    * @param text      text
-   * @param maxLength The max length (in displayed characters) of the text to be displayed inside the <a>tag</a>
+   * @param maxLength The max length (in displayed characters) of the text to be displayed
+   *                  inside the <a>tag</a>
    * @return hyperlinked text
    */
   public static String hyperlink(final String text, int maxLength) {
     if (StringUtils.isBlank(text)) {
       return text;
     }
-    // HACK: [issue - if the text ends with ')' this is included in the hyperlink]
-    // so to avoid this we explicitly guard against it here
-    // NOTE: com.opensymphony.util.TextUtils.linkURL guards against an atomically wrapped url:
-    // "(http://www.domain.com)" but NOT "(see http://www.domain.com)"
+    /*
+     * HACK: [issue - if the text ends with ')' this is included in the hyperlink] 
+     * so to avoid this we explicitly guard against it here 
+     * NOTE: com.opensymphony.util.TextUtils.linkURL guards against an atomically wrapped url: 
+     * "(http://www.domain.com)" but NOT "(see http://www.domain.com)"
+     */
     if (text.indexOf('}') >= 0 || text.indexOf('{') >= 0) {
       return TextUtilsExtended.linkURL(text, maxLength);
     }
@@ -112,7 +115,6 @@ public class TextUtils {
    */
   public static String hyperlink(final String text) {
     return hyperlink(text, 0);
-    // END HACK
   }
 
   /**
@@ -132,7 +134,6 @@ public class TextUtils {
     return hyperlinkEnclosedWithPTags(escapeHtml(bodyContent),0);
   }
 
-
   /**
    * Transforms an org.w3c.dom.Document into a String
    *
@@ -142,7 +143,6 @@ public class TextUtils {
    */
   public static String getAsXMLString(final Node node) throws TransformerException {
     final Transformer tf = TransformerFactory.newInstance().newTransformer();
-//    tf.setOutputProperty("indent", "yes");
     final StringWriter stringWriter = new StringWriter();
     tf.transform(new DOMSource(node), new StreamResult(stringWriter));
     return stringWriter.toString();
@@ -155,7 +155,7 @@ public class TextUtils {
     try {
       URI u = new URI(url);
 
-      //To see if we can get a valid url or if we get an exception
+      // To see if we can get a valid url or if we get an exception
       u.toURL();
       return true;
     } catch (Exception e) {

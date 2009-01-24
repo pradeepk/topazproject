@@ -21,9 +21,11 @@ package org.topazproject.ambra.article.action;
 
 import java.util.List;
 import java.util.ArrayList;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.action.BaseActionSupport;
@@ -31,6 +33,7 @@ import org.topazproject.ambra.article.service.ArticleFeedService;
 import org.topazproject.ambra.article.service.ArticleFeedService.Key;
 import org.topazproject.ambra.article.service.ArticleFeedService.FEED_TYPES;
 import org.topazproject.ambra.web.VirtualJournalContext;
+
 import com.opensymphony.xwork2.ModelDriven;
 
 /**
@@ -152,7 +155,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    */
   @Override
   public void validate () {
-    /* The cacheKey must have both the current Journal and start date.  Current Journal is set here
+    /*
+     * The cacheKey must have both the current Journal and start date.  Current Journal is set here
      * and startDate will be set in the data model validator.
      */
     cacheKey.setJournal(getCurrentJournal());

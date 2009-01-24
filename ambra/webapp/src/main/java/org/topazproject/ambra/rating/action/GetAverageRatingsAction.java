@@ -20,6 +20,7 @@ package org.topazproject.ambra.rating.action;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.rating.service.RatingsService;
 import org.topazproject.ambra.user.AmbraUser;
 
@@ -30,11 +31,11 @@ import org.topazproject.ambra.user.AmbraUser;
  */
 @SuppressWarnings("serial")
 public class GetAverageRatingsAction extends AbstractRatingAction {
-  private RatingsService ratingsService;
+  private RatingsService                  ratingsService;
   private RatingsService.AverageRatings   avg;
-  private String           articleURI;
-  private boolean          isResearchArticle;
-  private boolean          hasRated = false;
+  private String                          articleURI;
+  private boolean                         isResearchArticle;
+  private boolean                         hasRated = false;
 
   /**
    * Execute the ratings summary action.
@@ -198,7 +199,6 @@ public class GetAverageRatingsAction extends AbstractRatingAction {
     return avg.style.total;
   }
 
-
   /**
    * Tests if this article has been rated.
    *
@@ -207,7 +207,6 @@ public class GetAverageRatingsAction extends AbstractRatingAction {
   public boolean isHasRated() {
     return hasRated;
   }
-
 
   /**
    * Gets the rounded average on insight ratings.
@@ -236,14 +235,12 @@ public class GetAverageRatingsAction extends AbstractRatingAction {
     return avg.reliability.rounded;
   }
 
-
   /**
    * @return the singleRatingRoundedAverage
    */
   public double getSingleRatingRoundedAverage() {
     return avg.single.rounded;
   }
-
 
   /**
    * Gets the rounded average on style ratings.
@@ -262,5 +259,4 @@ public class GetAverageRatingsAction extends AbstractRatingAction {
   public int getNumUsersThatRated() {
     return avg.numUsersThatRated;
   }
-
 }

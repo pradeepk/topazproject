@@ -49,16 +49,17 @@ import com.sun.xacml.PDP;
 public class GetArticleRatingsAction extends AbstractRatingAction {
   protected static final Log log = LogFactory.getLog(GetArticleRatingsAction.class);
 
-  private Session session;
-  private String articleURI;
-  private String articleTitle;
-  private String articleDescription;
-  private boolean isResearchArticle;
-  private boolean hasRated = false;
-  private final List<ArticleRatingSummary> articleRatingSummaries = new ArrayList<ArticleRatingSummary>();
-  private double articleOverall = 0;
-  private double articleSingleRating = 0;
-  private RatingsPEP pep;
+  private Session                          session;
+  private String                           articleURI;
+  private String                           articleTitle;
+  private String                           articleDescription;
+  private boolean                          isResearchArticle;
+  private boolean                          hasRated = false;
+  private final List<ArticleRatingSummary> articleRatingSummaries =
+                                             new ArrayList<ArticleRatingSummary>();
+  private double                           articleOverall = 0;
+  private double                           articleSingleRating = 0;
+  private RatingsPEP                       pep;
 
   private RatingsPEP getPEP() {
     return pep;
@@ -100,7 +101,6 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
       articleOverall = rsc.getOverall();
       articleSingleRating = rsc.getSingleRating();
     } else {
-      // unexpected
       log.warn("Unexpected: " + summaryList.size() + " RatingSummary for " + articleURI);
       articleOverall = 0;
       articleSingleRating = 0;
@@ -129,7 +129,8 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
         summary.setCreatorName(ua.getProfile().getDisplayName());
       } else {
         summary.setCreatorName("Unknown");
-        log.error("Unable to look up UserAccount for " + rating.getCreator() + " for Rating " + rating.getId());
+        log.error("Unable to look up UserAccount for " + rating.getCreator() +
+                  " for Rating " + rating.getId());
       }
       articleRatingSummaries.add(summary);
     }
@@ -139,7 +140,8 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
     }
 
     if(log.isDebugEnabled()) {
-      log.debug("created ArticleRatingSummaries, " + articleRatingSummaries.size() + ", for: " + articleURI);
+      log.debug("created ArticleRatingSummaries, " + articleRatingSummaries.size() +
+                ", for: " + articleURI);
     }
 
     return SUCCESS;
@@ -213,7 +215,6 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
    * @return Returns the articleDescription.
    */
   public String getArticleDescription() {
-
     if(articleDescription != null) {
       return articleDescription;
     }
@@ -270,7 +271,6 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
    * @return Returns Ratings for the Article.
    */
   public Collection<ArticleRatingSummary> getArticleRatingSummaries() {
-
     return articleRatingSummaries;
   }
 }

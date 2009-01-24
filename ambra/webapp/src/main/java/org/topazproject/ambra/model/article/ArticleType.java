@@ -40,8 +40,6 @@ public class ArticleType implements Serializable {
    */
   public static final String ARTICLE_TYPE_HEADING_RESEARCH = "Research Article";
 
-  // private static final Log log = LogFactory.getLog(ArticleType.class);
-
   private static Map<URI, ArticleType> knownArticleTypes = new HashMap<URI, ArticleType>();
   private static Map<URI, ArticleType> newArticleTypes = new HashMap<URI, ArticleType>();
   private static List<ArticleType>     articleTypeOrder = new ArrayList<ArticleType>();
@@ -151,7 +149,8 @@ public class ArticleType implements Serializable {
     String basePath = "ambra.articleTypeList.articleType";
     String uriStr;
 
-    /* Iterate through the defined article types. This is ugly since the index needs
+    /*
+     * Iterate through the defined article types. This is ugly since the index needs
      * to be given in xpath format to access the element, so we calculate a base string
      * like: ambra.articleTypeList.articleType(x) and check if it's non-null for typeUri
      */

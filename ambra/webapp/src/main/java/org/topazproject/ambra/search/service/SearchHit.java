@@ -51,7 +51,8 @@ public class SearchHit implements Comparable<SearchHit> {
   }
 
   public int compareTo(SearchHit o) {
-    return Double.compare(o.hitScore, hitScore);        // descending
+    // descending
+    return Double.compare(o.hitScore, hitScore);
   }
 
   /**

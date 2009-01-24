@@ -37,7 +37,8 @@ import net.sf.ehcache.Element;
  * @author Pradeep Krishnan
  */
 public class EhcacheProvider implements Cache {
-  private static final Log   log          = LogFactory.getLog(EhcacheProvider.class);
+  private static final Log   log = LogFactory.getLog(EhcacheProvider.class);
+
   private final CacheManager cacheManager;
   private final Ehcache      cache;
   private final String       name;
@@ -48,9 +49,9 @@ public class EhcacheProvider implements Cache {
    * @param cache the ehcache object
    */
   public EhcacheProvider(CacheManager cacheManager, Ehcache cache) {
-    this.cache                            = cache;
-    this.cacheManager                     = cacheManager;
-    this.name                             = cache.getName();
+    this.cache        = cache;
+    this.cacheManager = cacheManager;
+    this.name         = cache.getName();
   }
 
   /*

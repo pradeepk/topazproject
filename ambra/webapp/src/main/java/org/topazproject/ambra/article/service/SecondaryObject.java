@@ -45,7 +45,6 @@ public class SecondaryObject implements Serializable {
     this.repSmall = repSmall;
     this.repMedium = repMedium;
     this.repLarge = repLarge;
-
   }
 
   /**
@@ -157,5 +156,4 @@ public class SecondaryObject implements Serializable {
   public void setTransformedCaptionTitle(String transformedTitle) {
     this.transformedCaptionTitle = transformedTitle;
   }
-
 }

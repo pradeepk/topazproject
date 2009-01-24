@@ -32,7 +32,6 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 public class CrossRefPosterService {
   private String doiXrefUrl;
 
-
   public void init() {
   }
 
@@ -46,9 +45,7 @@ public class CrossRefPosterService {
 
     Part[] parts = {new FilePart("fname", file.getName(), file)};
 
-    poster.setRequestEntity(
-        new MultipartRequestEntity(parts, poster.getParams())
-    );
+    poster.setRequestEntity(new MultipartRequestEntity(parts, poster.getParams()));
     client.getHttpConnectionManager().getParams().setConnectionTimeout(25000);
     return client.executeMethod(poster);
   }

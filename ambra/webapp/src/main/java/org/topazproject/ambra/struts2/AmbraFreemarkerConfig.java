@@ -23,6 +23,7 @@ import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.web.VirtualJournalContextFilter;
 
@@ -86,7 +87,7 @@ public class AmbraFreemarkerConfig {
     journals = new HashMap<String, JournalConfig>();
     orgName = myConfig.getString("ambra.platform.name");
     feedbackEmail = myConfig.getString("ambra.platform.email.feedback");
-    
+
     loadConfig(myConfig);
 
     processVirtualJournalConfig(myConfig);
@@ -142,7 +143,6 @@ public class AmbraFreemarkerConfig {
   }
 
   private void loadConfig2(Configuration configuration) {
-
       int numJournals = configuration.getList("ambra.freemarker.journal.name").size();
       for (int k = 0; k < numJournals; k++) {
         final String journal = "ambra.freemarker.journal(" + k + ")";
@@ -265,7 +265,8 @@ public class AmbraFreemarkerConfig {
             numCss = configuration.getList(page + ".css.file").size();
             cssArray = new String[numCss];
             for (j = 0; j < numCss; j++) {
-              cssArray[j] =  dirPrefix + subdirPrefix + configuration.getString(page + ".css.file(" + j + ")");
+              cssArray[j] =  dirPrefix + subdirPrefix +
+                             configuration.getString(page + ".css.file(" + j + ")");
             }
             if ((numCss > 0) || (numCss == 0 && isDefined)) {
               cssFiles.put(pageName, cssArray);
@@ -312,15 +313,18 @@ public class AmbraFreemarkerConfig {
   }
 
   private void processVirtualJournalConfig (Configuration configuration) {
-    final Collection<String> virtualJournals = configuration.getList(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_JOURNALS);
-    String defaultVirtualJournal = configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_DEFAULT + ".journal");
+    final Collection<String> virtualJournals =
+      configuration.getList(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_JOURNALS);
+    String defaultVirtualJournal =
+      configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_DEFAULT +
+                              ".journal");
     JournalConfig jour;
 
     if ((defaultVirtualJournal != null) && (!"".equals(defaultVirtualJournal))) {
       jour = journals.get(defaultVirtualJournal);
       if (jour != null) {
-        jour.setUrl(configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_DEFAULT +
-                                            ".url"));
+        jour.setUrl(configuration.getString(
+              VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_DEFAULT + ".url"));
       }
     }
 
@@ -346,16 +350,16 @@ public class AmbraFreemarkerConfig {
     boolean usingDefault = false;
     if (jc == null) {
       if (log.isDebugEnabled()) {
-        log.debug("Failed to get journal for given journalName '"+journalName+
-                  "'. Attempting to load default journal '"+defaultJournalName+"'");
+        log.debug("Failed to get journal for given journalName '" + journalName +
+                  "'. Attempting to load default journal '" + defaultJournalName + "'");
       }
       usingDefault = true;
       jc = journals.get(defaultJournalName);
       if (jc == null) {
-        log.error("Failed to get Journal. defaultJournalName '"+defaultJournalName+
-                  "'. Attempted to get default Journal when given journal name parameter '"+
-                  journalName+"' also returned null. Check your configuration for '"+
-                  DEFAULT_JOURNAL_NAME_CONFIG_KEY+"'");
+        log.error("Failed to get Journal. defaultJournalName '" + defaultJournalName +
+                  "'. Attempted to get default Journal when given journal name parameter '" +
+                  journalName + "' also returned null. Check your configuration for '" +
+                  DEFAULT_JOURNAL_NAME_CONFIG_KEY + "'");
         return DEFAULT_TITLE;
       }
     }
@@ -467,8 +471,8 @@ public class AmbraFreemarkerConfig {
     return retVal != null ? retVal : DEFAULT_JS_FILES;
   }
 
-  private String[] getJavascriptsForJournal(JournalConfig jc, String templateName, String defaultTemplateName) {
-
+  private String[] getJavascriptsForJournal(JournalConfig jc, String templateName,
+                                            String defaultTemplateName) {
     String[] retVal = jc.getJavaScriptFiles().get(templateName);
     if (retVal != null)
       return retVal;
@@ -748,7 +752,6 @@ public class AmbraFreemarkerConfig {
 
     return stringBuilder.toString();
   }
-
 
   private class JournalConfig {
     private HashMap<String, String[]> cssFiles;

@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.Required;
+
 import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.user.service.UserService;
 
@@ -35,9 +36,8 @@ import com.googlecode.jsonplugin.annotations.JSON;
  * 
  */
 public class UserActionSupport extends BaseSessionAwareActionSupport {
-
   private static final Log log = LogFactory.getLog(UserActionSupport.class);
-  
+
   private UserService userService;
 
   /**
@@ -56,5 +56,4 @@ public class UserActionSupport extends BaseSessionAwareActionSupport {
   public void setUserService(UserService userService) {
     this.userService = userService;
   }
-
 }

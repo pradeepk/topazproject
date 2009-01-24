@@ -45,6 +45,7 @@ import java.util.Set;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
+
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
@@ -92,6 +93,7 @@ import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.models.TextRepresentation;
 import org.topazproject.ambra.permission.service.PermissionsService;
+
 import org.topazproject.otm.AbstractBlob;
 import org.topazproject.otm.Blob;
 import org.topazproject.otm.OtmException;
@@ -176,7 +178,8 @@ public class Ingester {
         log.debug("Using ingest handler '" + handler + "'");
 
       // use handler to convert zip to object descriptions
-      objInfo = zip2Obj(zip, zipInfo, handler, configuration.getString("ambra.platform.doiUrlPrefix", null));
+      objInfo = zip2Obj(zip, zipInfo, handler,
+                        configuration.getString("ambra.platform.doiUrlPrefix", null));
       if (log.isDebugEnabled())
         log.debug("Got object-info '" + dom2String(objInfo) + "'");
     } catch (IOException ioe) {
@@ -199,7 +202,8 @@ public class Ingester {
    *                                     and <var>force</var> is false
    * @throws IngestException if there's any other problem ingesting the article
    */
-  public Article ingest(Configuration configuration, Session sess, PermissionsService permSvc, boolean force)
+  public Article ingest(Configuration configuration, Session sess, PermissionsService permSvc,
+                        boolean force)
       throws DuplicateArticleIdException, IngestException {
 
     if (objInfo == null)
@@ -250,7 +254,8 @@ public class Ingester {
     if (doiUrlPrefix != null)
       t.setParameter("doi-url-prefix", doiUrlPrefix);
 
-    /* Note: it would be preferable (and correct according to latest JAXP specs) to use
+    /*
+     * Note: it would be preferable (and correct according to latest JAXP specs) to use
      * t.setErrorListener(), but Saxon does not forward <xls:message>'s to the error listener.
      * Hence we need to use Saxon's API's in order to get at those messages.
      */
@@ -290,7 +295,8 @@ public class Ingester {
     return (Document) res.getNode();
   }
 
-  private Article processObjectInfo(final Zip zip, Document objInfo, boolean force, Session sess, PermissionsService permSvc)
+  private Article processObjectInfo(final Zip zip, Document objInfo, boolean force,
+                                    Session sess, PermissionsService permSvc)
       throws IngestException, DuplicateArticleIdException {
     Article art = null;
     final StringWriter msgs = new StringWriter();
@@ -368,8 +374,8 @@ public class Ingester {
       try {
         IOUtils.copy(in = map.get(rep).getInputStream(), out = rep.getBody().getOutputStream());
       } catch (IOException e) {
-        throw new OtmException("Error copying from zip. rep = '" + rep.getName() + "', id = "
-                                     + rep.getId(), e);
+        throw new OtmException("Error copying from zip. rep = '" + rep.getName() + "', id = " +
+                               rep.getId(), e);
       } finally {
         for (Closeable c : new Closeable[] { in, out }) {
           try {
@@ -616,7 +622,8 @@ public class Ingester {
                                                  String itemFieldName) {
       while (definedIn != null) {
         for (ImplicitCollectionMapping icm : getOrCreateICM(definedIn)) {
-          if (icm.getItemType().isAssignableFrom(itemType) && itemFieldName.equals(icm.getFieldName()))
+          if (icm.getItemType().isAssignableFrom(itemType) &&
+              itemFieldName.equals(icm.getFieldName()))
             return icm.getFieldName();
         }
         definedIn = definedIn.getSuperclass();

@@ -63,16 +63,15 @@ public class ItqlQueryFunction extends OtmQueryFunction {
     String[] parts = query.split("\\?");
 
     if ((parts.length - 1) != bindings.length)
-      throw new QueryException("query '" + query + "' requires " + (parts.length - 1)
-                               + " parameters; got " + bindings.length + " parameters instead.");
+      throw new QueryException("query '" + query + "' requires " + (parts.length - 1) +
+                               " parameters; got " + bindings.length + " parameters instead.");
 
     if (parts.length == 1)
       return parts[0];
 
     StringBuilder s = new StringBuilder(512);
 
-    int          i;
-
+    int i;
     for (i = 0; i < bindings.length; i++) {
       s.append(parts[i]);
 
@@ -85,7 +84,6 @@ public class ItqlQueryFunction extends OtmQueryFunction {
 
       s.append(bindings[i]);
     }
-
     s.append(parts[i]);
 
     return s.toString();

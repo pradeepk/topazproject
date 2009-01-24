@@ -40,8 +40,7 @@ public class SearchResultPage {
   private final int pageSize;
   private final Collection<SearchHit> hits;
 
-  public SearchResultPage(final int totalResults,
-                          final int pageSize,
+  public SearchResultPage(final int totalResults, final int pageSize,
                           final Collection<SearchHit> hits) {
     this.totalNoOfResults = totalResults;
     this.pageSize = pageSize;

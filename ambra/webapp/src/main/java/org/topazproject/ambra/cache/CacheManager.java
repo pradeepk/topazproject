@@ -49,8 +49,8 @@ import org.topazproject.otm.Session;
  * @author Pradeep Krishnan
  */
 public class CacheManager implements CacheListener, ObjectListener {
-  private static final Log                   log             =
-    LogFactory.getLog(CacheManager.class);
+  private static final Log log = LogFactory.getLog(CacheManager.class);
+
   private final TransactionManager           jtaTransactionManager;
   private final long                         lockWaitSeconds;
   private final Lock                         updateLock      = new ReentrantLock();
@@ -229,16 +229,16 @@ public class CacheManager implements CacheListener, ObjectListener {
        */
 
       if (!locked)
-        log.warn("Failed to acquire update-lock after waiting for "
-          + lockWaitSeconds + " seconds. Continuing anyway ... ");
+        log.warn("Failed to acquire update-lock after waiting for " + lockWaitSeconds +
+                 " seconds. Continuing anyway ... ");
       else if (log.isDebugEnabled())
         log.debug("beforeCompletion: acquired update-lock for " + txn);
     }
 
     public void afterCompletion(int status) {
       if (log.isDebugEnabled())
-        log.debug("afterCompletion: processing event-queue with " + queue.size() + " entries for "
-                  + txn);
+        log.debug("afterCompletion: processing event-queue with " + queue.size() + " entries for " +
+                  txn);
 
       boolean committed = (status == Status.STATUS_COMMITTED);
       if (!locked && committed)

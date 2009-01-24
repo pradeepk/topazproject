@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.util.XPointerUtils;
 
@@ -75,7 +76,7 @@ public abstract class ContextFormatter {
             endOffset));
       }
       String rval = XPointerUtils.createXPointer(c.getTarget(), context, "UTF-8");
-      if(log.isDebugEnabled()) {
+      if (log.isDebugEnabled()) {
         log.debug("xpointer '" + rval + "' created from context: " + c.toString());
       }
       return rval;

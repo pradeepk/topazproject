@@ -28,28 +28,26 @@ import org.topazproject.ambra.auth.db.DatabaseException;
 import org.topazproject.ambra.service.password.PasswordDigestService;
 
 /**
- * Ambra user authentication handler that verifies that the user with a given userid/adminPassword exists
- * in the database
+ * Ambra user authentication handler that verifies that the user with a given userid/adminPassword
+ * exists in the database
  * 
- * 
- To use this authentication handler, edit the file "genericHandler.xml" located at:
-  custom/esup-casgeneric-auth/ambra/webpages/WEB-INF/genericHandler.xml
-
-with 
-
-<authentication debug="on">
-  <handler>
-    <classname>org.topazproject.ambra.auth.handler.AuthDatabaseHandler</classname>
-    <config>
-      <table>${esup-casgeneric.auth.ambra.table}</table>
-      <login_column>${esup-casgeneric.auth.ambra.login-column}</login_column>
-      <password_column>${esup-casgeneric.auth.ambra.password-column}</password_column>
-      <encryption>${esup-casgeneric.auth.ambra.encryption}</encryption>
-      <encoding_charset>${esup-casgeneric.auth.ambra.encoding-charset}</encoding_charset>
-    </config>
-  </handler>
-</authentication>
-
+ * To use this authentication handler, edit the file "genericHandler.xml" located at:
+ * custom/esup-casgeneric-auth/ambra/webpages/WEB-INF/genericHandler.xml with 
+ *
+ * <pre>
+ *  <authentication debug="on">
+ *    <handler>
+ *      <classname>org.topazproject.ambra.auth.handler.AuthDatabaseHandler</classname>
+ *      <config>
+ *        <table>${esup-casgeneric.auth.ambra.table}</table>
+ *        <login_column>${esup-casgeneric.auth.ambra.login-column}</login_column>
+ *        <password_column>${esup-casgeneric.auth.ambra.password-column}</password_column>
+ *        <encryption>${esup-casgeneric.auth.ambra.encryption}</encryption>
+ *        <encoding_charset>${esup-casgeneric.auth.ambra.encoding-charset}</encoding_charset>
+ *      </config>
+ *    </handler>
+ *  </authentication>
+ * </pre>
  */
 public class AuthDatabaseHandler extends BasicHandler {
   private PasswordDigestService passwordService;
@@ -64,24 +62,25 @@ public class AuthDatabaseHandler extends BasicHandler {
    *
    * @throws Exception when the handler not configured correctly
    */
-  public AuthDatabaseHandler(final Element handlerElement, final Boolean configDebug) throws Exception  {
+  public AuthDatabaseHandler(final Element handlerElement, final Boolean configDebug)
+    throws Exception  {
     super(handlerElement, configDebug);
     traceBegin();
     trace("AuthDatabaseHandler constructor called");
 
     // check that a config element is present
     checkConfigElement(true);
-    
+
     init();
     traceEnd();
   }
-  
+
   private void init() throws Exception {
     passwordService = getPasswordService();
     passwordSqlQuery = getPasswordSqlQuery();
     verifiedUserSqlQuery = getVerifiedUserSqlQuery();
   }
-  
+
   private PasswordDigestService getPasswordService() throws Exception {
     final String encryption = getConfigSubElementContent("encryption");
     final String encodingCharset = getConfigSubElementContent("encoding_charset");
@@ -112,11 +111,11 @@ public class AuthDatabaseHandler extends BasicHandler {
       if (!isTrue(verificationStatus)) {
         trace("User: " + userLogin + " is not yet verified or is inactive");
       } else {
-        final String savedDigestPassword
-        = databaseContext.getSingleStringValueFromDb(passwordSqlQuery, userLogin);
-        
+        final String savedDigestPassword =
+          databaseContext.getSingleStringValueFromDb(passwordSqlQuery, userLogin);
+
         final boolean verified = passwordService.verifyPassword(userPassword, savedDigestPassword);
-  
+
         if (verified) {
           trace("User's password matches.");
           return SUCCEEDED;
@@ -134,8 +133,7 @@ public class AuthDatabaseHandler extends BasicHandler {
 
   private boolean isTrue(final String verificationStatus) {
     final String booleanStr = verificationStatus.toLowerCase();
-    return (Boolean.valueOf(booleanStr) || booleanStr.startsWith("t")) ? true 
-                                                                       : false;
+    return (Boolean.valueOf(booleanStr) || booleanStr.startsWith("t")) ? true : false;
   }
 
   private DatabaseContext getDatabaseContext() throws DatabaseException {
@@ -154,9 +152,8 @@ public class AuthDatabaseHandler extends BasicHandler {
     final String loginColumn = getConfigSubElementContent("login_column");
     final String passwordColumn = getConfigSubElementContent("password_column");
 
-    final String query = "SELECT " + passwordColumn
-                        + " FROM " + table
-                        + " WHERE " + loginColumn + " = ?";
+    final String query = "SELECT " + passwordColumn + " FROM " + table + " WHERE " +
+                         loginColumn + " = ?";
 
     traceEnd(query);
     return query;
@@ -174,20 +171,20 @@ public class AuthDatabaseHandler extends BasicHandler {
     final String loginColumn = getConfigSubElementContent("login_column");
     final String verifyColumn = getConfigSubElementContent("verify_column");
     final String isActiveColumn = getConfigSubElementContent("active_column");
-    
+
     final StringBuilder query = new StringBuilder("SELECT ");
     query.append(verifyColumn);
     query.append(" FROM ").append(table);
-    query.append(" WHERE ").append(isActiveColumn).append (" = true AND ").append(loginColumn).append(" = ?");
+    query.append(" WHERE ").append(isActiveColumn).append (" = true AND ").
+          append(loginColumn).append(" = ?");
 
     traceEnd(query.toString());
     return query.toString();
   }
 
   private String getConfigSubElementContent(final String elementName) throws Exception {
-    final String value = getConfigSubElementContent(elementName, true/*needed*/);
+    final String value = getConfigSubElementContent(elementName, true);
     trace(elementName + " = " + value);
     return value;
   }
-
 }

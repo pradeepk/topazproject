@@ -17,7 +17,6 @@
  */
 package org.topazproject.ambra.journal;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +25,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.Required;
+
 import org.topazproject.ambra.models.DublinCore;
 import org.topazproject.ambra.models.Journal;
+
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
@@ -103,8 +104,7 @@ public class JournalCreator {
    * @throws Error on a fatal error
    */
   @SuppressWarnings("unchecked")
-  private void createJournal(Session sess, String key)
-                     throws OtmException {
+  private void createJournal(Session sess, String key) throws OtmException {
     log.info("Attempting create/update journal with key '" + key + "'");
 
     String cKey = "ambra.virtualJournals." + key + ".eIssn";
@@ -129,12 +129,10 @@ public class JournalCreator {
     journal.seteIssn(eIssn);
 
     DublinCore dc = journal.getDublinCore();
-
     if (dc == null) {
       dc = new DublinCore();
       journal.setDublinCore(dc);
     }
-
     if (title != null)
       dc.setTitle(title);
 
@@ -198,5 +196,4 @@ public class JournalCreator {
   public void setAmbraConfiguration(Configuration configuration) {
     this.configuration = configuration;
   }
-
 }

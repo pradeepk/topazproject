@@ -26,7 +26,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * Checks that content is not profane. It could be used to check that the user's posts don't contain profane words like F***, GEORGE, BUSH, etc.
+ * Checks that content is not profane. It could be used to check that the user's posts don't contain
+ * profane words like F***, GEORGE, BUSH, etc.
  */
 public class ProfanityCheckingService {
   private Map<String, Pattern> profanePatterns;

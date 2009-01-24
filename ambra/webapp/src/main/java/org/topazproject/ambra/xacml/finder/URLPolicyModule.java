@@ -26,7 +26,6 @@ import java.net.URL;
 
 import java.util.List;
 
-
 /**
  * Policy Finder module that loads policy files from a URL. This version
  * supports Target matching; (ie. searches thru all policy files to find a matching policy)

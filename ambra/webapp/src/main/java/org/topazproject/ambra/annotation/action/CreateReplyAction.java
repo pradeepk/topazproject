@@ -22,9 +22,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.util.ProfanityCheckingService;
@@ -57,7 +59,8 @@ public class CreateReplyAction extends BaseSessionAwareActionSupport {
       final List<String> profaneWordsInBody = profanityCheckingService.validate(comment);
 
       if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty()) {
-        replyId = replyService.createReply(root, inReplyTo, commentTitle, mimeType, comment, getCurrentUser());
+        replyId = replyService.createReply(root, inReplyTo, commentTitle, mimeType, comment,
+                                           getCurrentUser());
       } else {
         addProfaneMessages(profaneWordsInBody, "comment", "comment");
         addProfaneMessages(profaneWordsInTitle, "commentTitle", "title");

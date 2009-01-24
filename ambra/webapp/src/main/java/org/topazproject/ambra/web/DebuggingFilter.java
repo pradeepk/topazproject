@@ -27,6 +27,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -49,10 +50,12 @@ public class DebuggingFilter implements Filter {
   public void init(FilterConfig filterConfig) throws ServletException {
   }
 
-  public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain filterChain) throws IOException, ServletException {
+  public void doFilter(final ServletRequest request, final ServletResponse response,
+                       final FilterChain filterChain) throws IOException, ServletException {
     try {
       final HttpServletRequest origRequest = (HttpServletRequest) request;
-      final CharResponseWrapper servletResponse = new CharResponseWrapper((HttpServletResponse) response);
+      final CharResponseWrapper servletResponse =
+        new CharResponseWrapper((HttpServletResponse) response);
 
       dumpRequest(origRequest, "before chain");
 

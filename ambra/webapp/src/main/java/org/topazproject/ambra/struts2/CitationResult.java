@@ -40,8 +40,8 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 public class CitationResult extends FreemarkerResult  {
-
   private static final Log log = LogFactory.getLog(CitationResult.class);
+
   private String fileExtension;
 
   protected boolean preTemplateProcess(freemarker.template.Template template,
@@ -50,7 +50,8 @@ public class CitationResult extends FreemarkerResult  {
     String doi = (String)invocation.getStack().findValue("citation.doi");
     HttpServletResponse response = ServletActionContext.getResponse();
     try {
-      response.addHeader("Content-disposition", "attachment; filename=" + URLEncoder.encode(doi, "UTF-8") + fileExtension);
+      response.addHeader("Content-disposition", "attachment; filename=" +
+                                                URLEncoder.encode(doi, "UTF-8") + fileExtension);
     } catch (UnsupportedEncodingException uee) {
       response.addHeader("Content-disposition", "attachment; filename=citation" + fileExtension);
     }

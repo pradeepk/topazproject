@@ -65,7 +65,7 @@ public class AmbraStreamResult extends StreamResult {
 
     HttpResourceServer.Resource resource;
     long lastModified = (date == null) ? System.currentTimeMillis() : date.getTime();
-    
+
     if (log.isDebugEnabled()) {
       log.debug("LastModified "+new Date(lastModified));
     }

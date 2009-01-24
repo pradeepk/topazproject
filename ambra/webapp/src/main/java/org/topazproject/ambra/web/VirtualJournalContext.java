@@ -39,7 +39,6 @@ import java.util.Collection;
  * </pre>
  */
 public class VirtualJournalContext {
-
   /** ServletRequest attribute for the virtual journal context. */
   public static final String PUB_VIRTUALJOURNAL_CONTEXT = "ambra.virtualjournal.context";
 
@@ -154,15 +153,17 @@ public class VirtualJournalContext {
    *
    * @return String[] of defaulted {contextPath, servletPath, pathInfo, requestUri}
    */
-  public String[] defaultUri(final String contextPath, final String servletPath, final String pathInfo) {
-
+  public String[] defaultUri(final String contextPath, final String servletPath,
+                             final String pathInfo) {
     // will need to examine, and possibly modify, Request Path Elements
     String defaultContextPath = contextPath;
     String defaultServletPath = servletPath;
     String defaultPathInfo    = pathInfo;
 
-    // in tests below, be flexible with servletPath and pathInfo, not all containers adhere tightly
-    // to Servlet SRV.4.4.  e.g. prefix could be in servletPath or pathInfo.
+    /*
+     * in tests below, be flexible with servletPath and pathInfo, not all containers adhere tightly
+     * to Servlet SRV.4.4.  e.g. prefix could be in servletPath or pathInfo.
+     */
 
     // does URI already contain mappingPrefix?
     if (defaultServletPath != null && defaultServletPath.startsWith(mappingPrefix)) {

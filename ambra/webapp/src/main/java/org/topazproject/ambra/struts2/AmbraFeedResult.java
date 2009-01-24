@@ -315,7 +315,6 @@ public class AmbraFeedResult extends Feed implements Result {
     List<Entry> entries = new ArrayList<Entry>();
 
     for (Article article : articles) {
-      
       /*
        * Article may be removed by the time
        * it a actually retrieved. A null
@@ -323,7 +322,7 @@ public class AmbraFeedResult extends Feed implements Result {
        */
       if (article == null)
         continue;
-      
+
       Entry entry = newEntry(article);
 
       List<Link> altLinks = new ArrayList<Link>();

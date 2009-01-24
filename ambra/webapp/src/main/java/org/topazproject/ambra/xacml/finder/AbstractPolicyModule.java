@@ -77,10 +77,8 @@ public abstract class AbstractPolicyModule extends PolicyFinderModule implements
   // the finder that is using this module
   private PolicyFinder finder;
 
-  //
   private File schemaFile;
 
-  //
   private Set resources;
   private Set policies;
   private Map policyMap;
@@ -258,8 +256,7 @@ public abstract class AbstractPolicyModule extends PolicyFinderModule implements
    *
    * @throws IOException if an error occured
    */
-  public abstract InputStream getPolicyResourceAsStream(String resource)
-                                                 throws IOException;
+  public abstract InputStream getPolicyResourceAsStream(String resource) throws IOException;
 
   /**
    * Finds a policy based on a request's context. This may involve using the request data as
@@ -342,7 +339,7 @@ public abstract class AbstractPolicyModule extends PolicyFinderModule implements
    *
    * @param exception information on what caused the problem
    *
-   * @throws SAXException DOCUMENT ME!
+   * @throws SAXException
    */
   public void warning(SAXParseException exception) throws SAXException {
     if (logger.isWarnEnabled())
@@ -358,8 +355,8 @@ public abstract class AbstractPolicyModule extends PolicyFinderModule implements
    */
   public void error(SAXParseException exception) throws SAXException {
     if (logger.isWarnEnabled())
-      logger.warn("Error on line " + exception.getLineNumber() + ": " + exception.getMessage()
-                  + " ... " + "Policy will not be available");
+      logger.warn("Error on line " + exception.getLineNumber() + ": " + exception.getMessage() +
+                  " ... " + "Policy will not be available");
 
     throw new SAXException("error parsing policy");
   }
@@ -373,8 +370,8 @@ public abstract class AbstractPolicyModule extends PolicyFinderModule implements
    */
   public void fatalError(SAXParseException exception) throws SAXException {
     if (logger.isWarnEnabled())
-      logger.warn("Fatal error on line " + exception.getLineNumber() + ": "
-                  + exception.getMessage() + " ... " + "Policy will not be available");
+      logger.warn("Fatal error on line " + exception.getLineNumber() + ": " +
+                  exception.getMessage() + " ... " + "Policy will not be available");
 
     throw new SAXException("fatal error parsing policy");
   }

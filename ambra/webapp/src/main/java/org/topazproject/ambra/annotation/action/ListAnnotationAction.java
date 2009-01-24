@@ -22,8 +22,10 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.annotation.service.AnnotationService;
@@ -51,9 +53,11 @@ public class ListAnnotationAction extends BaseActionSupport {
    * Loads all annotations for a given target.
    * @return status
    */
-  private String loadAnnotations(Set<Class<? extends ArticleAnnotation>> annotationTypeClasses, boolean needBody) {
+  private String loadAnnotations(Set<Class<? extends ArticleAnnotation>> annotationTypeClasses,
+                                 boolean needBody) {
     try {
-      annotations = converter.convert(annotationService.listAnnotations(target, annotationTypeClasses), true, needBody);
+      annotations = converter.convert(
+          annotationService.listAnnotations(target, annotationTypeClasses), true, needBody);
     } catch (final Exception e) {
       log.error("Could not list annotations for target: " + target, e);
       addActionError("Annotation fetching failed with error message: " + e.getMessage());
@@ -116,5 +120,4 @@ public class ListAnnotationAction extends BaseActionSupport {
   public void setAnnotationConverter(AnnotationConverter converter) {
     this.converter = converter;
   }
-
 }

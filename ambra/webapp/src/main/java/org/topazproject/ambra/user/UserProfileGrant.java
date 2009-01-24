@@ -129,7 +129,8 @@ public enum UserProfileGrant {
     return selectProfileGrants(fields, predicate);
   }
 
-  private static Collection<UserProfileGrant> selectProfileGrants(final String[] values, final Predicate predicate) {
+  private static Collection<UserProfileGrant> selectProfileGrants(final String[] values,
+                                                                  final Predicate predicate) {
     if (null == sortedProfileGrants) {
       sortedProfileGrants = sortProfileGrants();
     }

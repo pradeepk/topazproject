@@ -22,6 +22,7 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.commons.collections.EnumerationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.EmailValidator;
+
 import org.topazproject.ambra.service.AmbraMailer;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.action.UserActionSupport;
@@ -109,11 +110,12 @@ public class FeedbackAction extends UserActionSupport {
 
     headers.put("server-name", request.getServerName() + ":" + request.getServerPort());
     headers.put("remote-addr", request.getRemoteAddr());
-   // headers.put("remote-host", request.getRemoteHost());
     headers.put("local-addr", request.getLocalAddr() + ":" + request.getLocalPort());
-   // headers.put("local-name", request.getLocalName());
 
-    //Keeping this in case more values get passed from the client other than just the visible form fields
+    /*
+     * Keeping this in case more values get passed from the client other than just the visible form
+     * fields
+     */
     {
       final Enumeration parameterNames = request.getParameterNames();
       while (parameterNames.hasMoreElements()) {

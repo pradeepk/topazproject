@@ -20,8 +20,10 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.annotation.service.AnnotationService;
@@ -45,7 +47,8 @@ public class ListFlagAction extends BaseActionSupport {
   @Override
   public String execute() throws Exception {
     try {
-      flags = converter.convertAsFlags(annotationService.listAnnotations(target, annotationService.COMMENT_SET), true, true);
+      flags = converter.convertAsFlags(
+          annotationService.listAnnotations(target, annotationService.COMMENT_SET), true, true);
     } catch (final Exception e) {
       log.error("Could not list flags for target: " + target, e);
       addActionError("Flag fetch failed with error message: " + e.getMessage());
@@ -86,5 +89,4 @@ public class ListFlagAction extends BaseActionSupport {
   public void setAnnotationConverter(AnnotationConverter converter) {
     this.converter = converter;
   }
-
 }

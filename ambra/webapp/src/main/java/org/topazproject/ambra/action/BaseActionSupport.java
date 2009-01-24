@@ -19,6 +19,7 @@
 package org.topazproject.ambra.action;
 
 import com.opensymphony.xwork2.ActionSupport;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -105,7 +106,8 @@ public abstract class BaseActionSupport extends ActionSupport {
    * @param fieldName fieldName
    * @param readableFieldName readableFieldName
    */
-  protected void addProfaneMessages(final List<String> profaneWords, final String fieldName, final String readableFieldName) {
+  protected void addProfaneMessages(final List<String> profaneWords, final String fieldName,
+                                    final String readableFieldName) {
     if (!profaneWords.isEmpty()) {
       final String joinedWords = StringUtils.join(profaneWords.toArray(), ", ");
       String  msg;
@@ -114,7 +116,8 @@ public abstract class BaseActionSupport extends ActionSupport {
       } else {
         msg = "this word";
       }
-      addFieldError(fieldName, "Profanity filter found: " + joinedWords + ". Please remove " + msg + ".");
+      addFieldError(fieldName, "Profanity filter found: " + joinedWords + ". Please remove " +
+                               msg + ".");
     }
   }
 }

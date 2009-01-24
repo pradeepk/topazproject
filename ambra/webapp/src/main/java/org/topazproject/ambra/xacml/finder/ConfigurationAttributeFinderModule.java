@@ -79,8 +79,10 @@ public class ConfigurationAttributeFinderModule extends AttributeFinderModule {
 
       return new EvaluationResult(value);
     } catch (Exception e) {
-      // Abort the policy evaluation. For a deny-biased PEP, this will result in an
-      // access-denied.
+      /*
+       * Abort the policy evaluation. For a deny-biased PEP, this will result in an
+       * access-denied.
+       */
       return Util.processingError(e.getMessage(), type, id);
     }
   }

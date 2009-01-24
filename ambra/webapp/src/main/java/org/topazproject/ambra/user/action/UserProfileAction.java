@@ -24,8 +24,10 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.UserAccountsInterceptor;
@@ -75,7 +77,8 @@ public abstract class UserProfileAction extends UserActionSupport {
   private static final String COUNTRY = UserProfileGrant.COUNTRY.getFieldName();
   private static final String BIOGRAPHY_TEXT = UserProfileGrant.BIOGRAPHY_TEXT.getFieldName();
   private static final String INTERESTS_TEXT = UserProfileGrant.INTERESTS_TEXT.getFieldName();
-  private static final String RESEARCH_AREAS_TEXT = UserProfileGrant.RESEARCH_AREAS_TEXT.getFieldName();
+  private static final String RESEARCH_AREAS_TEXT =
+                                UserProfileGrant.RESEARCH_AREAS_TEXT.getFieldName();
   private static final String HOME_PAGE = "homePage";
   private static final String WEBLOG = "weblog";
 
@@ -159,8 +162,12 @@ public abstract class UserProfileAction extends UserActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   public String executeSaveUser() throws Exception {
     final AmbraUser ambraUser = getAmbraUserToUse();
-    //if new user then capture the displayname or if display name is blank (when user has been migrated)
-    if ((null == ambraUser) || (displayNameRequired && StringUtils.isBlank(ambraUser.getDisplayName()))) {
+    /*
+     * if new user then capture the displayname or if display name is blank (when user has been
+     * migrated)
+     */
+    if ((null == ambraUser) ||
+        (displayNameRequired && StringUtils.isBlank(ambraUser.getDisplayName()))) {
         isDisplayNameSet = false;
     }
 
@@ -186,7 +193,7 @@ public abstract class UserProfileAction extends UserActionSupport {
     }
 
     newUser = createAmbraUser();
-    //if new or migrated user then capture the displayname
+    // if new or migrated user then capture the displayname
     if (!isDisplayNameSet) {
       newUser.setDisplayName(this.displayName);
     }
@@ -196,11 +203,12 @@ public abstract class UserProfileAction extends UserActionSupport {
     }
 
     try {
-      //If a field is not among the private fields, it is saved as public
+      // If a field is not among the private fields, it is saved as public
       getUserService().setProfile(newUser, getPrivateFields(), displayNameRequired);
     } catch (DisplayNameAlreadyExistsException ex) {
       email = fetchUserEmailAddress();
-      newUser.setDisplayName(StringUtils.EMPTY);  //Empty out the display name from the newUser object
+      // Empty out the display name from the newUser object
+      newUser.setDisplayName(StringUtils.EMPTY);
       isDisplayNameSet = false;
       addErrorForField(DISPLAY_NAME, "is already in use. Please select a different username");
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -232,7 +240,8 @@ public abstract class UserProfileAction extends UserActionSupport {
     final AmbraUser ambraUser = getAmbraUserToUse();
     assignUserFields (ambraUser);
 
-    final Collection<UserProfileGrant> grants = getUserService().getProfileFieldsThatArePrivate(topazId);
+    final Collection<UserProfileGrant> grants =
+      getUserService().getProfileFieldsThatArePrivate(topazId);
     setVisibility(grants);
 
     return SUCCESS;
@@ -260,7 +269,6 @@ public abstract class UserProfileAction extends UserActionSupport {
     country = ambraUser.getCountry();
   }
 
-
   /**
    * Prepopulate the user profile data as available
    * @return return code for webwork
@@ -271,7 +279,7 @@ public abstract class UserProfileAction extends UserActionSupport {
     final AmbraUser ambraUser = getAmbraUserToUse();
 
     isDisplayNameSet = false;
-    //If the user has no topaz id
+    // If the user has no topaz id
     if (null == ambraUser) {
       email = fetchUserEmailAddress();
       log.debug("new profile with email: " + email);
@@ -283,9 +291,11 @@ public abstract class UserProfileAction extends UserActionSupport {
 
         assignUserFields (ambraUser);
       } catch(NullPointerException  ex) {
-        //fetching email in the case where profile creation failed and so email did not get saved.
-        //Will not be needed when all the user accounts with a profile have a email set up
-        //This is to display the email address to the user on the profile page, not required for saving
+        /*
+         * Fetching email in the case where profile creation failed and so email did not get saved.
+         * Will not be needed when all the user accounts with a profile have a email set up This is
+         * to display the email address to the user on the profile page, not required for saving
+         */
         email = fetchUserEmailAddress();
         if (log.isDebugEnabled()) {
           log.debug("Profile was not found, so creating one for user with email:" + email);
@@ -293,7 +303,7 @@ public abstract class UserProfileAction extends UserActionSupport {
       }
       return UPDATE_PROFILE;
     }
-    //else just forward the user to a success page, which might be the home page.
+    // else just forward the user to a success page, which might be the home page.
     isDisplayNameSet = true;
     return SUCCESS;
   }
@@ -304,7 +314,7 @@ public abstract class UserProfileAction extends UserActionSupport {
       if (ambraUser == null) {
         ambraUser = new AmbraUser(this.authId);
       }
-      //Set the email address if the email address did not get saved during profile creation
+      // Set the email address if the email address did not get saved during profile creation
       ambraUser.setEmail(fetchUserEmailAddress());
     }
 
@@ -341,8 +351,7 @@ public abstract class UserProfileAction extends UserActionSupport {
   }
 
   /**
-   * @param email
-   *          The email to set.
+   * @param email The email to set.
    */
   public void setEmail(String email) {
     this.email = email;
@@ -356,8 +365,7 @@ public abstract class UserProfileAction extends UserActionSupport {
   }
 
   /**
-   * @param realName
-   *          The firstName to set.
+   * @param realName The firstName to set.
    */
   public void setRealName(String realName) {
     this.realName = realName;
@@ -366,7 +374,7 @@ public abstract class UserProfileAction extends UserActionSupport {
   private boolean validates() {
     boolean isValid = true;
 
-    //Don't validate displayName if the user already has a display name
+    // Don't validate displayName if the user already has a display name
     if (!isDisplayNameSet && displayNameRequired) {
       if (spacePattern.matcher(displayName).matches()) {
         final int usernameLength = displayName.length();
@@ -388,7 +396,7 @@ public abstract class UserProfileAction extends UserActionSupport {
       addErrorForField(SURNAMES, "cannot be empty");
       isValid = false;
     }
-    //TODO: does everyone live in a city?
+    // TODO: does everyone live in a city?
     if (StringUtils.isBlank(city)) {
       addErrorForField(CITY, "cannot be empty");
       isValid = false;
@@ -491,8 +499,7 @@ public abstract class UserProfileAction extends UserActionSupport {
   }
 
   /**
-   * @param internalId
-   *          The topazId to set.
+   * @param internalId The topazId to set.
    */
   public void setInternalId(String internalId) {
     this.topazId = internalId;
@@ -511,8 +518,7 @@ public abstract class UserProfileAction extends UserActionSupport {
    * Here mainly for unit tests. Should not need to be used otherwise. Action picks it up from
    * session automatically.
    *
-   * @param authId
-   *          The authId to set.
+   * @param authId The authId to set.
    */
   protected void setAuthId(String authId) {
     this.authId = authId;
@@ -722,10 +728,11 @@ public abstract class UserProfileAction extends UserActionSupport {
   private String[] getPrivateFields() {
     final Collection<String> privateFieldsList = new ArrayList<String>();
     CollectionUtils.addAll(privateFieldsList, getRespectiveFields(nameVisibility, NAME_GROUP));
-    CollectionUtils.addAll(privateFieldsList, getRespectiveFields(extendedVisibility, EXTENDED_GROUP));
+    CollectionUtils.addAll(privateFieldsList,
+                           getRespectiveFields(extendedVisibility, EXTENDED_GROUP));
     CollectionUtils.addAll(privateFieldsList, getRespectiveFields(orgVisibility, ORG_GROUP));
 
-    //Add email as a private field.
+    // Add email as a private field.
     CollectionUtils.addAll(privateFieldsList, new String[]{UserProfileGrant.EMAIL.getFieldName()});
 
     return privateFieldsList.toArray(new String[privateFieldsList.size()]);

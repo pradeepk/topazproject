@@ -21,8 +21,6 @@ package org.topazproject.ambra.model.article;
 
 import java.util.TreeMap;
 
-
-
 /**
  * An ordered list of years (as year numbers). Each year has a list of months.
  */

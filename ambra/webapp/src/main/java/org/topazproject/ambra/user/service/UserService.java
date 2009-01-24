@@ -22,15 +22,18 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionStatus;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.cache.Cache;
@@ -44,6 +47,7 @@ import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.UserProfileGrant;
 import org.topazproject.ambra.user.UsersPEP;
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
+
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.spring.OtmTransactionManager;
@@ -63,7 +67,8 @@ public class UserService {
   private static final String[] allUserProfileFieldGrants = getAllUserProfileFieldGrants();
   private static final DefaultTransactionDefinition txnDef = new DefaultTransactionDefinition();
 
-  private static final String[] ALL_PRINCIPALS = new String[] { Constants.Permission.ALL_PRINCIPALS };
+  private static final String[] ALL_PRINCIPALS =
+    new String[] { Constants.Permission.ALL_PRINCIPALS };
 
   private static final String USER_LOCK = "UserCache-Lock-";
   private static final String USER_KEY = "UserCache-User-";
@@ -675,6 +680,7 @@ public class UserService {
 
     return res;
   }
+
   /**
    * Checks the action guard.
    * @return boolean
@@ -765,5 +771,4 @@ public class UserService {
   public void setTxManager(OtmTransactionManager txManager) {
     this.txManager = txManager;
   }
-
 }

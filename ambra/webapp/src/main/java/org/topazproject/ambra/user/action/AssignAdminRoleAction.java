@@ -19,8 +19,10 @@
 package org.topazproject.ambra.user.action;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.Constants;
 
@@ -43,7 +45,8 @@ public class AssignAdminRoleAction extends UserActionSupport {
   private String assignAdminRole(final String topazId) throws ApplicationException {
     getUserService().setRole(topazId, Constants.ADMIN_ROLE);
 
-    final String successMessage = "Topaz ID: " + topazId + " successfully assigned the role: " + Constants.ADMIN_ROLE;
+    final String successMessage = "Topaz ID: " + topazId + " successfully assigned the role: " +
+                                  Constants.ADMIN_ROLE;
     addActionMessage(successMessage);
     if (log.isDebugEnabled()) { log.debug(successMessage); }
 

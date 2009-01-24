@@ -23,13 +23,13 @@ import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.models.Citation;
-
 
 /**
  * Action to create a citation.  Does not care what the output format is.
@@ -39,6 +39,7 @@ import org.topazproject.ambra.models.Citation;
  */
 @SuppressWarnings("serial")
 public class CreateCitation extends BaseActionSupport {
+  private static final Log log = LogFactory.getLog(CreateCitation.class);
 
   public static final String CITATION_KEY = "ArticleAnnotationCache-Citation-";
 
@@ -47,19 +48,16 @@ public class CreateCitation extends BaseActionSupport {
   private String articleURI;
   private Citation citation;
 
-  private static final Log log = LogFactory.getLog(CreateCitation.class);
-
   /**
    * Get Citation object from database
    */
   @Override
   @Transactional(readOnly = true)
   public String execute () throws Exception {
-
     citation = articleOtmService.getArticle(URI.create(articleURI))
-      .getDublinCore()
-      .getBibliographicCitation();
-    citation.getAuthors(); // Load authors from db
+                                .getDublinCore()
+                                .getBibliographicCitation();
+    citation.getAuthors();
 
     return SUCCESS;
   }

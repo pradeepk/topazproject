@@ -68,9 +68,9 @@ public class OtmInterceptor implements Interceptor {
    * @param journalService the journal service
    */
   public OtmInterceptor(CacheManager cacheManager, Cache objCache, JournalService journalService) {
-    this.cacheManager                         = cacheManager;
-    this.objCache                             = objCache;
-    this.journalService                       = journalService;
+    this.cacheManager    = cacheManager;
+    this.objCache        = objCache;
+    this.journalService  = journalService;
   }
 
   /*
@@ -86,9 +86,9 @@ public class OtmInterceptor implements Interceptor {
       if (getChangedJournals().contains(journal)) {
         // Note: This is only in this transaction context. ie. Pending commit.
         if (log.isDebugEnabled())
-          log.debug(cm.getName() + " with id <" + id
-                    + "> must be loaded from the database since the journal '" + journal
-                    + "' is marked as changed.");
+          log.debug(cm.getName() + " with id <" + id +
+                    "> must be loaded from the database since the journal '" + journal +
+                    "' is marked as changed.");
 
         return null;
       }
@@ -97,16 +97,16 @@ public class OtmInterceptor implements Interceptor {
 
       if (o == null) {
         if (log.isDebugEnabled())
-          log.debug(cm.getName() + " with id <" + id + "> is not in the cache for journal '"
-                    + journal + "'");
+          log.debug(cm.getName() + " with id <" + id + "> is not in the cache for journal '" +
+                    journal + "'");
 
         return null;
       }
 
       if (o.getValue() == null) {
         if (log.isDebugEnabled())
-          log.debug(cm.getName() + " with id <" + id + "> is marked in cache as 'non-existant'."
-                    + " Forcing OTM to return a 'null'");
+          log.debug(cm.getName() + " with id <" + id + "> is marked in cache as 'non-existant'." +
+                    " Forcing OTM to return a 'null'");
 
         return NULL;
       }
@@ -124,7 +124,8 @@ public class OtmInterceptor implements Interceptor {
     if (log.isDebugEnabled())
       log.debug(cm.getName() + " with id <" + id + "> is found in the cache");
 
-    /* Note: Assumes get filtering produces identical results.
+    /*
+     * Note: Assumes get filtering produces identical results.
      * This assumption currently holds because filters are
      * not currently applied on 'writes' by OTM.
      */
@@ -202,16 +203,16 @@ public class OtmInterceptor implements Interceptor {
       attach(session, cm, id, instance, updates.rdfMappers,
              updates.blobChanged ? cm.getBlobField() : null);
 
-    /* Note: if a smart-collection rule was updated as opposed to
+    /*
+     * Note: if a smart-collection rule was updated as opposed to
      * new rules added or deleted, we wouldn't be able to detect it.
      * In that case we need to be explicitly told. But currently
      * journal definitions are not updated on the fly. So even
      * this attempt to detect a change is not likely to be hit.
      */
-    if ((instance instanceof Journal)
-         && ((updates == null)
-             || updates.rdfMappers.contains(cm.getMapperByName("smartCollectionRules"))
-             || updates.rdfMappers.contains(cm.getMapperByName("simpleCollection"))))
+    if ((instance instanceof Journal) && ((updates == null) ||
+          updates.rdfMappers.contains(cm.getMapperByName("smartCollectionRules")) ||
+          updates.rdfMappers.contains(cm.getMapperByName("simpleCollection"))))
       journalChanged(((Journal) instance).getKey(), false);
 
     cacheManager.objectChanged(session, cm, id, instance, updates);

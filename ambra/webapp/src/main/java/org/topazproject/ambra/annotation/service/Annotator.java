@@ -32,15 +32,16 @@ import javax.xml.transform.TransformerException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.dom.ranges.SelectionRange;
 import org.topazproject.dom.ranges.SelectionRangeList;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ranges.DocumentRange;
 import org.w3c.dom.ranges.Range;
-
 
 /**
  * Creates an annotated version of the content.
@@ -146,10 +147,12 @@ public class Annotator {
               log.debug("Evaluating xpointer : " + expression);
             lists[i] = XPointerAPI.evalFullptr(document, expression);
           } catch (Exception e) {
-            log.error ("Could not evaluate xPointer: " + expression + " in " + annotations[i].getId(), e);
-            // Trap the error here and continue.  One bad annotation shouldn't
-            // cause the article to fail rendering.
-            //throw new TransformerException(expression, e);
+            /*
+             * Trap the error here and continue.  One bad annotation shouldn't
+             * cause the article to fail rendering.
+             */
+            log.error ("Could not evaluate xPointer: " + expression + " in " +
+                       annotations[i].getId(), e);
           }
         }
       }
@@ -228,8 +231,10 @@ public class Annotator {
         }
 
         rNode.setAttributeNS(nsUri, "aml:numComments", Integer.toString(numComments));
-        rNode.setAttributeNS(nsUri, "aml:numMinorCorrections", Integer.toString(numMinorCorrections));
-        rNode.setAttributeNS(nsUri, "aml:numFormalCorrections", Integer.toString(numFormalCorrections));
+        rNode.setAttributeNS(nsUri, "aml:numMinorCorrections",
+                             Integer.toString(numMinorCorrections));
+        rNode.setAttributeNS(nsUri, "aml:numFormalCorrections",
+                             Integer.toString(numFormalCorrections));
 
         root.appendChild(rNode);
       }

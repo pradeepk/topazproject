@@ -19,9 +19,9 @@
 package org.topazproject.ambra.user.action;
 
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.user.AmbraUser;
-
 
 /**
  * User Profile Action to be used by the admin to update the profile of any member user

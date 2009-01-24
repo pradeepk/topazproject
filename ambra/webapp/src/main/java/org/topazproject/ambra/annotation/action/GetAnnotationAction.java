@@ -22,11 +22,13 @@ package org.topazproject.ambra.annotation.action;
  * Get annotation for a given id.
  *
  * We can't use BaseGetAnnotationAction directly as spring runs into this problem
- * org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with
- * name 'org.topazproject.ambra.annotation.action.AnnotationActionsTest': Unsatisfied dependency expressed through
- * bean property 'getAnnotationAction': There are 2 beans of type
- * [class org.topazproject.ambra.annotation.action.GetAnnotationAction] for autowire by type. There should have
- * been exactly 1 to be able to autowire property 'getAnnotationAction' of bean 'org.topazproject.ambra.annotation.action.AnnotationActionsTest'.
+ * org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name
+ * 'org.topazproject.ambra.annotation.action.AnnotationActionsTest': Unsatisfied dependency
+ * expressed through bean property 'getAnnotationAction': There are 2 beans of type [class
+ * org.topazproject.ambra.annotation.action.GetAnnotationAction] for autowire by type. There should
+ * have been exactly 1 to be able to autowire property 'getAnnotationAction' of bean
+ * 'org.topazproject.ambra.annotation.action.AnnotationActionsTest'.
+ *
  * Consider using autowire by name instead.
  */
 @SuppressWarnings("serial")

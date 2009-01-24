@@ -22,10 +22,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
+
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Comment;
 import org.topazproject.ambra.models.Correction;
 import org.topazproject.ambra.permission.service.PermissionsService;
+
 import org.topazproject.otm.Session;
 
 /**

@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
 
-
 /**
  * The info about a single Volume that the UI needs.
  * 
@@ -39,7 +38,6 @@ public class VolumeInfo implements Serializable {
   private List<IssueInfo> issueInfos;
 
   // XXX TODO, List<URI> w/Issue DOI vs. List<IssueInfo>???
-
   public VolumeInfo(URI id, String displayName, URI prevVolume, URI nextVolume, URI imageArticle,
     String description, List<IssueInfo> issueInfos) {
 

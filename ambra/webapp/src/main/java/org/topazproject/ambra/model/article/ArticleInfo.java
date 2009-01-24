@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 import org.topazproject.ambra.model.UserProfileInfo;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Projection;

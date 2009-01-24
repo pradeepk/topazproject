@@ -165,8 +165,7 @@ public class PDPFactory {
    * @throws IOException when there is an error in accessing the resource from the web-app context
    * @throws FileNotFoundException when a configuration file could not be located
    */
-  public static File getPDPConfigFile()
-                               throws IOException {
+  public static File getPDPConfigFile() throws IOException {
     String name = System.getProperty(ConfigurationStore.PDP_CONFIG_PROPERTY);
 
     if (name == null)
@@ -204,14 +203,13 @@ public class PDPFactory {
 
     // No configuration. Find out why and throw appropriate exception.
     if (System.getProperty(ConfigurationStore.PDP_CONFIG_PROPERTY) != null)
-      throw new FileNotFoundException("Can not find a file or resource named '" + name
-                                      + "' specified for '"
-                                      + ConfigurationStore.PDP_CONFIG_PROPERTY
-                                      + "' in System property");
+      throw new FileNotFoundException("Can not find a file or resource named '" + name +
+                                      "' specified for '" + ConfigurationStore.PDP_CONFIG_PROPERTY +
+                                      "' in System property");
 
-    throw new FileNotFoundException(ConfigurationStore.PDP_CONFIG_PROPERTY
-                                    + " must be made available as a system property OR "
-                                    + DEFAULT_PDP_CONFIG + " must exist.");
+    throw new FileNotFoundException(ConfigurationStore.PDP_CONFIG_PROPERTY +
+                                    " must be made available as a system property OR " +
+                                    DEFAULT_PDP_CONFIG + " must exist.");
   }
 
   public static class TopazPDP extends PDP {

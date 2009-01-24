@@ -39,7 +39,6 @@ import com.sun.xacml.ctx.Subject;
  * @author Ronald Tschalär
  */
 public abstract class AbstractSimplePEP extends DenyBiasedPEP {
-
   /**
    * Resource URI that represents any resource.
    *
@@ -146,8 +145,8 @@ public abstract class AbstractSimplePEP extends DenyBiasedPEP {
     if (actionAttrs == null)
       throw new SecurityException("Unknown action '" + action + "' for PEP");
 
-    return evaluate(new RequestCtx(dummySubjAttrs, resourceAttrs, actionAttrs, envAttrs(getClass())),
-                    (Set) knownObligations(getClass()).get(action));
+    return evaluate(new RequestCtx(dummySubjAttrs, resourceAttrs, actionAttrs,
+                    envAttrs(getClass())), (Set) knownObligations(getClass()).get(action));
   }
 
   /** 

@@ -20,6 +20,7 @@
 package org.topazproject.ambra.admin.action;
 
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.rating.service.RatingsService;

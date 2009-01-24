@@ -34,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.configuration.Configuration;
 
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -486,11 +485,13 @@ public class ArticleOtmService {
     }
 
     final String oqlQuery =
-      "select a, count(n) c from Article a, Annotation n where n.annotates = a order by c desc limit " + maxArticles;
+      "select a, count(n) c from Article a, Annotation n where n.annotates = a order by c desc limit " +
+      maxArticles;
 
     Results commentedArticles = session.createQuery(oqlQuery).execute();
 
-    /* Check access control on all Article results logged in user is automatically resolved by the
+    /*
+     * Check access control on all Article results logged in user is automatically resolved by the
      * ServletActionContextAttribute
      */
     ArrayList<Article> returnArticles = new ArrayList<Article>();
@@ -510,7 +511,6 @@ public class ArticleOtmService {
 
     return returnArticles.toArray(new Article[returnArticles.size()]);
   }
-
 
   private SecondaryObject convert(final ObjectInfo objectInfo) {
     return new SecondaryObject(objectInfo, smallImageRep, mediumImageRep, largeImageRep);

@@ -25,8 +25,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.BrowseService;
@@ -74,7 +76,8 @@ public class BrowseIssueAction extends BaseActionSupport{
         if (currentIssueUri != null) {
           issue = currentIssueUri.toString();
         } else {
-          /* Current Issue has not been set for the Journal - It should have
+          /*
+           * Current Issue has not been set for the Journal - It should have
            * been configured via the admin console. Try to find the latest issue
            * from the latest volume. If no issue exists in the latest volume -
            * look at the previous volume and so on.
@@ -99,9 +102,6 @@ public class BrowseIssueAction extends BaseActionSupport{
 
     // if still no issue, report an error and return ERROR status
     if (issue == null || issue.length() == 0) {
-      // issueInfo = new IssueInfo(null,
-      //     "No current Issue is defined for this Journal", null, null, null,
-      //     null);
       log.error("No issue was specified for BrowseIssue action and no current issue could be derived.");
       return ERROR;
     }
@@ -121,16 +121,18 @@ public class BrowseIssueAction extends BaseActionSupport{
         issueDescription = articleXmlUtils.transformArticleDescriptionToHtml(issueInfo.getDescription());
       } catch (ApplicationException e) {
         log.error("Failed to translate issue description to HTML.", e);
-        issueDescription = issueInfo.getDescription(); // Just use the untranslated issue description
+        // Just use the untranslated issue description
+        issueDescription = issueInfo.getDescription();
       }
     } else {
       log.error("The currentIssue description was null. Issue DOI='"+issueInfo.getId()+"'");
       issueDescription = "No description found for this issue";
     }
 
-    // clear out the articleGroups and rebuild the list with one TOCArticleGroup
-    // for each ArticleType to be displayed in the order defined by
-    // ArticleType.getOrderedListForDisplay()
+    /* 
+     * Clear out the articleGroups and rebuild the list with one TOCArticleGroup for each
+     * ArticleType to be displayed in the order defined by ArticleType.getOrderedListForDisplay()
+     */
     articleGroups = new ArrayList<TOCArticleGroup>();
     TOCArticleGroup defaultArticleGroup = null;
     for (ArticleType at : ArticleType.getOrderedListForDisplay()) {
@@ -142,9 +144,10 @@ public class BrowseIssueAction extends BaseActionSupport{
     }
 
     List<ArticleInfo> articlesInIssue = browseService.getArticleInfosForIssue(issueInfo.getId());
-    // For every article that is of the same ArticleType as a
-    // TOCArticleGroup, add it to that group. Articles can appear in
-    // multiple TOCArticleGroups.
+    /*
+     * For every article that is of the same ArticleType as a TOCArticleGroup, add it to that group.
+     * Articles can appear in multiple TOCArticleGroups.
+     */
     for (ArticleInfo ai : articlesInIssue) {
       boolean articleAddedToAtLeastOneGroup = false;
       for (TOCArticleGroup ag : articleGroups) {
@@ -172,8 +175,10 @@ public class BrowseIssueAction extends BaseActionSupport{
       }
     }
 
-    // Remove all empty TOCArticleGroups (avoid ConcurrentModificationException by
-    // building a new ArrayList of non-empty article groups).
+    /*
+     * Remove all empty TOCArticleGroups (avoid ConcurrentModificationException by
+     * building a new ArrayList of non-empty article groups).
+     */
     int i = 1;
     ArrayList<TOCArticleGroup> newArticleGroups = new ArrayList<TOCArticleGroup>();
     for (TOCArticleGroup grp : articleGroups) {
@@ -189,7 +194,6 @@ public class BrowseIssueAction extends BaseActionSupport{
     return SUCCESS;
   }
 
-
   /**
    * Used by the view to retrieve the IssueInfo from the struts value stack.
    * @return the IssueInfo.
@@ -200,8 +204,10 @@ public class BrowseIssueAction extends BaseActionSupport{
 
   /**
    * Used by the view to retrieve an ordered list of TOCArticleGroup objects. Each TOCArticleGroup
-   * represents a collection of article types that are defined in defaults.xml.
-   * The groups are listed by the view in the order returned here with links to the articles in that group category.
+   * represents a collection of article types that are defined in defaults.xml.  The groups are
+   * listed by the view in the order returned here with links to the articles in that group
+   * category.
+   *
    * @return ordered list of TOCArticleGroup(s)
    */
   public ArrayList<TOCArticleGroup> getArticleGroups() {
@@ -245,7 +251,6 @@ public class BrowseIssueAction extends BaseActionSupport{
   public void setBrowseService(BrowseService browseService) {
     this.browseService = browseService;
   }
-
 
   public String getIssueDescription() {
     return issueDescription;

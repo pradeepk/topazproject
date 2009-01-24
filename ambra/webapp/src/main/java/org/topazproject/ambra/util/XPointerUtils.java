@@ -29,7 +29,6 @@ import java.net.URLEncoder;
  * @see http://www.w3.org/TR/xptr-xpointer
  */
 public abstract class XPointerUtils {
-
   /**
    * Creates a string-range xpointer fragment.
    * 
@@ -42,8 +41,9 @@ public abstract class XPointerUtils {
    * @see http://www.w3.org/TR/WD-xptr#stringrange
    */
   public static String createStringRangeFragment(String location, String string, int offset,
-      int length, int occurrenceOrdinal) {
-    return "string-range(" + location + ", '" + string + "', " + offset + ", " + length + ")[" + occurrenceOrdinal + "]";
+                                                 int length, int occurrenceOrdinal) {
+    return "string-range(" + location + ", '" + string + "', " + offset + ", " + length +
+           ")[" + occurrenceOrdinal + "]";
   }
 
   /**

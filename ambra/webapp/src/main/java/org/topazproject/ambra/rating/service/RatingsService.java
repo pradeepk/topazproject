@@ -24,8 +24,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
@@ -34,6 +36,7 @@ import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.RatingContent;
 import org.topazproject.ambra.models.RatingSummary;
 import org.topazproject.ambra.user.AmbraUser;
+
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
@@ -51,9 +54,10 @@ import com.sun.xacml.PDP;
 public class RatingsService {
   private static final Log     log = LogFactory.getLog(RatingsService.class);
   private static final String AVG_RATINGS_KEY = "Avg-Ratings-";
+
   private Session              session;
   private RatingsPEP           pep;
-  private Cache articleAnnotationCache;
+  private Cache                articleAnnotationCache;
   private Invalidator          invalidator;
   private String               applicationId;
 
@@ -73,8 +77,7 @@ public class RatingsService {
    */
   @SuppressWarnings("unchecked")
   @Transactional(rollbackFor = { Throwable.class })
-  public void deleteRating(final String ratingId)
-                         throws ApplicationException {
+  public void deleteRating(final String ratingId) throws ApplicationException {
     pep.checkAccess(RatingsPEP.DELETE_RATINGS, URI.create(ratingId));
 
     final Rating articleRating = session.get(Rating.class, ratingId);
@@ -83,17 +86,16 @@ public class RatingsService {
     }
 
     final URI articleURI = articleRating.getAnnotates();
-    final List<RatingSummary> summaryList = session
-      .createCriteria(RatingSummary.class)
-      .add(Restrictions.eq("annotates",articleURI.toString()))
-      .list();
+    final List<RatingSummary> summaryList = session.createCriteria(RatingSummary.class).
+      add(Restrictions.eq("annotates",articleURI.toString())).list();
 
     if (summaryList.size() <= 0) {
-      throw new ApplicationException("No RatingSummary object found for article " + articleURI.toString());
+      throw new ApplicationException("No RatingSummary object found for article " +
+                                     articleURI.toString());
     }
     if (summaryList.size() > 1) {
       throw new ApplicationException("Multiple RatingSummary objects found found " +
-                                  "for article " + articleURI.toString());
+                                     "for article " + articleURI.toString());
     }
 
     final RatingSummary articleRatingSummary = summaryList.get(0);
@@ -110,7 +112,7 @@ public class RatingsService {
     removeRating(articleRatingSummary, Rating.SINGLE_RATING_TYPE, single);
 
     articleAnnotationCache.put(AVG_RATINGS_KEY + articleURI,
-        new AverageRatings(articleRatingSummary));
+                               new AverageRatings(articleRatingSummary));
     session.delete(articleRating);
   }
 
@@ -132,8 +134,10 @@ public class RatingsService {
   public Rating getRating(final String ratingId, AmbraUser user) {
     Rating rating = session.get(Rating.class, ratingId);
 
-    // the PEP check is against what is rated,
-    // e.g. can this user see the ratings for what is rated?
+    /*
+     * the PEP check is against what is rated,
+     * e.g. can this user see the ratings for what is rated?
+     */
     pep.checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()),
                           rating.getAnnotates());
 
@@ -177,11 +181,11 @@ public class RatingsService {
               public AverageRatings lookup() throws OtmException {
                 if (log.isDebugEnabled())
                   log.debug("retrieving rating summaries for: " + articleURI);
-                List<RatingSummary> summaryList = session
-                                    .createCriteria(RatingSummary.class)
-                                    .add(Restrictions.eq("annotates", articleURI))
-                                    .list();
-                return (summaryList.size() > 0) ? new AverageRatings(summaryList.get(0)) : new AverageRatings();
+                List<RatingSummary> summaryList = session.createCriteria(RatingSummary.class).
+                                                  add(Restrictions.eq("annotates", articleURI)).
+                                                  list();
+                return (summaryList.size() > 0) ? new AverageRatings(summaryList.get(0)) :
+                                                  new AverageRatings();
               }
             });
   }
@@ -194,13 +198,13 @@ public class RatingsService {
       return false;
 
     if (log.isDebugEnabled()) {
-      log.debug("retrieving list of user ratings for article: " + articleURI + " and user: "
-        + user.getUserId());
+      log.debug("retrieving list of user ratings for article: " + articleURI + " and user: " +
+                user.getUserId());
     }
 
-    List<Rating> ratingsList =
-      session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
-        .add(Restrictions.eq("creator", user.getUserId())).list();
+    List<Rating> ratingsList = session.createCriteria(Rating.class).
+                                 add(Restrictions.eq("annotates", articleURI)).
+                                 add(Restrictions.eq("creator", user.getUserId())).list();
 
     return ratingsList.size() > 0;
   }
@@ -247,6 +251,7 @@ public class RatingsService {
 
   public static class Average implements Serializable {
     private static final long serialVersionUID = -2890067268188424471L;
+
     public final double total;
     public final int    count;
     public final double average;
@@ -261,20 +266,21 @@ public class RatingsService {
 
     @Override
     public String toString() {
-      return "total = " + total + ", count = " + count + ", average = " + average
-        + ", rounded = " + rounded;
+      return "total = " + total + ", count = " + count + ", average = " + average +
+             ", rounded = " + rounded;
     }
   }
 
   public static class AverageRatings implements Serializable {
     private static final long serialVersionUID = -1666766336307635633L;
+
     public final Average style;
     public final Average insight;
     public final Average reliability;
     public final Average single;
-    public final int numUsersThatRated;
-    public final double overall;
-    public final double roundedOverall;
+    public final int     numUsersThatRated;
+    public final double  overall;
+    public final double  roundedOverall;
 
     AverageRatings() {
       style = new Average(0, 0);
@@ -303,9 +309,13 @@ public class RatingsService {
 
     @Override
     public String toString() {
-      return "style = [" + style + "], insight = [" + insight + "], reliability = [" + reliability
-        + "], single = [" + single + "], numUsersThatRated = " + numUsersThatRated + ", overall = "
-        + overall + ", roundedOverall = " + roundedOverall;
+      return "style = [" + style + "], " +
+             "insight = [" + insight + "], " +
+             "reliability = [" + reliability + "], " +
+             "single = [" + single + "], " +
+             "numUsersThatRated = " + numUsersThatRated +
+             ", overall = " + overall +
+             ", roundedOverall = " + roundedOverall;
     }
   }
 
@@ -332,5 +342,4 @@ public class RatingsService {
       }
     }
   }
-
 }

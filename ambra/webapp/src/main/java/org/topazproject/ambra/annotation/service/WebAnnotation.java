@@ -109,7 +109,8 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
    * @param creatorName the display name of the creator (must be non-null if the view requires it)
    * @param originalBodyContent body as text (must be non-null if the view requires it)
    */
-  public WebAnnotation(ArticleAnnotation annotation, String creatorName, String originalBodyContent) {
+  public WebAnnotation(ArticleAnnotation annotation, String creatorName,
+                       String originalBodyContent) {
     super(annotation, creatorName, originalBodyContent);
   }
 

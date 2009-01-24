@@ -26,8 +26,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.DublinCore;
 import org.topazproject.ambra.models.Issue;
@@ -94,7 +96,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
       return null;
     }
 
-
     // get Volumes for this Journal
     volumes.clear();
     for (final URI volumeDoi : journal.getVolumes()) {
@@ -129,8 +130,8 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
       }
     }
     if (log.isDebugEnabled()) {
-      log.debug(volumes.size() + " Volume(s), " + issues.size() + " Issue(s) for Journal "
-              + journal.geteIssn());
+      log.debug(volumes.size() + " Volume(s), " + issues.size() + " Issue(s) for Journal " +
+                journal.geteIssn());
     }
 
     // default action is just to display the template
@@ -455,5 +456,4 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   public void setJournalService(JournalService journalService) {
     this.journalService = journalService;
   }
-
 }

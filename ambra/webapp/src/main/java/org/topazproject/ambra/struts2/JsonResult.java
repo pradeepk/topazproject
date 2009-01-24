@@ -34,18 +34,18 @@ import org.apache.struts2.StrutsStatics;
  */
 public class JsonResult extends JSONResult {
   private boolean noCache;
-  
+
   /**
    * 
    */
   public JsonResult() {
     super();
   }
-  
+
   public void execute(ActionInvocation invocation) throws Exception {
     ActionContext actionContext = invocation.getInvocationContext();
     HttpServletResponse response = (HttpServletResponse) actionContext
-        .get(StrutsStatics.HTTP_RESPONSE);
+      .get(StrutsStatics.HTTP_RESPONSE);
 
     if (noCache) {
       // HTTP 1.1 browsers should defeat caching on this header
@@ -64,5 +64,4 @@ public class JsonResult extends JSONResult {
   public void setNoCache(boolean noCache) {
     this.noCache = noCache;
   }
-
 }

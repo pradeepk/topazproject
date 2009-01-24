@@ -124,7 +124,5 @@ public interface Constants {
       allTitles.put("Other", "Other");
       return allTitles;
     }
-
-
   }
 }

@@ -20,6 +20,7 @@ package org.topazproject.ambra.user;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+
 import org.apache.struts2.ServletActionContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,11 +31,12 @@ import static org.topazproject.ambra.Constants.SINGLE_SIGNON_EMAIL_KEY;
 import static org.topazproject.ambra.Constants.SINGLE_SIGNON_RECEIPT;
 import static org.topazproject.ambra.Constants.SINGLE_SIGNON_USER_KEY;
 
-import org.springframework.util.StringUtils;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.user.service.DisplayNameAlreadyExistsException;
 import org.topazproject.ambra.user.service.UserService;
 import org.topazproject.ambra.util.FileUtils;
+
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -77,7 +79,7 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
       }
 
       if (null == ambraUser) {
-        //forward to new profile creation page
+        // forward to new profile creation page
         if (log.isDebugEnabled())
           log.debug("This is a new user with id: " + userId);
         return ReturnCode.NEW_PROFILE;
@@ -91,9 +93,11 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
     }
   }
 
-  private String getReturnCodeDependingOnDisplayName(final AmbraUser ambraUser, final ActionInvocation actionInvocation) throws Exception {
+  private String getReturnCodeDependingOnDisplayName(final AmbraUser ambraUser,
+                                                     final ActionInvocation actionInvocation)
+    throws Exception {
     if (StringUtils.hasText(ambraUser.getDisplayName())) {
-      //forward the user to the page he was initially going to
+      // forward the user to the page he was initially going to
       return actionInvocation.invoke();
     } else {
       // profile has partial details as the user might have been ported from old application
@@ -105,7 +109,8 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
     this.userService = userService;
   }
 
-  private void updateUserEmailAddress(AmbraUser user, String authId, String presetEmail) throws ApplicationException {
+  private void updateUserEmailAddress(AmbraUser user, String authId, String presetEmail)
+    throws ApplicationException {
     String emailAddress = fetchUserEmailAddress(authId, presetEmail);
     if (emailAddress != null) {
       if (!emailAddress.equals(user.getEmail())) {
@@ -127,7 +132,8 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
     }
   }
 
-  private String fetchUserEmailAddress(String authId, String presetEmail) throws ApplicationException {
+  private String fetchUserEmailAddress(String authId, String presetEmail)
+    throws ApplicationException {
     if (presetEmail != null)
       return presetEmail;
 

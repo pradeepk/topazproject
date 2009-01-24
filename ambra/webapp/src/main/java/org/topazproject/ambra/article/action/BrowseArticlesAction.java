@@ -30,8 +30,10 @@ import java.util.SortedMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.BrowseService;
 import org.topazproject.ambra.model.article.ArticleInfo;
@@ -43,7 +45,6 @@ import org.topazproject.ambra.model.article.Years;
  */
 @SuppressWarnings("serial")
 public class BrowseArticlesAction extends BaseActionSupport {
-
   private static final Log log  = LogFactory.getLog(BrowseArticlesAction.class);
   private static final String FEED_BASE_PATH = "ambra.services.feed.basePath";
   private static final String FEED_CATEGORY_PREFIX = "ambra.services.feed.categoryPrefix";
@@ -166,7 +167,6 @@ public class BrowseArticlesAction extends BaseActionSupport {
 
     return SUCCESS;
   }
-
 
   /**
    * @return Returns the field.
@@ -301,7 +301,6 @@ public class BrowseArticlesAction extends BaseActionSupport {
     return totalArticles;
   }
 
-
   /**
    * @param browseService The browseService to set.
    */
@@ -340,5 +339,4 @@ public class BrowseArticlesAction extends BaseActionSupport {
   public void setEndDateParam(String endDateParam) {
     this.endDateParam = endDateParam;
   }
-
 }

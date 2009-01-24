@@ -24,13 +24,13 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.SecondaryObject;
 import org.topazproject.ambra.util.ArticleXMLUtils;
-
-
 
 /**
  * Fetch the secondary objects for a given uri

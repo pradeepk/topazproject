@@ -25,8 +25,10 @@ import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.Commentary;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
@@ -85,7 +87,8 @@ public class GetCommentaryAction extends BaseActionSupport {
   private String list(Set<Class<? extends ArticleAnnotation>> set) {
     try {
       article = articleOtmService.getArticle(URI.create(target));
-      WebAnnotation[] annotations = converter.convert(annotationService.listAnnotations(target, set), true, false);
+      WebAnnotation[] annotations =
+        converter.convert(annotationService.listAnnotations(target, set), true, false);
       commentary = new Commentary[annotations.length];
       Commentary com = null;
       if (annotations.length > 0) {
@@ -93,9 +96,11 @@ public class GetCommentaryAction extends BaseActionSupport {
           com = new Commentary();
           com.setAnnotation(annotations[i]);
           try {
-            converter.convert(replyService.listAllReplies(annotations[i].getId(), annotations[i].getId()), com, false, false);
+            converter.convert(replyService.listAllReplies(annotations[i].getId(),
+                                                          annotations[i].getId()), com, false,
+                                                           false);
           } catch (SecurityException t) {
-              // don't error if you can't list the replies
+            // don't error if you can't list the replies
             com.setNumReplies(0);
             com.setReplies(null);
           }
@@ -176,5 +181,4 @@ public class GetCommentaryAction extends BaseActionSupport {
   public void setAnnotationService(final AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
-
 }

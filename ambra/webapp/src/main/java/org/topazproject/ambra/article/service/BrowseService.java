@@ -30,8 +30,10 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.journal.JournalService;
@@ -43,6 +45,7 @@ import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Issue;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.models.Volume;
+
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Interceptor.Updates;
@@ -277,12 +280,8 @@ public class BrowseService {
     URI nextIssueURI = null;
     Volume parentVolume = null;
 
-    // String oqlQuery = "select v from Volume v where v.issueList = <" + issueDOI + "> ;";
-    // Results results = session.createQuery(oqlQuery).execute();
-
     Results results = session.createQuery("select v from Volume v where v.issueList = :doi ;")
                              .setParameter("doi", issueDOI).execute();
-
     results.beforeFirst();
     if (results.next()) {
       parentVolume = (Volume)results.get("v");
@@ -297,8 +296,9 @@ public class BrowseService {
       log.warn("Issue: " + issue.getId() + ", not contained in any Volumes");
     }
 
-    IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssueURI, nextIssueURI,
-                                        imageArticle, description, parentVolume == null ? null : parentVolume.getId());
+    IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssueURI,
+                                        nextIssueURI, imageArticle, description,
+                                        parentVolume == null ? null : parentVolume.getId());
     issueInfo.setArticleUriList(issue.getSimpleCollection());
     return issueInfo;
   }
@@ -343,7 +343,10 @@ public class BrowseService {
       }
     }
 
-    // If we have no luck with the cached journal list, attempt to load the volume re-using loadVolumeInfos();
+    /*
+     * If we have no luck with the cached journal list, attempt to load the volume re-using
+     * loadVolumeInfos();
+     */
     List<URI> l = new ArrayList<URI>();
     l.add(id);
     List<VolumeInfo> vols = loadVolumeInfos(l);
@@ -660,9 +663,8 @@ public class BrowseService {
         notifyArticlesChanged(new String[]{id});
       } else if (o instanceof Journal) {
         String key = ((Journal)o).getKey();
-        if ((updates == null)
-                 || updates.isChanged("smartCollectionRules")
-                 || updates.isChanged("simpleCollection")) {
+        if ((updates == null) || updates.isChanged("smartCollectionRules") ||
+            updates.isChanged("simpleCollection")) {
           if (log.isDebugEnabled())
             log.debug("Updating browsecache for the journal that was modified.");
           notifyJournalModified(key);

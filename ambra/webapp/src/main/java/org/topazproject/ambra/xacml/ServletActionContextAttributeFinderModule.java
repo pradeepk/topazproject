@@ -53,7 +53,6 @@ public class ServletActionContextAttributeFinderModule extends AttributeFinderMo
   public static final URI SUBJECT_CATEGORY_DEFAULT_URI =
     URI.create(AttributeDesignator.SUBJECT_CATEGORY_DEFAULT);
 
-  // STandard subject-id from spec
   /**
    * Standard subject-id from the spec
    */
@@ -106,8 +105,10 @@ public class ServletActionContextAttributeFinderModule extends AttributeFinderMo
         // Now resolve a value for the id.
         value = resolvers[i].resolve(type, id);
       } catch (Exception e) {
-        // Abort the policy evaluation. For a deny-biased PEP, this will result in an
-        // access-denied.
+        /*
+         * Abort the policy evaluation. For a deny-biased PEP, this will result in an
+         * access-denied.
+         */
         return Util.processingError(e.getMessage(), type, id);
       }
 

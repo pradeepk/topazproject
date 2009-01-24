@@ -19,6 +19,7 @@
 package org.topazproject.ambra.user.action;
 
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.ApplicationException;
 
 import org.apache.commons.logging.Log;
@@ -28,13 +29,13 @@ import org.apache.commons.logging.LogFactory;
  * Search a user based on a criteria
  */
 public class SearchUserAction extends UserActionSupport {
+  private static final Log log = LogFactory.getLog(SearchUserAction.class);
+
   private String authId;
   private String accountId;
   private String emailAddress;
   private String name;
   private String[] topazUserIdList;
-
-  private static final Log log = LogFactory.getLog(SearchUserAction.class);
 
   /**
    * Find user with a given auth id
@@ -131,7 +132,6 @@ public class SearchUserAction extends UserActionSupport {
 
     return SUCCESS;
   }
-
 
   /**
    * Getter for authId.

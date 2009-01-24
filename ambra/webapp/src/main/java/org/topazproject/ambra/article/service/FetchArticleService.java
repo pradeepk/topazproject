@@ -36,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.Required;
 
-
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.Annotator;
 import org.topazproject.ambra.annotation.service.AnnotationService;

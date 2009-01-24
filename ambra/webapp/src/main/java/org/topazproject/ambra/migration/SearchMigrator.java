@@ -28,7 +28,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
+
 import org.topazproject.ambra.cache.OtmInterceptor;
 import org.topazproject.ambra.models.Ambra;
 import org.topazproject.ambra.models.AnnotationBlob;
@@ -40,6 +42,7 @@ import org.topazproject.ambra.models.Comment;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.models.ReplyBlob;
 import org.topazproject.ambra.models.TextRepresentation;
+
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.EntityMode;
@@ -170,7 +173,8 @@ public class SearchMigrator implements Runnable {
     sf.preload(SearchMarker.class);
     sf.validate();
 
-    int count = TransactionHelper.doInTx(sf, false, txnTimeout, new TransactionHelper.Action<Integer>() {
+    int count = TransactionHelper.doInTx(sf, false, txnTimeout,
+                                         new TransactionHelper.Action<Integer>() {
       public Integer run(Transaction tx) {
         return setup(tx.getSession());
       }
@@ -387,7 +391,6 @@ public class SearchMigrator implements Runnable {
     return q.toString();
   }
 
-
   private void buildWhere(StringBuilder qs, ClassMetadata cm) {
     String s = "$s";
     URI g;
@@ -439,7 +442,7 @@ public class SearchMigrator implements Runnable {
     if (m == null)
       return null;
 
-//    return SearchableDefinition.findForProp(sf, m.getDefinition().getName());
+    // return SearchableDefinition.findForProp(sf, m.getDefinition().getName());
     return SearchableDefinition.findForProp(sf, cm.getName() + ":" + m.getName());
   }
 

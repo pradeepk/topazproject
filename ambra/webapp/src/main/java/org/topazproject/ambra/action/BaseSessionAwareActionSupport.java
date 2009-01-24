@@ -20,7 +20,9 @@
 package org.topazproject.ambra.action;
 
 import org.apache.struts2.interceptor.SessionAware;
+
 import static org.topazproject.ambra.Constants.AMBRA_USER_KEY;
+
 import org.topazproject.ambra.user.AmbraUser;
 
 import java.util.Map;
@@ -32,7 +34,6 @@ import java.util.Map;
  */
 
 public class BaseSessionAwareActionSupport extends BaseActionSupport implements SessionAware {
-
   protected Map session;
 
   public void setSession(Map map) {
@@ -47,5 +48,4 @@ public class BaseSessionAwareActionSupport extends BaseActionSupport implements 
   protected AmbraUser getCurrentUser() {
     return (AmbraUser) session.get(AMBRA_USER_KEY);
   }
-
 }

@@ -31,7 +31,9 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.service.UserAlert;
 
@@ -40,7 +42,6 @@ import org.topazproject.ambra.user.service.UserAlert;
  */
 @SuppressWarnings("serial")
 public abstract class UserAlertsAction extends UserActionSupport {
-
   private static final Log log = LogFactory.getLog(UserAlertsAction.class);
 
   private String displayName;
@@ -60,19 +61,19 @@ public abstract class UserAlertsAction extends UserActionSupport {
    *
    * <pre>
    * &lt;userAlerts&gt;
-   *         &lt;categories&gt;
-   *           &lt;category key=&quot;biology&quot;&gt;PLoS Biology&lt;/category&gt;
-   *           &lt;category key=&quot;computational_biology&quot;&gt;PLoS Computational Biology&lt;/category&gt;
-   *           &lt;category key=&quot;clinical_trials&quot;&gt;PLoS Hub for Clinical Trials&lt;/category&gt;
-   *           &lt;category key=&quot;genetics&quot;&gt;PLoS Genetics&lt;/category&gt;
-   *           &lt;category key=&quot;medicine&quot;&gt;PLoS Medicine&lt;/category&gt;
-   *           &lt;category key=&quot;pathogens&quot;&gt;PLoS Pathogens&lt;/category&gt;
-   *           &lt;category key=&quot;plosntds&quot;&gt;PLoS Neglected Tropical Diseases&lt;/category&gt;
-   *           &lt;category key=&quot;plosone&quot;&gt;PLoS ONE&lt;/category&gt;
-   *         &lt;/categories&gt;
-   *         &lt;monthly&gt;biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds&lt;/monthly&gt;
-   *         &lt;weekly&gt;biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds, plosone&lt;/weekly&gt;
-   *       &lt;/userAlerts&gt;
+   *   &lt;categories&gt;
+   *     &lt;category key=&quot;biology&quot;&gt;PLoS Biology&lt;/category&gt;
+   *     &lt;category key=&quot;computational_biology&quot;&gt;PLoS Computational Biology&lt;/category&gt;
+   *     &lt;category key=&quot;clinical_trials&quot;&gt;PLoS Hub for Clinical Trials&lt;/category&gt;
+   *     &lt;category key=&quot;genetics&quot;&gt;PLoS Genetics&lt;/category&gt;
+   *     &lt;category key=&quot;medicine&quot;&gt;PLoS Medicine&lt;/category&gt;
+   *     &lt;category key=&quot;pathogens&quot;&gt;PLoS Pathogens&lt;/category&gt;
+   *     &lt;category key=&quot;plosntds&quot;&gt;PLoS Neglected Tropical Diseases&lt;/category&gt;
+   *     &lt;category key=&quot;plosone&quot;&gt;PLoS ONE&lt;/category&gt;
+   *     &lt;/categories&gt;
+   *     &lt;monthly&gt;biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds&lt;/monthly&gt;
+   *     &lt;weekly&gt;biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds, plosone&lt;/weekly&gt;
+   * &lt;/userAlerts&gt;
    * </pre>
    * @return All available user alerts
    */
@@ -83,8 +84,7 @@ public abstract class UserAlertsAction extends UserActionSupport {
     final Map<String, String> categoryNames = new HashMap<String, String>();
 
     HierarchicalConfiguration hc = (HierarchicalConfiguration) configuration;
-    List<HierarchicalConfiguration> categories = hc
-        .configurationsAt(ALERTS_CATEGORIES_CATEGORY);
+    List<HierarchicalConfiguration> categories = hc.configurationsAt(ALERTS_CATEGORIES_CATEGORY);
     for (HierarchicalConfiguration c : categories) {
       String key = c.getString("[@key]");
       String value = c.getString("");
@@ -106,8 +106,7 @@ public abstract class UserAlertsAction extends UserActionSupport {
       if (ArrayUtils.contains(monthlyCategories, key)) {
         monthlyCategoryKey = true;
       }
-      alerts
-          .add(new UserAlert(key, category.getValue(), weeklyCategoryKey, monthlyCategoryKey));
+      alerts.add(new UserAlert(key, category.getValue(), weeklyCategoryKey, monthlyCategoryKey));
     }
     return alerts;
   }

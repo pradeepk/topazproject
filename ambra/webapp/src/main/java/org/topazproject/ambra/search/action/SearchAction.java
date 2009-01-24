@@ -33,12 +33,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.article.service.BrowseService;
 import org.topazproject.ambra.search.SearchResultPage;
 import org.topazproject.ambra.search.service.SearchHit;
 import org.topazproject.ambra.search.service.SearchService;
-
 
 /**
  * Search Action class to search for simple or advanced search.
@@ -60,9 +60,10 @@ public class SearchAction extends BaseSessionAwareActionSupport {
 
   private Collection<SearchHit> searchResults;
   private int                   totalNoOfResults;
-  private Map<String, Integer>  categoryInfos = new HashMap<String, Integer>(); // empty map for non-null safety
+  // empty map for non-null safety
+  private Map<String, Integer>  categoryInfos = new HashMap<String, Integer>();
 
-  /**
+  /*
    * Flag telling this action whether or not the search should be executed.
    */
   private String   noSearchFlag;
@@ -119,7 +120,8 @@ public class SearchAction extends BaseSessionAwareActionSupport {
       if (pageSize == 0)
         pageSize = configuration.getInt(SEARCH_PAGE_SIZE, 10);
 
-      SearchResultPage results = searchService.find(queryString, startPage, pageSize, getCurrentUser());
+      SearchResultPage results = searchService.find(queryString, startPage, pageSize,
+                                                    getCurrentUser());
       totalNoOfResults = results.getTotalNoOfResults();
       searchResults    = results.getHits();
 
@@ -147,9 +149,7 @@ public class SearchAction extends BaseSessionAwareActionSupport {
       for (int i=0; i<creator.length; i++) {
         String creatorName = creator[i];
         if (StringUtils.isNotBlank(creatorName)) {
-          buf.append("\"");
-          buf.append(escape(creatorName));
-          buf.append("\"");
+          buf.append("\"").append(escape(creatorName)).append("\"");
         }
         if ((i < creator.length-1) && (StringUtils.isNotBlank(creator[i+1]))) {
           if (allAuthors) {
@@ -164,7 +164,6 @@ public class SearchAction extends BaseSessionAwareActionSupport {
     }
 
     // Build Search Article Text section of advanced search.
-
     String textSearchField = null;
     if (StringUtils.isNotBlank(textSearchOption)) {
       if ("abstract".equals(textSearchOption)) {
@@ -201,9 +200,7 @@ public class SearchAction extends BaseSessionAwareActionSupport {
       if (textSearchField != null) {
         buf.append(textSearchField);
       }
-      buf.append("(\"");
-      buf.append(escape(textSearchExactPhrase));
-      buf.append("\")");
+      buf.append("(\"").append(escape(textSearchExactPhrase)).append("\")");
       fields.add(buf.toString());
     }
 
@@ -213,17 +210,19 @@ public class SearchAction extends BaseSessionAwareActionSupport {
       if (textSearchField != null) {
         buf.append(textSearchField);
       }
-      buf.append("( ");
-      buf.append(escape(textSearchAtLeastOne));
-      buf.append(" )");
+      buf.append("( ").append(escape(textSearchAtLeastOne)).append(" )");
       fields.add(buf.toString());
     }
 
-    // Without the words - in parenthesis with NOT operator and AND'ed together
-    // E.g. (-"the" AND -"fat" AND -"cat")
+    /*
+     * Without the words - in parenthesis with NOT operator and AND'ed together
+     * E.g. (-"the" AND -"fat" AND -"cat")
+     */
     if (StringUtils.isNotBlank(textSearchWithout)) {
-      // TODO - we might want to allow the entry of phrases to omit (entered using quotes?)
-      // - in which case we have to be smarter about how we split...
+      /*
+       * TODO - we might want to allow the entry of phrases to omit (entered using quotes?)
+       *      - in which case we have to be smarter about how we split...
+       */
       String[] words = StringUtils.split(textSearchWithout);
       StringBuilder buf = new StringBuilder();
       if (textSearchField != null) {
@@ -231,9 +230,7 @@ public class SearchAction extends BaseSessionAwareActionSupport {
       }
       buf.append("( ");
       for (int i=0; i<words.length; i++) {
-        buf.append("-\"");
-        buf.append(escape(words[i]));
-        buf.append("\"");
+        buf.append("-\"").append(escape(words[i])).append("\"");
         if (i < words.length-1) {
           buf.append(" AND ");
         }
@@ -247,9 +244,12 @@ public class SearchAction extends BaseSessionAwareActionSupport {
         if (isDigit(startYear)&& isDigit(startMonth) && isDigit(startDay) &&
             isDigit(endYear) && isDigit(endMonth) && isDigit(endDay)) {
           StringBuilder buf = new StringBuilder("date:[");
-          buf.append(padDatePart(startYear, true)).append('-').append(padDatePart(startMonth, false)).append('-').append(padDatePart(startDay, false));
+          buf.append(padDatePart(startYear, true)).append('-').
+              append(padDatePart(startMonth, false)).append('-').
+              append(padDatePart(startDay, false));
           buf.append(" TO ");
-          buf.append(padDatePart(endYear, true)).append('-').append(padDatePart(endMonth, false)).append('-').append(padDatePart(endDay, false));
+          buf.append(padDatePart(endYear, true)).append('-').append(padDatePart(endMonth, false)).
+              append('-').append(padDatePart(endDay, false));
           buf.append("]");
           fields.add(buf.toString());
         }
@@ -290,7 +290,7 @@ public class SearchAction extends BaseSessionAwareActionSupport {
 
     String advSearchQueryStr = StringUtils.join(fields.iterator(), " AND ");
     if (log.isDebugEnabled()) {
-      log.debug("Generated advanced search query: "+advSearchQueryStr);
+      log.debug("Generated advanced search query: " + advSearchQueryStr);
     }
     return StringUtils.join(fields.iterator(), " AND ");
   }
@@ -375,7 +375,6 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   public Collection<SearchHit> getSearchResults() {
     return searchResults;
   }
-
 
   /**
    * Getter for property 'pageSize'.

@@ -28,10 +28,10 @@ import org.topazproject.ambra.util.TextUtils;
 /**
  * Article ratings &amp; comments by user.
  *
- * Data structures used by display &amp; browse for the ratings &amp; comments for an Article by user.
+ * Data structures used by display &amp; browse for the ratings &amp; comments for an Article by
+ * user.
  */
 public class ArticleRatingSummary {
-
   private URI    ratingId;
   private String articleURI;
   private String articleTitle;
@@ -47,13 +47,11 @@ public class ArticleRatingSummary {
   private String commentValue;
 
   public ArticleRatingSummary(String articleURI, String articleTitle) {
-
     this.articleURI = articleURI;
     this.articleTitle = articleTitle;
   }
 
   public void setRating(Rating rating) {
-
     this.ratingId    = rating.getId();
     this.insight     = rating.getBody().getInsightValue();
     this.style       = rating.getBody().getStyleValue();
@@ -109,8 +107,8 @@ public class ArticleRatingSummary {
   public void setCreatorName(String creatorName) {
     this.creatorName = creatorName;
   }
-  public String getCreatorName() {
 
+  public String getCreatorName() {
     return creatorName;
   }
 
@@ -124,6 +122,7 @@ public class ArticleRatingSummary {
   public void setInsight(int insight) {
     this.insight = insight;
   }
+
   public int getInsight() {
     return insight;
   }
@@ -142,6 +141,7 @@ public class ArticleRatingSummary {
   public void setSingleRating(int singleRating) {
     this.singleRating = singleRating;
   }
+
   public int getSingleRating() {
     return singleRating;
   }
@@ -171,7 +171,6 @@ public class ArticleRatingSummary {
    * @param value Comment value.
    */
   public void setCommentValue(String value) {
-
     // protect against markup
     this.commentValue = TextUtils.escapeHtml(value);
   }

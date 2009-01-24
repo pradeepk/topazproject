@@ -20,9 +20,11 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 
@@ -33,10 +35,10 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  */
 @SuppressWarnings("serial")
 public class DeleteAnnotationAction extends BaseActionSupport {
+  private static final Log log = LogFactory.getLog(DeleteAnnotationAction.class);
+
   private String annotationId;
   protected AnnotationService annotationService;
-
-  private static final Log log = LogFactory.getLog(DeleteAnnotationAction.class);
 
   /**
    * Delete public annotation.

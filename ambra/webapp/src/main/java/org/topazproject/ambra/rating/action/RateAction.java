@@ -25,9 +25,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.RatingContent;
 import org.topazproject.ambra.models.RatingSummary;
@@ -35,10 +37,12 @@ import org.topazproject.ambra.models.RatingSummaryContent;
 import org.topazproject.ambra.rating.service.RatingsPEP;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.util.ProfanityCheckingService;
+
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+
 import com.sun.xacml.PDP;
 
 /**
@@ -50,16 +54,16 @@ import com.sun.xacml.PDP;
 public class RateAction extends AbstractRatingAction {
   private static final Log log = LogFactory.getLog(RateAction.class);
 
-  private double           insight;
-  private double           reliability;
-  private double           style;
-  private double           singleRating;
-  private String           articleURI;
-  private boolean          isResearchArticle;
-  private String           commentTitle;
-  private String           comment;
-  private Session          session;
-  private RatingsPEP       pep;
+  private double                   insight;
+  private double                   reliability;
+  private double                   style;
+  private double                   singleRating;
+  private String                   articleURI;
+  private boolean                  isResearchArticle;
+  private String                   commentTitle;
+  private String                   comment;
+  private Session                  session;
+  private RatingsPEP               pep;
   private ProfanityCheckingService profanityCheckingService;
 
   private RatingsPEP getPEP() {
@@ -101,7 +105,8 @@ public class RateAction extends AbstractRatingAction {
       return ERROR;
     }
 
-    getPEP().checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
+    getPEP().checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()),
+                               annotatedArticle);
 
     try {
       isResearchArticle = isResearchArticle(articleURI);
@@ -142,16 +147,14 @@ public class RateAction extends AbstractRatingAction {
     boolean       newRating = false;
 
     if (log.isDebugEnabled()) {
-      log.debug("Retrieving user Ratings for article: " + articleURI + " and user: "
-              + user.getUserId());
+      log.debug("Retrieving user Ratings for article: " + articleURI + " and user: " +
+                user.getUserId());
     }
 
     // Ratings by this User for Article
-    List<Rating> ratingsList = session
-      .createCriteria(Rating.class)
-      .add(Restrictions.eq("annotates", articleURI))
-      .add(Restrictions.eq("creator", user.getUserId()))
-      .list();
+    List<Rating> ratingsList = session.createCriteria(Rating.class).
+                                       add(Restrictions.eq("annotates", articleURI)).
+                                       add(Restrictions.eq("creator", user.getUserId())).list();
     if (ratingsList.size() == 0) {
       newRating = true;
       articleRating = new Rating();
@@ -166,17 +169,15 @@ public class RateAction extends AbstractRatingAction {
       articleRating = ratingsList.get(0);
     } else {
       // should never happen
-      String errorMessage = "Multiple Ratings, " + ratingsList.size() + ", for Article, "
-        + articleURI + ", for user, " + user.getUserId();
+      String errorMessage = "Multiple Ratings, " + ratingsList.size() + ", for Article, " +
+                            articleURI + ", for user, " + user.getUserId();
       log.error(errorMessage);
       throw new RuntimeException(errorMessage);
     }
 
     // RatingsSummary for Article
-    List<RatingSummary> summaryList = session
-      .createCriteria(RatingSummary.class)
-      .add(Restrictions.eq("annotates", articleURI))
-      .list();
+    List<RatingSummary> summaryList = session.createCriteria(RatingSummary.class).
+                                              add(Restrictions.eq("annotates", articleURI)).list();
     if (summaryList.size() == 0) {
       articleRatingSummary = new RatingSummary();
       articleRatingSummary.setAnnotates(annotatedArticle);
@@ -189,8 +190,8 @@ public class RateAction extends AbstractRatingAction {
       articleRatingSummary = summaryList.get(0);
     } else {
       // should never happen
-      String errorMessage = "Multiple RatingsSummary, " + summaryList.size() + ", for Article "
-        + articleURI;
+      String errorMessage = "Multiple RatingsSummary, " + summaryList.size() + ", for Article " +
+                            articleURI;
       log.error(errorMessage);
       throw new RuntimeException(errorMessage);
     }
@@ -286,11 +287,11 @@ public class RateAction extends AbstractRatingAction {
     }
 
     getPEP().checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()),
-        URI.create(articleURI));
+                               URI.create(articleURI));
 
-    List<Rating> ratingsList = session.createCriteria(Rating.class)
-      .add(Restrictions.eq("annotates", articleURI))
-      .add(Restrictions.eq("creator", user.getUserId())).list();
+    List<Rating> ratingsList = session.createCriteria(Rating.class).
+                                       add(Restrictions.eq("annotates", articleURI)).
+                                       add(Restrictions.eq("creator", user.getUserId())).list();
 
     if (ratingsList.size() < 1) {
       log.debug("didn't find any matching ratings for user: " + user.getUserId());

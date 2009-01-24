@@ -17,16 +17,17 @@
  * limitations under the License.
  */
 
-
 package org.topazproject.ambra.user.action;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.UserProfileGrant;
-
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +39,6 @@ import java.util.Collection;
  * 
  */
 public class DisplayUserAction extends UserActionSupport {
-
   private static final Log log = LogFactory.getLog(DisplayUserAction.class);
 
   private AmbraUser pou;
@@ -67,7 +67,8 @@ public class DisplayUserAction extends UserActionSupport {
    */
   @Transactional(readOnly = true)
   public String fetchUserProfileWithPrivateVisibility() throws Exception {
-    final Collection<UserProfileGrant> privateGrants = getUserService().getProfileFieldsThatArePrivate(userId);
+    final Collection<UserProfileGrant> privateGrants =
+      getUserService().getProfileFieldsThatArePrivate(userId);
 
     privateFields = new ArrayList<String>(privateGrants.size());
     for (final UserProfileGrant userProfileGrant : privateGrants) {
@@ -113,5 +114,4 @@ public class DisplayUserAction extends UserActionSupport {
   public Collection<String> getPrivateFields() {
     return privateFields;
   }
-
 }

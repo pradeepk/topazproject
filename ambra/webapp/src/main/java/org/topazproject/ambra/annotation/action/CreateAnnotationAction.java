@@ -23,9 +23,11 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.annotation.Context;
 import org.topazproject.ambra.annotation.ContextFormatter;
@@ -72,10 +74,15 @@ public class CreateAnnotationAction extends BaseSessionAwareActionSupport {
       final List<String> profaneWordsInBody = profanityCheckingService.validate(comment);
 
       if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty()) {
-        final String scontext = ContextFormatter.asXPointer(new Context(startPath, startOffset, endPath, endOffset, target));
-        annotationId = annotationService.createComment(target, scontext, supercedes, commentTitle, mimeType, comment, isPublic, getCurrentUser());
+        final String scontext =
+          ContextFormatter.asXPointer(new Context(startPath, startOffset, endPath, endOffset,
+                                                  target));
+        annotationId = annotationService.createComment(target, scontext, supercedes, commentTitle,
+                                                       mimeType, comment, isPublic,
+                                                       getCurrentUser());
         if (log.isDebugEnabled()) {
-          log.debug("CreateAnnotationAction called and annotation created with id: " + annotationId);
+          log.debug("CreateAnnotationAction called and annotation created with id: " +
+                    annotationId);
         }
         if ("correction".equals(noteType)) {
           annotationService.createFlag(annotationId, "Create Correction",

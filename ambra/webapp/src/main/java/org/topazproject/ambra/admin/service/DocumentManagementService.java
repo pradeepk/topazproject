@@ -46,8 +46,10 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.DuplicateArticleIdException;
@@ -60,6 +62,7 @@ import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.xml.transform.cache.CachedSource;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -223,7 +226,8 @@ public class DocumentManagementService {
 
     // move zip back to ingestion queue
     if (!queueDir.equals(ingestedDir)) {
-      String fname = uri.substring(documentPrefix.length()) + ".zip";        // strip 'info:doi/10.1371/journal.'
+      // strip 'info:doi/10.1371/journal.'
+      String fname = uri.substring(documentPrefix.length()) + ".zip";
       File fromFile = new File(ingestedDir, fname);
       File toFile   = new File(queueDir,    fname);
 

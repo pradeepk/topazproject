@@ -37,7 +37,6 @@ import java.io.Writer;
  *
  */
 public class AuthorNameAbbreviationDirective implements TemplateDirectiveModel {
-
   public void execute(Environment environment, Map params,
     TemplateModel[] loopVars,
     TemplateDirectiveBody body)

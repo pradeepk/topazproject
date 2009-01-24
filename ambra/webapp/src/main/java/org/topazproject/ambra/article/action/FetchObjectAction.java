@@ -101,7 +101,6 @@ public class FetchObjectAction extends BaseActionSupport {
     contentLength = rep.getSize();
 
     long smallBlobSizeBytes = configuration.getLong(SMALL_BLOB_SIZE, 0l) * 1024l;
-                                                                                                                                                     
 
     if (rep.getSize() <= smallBlobSizeBytes) {
       inputByteArray = smallBlobService.getSmallBlob(rep);

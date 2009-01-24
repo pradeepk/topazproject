@@ -22,8 +22,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.EmailValidator;
+
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Required;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
@@ -33,6 +35,7 @@ import org.topazproject.ambra.service.AmbraMailer;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.action.UserActionSupport;
 import org.topazproject.ambra.util.ArticleXMLUtils;
+
 import org.topazproject.otm.search.XmlTagStripper;
 
 import java.util.ArrayList;
@@ -98,14 +101,16 @@ public class EmailArticleAction extends UserActionSupport {
     mapFields.put("title", title);
     mapFields.put("description", description);
     mapFields.put("journalName", journalName);
-    mapFields.put("subject", "An Article from PLoS: " + xmlTS.process(null, null, "<title>" + title + "</title>"));
-    
+    mapFields.put("subject", "An Article from PLoS: " +
+                  xmlTS.process(null, null, "<title>" + title + "</title>"));
+
     ambraMailer.sendEmailThisArticleEmail(emailTo, emailFrom, mapFields);
 
     return SUCCESS;
   }
 
-  private void setArticleTitleAndDesc(final String articleURI) throws NoSuchArticleIdException, ApplicationException {
+  private void setArticleTitleAndDesc(final String articleURI) throws NoSuchArticleIdException,
+                                      ApplicationException {
     final ObjectInfo articleInfo = articleOtmService.getArticle(URI.create(articleURI));
     title = articleInfo.getDublinCore().getTitle();
 
@@ -285,7 +290,7 @@ public class EmailArticleAction extends UserActionSupport {
   public void setArticleXmlUtils(ArticleXMLUtils articleXmlUtils) {
     this.articleXmlUtils = articleXmlUtils;
   }
-  
+
   /**
    * Getter for description.
    * @return Value of description.

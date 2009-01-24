@@ -24,7 +24,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +32,6 @@ import org.apache.struts2.ServletActionContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +57,6 @@ import org.apache.roller.util.LinkbackExtractor;
  *
  */
 public class TrackbackAction extends BaseActionSupport {
-
   private static final Log log = LogFactory.getLog(TrackbackAction.class);
   private static final String TRACK_BACKS_KEY = "Trackbacks-";
   private int error = 0;
@@ -152,20 +149,16 @@ public class TrackbackAction extends BaseActionSupport {
     }
 
     if (log.isInfoEnabled() && inserted) {
-      if (log.isDebugEnabled() && inserted){
-        StringBuilder msg = new StringBuilder ("Successfully inserted trackback for resource: ")
+      if (log.isDebugEnabled() && inserted) {
+        StringBuilder msg = new StringBuilder("Successfully inserted trackback for resource: ")
                                            .append (trackbackId)
-                                           .append ("; with title: ")
-                                           .append (title)
-                                           .append ("; url: ")
-                                           .append (url)
-                                           .append ("; excerpt: ")
-                                           .append (excerpt)
-                                           .append ("; blog_name: ")
-                                           .append (blog_name);
+                                           .append ("; with title: ").append (title)
+                                           .append ("; url: ").append (url)
+                                           .append ("; excerpt: ").append (excerpt)
+                                           .append ("; blog_name: ").append (blog_name);
         log.debug(msg);
       } else {
-        StringBuilder msg = new StringBuilder ("Successfully inserted trackback for resource: ")
+        StringBuilder msg = new StringBuilder("Successfully inserted trackback for resource: ")
                                            .append (trackbackId);
         log.info(msg);
       }
@@ -395,8 +388,9 @@ public class TrackbackAction extends BaseActionSupport {
       escapedURI = articleURI;
     }
 
-    StringBuilder url = new StringBuilder(baseURL).append("/").append (configuration.getString(ARTICLE_ACTION))
-    .append(escapedURI);
+    StringBuilder url = new StringBuilder(baseURL).append("/").
+                                                   append(configuration.getString(ARTICLE_ACTION)).
+                                                   append(escapedURI);
 
     if (log.isDebugEnabled()) {
       log.debug("article url to find is: " + url.toString());

@@ -44,6 +44,7 @@ public class AmbraFreemarkerResult extends FreemarkerResult {
   private static final Log log = LogFactory.getLog(AmbraFreemarkerResult.class);
   private String templateFile;
   private boolean noCache = false;
+
   /**
    * @return Returns the templateFile.
    */
@@ -58,7 +59,6 @@ public class AmbraFreemarkerResult extends FreemarkerResult {
     this.templateFile = templateFile;
   }
 
-
   /**
    * Add journal context path at the beginning of each Freemarker template
    * @param template template
@@ -70,7 +70,6 @@ public class AmbraFreemarkerResult extends FreemarkerResult {
                                        freemarker.template.TemplateModel model) throws IOException {
     SimpleHash modelHash = (SimpleHash) model;
     String templateFileName = templateFile;
-
 
     if (templateFile != null && !templateFile.startsWith("/journals/")) {
       try {

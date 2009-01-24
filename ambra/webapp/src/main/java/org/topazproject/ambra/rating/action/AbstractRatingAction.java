@@ -22,7 +22,9 @@ import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
+
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
@@ -37,7 +39,6 @@ import org.topazproject.ambra.models.Article;
  */
 @SuppressWarnings("serial")
 public abstract class AbstractRatingAction extends BaseSessionAwareActionSupport {
-
   protected static final Log log = LogFactory.getLog(AbstractRatingAction.class);
 
   protected ArticleOtmService articleOtmService;
@@ -58,7 +59,8 @@ public abstract class AbstractRatingAction extends BaseSessionAwareActionSupport
    * @throws NoSuchArticleIdException When no article resolvable for the articleURI. 
    * @throws ApplicationException When no article type is resolvable for the article.
    */
-  protected final boolean isResearchArticle(String articleURI) throws ApplicationException, NoSuchArticleIdException {
+  protected final boolean isResearchArticle(String articleURI)
+    throws ApplicationException, NoSuchArticleIdException {
     // resolve article type and supported properties
     Article artInfo = articleOtmService.getArticle(URI.create(articleURI));
     ArticleType articleType = ArticleType.getDefaultArticleType();

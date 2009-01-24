@@ -32,7 +32,8 @@ public class ConfigWrapperUtil {
    * @param initParamProvider initParamProvider
    * @param params params
    */
-  public static void copyInitParams(final InitParamProvider initParamProvider, final Map<String, String> params) {
+  public static void copyInitParams(final InitParamProvider initParamProvider,
+                                    final Map<String, String> params) {
     final Enumeration en = initParamProvider.getInitParameterNames();
     while (en.hasMoreElements()) {
       String key = (String) en.nextElement();
@@ -47,10 +48,11 @@ public class ConfigWrapperUtil {
    * @param defaultInitParamProvider defaultInitParamProvider
    * @param params params
    */
-  public static void setInitParamValue(final String initParamName, final String customValue, final InitParamProvider defaultInitParamProvider, final Map<String, String> params) {
-    String finalValue = StringUtils.isBlank(customValue)
-                          ? defaultInitParamProvider.getInitParameter(initParamName)
-                          : customValue;
+  public static void setInitParamValue(final String initParamName, final String customValue,
+                                       final InitParamProvider defaultInitParamProvider,
+                                       final Map<String, String> params) {
+    String finalValue = StringUtils.isBlank(customValue) ?
+      defaultInitParamProvider.getInitParameter(initParamName) : customValue;
 
     params.put(initParamName, finalValue);
   }

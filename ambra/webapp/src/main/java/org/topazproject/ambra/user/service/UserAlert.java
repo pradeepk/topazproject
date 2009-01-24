@@ -35,7 +35,8 @@ public class UserAlert {
    * @param weeklyAvailable
    * @param monthlyAvailable
    */
-  public UserAlert(final String key, final String name, final boolean weeklyAvailable, final boolean monthlyAvailable) {
+  public UserAlert(final String key, final String name, final boolean weeklyAvailable,
+                   final boolean monthlyAvailable) {
     this.key = key;
     this.name = name;
     this.weeklyAvailable = weeklyAvailable;

@@ -24,8 +24,10 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.article.service.BrowseService;
@@ -62,7 +64,8 @@ public class FetchArticleAction extends BaseActionSupport {
   private ArticleType articleType;
   private ArticleInfo articleInfoX;
   private String transformedArticle;
-  private final String articleTypeHeading = "Research Article"; // displayed article type (assigned default)
+  // Displayed article type (assigned default)
+  private final String articleTypeHeading = "Research Article";
   private AnnotationService annotationService;
   private int numDiscussions = 0;
   private int numMinorCorrections = 0;

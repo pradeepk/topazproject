@@ -35,7 +35,6 @@ import java.util.Comparator;
  *
  */
 public class ArticleInfoMostRecentDateComparator implements Comparator<ArticleInfo>{
-
   public int compare(ArticleInfo o1, ArticleInfo o2) {
     if (o1.getDate().after(o2.getDate())) {
       return -1;
@@ -43,7 +42,7 @@ public class ArticleInfoMostRecentDateComparator implements Comparator<ArticleIn
     if (o1.getDate().before(o2.getDate())) {
       return 1;
     }
-    
+
     return o1.getId().compareTo(o2.getId());
   }
 }

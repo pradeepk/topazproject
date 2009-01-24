@@ -34,6 +34,7 @@ import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Journal;
+
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Interceptor.Updates;
@@ -81,16 +82,16 @@ class JournalCarrierService {
 
     objectCarriers.getCacheManager().registerListener(new AbstractObjectListener() {
       public void objectChanged(Session s, ClassMetadata cm, String id, Object o, Updates updates) {
-        /* Note: if a smart-collection rule was updated as opposed to
+        /*
+         * Note: if a smart-collection rule was updated as opposed to
          * new rules added or deleted, we wouldn't be able to detect it.
          * In that case we need to be explicitly told. But currently
          * journal definitions are not updated on the fly. So even
          * this attempt to detect a change is not likely to be hit.
          */
-        if ((o instanceof Journal)
-             && ((updates == null)
-                 || updates.isChanged("smartCollectionRules")
-                 || updates.isChanged("simpleCollection"))) {
+        if ((o instanceof Journal) && ((updates == null) ||
+            updates.isChanged("smartCollectionRules") ||
+            updates.isChanged("simpleCollection"))) {
           if (log.isDebugEnabled())
             log.debug("Dumping the carrier-cache because the journal rules/collection changed");
           objectCarriers.removeAll();
@@ -179,7 +180,6 @@ class JournalCarrierService {
     return res;
   }
 
-
   public Set<String> getJournalKeysForObject(final URI oid, final Session s) {
     return objectCarriers.get(oid, -1,
         new Cache.SynchronizedLookup<Set<String>, RuntimeException>(oid.toString().intern()) {
@@ -202,6 +202,4 @@ class JournalCarrierService {
 
     return jnlList;
   }
-
-
 }

@@ -35,7 +35,6 @@ import java.util.Set;
  * Class to roll up access for a user into an Ambra appplication specific object.
  * @author Stephen Cheng
  */
-
 public class AmbraUser {
   private static final Log log = LogFactory.getLog(AmbraUser.class);
   // Constants for application specific User Preferences
@@ -52,7 +51,6 @@ public class AmbraUser {
 
   /** the user-preferences as a map */
   private Map<String, String[]> userPrefs;
-
 
   /**
    * Initializes a new Ambra user
@@ -125,9 +123,11 @@ public class AmbraUser {
       prof.setGender(null);
     if (prof.getPositionType() != null && !checkAccess(owner, UsersPEP.GET_POSITION_TYPE, pep))
       prof.setPositionType(null);
-    if (prof.getOrganizationName() != null && !checkAccess(owner, UsersPEP.GET_ORGANIZATION_NAME, pep))
+    if (prof.getOrganizationName() != null &&
+        !checkAccess(owner, UsersPEP.GET_ORGANIZATION_NAME, pep))
       prof.setOrganizationName(null);
-    if (prof.getOrganizationType() != null && !checkAccess(owner, UsersPEP.GET_ORGANIZATION_TYPE, pep))
+    if (prof.getOrganizationType() != null &&
+        !checkAccess(owner, UsersPEP.GET_ORGANIZATION_TYPE, pep))
       prof.setOrganizationType(null);
     if (prof.getPostalAddress() != null && !checkAccess(owner, UsersPEP.GET_POSTAL_ADDRESS, pep))
       prof.setPostalAddress(null);
@@ -151,7 +151,8 @@ public class AmbraUser {
       prof.setBiographyText(null);
     if (prof.getInterestsText() != null && !checkAccess(owner, UsersPEP.GET_INTERESTS_TEXT, pep))
       prof.setInterestsText(null);
-    if (prof.getResearchAreasText() != null && !checkAccess(owner, UsersPEP.GET_RESEARCH_AREAS_TEXT, pep))
+    if (prof.getResearchAreasText() != null &&
+        !checkAccess(owner, UsersPEP.GET_RESEARCH_AREAS_TEXT, pep))
       prof.setResearchAreasText(null);
   }
 
@@ -257,8 +258,7 @@ public class AmbraUser {
   }
 
   /**
-   * @param gender
-   *          The gender to set.
+   * @param gender The gender to set.
    */
   public void setGender(String gender) {
     userProfile.setGender(gender);
@@ -272,8 +272,7 @@ public class AmbraUser {
   }
 
   /**
-   * @param homePage
-   *          The homePage to set.
+   * @param homePage The homePage to set.
    */
   public void setHomePage(String homePage) {
     userProfile.setHomePage(homePage != null ? URI.create(homePage) : null);
@@ -294,8 +293,7 @@ public class AmbraUser {
   }
 
   /**
-   * @param interests
-   *          The interests to set.
+   * @param interests The interests to set.
    */
   public void setInterests(String[] interests) {
     Set<URI> i = userProfile.getInterests();
@@ -314,8 +312,7 @@ public class AmbraUser {
   }
 
   /**
-   * @param publications
-   *          The publications to set.
+   * @param publications The publications to set.
    */
   public void setPublications(String publications) {
     userProfile.setPublications(publications != null ? URI.create(publications) : null);
@@ -329,8 +326,7 @@ public class AmbraUser {
   }
 
   /**
-   * @param realName
-   *          The realName to set.
+   * @param realName The realName to set.
    */
   public void setRealName(String realName) {
     userProfile.setRealName(realName);
@@ -344,8 +340,7 @@ public class AmbraUser {
   }
 
   /**
-   * @param title
-   *          The title to set.
+   * @param title The title to set.
    */
   public void setTitle(String title) {
     userProfile.setTitle(title);
@@ -359,8 +354,7 @@ public class AmbraUser {
   }
 
   /**
-   * @param userId
-   *          The userId to set.
+   * @param userId The userId to set.
    */
   public void setUserId(String userId) {
     this.userId = userId;
@@ -374,8 +368,7 @@ public class AmbraUser {
   }
 
   /**
-   * @param weblog
-   *          The weblog to set.
+   * @param weblog The weblog to set.
    */
   public void setWeblog(String weblog) {
     userProfile.setWeblog(weblog != null ? URI.create(weblog) : null);
@@ -391,8 +384,7 @@ public class AmbraUser {
 
   /**
    *
-   * @param city
-   *          The city to set.
+   * @param city The city to set.
    */
   public void setCity(String city) {
     userProfile.setCity(city);
@@ -408,8 +400,7 @@ public class AmbraUser {
 
   /**
    *
-   * @param country
-   *          The country to set.
+   * @param country The country to set.
    */
   public void setCountry(String country) {
     userProfile.setCountry(country);
@@ -425,8 +416,7 @@ public class AmbraUser {
 
   /**
    *
-   * @param inAlerts
-   *          the array of alert categories to set
+   * @param inAlerts the array of alert categories to set
    */
   public void setAlerts(String[] inAlerts) {
     userPrefs.put(AmbraUser.ALERTS_CATEGORIES, inAlerts);

@@ -18,7 +18,6 @@
  */
 package org.topazproject.ambra.cas.client.filter;
 
-//import edu.yale.its.tp.cas.client.filter.CASFilter;
 import org.apache.commons.configuration.Configuration;
 import org.topazproject.ambra.cas.ConfigWrapper;
 import org.topazproject.ambra.cas.ConfigWrapperUtil;
@@ -68,5 +67,4 @@ public class CASFilterWrapper extends CASFilter {
     final FilterConfig customFilterConfig = new ConfigWrapper(filterConfig, params);
     super.init(customFilterConfig);
   }
-
 }

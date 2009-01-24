@@ -24,6 +24,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.annotation.service.WebReply;
 import org.topazproject.ambra.util.DateParser;
@@ -130,7 +131,9 @@ public class Commentary {
      *
      * @param a the first Commentary object to be compared
      * @param b the second Commentary object to be compared
-     * @return a number less than 0 if <var>a</var> less than <var>b</var>, a number greater than 0 if <var>a</var> greater than <var>b</var>, or 0 if <var>a</var> equals <var>b</var>
+     * @return a number less than 0 if <var>a</var> less than <var>b</var>, a number greater
+     *         than 0 if <var>a</var> greater than <var>b</var>, or 0 if
+     *         <var>a</var> equals <var>b</var>
      */
     public int compare (Commentary a, Commentary b){
       String dateA, dateB;
@@ -147,5 +150,4 @@ public class Commentary {
       return dateB.compareTo(dateA);
     }
   }
-
 }

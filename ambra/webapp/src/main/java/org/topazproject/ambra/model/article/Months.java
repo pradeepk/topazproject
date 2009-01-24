@@ -20,8 +20,6 @@ package org.topazproject.ambra.model.article;
 
 import java.util.TreeMap;
 
-
-
 /**
  * An ordered list of months (as month numbers, from 1 to 12). Each month has a list of days.
  */

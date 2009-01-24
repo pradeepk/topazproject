@@ -26,8 +26,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.criterion.DetachedCriteria;
@@ -121,11 +123,10 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
     }
 
     // process any pending modifications, adds, deletes
-    if (journalToModify != null
-      && (image != null
-        || currentIssue != null
-        || (articlesToAdd != null && articlesToAdd.length() != 0)
-        || articlesToDelete != null)) {
+    if (journalToModify != null && (image != null ||
+                                    currentIssue != null ||
+                                    (articlesToAdd != null && articlesToAdd.length() != 0) ||
+                                    articlesToDelete != null)) {
       // get the Journal
       Journal journal = journalService.getCurrentJournal();
       if (journal == null) {
@@ -209,7 +210,8 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
     journalInfo.setKey(journal.getKey());
     journalInfo.seteIssn(journal.geteIssn());
-    journalInfo.setCurrentIssue(journal.getCurrentIssue() == null ? null : journal.getCurrentIssue().toString());
+    journalInfo.setCurrentIssue(journal.getCurrentIssue() == null ?
+        null : journal.getCurrentIssue().toString());
     journalInfo.setImage(journal.getImage() == null ? null : journal.getImage().toString());
 
     List<URI> jscs = journal.getSimpleCollection();
@@ -349,5 +351,4 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   public void setJournalService(JournalService journalService) {
     this.journalService = journalService;
   }
-
 }

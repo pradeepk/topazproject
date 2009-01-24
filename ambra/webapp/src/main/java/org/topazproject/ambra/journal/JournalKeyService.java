@@ -31,13 +31,11 @@ import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.web.VirtualJournalContext;
+
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
-
-
-
 
 /**
  * This service manages journal definitions by journal key.
@@ -49,7 +47,6 @@ class JournalKeyService {
 
   private final Cache                  journalCache;          // key    -> Journal
   private final String                 keyPrefix;
-
 
   /**
    * Create a new journal-service instance. One and only one of these should be created for evey
@@ -74,7 +71,6 @@ class JournalKeyService {
     journalCache.remove(keyPrefix);
     journalCache.remove(keyPrefix + jName);
   }
-
 
   /* must be inside active tx */
   private Journal retrieveJournalFromDB(String jName, Session s) {
@@ -152,5 +148,4 @@ class JournalKeyService {
       .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
     return (vjc == null) ? null : vjc.getJournal();
   }
-
 }

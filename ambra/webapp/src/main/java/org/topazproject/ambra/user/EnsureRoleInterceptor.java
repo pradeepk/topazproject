@@ -52,5 +52,4 @@ public class EnsureRoleInterceptor extends AbstractInterceptor {
   public void setUserService(final UserService userService) {
     this.userService = userService;
   }
-
 }

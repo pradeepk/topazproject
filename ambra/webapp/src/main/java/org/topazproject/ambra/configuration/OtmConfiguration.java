@@ -33,8 +33,10 @@ import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.util.TransactionHelper;
+
 import org.topazproject.fedora.otm.FedoraBlobStore;
 import org.topazproject.fedora.otm.FedoraBlobFactory;
+
 import org.topazproject.mulgara.itql.EmbeddedClient;
 
 import javax.transaction.TransactionManager;
@@ -45,13 +47,14 @@ import javax.transaction.TransactionManager;
  * @author Stephen Cheng
  */
 public class OtmConfiguration {
+  private static final Log log = LogFactory.getLog(OtmConfiguration.class);
+
   private final String        tripleStoreUrl;
   private final BlobStore     blobStore;
   private SessionFactory      factory = null;
   private String[]            preloadClasses = new String[0];
   private GraphConfig[]       graphs = new GraphConfig[0];
   private Map<String, String> aliases = new HashMap<String, String>();
-  private static final Log log = LogFactory.getLog(OtmConfiguration.class);
 
   /**
    * Creates a new OtmConfiguration object.

@@ -21,9 +21,11 @@ package org.topazproject.ambra.admin.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.Flag;
@@ -134,7 +136,6 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       }
     }
 
-
     if (convertToFormalCorrection != null) {
       for (String paramStr : convertToFormalCorrection) {
         if (log.isDebugEnabled()) {
@@ -224,7 +225,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
   private void deleteTarget(String root, String target, String targetType)
       throws Exception {
     Reply[] replies;
-    Flag[] flags = converter.convertAsFlags(annotationService.listAnnotations(target, annotationService.COMMENT_SET), false, false);
+    Flag[] flags = converter.convertAsFlags(
+        annotationService.listAnnotations(target, annotationService.COMMENT_SET), false, false);
 
     if (log.isDebugEnabled()) {
       log.debug("Deleting Target" + target + " Root is " + root);
@@ -258,7 +260,9 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       log.debug(target + " has " + replies.length + " replies. Removing their flags");
     }
     for (Reply reply : replies) {
-      Flag[] replyFlags = converter.convertAsFlags(annotationService.listAnnotations(reply.getId().toString(), annotationService.COMMENT_SET), false, false);
+      Flag[] replyFlags = converter.convertAsFlags
+        (annotationService.listAnnotations(reply.getId().toString(), annotationService.COMMENT_SET),
+                                           false, false);
       if (log.isDebugEnabled()) {
         log.debug("Reply " + reply.getId() + " has " + replyFlags.length + " flags");
       }

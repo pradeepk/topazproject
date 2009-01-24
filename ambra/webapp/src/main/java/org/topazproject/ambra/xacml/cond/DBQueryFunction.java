@@ -251,8 +251,8 @@ public abstract class DBQueryFunction implements Function {
     } catch (UnknownIdentifierException e) {
       throw new QueryException("Invalid return-type", e);
     } catch (ParsingException e) {
-      throw new QueryException("Type conversion error while converting"
-                               + " query results to return-type", e);
+      throw new QueryException("Type conversion error while converting" +
+                               " query results to return-type", e);
     }
 
     BagAttribute attr = new BagAttribute(returnType, bag);

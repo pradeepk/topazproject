@@ -23,12 +23,14 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionProxy;
+
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.beans.factory.annotation.Required;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -44,7 +46,6 @@ import java.lang.annotation.Annotation;
  * @author Dragisa Krsmanovic
  */
 public class TransactionInterceptor extends AbstractInterceptor {
-
   private static final Log log = LogFactory.getLog(TransactionInterceptor.class);
 
   private PlatformTransactionManager txManager;
@@ -174,5 +175,4 @@ public class TransactionInterceptor extends AbstractInterceptor {
       this.exception = exception;
     }
   }
-
 }

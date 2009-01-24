@@ -67,8 +67,7 @@ public class URLReferencePolicyModule extends AbstractPolicyModule {
   /*
    * inherited javadoc
    */
-  public InputStream getPolicyResourceAsStream(String resource)
-                                        throws IOException {
+  public InputStream getPolicyResourceAsStream(String resource) throws IOException {
     return (new URL(resource)).openStream();
   }
 }

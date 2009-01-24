@@ -29,7 +29,6 @@ import org.apache.struts2.dispatcher.SessionMap;
  *
  */
 public class LogoutAction extends BaseSessionAwareActionSupport {
-
   private String goTo;
 
   /**
@@ -57,5 +56,4 @@ public class LogoutAction extends BaseSessionAwareActionSupport {
   public void setGoTo(String goTo) {
     this.goTo = goTo;
   }
-
 }

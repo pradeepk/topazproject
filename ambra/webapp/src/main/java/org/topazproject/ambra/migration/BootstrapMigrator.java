@@ -202,5 +202,4 @@ public class BootstrapMigrator {
 
     return map.size();
   }
-
 }

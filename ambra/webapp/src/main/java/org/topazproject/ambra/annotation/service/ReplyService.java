@@ -25,14 +25,17 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.models.ReplyBlob;
 import org.topazproject.ambra.models.ReplyThread;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
+
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.criterion.Restrictions;

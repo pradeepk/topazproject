@@ -24,7 +24,6 @@ import java.io.IOException;
 
 import java.util.List;
 
-
 /**
  * Policy Finder module that loads policy files from a thread-context classloader. This version
  * supports Target matching; (ie. searches thru all policy files to find a matching policy)

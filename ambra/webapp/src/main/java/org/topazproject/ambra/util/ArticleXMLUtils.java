@@ -90,7 +90,6 @@ public class ArticleXMLUtils {
    * @throws ApplicationException On Template creation Exceptions.
    */
   public void init() throws ApplicationException {
-
     // set JAXP properties
     System.getProperties().putAll(xmlFactoryProperty);
 
@@ -101,7 +100,8 @@ public class ArticleXMLUtils {
 
     // set the Templates
     final TransformerFactory tFactory = TransformerFactory.newInstance();
-    final URL resource = getClass().getResource(System.getProperty("secondaryObjectXslTemplate", "/objInfo.xsl"));
+    final URL resource = getClass().getResource(System.getProperty("secondaryObjectXslTemplate",
+                                                                   "/objInfo.xsl"));
     if (resource == null) {
       throw new ApplicationException("Failed to get stylesheet: /objInfo.xsl");
     }
@@ -113,7 +113,7 @@ public class ArticleXMLUtils {
     } catch (URISyntaxException use) {
       throw new ApplicationException(use);
     }
-}
+  }
 
   /**
    * Pass in an XML string fragment, and will return back a string representing the document after
@@ -324,9 +324,10 @@ public class ArticleXMLUtils {
    * @throws TransformerException TransformerException.
    */
   public Transformer getSecondaryObjectTranslet() throws TransformerException {
-
-    // For each thread, instantiate a new Transformer, and perform the
-    // transformations on that thread from a StreamSource to a StreamResult;
+    /*
+     * For each thread, instantiate a new Transformer, and perform the
+     * transformations on that thread from a StreamSource to a StreamResult;
+     */
     return objInfoXsltTemplate.newTransformer();
   }
 }

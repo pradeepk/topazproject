@@ -70,9 +70,7 @@ import java.io.Writer;
  * </table>
  */
 public class ArticleFormattingDirective implements TemplateDirectiveModel {
-
-  public void execute(Environment environment, Map params,
-                      TemplateModel[] loopVars,
+  public void execute(Environment environment, Map params, TemplateModel[] loopVars,
                       TemplateDirectiveBody body)
       throws TemplateException, IOException {
 
@@ -112,7 +110,6 @@ public class ArticleFormattingDirective implements TemplateDirectiveModel {
     public void close() throws IOException {
       out.close();
     }
-
   }
 
   /**

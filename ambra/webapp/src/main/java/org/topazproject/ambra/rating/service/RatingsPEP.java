@@ -72,7 +72,6 @@ public class RatingsPEP extends AbstractSimplePEP {
     init(RatingsPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
   }
 
-
   public RatingsPEP(PDP pdp) {
     super(pdp);
   }
@@ -88,8 +87,7 @@ public class RatingsPEP extends AbstractSimplePEP {
   public void checkObjectAccess(String action, URI userId, URI object) throws SecurityException {
     Set<Attribute> resourceAttrs = new HashSet<Attribute>();
 
-    resourceAttrs.add(
-        new Attribute(Util.RESOURCE_ID, null, null, new AnyURIAttribute(userId)));
+    resourceAttrs.add(new Attribute(Util.RESOURCE_ID, null, null, new AnyURIAttribute(userId)));
     if (object != null)
       resourceAttrs.add(new Attribute(OBJ_ID, null, null, new AnyURIAttribute(object)));
 

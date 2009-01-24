@@ -40,10 +40,8 @@ public class IssueInfo implements Serializable {
   private List<URI> articleUriList;
 
   // XXX TODO, List<URI> w/Article DOI vs. List<ArticleInfo>???
-
   public IssueInfo(URI id, String displayName, URI prevIssue, URI nextIssue, URI imageArticle,
           String description, URI parentVolume) {
-
     this.id = id;
     this.displayName = displayName;
     this.prevIssue = prevIssue;
@@ -115,7 +113,7 @@ public class IssueInfo implements Serializable {
   public URI getParentVolume() {
     return parentVolume;
   }
-  
+
   /**
    * Set the list of article DOI's that this issue contains. Please update
    * the browseCache for this IssueInfo if you change this list. 
@@ -124,7 +122,7 @@ public class IssueInfo implements Serializable {
   public void setArticleUriList(List<URI> articleList) {
     articleUriList = articleList;
   }
-  
+
   /**
    * Returns a list of Article DOI's that this issue contains. Note that is you need the actual 
    * articles themselves, use BrowseService.getArticleInfosForIssue() since it attempts to use

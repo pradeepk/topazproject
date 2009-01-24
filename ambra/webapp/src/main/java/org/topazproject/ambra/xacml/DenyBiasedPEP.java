@@ -66,9 +66,8 @@ public class DenyBiasedPEP {
    * @param pdp The PDP to evaluate requests against
    */
   public DenyBiasedPEP(PDP pdp) {
-    this(pdp,
-         (pdp instanceof PDPFactory.TopazPDP) ? ((PDPFactory.TopazPDP) pdp).getAttributeFinder()
-         : null);
+    this(pdp, (pdp instanceof PDPFactory.TopazPDP) ? 
+        ((PDPFactory.TopazPDP) pdp).getAttributeFinder() : null);
   }
 
   /**
@@ -292,24 +291,24 @@ public class DenyBiasedPEP {
     public void analyze(Obligation o) {
       if (!knownObligations.contains(o.getId())) {
         unfulfillable++;
-        addExplanation("XACML policy contains an obligation that this PEP cannot"
-                       + " fulfill. The obligation id is " + o.getId());
+        addExplanation("XACML policy contains an obligation that this PEP cannot" +
+                       " fulfill. The obligation id is " + o.getId());
 
         return;
       }
 
       if (o.getFulfillOn() != Result.DECISION_PERMIT) {
         unfulfillable++;
-        addExplanation("XACML policy contains an obligation that this PEP can "
-                       + " fulfill only on a PERMIT. The obligation id is " + o.getId());
+        addExplanation("XACML policy contains an obligation that this PEP can " +
+                       " fulfill only on a PERMIT. The obligation id is " + o.getId());
 
         return;
       }
 
       if (!obligations.add(o)) {
         // xxx: currently duplicates are not an error; revisit later
-        addExplanation("XACML policy contains a duplicate obligation. The obligation id is "
-                       + o.getId());
+        addExplanation("XACML policy contains a duplicate obligation. The obligation id is " +
+                       o.getId());
       }
     }
 

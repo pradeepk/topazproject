@@ -50,7 +50,8 @@ public class AmbraMailer extends FreemarkerTemplateMailer {
    * @param fromEmailAddress fromEmailAddress
    * @param mapFields mapFields to fill up the template with the right values
    */
-  public void sendEmailThisArticleEmail(final String toEmailAddress, final String fromEmailAddress, final Map<String, String> mapFields) {
+  public void sendEmailThisArticleEmail(final String toEmailAddress, final String fromEmailAddress,
+      final Map<String, String> mapFields) {
     final HashMap<String, Object> newMapFields = new HashMap<String, Object>();
     newMapFields.putAll(emailThisArticleMap);
     newMapFields.putAll(mapFields);

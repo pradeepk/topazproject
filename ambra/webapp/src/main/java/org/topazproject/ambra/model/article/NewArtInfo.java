@@ -29,41 +29,40 @@ import org.topazproject.otm.annotations.View;
 /**
  * The info about a single article that the UI needs.
  */
-@View(query=
-            "select cat, a.id articleId, a.dublinCore.date date from Article a " +
-            "where cat := a.categories.mainCategory and a.id = :id;")
+@View(query = "select cat, a.id articleId, a.dublinCore.date date from Article a " +
+              "where cat := a.categories.mainCategory and a.id = :id;")
 public class NewArtInfo implements Serializable {
-    public URI          id;
-    public Date         date;
-    public String       category;
+  public URI          id;
+  public Date         date;
+  public String       category;
 
-    /**
-     * Set id.
-     *
-     * @param id the value to set.
-     */
-    @Id
-    public void setId(URI id) {
-        this.id = id;
-    }
+  /**
+   * Set id.
+   *
+   * @param id the value to set.
+   */
+  @Id
+  public void setId(URI id) {
+    this.id = id;
+  }
 
-    /**
-     * Set date.
-     *
-     * @param date the value to set.
-     */
-    @Projection("date")
-    public void setDate(Date date) {
-        this.date = date;
-    }
+  /**
+   * Set date.
+   *
+   * @param date the value to set.
+   */
+  @Projection("date")
+  public void setDate(Date date) {
+    this.date = date;
+  }
 
-    /**
-     * Set category.
-     *
-     * @param category the value to set.
-     */
-    @Projection("cat")
-    public void setCategory(String category) {
-      this.category = category;
-    }
+  /**
+   * Set category.
+   *
+   * @param category the value to set.
+   */
+  @Projection("cat")
+  public void setCategory(String category) {
+    this.category = category;
+  }
 }

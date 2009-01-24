@@ -38,7 +38,6 @@ import org.topazproject.ambra.user.service.UserService;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
-
 /**
  * A webwork interceptor that maps the authentication id to an internal ambra-user-id. The ambra
  * user-id is setup in the HttpSession using the key {@link #USER_KEY}. The original authentication
@@ -75,13 +74,15 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
    * has already been applied for the targeted action.  
    * This check is necessary when considering action chaining. 
    */
-  private static final String REENTRANT_KEY = UserAccountsInterceptor.class.getName() + ".reentrant";
+  private static final String REENTRANT_KEY = UserAccountsInterceptor.class.getName() +
+                                              ".reentrant";
 
   /**
    * Checks for and sets the {@link #REENTRANT_KEY} value for the current {@link ActionContext}
    * and reports on whether or not it was previously set.
    * @param invocation The {@link ActionInvocation}
-   * @return <code>true</code> if this interceptor has already been applied for the current {@link ActionContext}.
+   * @return <code>true</code> if this interceptor has already been applied for the current
+   *                           {@link ActionContex}.
    */
   private boolean reentrantCheck(ActionInvocation invocation) {
     Object obj = invocation.getInvocationContext().get(REENTRANT_KEY);
@@ -142,7 +143,6 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
     String      authId  = getAuthenticationId(request);
     String      current = (String) session.getAttribute(AUTH_KEY);
     boolean     same    = (current == null) ? (authId == null) : current.equals(authId);
-
 
     if ((user != null) && same) {
       if (log.isDebugEnabled())

@@ -20,9 +20,11 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 
@@ -46,7 +48,8 @@ public class CreateFlagAction extends BaseSessionAwareActionSupport {
   @Override
   public String execute() throws Exception {
     try {
-      annotationId = annotationService.createFlag(target, reasonCode, comment, mimeType, getCurrentUser());
+      annotationId = annotationService.createFlag(target, reasonCode, comment, mimeType,
+                                                  getCurrentUser());
     } catch (final Exception e) {
       log.error("Could not create flag for target: " + target, e);
       addActionError("Flag creation failed with error message: " + e.getMessage());

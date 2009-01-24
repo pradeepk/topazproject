@@ -22,8 +22,10 @@ import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.annotation.service.AnnotationService;
@@ -41,6 +43,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  */
 @SuppressWarnings("serial")
 public class ListReplyAction extends BaseActionSupport {
+  private static final Log log = LogFactory.getLog(ListReplyAction.class);
 
   private String root;
   private String inReplyTo;
@@ -52,10 +55,6 @@ public class ListReplyAction extends BaseActionSupport {
   protected ReplyService replyService;
   protected AnnotationConverter converter;
   protected AnnotationService annotationService;
-
-
-
-  private static final Log log = LogFactory.getLog(ListReplyAction.class);
 
   @Transactional(readOnly = true)
   @Override
@@ -79,9 +78,11 @@ public class ListReplyAction extends BaseActionSupport {
   @Transactional(readOnly = true)
   public String listAllReplies() {
     try {
-      // Allow a single 'root' param to be accepted. If 'inReplyTo' is null or
-      // empty string, set to root value.
-      // This results in that single annotation being displayed.
+      /*
+       * Allow a single 'root' param to be accepted. If 'inReplyTo' is null or
+       * empty string, set to root value.
+       * This results in that single annotation being displayed.
+       */
       if ((inReplyTo == null) || inReplyTo.length() == 0) {
         inReplyTo = root;
       }
@@ -93,8 +94,10 @@ public class ListReplyAction extends BaseActionSupport {
       final String articleId = baseAnnotation.getAnnotates();
       article = articleOtmService.getArticle(URI.create(articleId));
 
-      // construct citation string
-      // we're only showing annotation citations for formal corrections
+      /*
+       * construct citation string
+       * we're only showing annotation citations for formal corrections
+       */
       if(baseAnnotation.isFormalCorrection()) {
         // lock @ Article level
         Citation bibliographicCitation = article.getDublinCore().getBibliographicCitation();
@@ -189,5 +192,4 @@ public class ListReplyAction extends BaseActionSupport {
   public void setAnnotationService(final AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
-
 }

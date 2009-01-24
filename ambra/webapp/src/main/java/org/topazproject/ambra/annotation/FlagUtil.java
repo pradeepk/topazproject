@@ -26,6 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.util.TextUtils;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -38,7 +39,8 @@ public class FlagUtil {
   private static final String FLAG_NODE = "flag";
   private static final String REASON_CODE = "reasonCode";
   private static final String COMMENT_NODE = "comment";
-  private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+  private static final DocumentBuilderFactory documentBuilderFactory =
+    DocumentBuilderFactory.newInstance();
 
   /**
    * Return the comment from an xml string
@@ -71,7 +73,8 @@ public class FlagUtil {
     }
   }
 
-  private static Element getRootNode(final String xmlDocument) throws SAXException, IOException, ParserConfigurationException {
+  private static Element getRootNode(final String xmlDocument)
+    throws SAXException, IOException, ParserConfigurationException {
     final Document doc = documentBuilderFactory.newDocumentBuilder()
                             .parse(new ByteArrayInputStream(xmlDocument.getBytes("UTF-8")));
     return doc.getDocumentElement();
@@ -84,7 +87,8 @@ public class FlagUtil {
    * @return the flag body
    * @throws Exception Exception
    */
-  public static String createFlagBody(final String reasonCode, final String commentText) throws Exception {
+  public static String createFlagBody(final String reasonCode, final String commentText)
+    throws Exception {
     final Document doc = documentBuilderFactory.newDocumentBuilder().newDocument();
     final Element rootElement = doc.createElement(FLAG_NODE);
     doc.appendChild(rootElement);

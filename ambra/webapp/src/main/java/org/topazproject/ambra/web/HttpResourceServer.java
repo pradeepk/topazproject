@@ -87,9 +87,9 @@ public class HttpResourceServer {
    *
    * @exception IOException if an input/output error occurs
    */
-  public void serveResource(HttpServletRequest request, HttpServletResponse response, Resource resource)
-                     throws IOException {
-    boolean head               = "HEAD".equals(request.getMethod());
+  public void serveResource(HttpServletRequest request, HttpServletResponse response,
+                            Resource resource) throws IOException {
+    boolean head = "HEAD".equals(request.getMethod());
     serveResource(request, response, !head, resource);
   }
 
@@ -106,8 +106,7 @@ public class HttpResourceServer {
   public void serveResource(HttpServletRequest request, HttpServletResponse response,
                             boolean content, Resource resource)
                      throws IOException {
-    // Check if the conditions specified in the optional If headers are
-    // satisfied.
+    // Check if the conditions specified in the optional If headers are satisfied.
     if (!checkIfHeaders(request, response, resource))
       return;
 
@@ -133,8 +132,7 @@ public class HttpResourceServer {
       try {
         ostream = response.getOutputStream();
       } catch (IllegalStateException e) {
-        // If it fails, we try to get a Writer instead if we're
-        // trying to serve a text file
+        // If it fails, we try to get a Writer instead if we're trying to serve a text file
         if ((contentType == null) || (contentType.startsWith("text"))
              || (contentType.endsWith("xml"))) {
           writer = response.getWriter();
@@ -328,14 +326,17 @@ public class HttpResourceServer {
       long   lastModified = resource.getLastModified();
 
       if (headerValueTime == (-1L)) {
-        // If the ETag the client gave does not match the entity
-        // etag, then the entire entity is returned.
+        /* 
+         * If the ETag the client gave does not match the entity etag, then the entire entity is
+         * returned.
+         */
         if (!eTag.equals(headerValue.trim()))
           return FULL;
       } else {
-        // If the timestamp of the entity the client got is older than
-        // the last modification date of the entity, the entire entity
-        // is returned.
+        /*
+         * If the timestamp of the entity the client got is older than the last modification date of
+         * the entity, the entire entity is returned.
+         */
         if (lastModified > (headerValueTime + 1000))
           return FULL;
       }
@@ -522,11 +523,12 @@ public class HttpResourceServer {
       long lastModified = resource.getLastModified();
 
       if (headerValue != -1) {
-        // If an If-None-Match header has been specified, if modified since
-        // is ignored.
+        // If an If-None-Match header has been specified, if modified since is ignored.
         if ((request.getHeader("If-None-Match") == null) && (lastModified < (headerValue + 1000))) {
-          // The entity has not been modified since the date
-          // specified by the client. This is not an error case.
+          /*
+           * The entity has not been modified since the date specified by the client. This is not an
+           * error case.
+           */
           response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
           response.setHeader("ETag", getETag(resource));
 
@@ -579,10 +581,10 @@ public class HttpResourceServer {
       }
 
       if (conditionSatisfied) {
-        // For GET and HEAD, we should respond with
-        // 304 Not Modified.
-        // For every other method, 412 Precondition Failed is sent
-        // back.
+        /*
+         * For GET and HEAD, we should respond with 304 Not Modified.
+         * For every other method, 412 Precondition Failed is sent back.
+         */
         if (("GET".equals(request.getMethod())) || ("HEAD".equals(request.getMethod()))) {
           response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
           response.setHeader("ETag", getETag(resource));
@@ -595,8 +597,8 @@ public class HttpResourceServer {
           response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
 
           if (log.isDebugEnabled())
-            log.debug("If-None-Match: " + headerValue + ": Sending 'Pre-condition failed' for "
-                      + resource);
+            log.debug("If-None-Match: " + headerValue + ": Sending 'Pre-condition failed' for " +
+                      resource);
 
           return false;
         }
@@ -627,8 +629,10 @@ public class HttpResourceServer {
 
       if (headerValue != -1) {
         if (lastModified >= (headerValue + 1000)) {
-          // The entity has not been modified since the date
-          // specified by the client. This is not an error case.
+          /*
+           * The entity has not been modified since the date specified by the client. This is not an
+           * error case.
+           */
           response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
 
           if (log.isDebugEnabled())
@@ -656,9 +660,7 @@ public class HttpResourceServer {
    */
   protected void copy(Resource resource, ServletOutputStream ostream)
                throws IOException {
-
-    // Optimization: If the binary content has already been loaded, send
-    // it directly
+    // Optimization: If the binary content has already been loaded, send it directly
     byte[] buffer = resource.getContent();
 
     if (buffer != null) {
@@ -691,9 +693,7 @@ public class HttpResourceServer {
    *
    * @exception IOException if an input/output error occurs
    */
-  protected void copy(Resource resource, PrintWriter writer)
-               throws IOException {
-
+  protected void copy(Resource resource, PrintWriter writer) throws IOException {
     InputStream resourceInputStream = resource.streamContent();
 
     Reader reader = new InputStreamReader(resourceInputStream, FILE_ENCODING);
@@ -721,7 +721,6 @@ public class HttpResourceServer {
    */
   protected void copy(Resource resource, ServletOutputStream ostream, Range range)
                throws IOException {
-
     InputStream resourceInputStream = resource.streamContent();
     InputStream istream             = new BufferedInputStream(resourceInputStream, INPUT_BUFFER_SIZE);
     IOException exception           = copyRange(istream, ostream, range.start, range.end);
@@ -746,7 +745,6 @@ public class HttpResourceServer {
    */
   protected void copy(Resource resource, PrintWriter writer, Range range)
                throws IOException {
-
     InputStream resourceInputStream = resource.streamContent();
 
     Reader      reader = new InputStreamReader(resourceInputStream, FILE_ENCODING);
@@ -836,8 +834,8 @@ public class HttpResourceServer {
       if (contentType != null)
         writer.println("Content-Type: " + contentType);
 
-      writer.println("Content-Range: bytes " + currentRange.start + "-" + currentRange.end + "/"
-                     + currentRange.length);
+      writer.println("Content-Range: bytes " + currentRange.start + "-" + currentRange.end + "/" +
+                     currentRange.length);
       writer.println();
 
       // Printing content
@@ -1079,8 +1077,11 @@ public class HttpResourceServer {
     }
 
     public String toString() {
-      return "Resource[name=" + name + ", contentType=" + contentType + ", contentLength="
-             + contentLength + ",lastModified=" + lastModified + "(" + lastModifiedHttp + ")]";
+      return "Resource[name=" + name +
+             ", contentType=" + contentType +
+             ", contentLength=" + contentLength +
+             ",lastModified=" + lastModified +
+             "(" + lastModifiedHttp + ")]";
     }
   }
 

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -50,25 +51,18 @@ import org.topazproject.ambra.configuration.ConfigurationStore;
  * See WEB-INF/classes/ambra/configuration/defaults.xml for configuration examples.
  */
 public class VirtualJournalContextFilter implements Filter {
+  private static final Log log = LogFactory.getLog(VirtualJournalContextFilter.class);
 
   public static final String CONF_VIRTUALJOURNALS          = "ambra.virtualJournals";
   public static final String CONF_VIRTUALJOURNALS_DEFAULT  = CONF_VIRTUALJOURNALS + ".default";
   public static final String CONF_VIRTUALJOURNALS_JOURNALS = CONF_VIRTUALJOURNALS + ".journals";
 
-  /** Allow setting/overriding the virtual journal as a URI param. */
-  // public static final String URI_PARAM_VIRTUALJOURNAL = "virtualJournal";
-  /** Allow setting/overriding the mapping prefix as a URI param. */
-  // public static final String URI_PARAM_MAPPINGPREFIX = "mappingPrefix";
-
   private static final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
-
-  private static final Log log = LogFactory.getLog(VirtualJournalContextFilter.class);
 
   /*
    * @see javax.servlet.Filter#init
    */
   public void init(final FilterConfig filterConfig) throws ServletException {
-
     // settings & overrides are in the Configuration
     if (configuration == null) {
       // should never happen
@@ -82,7 +76,6 @@ public class VirtualJournalContextFilter implements Filter {
    * @see javax.servlet.Filter#destroy
    */
   public void destroy() {
-
     // nothing to do
   }
 
@@ -105,8 +98,8 @@ public class VirtualJournalContextFilter implements Filter {
       mappingPrefix  = ruleValues.getMappingPrefix();
       if (journalName != null) {
         if (log.isTraceEnabled()) {
-          log.trace("virtual journal from rules: journal = \"" + journalName + "\""
-            + ", mappingPrefix = \"" + mappingPrefix + "\"");
+          log.trace("virtual journal from rules: journal = \"" + journalName + "\"" +
+                    ", mappingPrefix = \"" + mappingPrefix + "\"");
         }
       }
     }
@@ -117,8 +110,8 @@ public class VirtualJournalContextFilter implements Filter {
       mappingPrefix  = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".mappingPrefix");
 
       if (log.isTraceEnabled()) {
-        log.trace("virtual journal from defaults: journal = \"" + journalName + "\""
-          + ", mappingPrefix = \"" + mappingPrefix + "\"");
+        log.trace("virtual journal from defaults: journal = \"" + journalName + "\"" +
+                  ", mappingPrefix = \"" + mappingPrefix + "\"");
       }
     }
 
@@ -146,8 +139,10 @@ public class VirtualJournalContextFilter implements Filter {
         request.getServerPort(), request.getServerName(),
         ((HttpServletRequest) request).getContextPath(), virtualJournals));
 
-    // establish a "Nested Diagnostic Context" for logging, e.g. prefix log entries w/journal name
-    // http://logging.apache.org/log4j/docs/api/org/apache/log4j/NDC.html
+    /*
+     * Establish a "Nested Diagnostic Context" for logging, e.g. prefix log entries w/journal name
+     * http://logging.apache.org/log4j/docs/api/org/apache/log4j/NDC.html
+     */
     NDC.push(journalName);
 
     try {
@@ -176,8 +171,7 @@ public class VirtualJournalContextFilter implements Filter {
     // process all <virtualjournal><journals> entries looking for a match
     final List<String> journals = configuration.getList(CONF_VIRTUALJOURNALS_JOURNALS);
     final Iterator<String> onJournal = journals.iterator();
-    while(onJournal.hasNext()
-      && virtualJournal == null) {
+    while (onJournal.hasNext() && virtualJournal == null) {
       final String journal = onJournal.next();
 
       if (log.isTraceEnabled()) {
@@ -204,7 +198,8 @@ public class VirtualJournalContextFilter implements Filter {
         if (reqHttpValue == null) {
           if (httpValue == null) {
             virtualJournal = journal;
-            mappingPrefix = configuration.getString(CONF_VIRTUALJOURNALS + "." + journal + ".mappingPrefix");
+            mappingPrefix = configuration.getString(CONF_VIRTUALJOURNALS + "." + journal +
+                                                    ".mappingPrefix");
             break;
           }
           continue;
@@ -212,7 +207,8 @@ public class VirtualJournalContextFilter implements Filter {
 
         if (reqHttpValue.matches(httpValue)) {
           virtualJournal = journal;
-          mappingPrefix = configuration.getString(CONF_VIRTUALJOURNALS + "." + journal + ".mappingPrefix");
+          mappingPrefix = configuration.getString(CONF_VIRTUALJOURNALS + "." + journal +
+                                                  ".mappingPrefix");
           break;
         }
       }

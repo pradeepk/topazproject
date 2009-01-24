@@ -44,7 +44,9 @@ import net.sf.saxon.TransformerFactoryImpl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.annotation.Required;
+
 import org.topazproject.ambra.article.service.Ingester;
 import org.topazproject.ambra.cache.OtmInterceptor;
 import org.topazproject.ambra.configuration.ConfigurationStore;
@@ -61,6 +63,7 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.util.TransactionHelper;
 import org.topazproject.xml.transform.cache.CachedSource;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -366,7 +369,8 @@ public class CitationMigrator implements Runnable {
     String k1 = getNotNull(old.getGivenNames()) + getNotNull(old.getSurnames());
     String k2 = getNotNull(nu.getGivenNames()) + getNotNull(nu.getSurnames());
     if (!k1.equals(k2))
-      throw new OtmException("Mismatch in Citation " + key + ". Expecting '" + k1 + "', got '" + k2 + "'");
+      throw new OtmException("Mismatch in Citation " + key + ". Expecting '" + k1 + "', got '" +
+                             k2 + "'");
 
     // Apply the changes from r6692, r6774 and r6867
     old.setRealName(nu.getRealName());

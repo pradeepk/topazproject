@@ -30,7 +30,6 @@ import com.sun.xacml.PDP;
  * @author Ronald Tschalär
  */
 public class ArticlePEP extends AbstractSimplePEP {
-
   /** The action that represents an ingest operation in XACML policies. */
   public static final String INGEST_ARTICLE = "articles:ingestArticle";
   /** The action that represents a delete operation in XACML policies. */
@@ -78,5 +77,4 @@ public class ArticlePEP extends AbstractSimplePEP {
   public ArticlePEP(PDP pdp) {
     super(pdp);
   }
-
 }
