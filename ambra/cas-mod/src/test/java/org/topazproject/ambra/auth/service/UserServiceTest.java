@@ -28,18 +28,18 @@ import java.util.Properties;
 
 public class UserServiceTest extends TestCase {
   private static final Log log = LogFactory.getLog(UserServiceTest.class);
+
   public void testUserIsFound() throws Exception {
     final Properties dbProperties = new Properties();
     dbProperties.setProperty("url", "jdbc:postgresql://localhost/postgres");
     dbProperties.setProperty("user", "postgres");
     dbProperties.setProperty("password", "postgres");
 
-    final DatabaseContext context = DatabaseContext.createDatabaseContext("org.postgresql.Driver", dbProperties, 2, 10, "select 1");
+    final DatabaseContext context = DatabaseContext.createDatabaseContext("org.postgresql.Driver",
+                                                                          dbProperties, 2, 10, "select 1");
 
-    final UserService userService
-            = new UserService(context, 
-              "select id from plos_user where loginname=?",
-              "select loginname from plos_user where id=?");
+    final UserService userService = new UserService(context, "select id from plos_user where loginname=?",
+                                                    "select loginname from plos_user where id=?");
     final String testUsername = "viru";
 
     final String guid = userService.getGuid(testUsername);
@@ -49,5 +49,4 @@ public class UserServiceTest extends TestCase {
     assertEquals(testUsername, username);
     log.debug(context.getStatus());
   }
-
 }

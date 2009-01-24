@@ -27,6 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -51,7 +52,8 @@ import java.io.PrintWriter;
 public class GetEmailAddress extends HttpServlet {
   private UserService userService;
 
-  protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+  protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
+    throws ServletException, IOException {
     response.setHeader("Pragma", "no-cache");
     response.setHeader("Cache-Control", "no-store");
     response.setDateHeader("Expires", -1);
@@ -66,13 +68,15 @@ public class GetEmailAddress extends HttpServlet {
 
   public void init(final ServletConfig servletConfig) throws ServletException {
     try {
-      userService = (UserService) (servletConfig.getServletContext().getAttribute(AuthConstants.USER_SERVICE));
+      userService = (UserService)
+        (servletConfig.getServletContext().getAttribute(AuthConstants.USER_SERVICE));
     } catch (final Exception ex) {
       throw new ServletException(ex);
     }
   }
 
-  protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+  protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
+    throws ServletException, IOException {
     doGet(request, response);
   }
 }

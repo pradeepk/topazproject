@@ -20,6 +20,7 @@ package org.topazproject.ambra.auth.web;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ambra.auth.AuthConstants;
 import org.topazproject.ambra.auth.db.DatabaseException;
 import org.topazproject.ambra.auth.service.UserService;
@@ -35,14 +36,15 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
+
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 
 /**
- * Replaces the Username with the user's GUID so that the username is the GUID for any responses to clients.
- * File to change when hosting
+ * Replaces the Username with the user's GUID so that the username is the GUID for any responses to
+ * clients.  File to change when hosting
  * esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/webapps/cas/WEB-INF/web.xml
  *
  *  <pre>
@@ -73,7 +75,8 @@ public class UsernameReplacementWithGuidFilter implements Filter {
     }
   }
 
-  public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain filterChain) throws IOException, ServletException {
+  public void doFilter(final ServletRequest request, final ServletResponse response,
+                       final FilterChain filterChain) throws IOException, ServletException {
     try {
       HttpServletRequest httpRequest = (HttpServletRequest) request;
 
@@ -140,22 +143,19 @@ public class UsernameReplacementWithGuidFilter implements Filter {
     log.debug(prefix + "----------------" + System.currentTimeMillis());
     log.debug("url:" + request.getRequestURL());
     log.debug("query string:" + request.getQueryString());
-    {
-      log.debug("Request Attributes:");
-      final Enumeration attribs = request.getAttributeNames();
-      while (attribs.hasMoreElements()) {
-        final String attribName = (String) attribs.nextElement();
-        log.debug(attribName + ":" + request.getAttribute(attribName).toString());
-      }
+
+    log.debug("Request Attributes:");
+    final Enumeration attribs = request.getAttributeNames();
+    while (attribs.hasMoreElements()) {
+      final String attribName = (String) attribs.nextElement();
+      log.debug(attribName + ":" + request.getAttribute(attribName).toString());
     }
 
-    {
-      log.debug("Request Parameters:");
-      final Enumeration params = request.getParameterNames();
-      while (params.hasMoreElements()) {
-        final String paramName = (String) params.nextElement();
-        log.debug(paramName + ":" + request.getParameterValues(paramName).toString());
-      }
+    log.debug("Request Parameters:");
+    final Enumeration params = request.getParameterNames();
+    while (params.hasMoreElements()) {
+      final String paramName = (String) params.nextElement();
+      log.debug(paramName + ":" + request.getParameterValues(paramName).toString());
     }
   }
 
@@ -171,7 +171,6 @@ public class UsernameReplacementWithGuidFilter implements Filter {
   public void destroy() {
   }
 }
-
 
 class CharResponseWrapper extends HttpServletResponseWrapper {
   private CharArrayWriter output;

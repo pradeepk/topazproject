@@ -31,7 +31,8 @@ public class UserService {
   private final String usernameToGuidSql;
   private final String guidToUsernameSql;
 
-  public UserService(final DatabaseContext context, final String usernameToGuidSql, final String guidToUsernameSql) {
+  public UserService(final DatabaseContext context, final String usernameToGuidSql,
+                     final String guidToUsernameSql) {
     this.usernameToGuidSql = usernameToGuidSql;
     this.guidToUsernameSql = guidToUsernameSql;
     this.context = context;
