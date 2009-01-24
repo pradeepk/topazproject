@@ -18,10 +18,12 @@
  */
 package org.topazproject.ambra.auth.web;
 
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.commons.configuration.Configuration;
+
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.auth.AuthConstants;
 import org.topazproject.ambra.auth.db.DatabaseContext;
@@ -31,7 +33,6 @@ import org.topazproject.ambra.auth.service.UserService;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContext;
-import java.util.Properties;
 
 /**
  * Initialize the DatabaseContext and UserService for cas.<p>
@@ -43,36 +44,34 @@ import java.util.Properties;
  * @author Eric Brown
  */
 public class AuthServletContextListener implements ServletContextListener {
-  private DatabaseContext dbContext;
   private static final Log log = LogFactory.getLog(AuthServletContextListener.class);
+
+  private static final String PREF = "ambra.services.cas.db.";
+
+  private DatabaseContext dbContext;
 
   public void contextInitialized(final ServletContextEvent event) {
     final ServletContext context = event.getServletContext();
 
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-    String url = conf.getString("ambra.services.cas.db.url");
+    String url = conf.getString(PREF + "url");
 
     final Properties dbProperties = new Properties();
     dbProperties.setProperty("url", url);
-    dbProperties.setProperty("user", conf.getString("ambra.services.cas.db.user"));
-    dbProperties.setProperty("password", conf.getString("ambra.services.cas.db.password"));
+    dbProperties.setProperty("user", conf.getString(PREF + "user"));
+    dbProperties.setProperty("password", conf.getString(PREF + "password"));
 
     try {
-      dbContext = DatabaseContext.createDatabaseContext(
-              conf.getString("ambra.services.cas.db.driver"),
-              dbProperties,
-              conf.getInt("ambra.services.cas.db.initialSize"),
-              conf.getInt("ambra.services.cas.db.maxActive"),
-              conf.getString("ambra.services.cas.db.connectionValidationQuery"));
+      dbContext = DatabaseContext.createDatabaseContext(conf.getString(PREF + "driver"),
+                                                        dbProperties, conf.getInt(PREF + "initialSize"),
+                                                        conf.getInt(PREF + "maxActive"),
+                                                        conf.getString(PREF + "connectionValidationQuery"));
     } catch (final DatabaseException ex) {
       throw new Error("Failed to initialize the database context to '" + url + "'", ex);
     }
 
-    final UserService userService = new UserService(
-                                          dbContext,
-                                          conf.getString("ambra.services.cas.db.usernameToGuidSql"),
-                                          conf.getString("ambra.services.cas.db.guidToUsernameSql"));
-
+    final UserService userService = new UserService(dbContext, conf.getString(PREF + "usernameToGuidSql"),
+                                                    conf.getString(PREF + "guidToUsernameSql"));
     context.setAttribute(AuthConstants.USER_SERVICE, userService);
   }
 
