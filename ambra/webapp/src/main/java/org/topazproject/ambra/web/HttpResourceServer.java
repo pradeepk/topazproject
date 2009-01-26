@@ -18,7 +18,6 @@
  */
 package org.topazproject.ambra.web;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -56,12 +55,12 @@ public class HttpResourceServer {
   /**
    * The input buffer size to use when serving resources.
    */
-  private static final int INPUT_BUFFER_SIZE = 2048;
+  private static final int INPUT_BUFFER_SIZE = 16384;
 
   /**
    * The output buffer size to use when serving resources.
    */
-  private static final int OUTPUT_BUFFER_SIZE = 2048;
+  private static final int OUTPUT_BUFFER_SIZE = 16384;
 
   /**
    * File encoding to be used when reading static files. If none is specified  UTF-8 is used.
@@ -669,11 +668,8 @@ public class HttpResourceServer {
       return;
     }
 
-    InputStream resourceInputStream = resource.streamContent();
-
-    InputStream istream = new BufferedInputStream(resourceInputStream, INPUT_BUFFER_SIZE);
-
     // Copy the input stream to the output stream
+    InputStream istream   = resource.streamContent();
     IOException exception = copyRange(istream, ostream);
 
     // Clean up the input stream
@@ -721,9 +717,8 @@ public class HttpResourceServer {
    */
   protected void copy(Resource resource, ServletOutputStream ostream, Range range)
                throws IOException {
-    InputStream resourceInputStream = resource.streamContent();
-    InputStream istream             = new BufferedInputStream(resourceInputStream, INPUT_BUFFER_SIZE);
-    IOException exception           = copyRange(istream, ostream, range.start, range.end);
+    InputStream istream   = resource.streamContent();
+    IOException exception = copyRange(istream, ostream, range.start, range.end);
 
     // Clean up the input stream
     istream.close();
@@ -775,10 +770,8 @@ public class HttpResourceServer {
     IOException exception = null;
 
     while ((exception == null) && (ranges.hasNext())) {
-      InputStream resourceInputStream = resource.streamContent();
-      InputStream istream             = new BufferedInputStream(resourceInputStream, INPUT_BUFFER_SIZE);
-
-      Range       currentRange        = (Range) ranges.next();
+      InputStream istream      = resource.streamContent();
+      Range       currentRange = (Range) ranges.next();
 
       // Writing MIME header.
       ostream.println();
