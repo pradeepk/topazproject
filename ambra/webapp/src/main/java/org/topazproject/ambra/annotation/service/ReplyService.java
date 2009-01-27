@@ -46,9 +46,11 @@ import com.sun.xacml.PDP;
  * Wrapper over reply web service
  */
 public class ReplyService extends BaseAnnotationService {
-  private static final Log     log         = LogFactory.getLog(ReplyService.class);
-  private RepliesPEP     pep;
-  private String defaultType;
+  private static final Log log = LogFactory.getLog(ReplyService.class);
+
+  private RepliesPEP pep;
+  private String     defaultType;
+
   /**
    * Create a new instance of ReplyService.
    *
@@ -122,8 +124,8 @@ public class ReplyService extends BaseAnnotationService {
   public void deleteReplies(final String root, final String inReplyTo)
                      throws OtmException, SecurityException {
     final List<Reply> all =
-      session.createCriteria(Reply.class).add(Restrictions.eq("root", root))
-              .add(Restrictions.eq("inReplyTo", inReplyTo)).list();
+      session.createCriteria(Reply.class).add(Restrictions.eq("root", root)).
+                                          add(Restrictions.eq("inReplyTo", inReplyTo)).list();
 
     for (Reply r : all)
       deleteReplies(r.getId().toString());
@@ -152,7 +154,7 @@ public class ReplyService extends BaseAnnotationService {
       pep.checkAccess(RepliesPEP.DELETE_REPLY, r.getId());
       if (r.getBody() != null)
         permissionsService.cancelPropagatePermissions(r.getId().toString(),
-                                               new String[] { r.getBody().getId() });
+                                                      new String[] { r.getBody().getId() });
       cancelPublicPermissions(r.getId().toString());
     }
 
@@ -190,7 +192,6 @@ public class ReplyService extends BaseAnnotationService {
     pep.checkAccess(RepliesPEP.GET_REPLY_INFO, URI.create(replyId));
 
     Reply a = session.get(Reply.class, replyId);
-
     if (a == null)
       throw new IllegalArgumentException("invalid reply id: " + replyId);
 
@@ -215,10 +216,10 @@ public class ReplyService extends BaseAnnotationService {
     pep.checkAccess(RepliesPEP.LIST_REPLIES, URI.create(inReplyTo));
 
     List<Reply> all =
-      session.createCriteria(Reply.class).add(Restrictions.eq("root", root))
-              .add(Restrictions.eq("inReplyTo", inReplyTo)).list();
+      session.createCriteria(Reply.class).add(Restrictions.eq("root", root)).
+                                          add(Restrictions.eq("inReplyTo", inReplyTo)).list();
 
-    List<Reply> l   = new ArrayList<Reply>(all.size());
+    List<Reply> l = new ArrayList<Reply>(all.size());
 
     for (Reply a : all) {
       try {
@@ -226,8 +227,8 @@ public class ReplyService extends BaseAnnotationService {
         l.add(a);
       } catch (Throwable t) {
         if (log.isDebugEnabled())
-          log.debug("no permission for viewing reply " + a.getId()
-                    + " and therefore removed from list");
+          log.debug("no permission for viewing reply " + a.getId() +
+                    " and therefore removed from list");
       }
     }
 
@@ -257,11 +258,11 @@ public class ReplyService extends BaseAnnotationService {
     if (inReplyTo.equals(root))
       all = session.createCriteria(ReplyThread.class).add(Restrictions.eq("root", root)).list();
     else
-      all = session.createCriteria(ReplyThread.class).add(Restrictions.eq("root", root))
-              .add(Restrictions.walk("inReplyTo", inReplyTo)).list();
+      all = session.createCriteria(ReplyThread.class).add(Restrictions.eq("root", root)).
+                                                      add(Restrictions.walk("inReplyTo",
+                                                                            inReplyTo)).list();
 
     List<ReplyThread> l   = new ArrayList<ReplyThread>(all);
-
     for (ReplyThread a : all) {
       try {
         if (l.contains(a))
@@ -269,8 +270,8 @@ public class ReplyService extends BaseAnnotationService {
       } catch (SecurityException t) {
         remove(l, a);  // remove this thread
         if (log.isDebugEnabled())
-          log.debug("no permission for viewing reply " + a.getId()
-                    + " and therefore removed from list");
+          log.debug("no permission for viewing reply " + a.getId() +
+                    " and therefore removed from list");
       }
     }
 
@@ -313,33 +314,16 @@ public class ReplyService extends BaseAnnotationService {
   @Transactional(rollbackFor = { Throwable.class })
   public void setPublicPermissions(final String id) throws OtmException, SecurityException {
     final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
-    permissionsService.grant(
-              id,
-              new String[]{
-                      RepliesPEP.GET_REPLY_INFO}, everyone);
-
-    permissionsService.revoke(
-              id,
-              new String[]{
-                      RepliesPEP.DELETE_REPLY}, everyone);
-
+    permissionsService.grant(id, new String[] { RepliesPEP.GET_REPLY_INFO }, everyone);
+    permissionsService.revoke(id, new String[] { RepliesPEP.DELETE_REPLY }, everyone);
   }
 
   @Transactional(rollbackFor = { Throwable.class })
   public void cancelPublicPermissions(final String id) throws OtmException, SecurityException {
     final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
-    permissionsService.cancelGrants(
-              id,
-              new String[]{
-                      RepliesPEP.GET_REPLY_INFO}, everyone);
-
-    permissionsService.cancelRevokes(
-              id,
-              new String[]{
-                      RepliesPEP.DELETE_REPLY}, everyone);
-
+    permissionsService.cancelGrants(id, new String[] { RepliesPEP.GET_REPLY_INFO }, everyone);
+    permissionsService.cancelRevokes(id, new String[] { RepliesPEP.DELETE_REPLY }, everyone);
   }
-
 
   /**
    * Set the default annotation type.
@@ -355,5 +339,4 @@ public class ReplyService extends BaseAnnotationService {
   public String getDefaultType() {
     return defaultType;
   }
-
 }
