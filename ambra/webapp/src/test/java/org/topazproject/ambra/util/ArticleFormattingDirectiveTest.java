@@ -46,7 +46,7 @@ public class ArticleFormattingDirectiveTest {
   }
 
   @Test(dataProvider = "content")
-  public void testItalic(String content, String expected) throws Exception {
+  public void testFormatting(String content, String expected) throws Exception {
     assertEquals(ArticleFormattingDirective.format(content), expected);
   }
 
