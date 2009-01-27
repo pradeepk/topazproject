@@ -28,9 +28,9 @@ import java.lang.annotation.Retention;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Alias {
-    /** the String is a uri. **/
+    /** the String is the full URI. **/
     String value();
 
-    /** the String is an alias. **/
+    /** the String is the alias. **/
     String alias();
 }

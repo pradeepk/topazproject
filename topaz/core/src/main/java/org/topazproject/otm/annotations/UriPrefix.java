@@ -26,7 +26,9 @@ import java.lang.annotation.Target;
 
 /**
  * An annotation for configuring the default uri-prefix for predicate uris that are
- * auto-generated from the field name.
+ * auto-generated from the field name. For convenience, this annotation is declard
+ * as '@Inherited'. This means a uri-prefix defined in any class or intreface is
+ * inherited by its sub-classes or implementors.
  *
  * @author Pradeep Krishnan
  */
@@ -35,6 +37,6 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface UriPrefix {
 
-    /** the String is a uri. **/
+    /** The URI prefix value **/
     String value();
 }

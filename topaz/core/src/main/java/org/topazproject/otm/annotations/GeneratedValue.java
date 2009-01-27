@@ -32,9 +32,13 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface GeneratedValue {
   /**
-   * The name of the generator class to use.
-   *
-   * NOTE: This may be deprecated later when we have a configuration file.
+   * The name of the generator class to use. The class must implement
+   * {@link org.topazproject.otm.id.IdentifierGenerator} and must have
+   * a no-argument Constructor and must be loadable by the Thread-Context
+   * ClassLoader. One instance of this class is created per declaration
+   * of this annotation and therefore the
+   * {@link org.topazproject.otm.id.IdentifierGenerator#generate}
+   * must be multi-thread safe.
    */
   String generatorClass() default "org.topazproject.otm.id.GUIDGenerator";
 
