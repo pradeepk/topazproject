@@ -69,7 +69,7 @@ public class Annotator {
     Regions        regions = new Regions(document);
 
     for (int i = 0; i < lists.length; i++) {
-      if (lists[i] != null){
+      if (lists[i] != null) {
         regions.addRegion(lists[i], annotations[i]);
       }
     }
@@ -132,7 +132,7 @@ public class Annotator {
     for (int i = 0; i < annotations.length; i++) {
       lists[i] = null;
       annotationContext = annotations[i].getContext();
-      if (annotationContext != null){
+      if (annotationContext != null) {
         URI    context    = new URI(annotationContext);
         String expression = context.getFragment();
         if (expression != null) {
