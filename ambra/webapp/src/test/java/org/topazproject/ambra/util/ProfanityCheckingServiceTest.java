@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,60 +18,77 @@
  */
 package org.topazproject.ambra.util;
 
-import junit.framework.TestCase;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.topazproject.ambra.util.ProfanityCheckingService;
+import org.testng.annotations.Test;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.BeforeClass;
+import static org.testng.Assert.assertEquals;
 
-public class ProfanityCheckingServiceTest extends TestCase {
-  public void testShouldCatchProfaneText() {
-    final ProfanityCheckingService service = new ProfanityCheckingService();
-    final Collection<String> profaneWordList = new ArrayList<String>();
+public class ProfanityCheckingServiceTest {
+
+  private ProfanityCheckingService service;
+  private Collection<String> profaneWordList;
+  private Collection<String> expectedAss;
+
+  @BeforeClass
+  public void setUp() {
+    service = new ProfanityCheckingService();
+    profaneWordList = new ArrayList<String>();
     profaneWordList.add("ASS");
     profaneWordList.add("bush");
     service.setProfaneWords(profaneWordList);
-    found("ass", service);
-    found(" ass", service);
-    found("  ass", service);
-    found("  \nass", service);
-    found("aSS", service);
-    found("am ass", service);
-    found(".ass", service);
-    found(" some ass", service);
-    found("+ass", service);
-    found("-ass", service);
-    found(" ass", service);
-    found(" some before Ass and some after", service);
-    found(" some /n before and some after/n before Ass and some after", service);
-    found(" (Ass ", service);
-    found("[Ass]", service);
-    found("[Ass] and bush", 2, service);
+    expectedAss = new ArrayList<String>();
+    expectedAss.add("ASS");
   }
 
-  public void testShouldAllowTextWhichIsNotProfane() {
-    final ProfanityCheckingService service = new ProfanityCheckingService();
-    final Collection<String> profaneWordList = new ArrayList<String>();
-    profaneWordList.add("BUSH");
-    service.setProfaneWords(profaneWordList);
-    notFound("ambush", service);
-    notFound(" some ambush", service);
-    notFound(" amBush ", service);
-    notFound(" some before amBush and some after", service);
-    notFound(" some /n before some before some /n before amBush and some after /n adter", service);
+  @DataProvider(name = "asses")
+  public String[][] createAss() {
+    return new String[][]{
+        {"ass"},
+        {" ass"},
+        {"  ass"},
+        {"  \nass"},
+        {"aSS"},
+        {"am ass"},
+        {".ass"},
+        {" some ass"},
+        {"+ass"},
+        {"-ass"},
+        {" ass"},
+        {" some before Ass and some after"},
+        {" some /n before and some after/n before Ass and some after"},
+        {" (Ass "},
+        {"[Ass]"},
+    };
   }
 
-  private void notFound(final String content, final ProfanityCheckingService service) {
-    assertEquals("["+content+"]", 0, service.validate(content).size());
+  @DataProvider(name = "nonProfanity")
+  public String[][] createNonProfanity() {
+    return new String[][]{
+        {"ambush"},
+        {" some ambush"},
+        {" amBush "},
+        {" some before amBush and some after"},
+        {" some /n before some before some /n before amBush and some after /n adter"}
+    };
   }
 
-  private void found(final String content, final ProfanityCheckingService service) {
-    found(content, 1, service);
+
+  @Test(dataProvider = "asses")
+  public void testShouldCatchProfaneText(String word) {
+    assertEquals(service.validate(word), expectedAss, "Profanity not caught");
   }
 
-  private void found(final String content, final int total, final ProfanityCheckingService service) {
-    assertEquals("["+content+"]", total, service.validate(content).size());
+  @Test
+  public void testShouldCatchMultipleProfaneText() {
+    assertEquals(service.validate("[Ass] and bush"), profaneWordList, "Profanity not caught");
+  }
+
+  @Test(dataProvider = "nonProfanity")
+  public void testShouldAllowTextWhichIsNotProfane(String word) {
+    assertEquals(service.validate(word).size(), 0, "Wrong word caught");
   }
 
 }
