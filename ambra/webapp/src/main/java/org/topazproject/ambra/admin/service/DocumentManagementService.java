@@ -370,7 +370,7 @@ public class DocumentManagementService {
 
   /**
    * @param uri
-   * @return a string usable as a distinct filename - ':', '/' and '.' -> '_'
+   * @return a string usable as a distinct filename - ':', '/' and '.' -&gt; '_'
    */
   private String uriToFilename(String uri) {
     return uri.replace(':', '_').replace('/', '_').replace('.', '_');
