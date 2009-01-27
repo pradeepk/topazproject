@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,65 +18,130 @@
  */
 package org.topazproject.ambra.util;
 
-import org.topazproject.ambra.util.TextUtils;
+import org.testng.annotations.Test;
+import org.testng.annotations.DataProvider;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
 
-import junit.framework.TestCase;
 
-public class TextUtilsTest extends TestCase {
-  public void testValidatesUrl() {
-    assertFalse(TextUtils.verifyUrl("http://"));
-    assertFalse(TextUtils.verifyUrl("ftp://"));
-    assertFalse(TextUtils.verifyUrl("..."));
-    assertFalse(TextUtils.verifyUrl("\\"));
-    assertFalse(TextUtils.verifyUrl("http://google.com\\"));
-    assertFalse(TextUtils.verifyUrl("http://www.google.com\\"));
-    assertFalse(TextUtils.verifyUrl("google.com\\"));
-    assertFalse(TextUtils.verifyUrl("--"));
-    assertFalse(TextUtils.verifyUrl("httpss:\\..."));
-    assertFalse(TextUtils.verifyUrl("ftps://www.google.com"));
-    assertFalse(TextUtils.verifyUrl("asdasdasd"));
-    assertFalse(TextUtils.verifyUrl("123123"));
-    assertFalse(TextUtils.verifyUrl("http://www.yahoo.com:asas"));
-    assertFalse(TextUtils.verifyUrl("http://www.   yahoo.com:asas"));
+public class TextUtilsTest {
 
-    assertTrue(TextUtils.verifyUrl("http://www.yahoo.com"));
-    assertTrue(TextUtils.verifyUrl("http://www.yahoo.com:9090"));
-    assertTrue(TextUtils.verifyUrl("http://www.yahoo.com/"));
-    assertTrue(TextUtils.verifyUrl("https://www.yahoo.com/"));
-    assertTrue(TextUtils.verifyUrl("ftp://www.yahoo.com/"));
-    assertTrue(TextUtils.verifyUrl("http://www.google.com//something#somewhere"));
-    assertTrue(TextUtils.verifyUrl("ftp://..."));
+  @DataProvider(name = "brokenUrls")
+  public String[][] createBrokenData() {
+    return new String[][]{
+        {"http://"},
+        {"ftp://"},
+        {"..."},
+        {"\\"},
+        {"http://google.com\\"},
+        {"http://www.google.com\\"},
+        {"google.com\\"},
+        {"--"},
+        {"httpss:\\..."},
+        {"ftps://www.google.com"},
+        {"asdasdasd"},
+        {"123123"},
+        {"http://www.yahoo.com:asas"},
+        {"http://www.   yahoo.com:asas"},
+    };
   }
 
-  public void testMakeUrl() throws Exception {
-    assertEquals("http://www.google.com", TextUtils.makeValidUrl("www.google.com"));
-    assertEquals("http://www.google.com", TextUtils.makeValidUrl("http://www.google.com"));
-    assertEquals("ftp://www.google.com", TextUtils.makeValidUrl("ftp://www.google.com"));
-    assertEquals("https://www.google.com", TextUtils.makeValidUrl("https://www.google.com"));
+  @DataProvider(name = "correctUrls")
+  public String[][] createCorrectData() {
+    return new String[][]{
+        {"http://www.yahoo.com"},
+        {"http://www.yahoo.com:9090"},
+        {"http://www.yahoo.com/"},
+        {"https://www.yahoo.com/"},
+        {"ftp://www.yahoo.com/"},
+        {"http://www.google.com//something#somewhere"},
+        {"ftp://..."},
+    };
   }
 
-  public void testMaliciousContent() {
-    assertTrue(TextUtils.isPotentiallyMalicious("<"));
-    assertTrue(TextUtils.isPotentiallyMalicious("something<script"));
-    assertTrue(TextUtils.isPotentiallyMalicious("something>"));
-    assertTrue(TextUtils.isPotentiallyMalicious("someth&ing"));
-    assertTrue(TextUtils.isPotentiallyMalicious("someth%ing"));
-    assertTrue(TextUtils.isPotentiallyMalicious(">something"));
-    assertTrue(TextUtils.isPotentiallyMalicious("s%omething"));
-    assertTrue(TextUtils.isPotentiallyMalicious("somet)hing"));
-    assertTrue(TextUtils.isPotentiallyMalicious("(something"));
-    assertTrue(TextUtils.isPotentiallyMalicious("someth'ing+"));
-    assertTrue(TextUtils.isPotentiallyMalicious("somethin\"g"));
-    assertFalse(TextUtils.isPotentiallyMalicious("something."));
+  @DataProvider(name = "makeUrls")
+  public String[][] createMakeData() {
+    return new String[][]{
+        {"www.google.com", "http://www.google.com"},
+        {"http://www.google.com", "http://www.google.com"},
+        {"ftp://www.google.com", "ftp://www.google.com"},
+        {"https://www.google.com", "https://www.google.com"},
+    };
   }
 
-  public void testHyperLink() {
-    assertEquals("Ï<a href=\"http://www.google.com\">www.google.com</a>" , TextUtils.hyperlink("Ïwww.google.com"));
-    assertEquals("Ï" , TextUtils.hyperlink("Ï"));
+  @DataProvider(name = "malicious")
+  public String[][] createMaliciousData() {
+    return new String[][]{
+        {"<"},
+        {"something<script"},
+        {"something>"},
+        {"someth&ing"},
+        {"someth%ing"},
+        {">something"},
+        {"s%omething"},
+        {"somet)hing"},
+        {"(something"},
+        {"someth'ing+"},
+        {"somethin\"g"}
+    };
   }
 
-  public void testEscapeAndHyperlink() {
-    assertEquals("<p>&Iuml;<a href=\"http://www.google.com\">www.google.com</a></p>" , TextUtils.escapeAndHyperlink("Ïwww.google.com"));
-    assertEquals("<p>&Iuml;</p>" , TextUtils.escapeAndHyperlink("Ï"));
+  @DataProvider(name = "nonMalicious")
+  public String[][] createNonMaliciousData() {
+    return new String[][]{
+        {"something."}
+    };
+  }
+
+  @DataProvider(name = "hyperlinks")
+  public String[][] createHyperlinks() {
+    return new String[][]{
+        {"Ïwww.google.com", "Ï<a href=\"http://www.google.com\">www.google.com</a>"},
+        {"Ï", "Ï"}
+    };
+  }
+
+  @DataProvider(name = "escapeHyperlinks")
+  public String[][] createEscapeHyperlinks() {
+    return new String[][]{
+        {"Ïwww.google.com", "<p>&Iuml;<a href=\"http://www.google.com\">www.google.com</a></p>"},
+        {"Ï", "<p>&Iuml;</p>",}
+    };
+  }
+
+  @Test(dataProvider = "brokenUrls")
+  public void testValidatesBrokenUrl(String url) {
+    assertFalse(TextUtils.verifyUrl(url));
+  }
+
+  @Test(dataProvider = "correctUrls")
+  public void testValidatesCorrectUrl(String url) {
+    assertTrue(TextUtils.verifyUrl(url));
+  }
+
+  @Test(dataProvider = "makeUrls")
+  public void testMakeUrl(String url, String expected) throws Exception {
+    assertEquals(TextUtils.makeValidUrl(url), expected);
+  }
+
+  @Test(dataProvider = "malicious")
+  public void testMaliciousContent(String data) {
+    assertTrue(TextUtils.isPotentiallyMalicious(data));
+  }
+
+  @Test(dataProvider = "nonMalicious")
+  public void testNonMaliciousContent(String data) {
+    assertFalse(TextUtils.isPotentiallyMalicious(data));
+  }
+
+  @Test(dataProvider = "hyperlinks")
+  public void testHyperLink(String hyperlink, String expected) {
+    assertEquals(TextUtils.hyperlink(hyperlink), expected);
+  }
+
+  @Test(dataProvider = "escapeHyperlinks")
+  public void testEscapeAndHyperlink(String hyperlink, String expected) {
+    assertEquals(TextUtils.escapeAndHyperlink(hyperlink), expected);
   }
 }
