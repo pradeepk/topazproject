@@ -35,39 +35,39 @@ import java.io.IOException;
  */
 public class HttpResourceServerTest {
   private HttpResourceServer server;
-  private MockHttpServletResponse responseMock;
-  private MockHttpServletRequest requestMock;
   private static final String EXPECTED_TEXT = "Hello World !";
   private static final String EXPECTED_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
       "<test>Hello World !</test>";
-  private HttpResourceServer.Resource txtResource;
-  private HttpResourceServer.Resource xmlResource;
+  private URL xmlUrl;
+  private URL txtUrl;
 
   @BeforeClass
   protected void setUpClass() throws Exception {
-    txtResource = new HttpResourceServer.URLResource(this.getClass().getResource("/TestResource.txt"));
-    xmlResource = new HttpResourceServer.URLResource(this.getClass().getResource("/TestResource.xml"));
+    xmlUrl = this.getClass().getResource("/TestResource.xml");
+    txtUrl = this.getClass().getResource("/TestResource.txt");
   }
 
   @BeforeMethod
   protected void setUpMethod() throws Exception {
     server = new HttpResourceServer();
-    responseMock = new MockHttpServletResponse();
-    requestMock = new MockHttpServletRequest();
   }
 
   @Test
   public void testServerResourceTxt() throws IOException {
-    server.serveResource(requestMock, responseMock, txtResource);
+    MockHttpServletResponse responseMock = new MockHttpServletResponse();
+    MockHttpServletRequest requestMock = new MockHttpServletRequest();
+    server.serveResource(requestMock, responseMock, new HttpResourceServer.URLResource(txtUrl));
     assertEquals(responseMock.getContentAsString(), EXPECTED_TEXT, "Wrong content served");
     assertEquals(responseMock.getContentType(), "text/plain", "Wrong content type");
-    int length = EXPECTED_TEXT.getBytes().length;
-    assertEquals(responseMock.getContentLength(), length, "Wrong content length");
+    assertEquals(responseMock.getContentLength(), EXPECTED_TEXT.getBytes().length,
+        "Wrong content length");
   }
 
   @Test
   public void testServerResourceXml() throws IOException {
-    server.serveResource(requestMock, responseMock, xmlResource);
+    MockHttpServletResponse responseMock = new MockHttpServletResponse();
+    MockHttpServletRequest requestMock = new MockHttpServletRequest();
+    server.serveResource(requestMock, responseMock, new HttpResourceServer.URLResource(xmlUrl));
     assertEquals(responseMock.getContentAsString(), EXPECTED_XML, "Wrong content served");
     assertEquals(responseMock.getContentType(), "application/xml", "Wrong content type");
     assertEquals(responseMock.getContentLength(), EXPECTED_XML.getBytes().length,
@@ -76,8 +76,10 @@ public class HttpResourceServerTest {
 
   @Test
   public void testServerResourceForHead() throws IOException {
+    MockHttpServletResponse responseMock = new MockHttpServletResponse();
+    MockHttpServletRequest requestMock = new MockHttpServletRequest();
     requestMock.setMethod("HEAD");
-    server.serveResource(requestMock, responseMock, txtResource);
+    server.serveResource(requestMock, responseMock, new HttpResourceServer.URLResource(txtUrl));
     assertEquals(responseMock.getContentAsString(), "", "Content is not empty");
     assertEquals(responseMock.getContentType(), "text/plain", "Wrong content type");
     assertEquals(responseMock.getContentLength(), EXPECTED_TEXT.getBytes().length,
@@ -86,7 +88,9 @@ public class HttpResourceServerTest {
 
   @Test
   public void testServerResourceWithContent() throws IOException {
-    server.serveResource(requestMock, responseMock, true, txtResource);
+    MockHttpServletResponse responseMock = new MockHttpServletResponse();
+    MockHttpServletRequest requestMock = new MockHttpServletRequest();
+    server.serveResource(requestMock, responseMock, true, new HttpResourceServer.URLResource(txtUrl));
     assertEquals(responseMock.getContentAsString(), EXPECTED_TEXT, "Wrong content served");
     assertEquals(responseMock.getContentType(), "text/plain", "Wrong content type");
     assertEquals(responseMock.getContentLength(), EXPECTED_TEXT.getBytes().length,
@@ -95,7 +99,9 @@ public class HttpResourceServerTest {
 
   @Test
   public void testServerResourceWithoutContent() throws IOException {
-    server.serveResource(requestMock, responseMock, false, txtResource);
+    MockHttpServletResponse responseMock = new MockHttpServletResponse();
+    MockHttpServletRequest requestMock = new MockHttpServletRequest();
+    server.serveResource(requestMock, responseMock, false, new HttpResourceServer.URLResource(txtUrl));
     assertEquals(responseMock.getContentAsString(), "", "Content is not empty");
     assertEquals(responseMock.getContentType(), "text/plain", "Wrong content type");
     assertEquals(responseMock.getContentLength(), EXPECTED_TEXT.getBytes().length,
