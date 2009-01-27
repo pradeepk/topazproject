@@ -105,9 +105,11 @@ public class AnnotationModel {
     node.appendChild(document.createTextNode(annotation.getCreatedAsString()));
     parent.appendChild(node);
 
-    node = document.createElementNS(aNs, "a:body");
-    node.setAttributeNS(rNs, "r:resource", annotation.getBody().getId());
-    parent.appendChild(node);
+    if (annotation.getBody() != null) {
+      node = document.createElementNS(aNs, "a:body");
+      node.setAttributeNS(rNs, "r:resource", annotation.getBody().getId());
+      parent.appendChild(node);
+    }
 
     Annotation<?> supersedes = annotation.getSupersedes();
 

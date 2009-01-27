@@ -150,7 +150,8 @@ public class ReplyService extends BaseAnnotationService {
 
     for (Reply r : all) {
       pep.checkAccess(RepliesPEP.DELETE_REPLY, r.getId());
-      permissionsService.cancelPropagatePermissions(r.getId().toString(),
+      if (r.getBody() != null)
+        permissionsService.cancelPropagatePermissions(r.getId().toString(),
                                                new String[] { r.getBody().getId() });
       cancelPublicPermissions(r.getId().toString());
     }
