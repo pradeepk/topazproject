@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.models.Citation;
-import org.topazproject.ambra.struts2.Span;
 
 /**
  * Action to create a citation.  Does not care what the output format is.
@@ -39,7 +38,6 @@ import org.topazproject.ambra.struts2.Span;
  *
  */
 @SuppressWarnings("serial")
-@Span(@Transactional(readOnly = true))
 public class CreateCitation extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(CreateCitation.class);
 
@@ -54,10 +52,12 @@ public class CreateCitation extends BaseActionSupport {
    * Get Citation object from database
    */
   @Override
+  @Transactional(readOnly = true)
   public String execute () throws Exception {
     citation = articleOtmService.getArticle(URI.create(articleURI))
                                 .getDublinCore()
                                 .getBibliographicCitation();
+    citation.getAuthors();
     return SUCCESS;
   }
 

@@ -35,7 +35,6 @@ import org.topazproject.ambra.annotation.service.WebReply;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Citation;
-import org.topazproject.ambra.struts2.Span;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -76,7 +75,7 @@ public class ListReplyAction extends BaseActionSupport {
    *
    * @return webwork status for the call
    */
-  @Span(@Transactional(readOnly = true))
+  @Transactional(readOnly = true)
   public String listAllReplies() {
     try {
       /*
@@ -102,6 +101,7 @@ public class ListReplyAction extends BaseActionSupport {
       if(baseAnnotation.isFormalCorrection()) {
         // lock @ Article level
         citation = article.getDublinCore().getBibliographicCitation();
+        citation.getAuthors();
       }
     } catch (Exception ae) {
       citation = null;
