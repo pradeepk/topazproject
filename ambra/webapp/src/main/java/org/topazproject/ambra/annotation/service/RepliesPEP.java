@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -69,8 +69,8 @@ public class RepliesPEP extends AbstractSimplePEP {
    */
   public static final String[] SUPPORTED_ACTIONS =
     new String[] {
-                   CREATE_REPLY, DELETE_REPLY, GET_REPLY_INFO, LIST_REPLIES, LIST_ALL_REPLIES,
-                   LIST_REPLIES_IN_STATE, SET_REPLY_STATE
+      CREATE_REPLY, DELETE_REPLY, GET_REPLY_INFO, LIST_REPLIES, LIST_ALL_REPLIES,
+      LIST_REPLIES_IN_STATE, SET_REPLY_STATE
     };
 
   /**

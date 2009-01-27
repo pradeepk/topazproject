@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
  * limitations under the License.
  */
 package org.topazproject.ambra.annotation.service;
-
 
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
 
@@ -76,8 +75,8 @@ public class AnnotationsPEP extends AbstractSimplePEP {
    */
   public static final String[] SUPPORTED_ACTIONS =
     new String[] {
-                   CREATE_ANNOTATION, DELETE_ANNOTATION, UPDATE_ANNOTATION, GET_ANNOTATION_INFO,
-                   SUPERSEDE, LIST_ANNOTATIONS, LIST_ANNOTATIONS_IN_STATE, SET_ANNOTATION_STATE
+      CREATE_ANNOTATION, DELETE_ANNOTATION, UPDATE_ANNOTATION, GET_ANNOTATION_INFO,
+      SUPERSEDE, LIST_ANNOTATIONS, LIST_ANNOTATIONS_IN_STATE, SET_ANNOTATION_STATE
     };
 
   /**

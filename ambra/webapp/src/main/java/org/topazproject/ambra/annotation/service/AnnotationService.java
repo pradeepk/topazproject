@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -135,8 +135,8 @@ public class AnnotationService extends BaseAnnotationService {
     blob.getBody().writeAll(body.getBytes(getEncodingCharset()));
 
     if (log.isDebugEnabled())
-      log.debug("created annotaion " + newId + " for " + target + " with body in blob "
-          + blob.getId());
+      log.debug("created annotaion " + newId + " for " + target + " with body in blob " +
+                blob.getId());
 
     permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
 
@@ -155,8 +155,7 @@ public class AnnotationService extends BaseAnnotationService {
    * @throws SecurityException if a security policy prevented this operation
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public void deleteAnnotation(final String annotationId)
-    throws OtmException, SecurityException {
+  public void deleteAnnotation(final String annotationId) throws OtmException, SecurityException {
     pep.checkAccess(AnnotationsPEP.DELETE_ANNOTATION, URI.create(annotationId));
     ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
 
@@ -185,7 +184,7 @@ public class AnnotationService extends BaseAnnotationService {
       session.flush();
 
     // lock @ Article level
-    final Object     lock           = (FetchArticleService.ARTICLE_LOCK + target).intern();
+    final Object lock = (FetchArticleService.ARTICLE_LOCK + target).intern();
 
     return articleAnnotationCache.get(ANNOTATED_KEY + target, -1,
           new Cache.SynchronizedLookup<List<ArticleAnnotation>, OtmException>(lock) {
@@ -199,8 +198,8 @@ public class AnnotationService extends BaseAnnotationService {
   private List<ArticleAnnotation> filterAnnotations(List<ArticleAnnotation> allAnnotations,
       Set<Class<?extends ArticleAnnotation>> annotationClassTypes) {
 
-    if ((annotationClassTypes == null) || (annotationClassTypes.size() == 0)
-       || ALL_ANNOTATION_CLASSES.equals(annotationClassTypes))
+    if ((annotationClassTypes == null) || (annotationClassTypes.size() == 0) ||
+        ALL_ANNOTATION_CLASSES.equals(annotationClassTypes))
       return allAnnotations;
 
     List<ArticleAnnotation> filteredAnnotations = new
@@ -258,9 +257,9 @@ public class AnnotationService extends BaseAnnotationService {
    */
   @Transactional(readOnly = true)
   public List<ArticleAnnotation> getAnnotations(String articleId, Date startDate, Date endDate,
-      String mediator, List<String> annotType,int[] states, boolean ascending,
-      int maxResults) throws ParseException, URISyntaxException {
-
+                                                String mediator, List<String> annotType,
+                                                int[] states, boolean ascending, int maxResults)
+  throws ParseException, URISyntaxException {
     List<String> annotationIds = getAnnotationIds(articleId, startDate, endDate, mediator,
                                                   annotType, states, ascending, maxResults);
 
@@ -287,9 +286,9 @@ public class AnnotationService extends BaseAnnotationService {
    */
   @Transactional(readOnly = true)
   public List<String> getAnnotationIds(String targetId, Date startDate, Date endDate,
-      String mediator, List<String> annotType, int[] states, boolean ascending,
-      int maxResults) throws ParseException, URISyntaxException {
-
+                                       String mediator, List<String> annotType, int[] states,
+                                       boolean ascending, int maxResults)
+  throws ParseException, URISyntaxException {
     StringBuilder qry = new StringBuilder();
 
     if (targetId != null) {
@@ -391,7 +390,6 @@ public class AnnotationService extends BaseAnnotationService {
 
         if (a != null)
           annotationList.add(a);
-
       } catch (SecurityException se) {
         if (log.isDebugEnabled())
           log.debug("Filtering URI " + id + " from Article list due to PEP SecurityException", se);
@@ -409,7 +407,7 @@ public class AnnotationService extends BaseAnnotationService {
    * @param state the state to filter by (0 for all non-zero, -1 to not restrict by state)
    */
   private static void setRestrictions(Criteria c, final String target, final String mediator,
-      final int state) {
+                                      final int state) {
     if (mediator != null) {
       c.add(Restrictions.eq("mediator", mediator));
     }
@@ -456,8 +454,8 @@ public class AnnotationService extends BaseAnnotationService {
         filtered.add(a);
       } catch (Throwable t) {
         if (log.isDebugEnabled())
-          log.debug("no permission for viewing annotation " + a.getId()
-                    + " and therefore removed from list");
+          log.debug("no permission for viewing annotation " + a.getId() +
+                    " and therefore removed from list");
       }
     }
 
@@ -525,7 +523,7 @@ public class AnnotationService extends BaseAnnotationService {
    */
   @Transactional(readOnly = true)
   public ArticleAnnotation[] listAnnotations(final String mediator, final int state)
-                                   throws OtmException, SecurityException {
+  throws OtmException, SecurityException {
     pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS_IN_STATE, AbstractSimplePEP.ANY_RESOURCE);
     List<ArticleAnnotation> annotations =
       loadAnnotations(null, mediator, state, ALL_ANNOTATION_CLASSES);
@@ -617,7 +615,7 @@ public class AnnotationService extends BaseAnnotationService {
 
     if (log.isDebugEnabled()) {
       log.debug("Comment created with ID: " + annotationId + " for user: " + user +
-                  " for IP: " + ServletActionContext.getRequest().getRemoteAddr());
+                " for IP: " + ServletActionContext.getRequest().getRemoteAddr());
     }
 
     return annotationId;
@@ -633,34 +631,28 @@ public class AnnotationService extends BaseAnnotationService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void setPublicPermissions(final String annotationDoi)
-                throws OtmException, SecurityException {
+  throws OtmException, SecurityException {
     final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
-    permissionsService.grant(
-            annotationDoi,
-            new String[]{
-                    AnnotationsPEP.GET_ANNOTATION_INFO}, everyone);
+    permissionsService.grant(annotationDoi,
+                             new String[] { AnnotationsPEP.GET_ANNOTATION_INFO}, everyone);
 
-    permissionsService.revoke(
-            annotationDoi,
-            new String[]{
-                    AnnotationsPEP.DELETE_ANNOTATION,
-                    AnnotationsPEP.SUPERSEDE}, everyone);
+    permissionsService.revoke(annotationDoi,
+                              new String[] { AnnotationsPEP.DELETE_ANNOTATION,
+                                             AnnotationsPEP.SUPERSEDE },
+                              everyone);
   }
 
   @Transactional(rollbackFor = { Throwable.class })
   public void cancelPublicPermissions(final String annotationDoi)
                 throws OtmException, SecurityException {
     final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
-    permissionsService.cancelGrants(
-            annotationDoi,
-            new String[]{
-                    AnnotationsPEP.GET_ANNOTATION_INFO}, everyone);
+    permissionsService.cancelGrants(annotationDoi,
+                                    new String[] { AnnotationsPEP.GET_ANNOTATION_INFO }, everyone);
 
-    permissionsService.cancelRevokes(
-            annotationDoi,
-            new String[]{
-                    AnnotationsPEP.DELETE_ANNOTATION,
-                    AnnotationsPEP.SUPERSEDE}, everyone);
+    permissionsService.cancelRevokes(annotationDoi,
+                                     new String[] { AnnotationsPEP.DELETE_ANNOTATION,
+                                                    AnnotationsPEP.SUPERSEDE },
+                                     everyone);
   }
 
   /**
@@ -684,13 +676,15 @@ public class AnnotationService extends BaseAnnotationService {
   private class Invalidator extends AbstractObjectListener {
     @Override
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
-        Updates updates) {
+                              Updates updates) {
       handleEvent(id, o, updates, false);
     }
+
     @Override
     public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
       handleEvent(id, o, null, true);
     }
+
     private void handleEvent(String id, Object o, Updates updates, boolean removed) {
       if ((o instanceof Article) && removed) {
         if (log.isDebugEnabled())
@@ -701,7 +695,7 @@ public class AnnotationService extends BaseAnnotationService {
           log.debug("ArticleAnnotation changed/deleted. Invalidating annotation list " +
               " for the target this was annotating or is about to annotate.");
         articleAnnotationCache.remove(ANNOTATED_KEY +
-            ((ArticleAnnotation)o).getAnnotates().toString());
+                                      ((ArticleAnnotation)o).getAnnotates().toString());
         if ((updates != null) && updates.isChanged("annotates")) {
            List<String> v = updates.getOldValue("annotates");
            if (v.size() == 1)

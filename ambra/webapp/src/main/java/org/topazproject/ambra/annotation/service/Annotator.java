@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,8 +66,7 @@ public class Annotator {
                            throws URISyntaxException, TransformerException {
     LocationList[] lists = evaluate(document, annotations);
 
-    Regions        regions = new Regions(document);
-
+    Regions regions = new Regions(document);
     for (int i = 0; i < lists.length; i++) {
       if (lists[i] != null) {
         regions.addRegion(lists[i], annotations[i]);
@@ -91,7 +90,6 @@ public class Annotator {
     AnnotationModel.appendNSAttr(aRoot);
 
     ArticleAnnotation annotation;
-
     for (int i = 0; i < annotations.length; i++) {
       annotation = annotations[i];
       if ((lists[i] != null) && (annotation.getContext() != null)) {
@@ -124,7 +122,7 @@ public class Annotator {
   }
 
   private static LocationList[] evaluate(Document document, ArticleAnnotation[] annotations)
-                                  throws URISyntaxException, TransformerException {
+    throws URISyntaxException, TransformerException {
     LocationList[] lists = new LocationList[annotations.length];
 
     String annotationContext;
@@ -192,7 +190,6 @@ public class Annotator {
       }
     }
 
-
     @SuppressWarnings("unchecked")
     public Element createElement(String nsUri, String elemQName, String annotationsQName,
                                  String idAttrQName) {
@@ -210,7 +207,6 @@ public class Annotator {
         List<ArticleAnnotation> annotations = get(i).getUserDataList();
 
         int  c = annotations.size();
-
         for (int j = 0; j < c; j++) {
           ArticleAnnotation a     = annotations.get(j);
           Element        aNode = document.createElementNS(nsUri, annotationsQName);
@@ -242,5 +238,4 @@ public class Annotator {
       return root;
     }
   }
-
 }

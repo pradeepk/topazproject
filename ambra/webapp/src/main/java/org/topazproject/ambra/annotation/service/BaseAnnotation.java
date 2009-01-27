@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,6 +38,7 @@ import com.googlecode.jsonplugin.annotations.JSON;
 public abstract class BaseAnnotation<T extends Annotea<? extends Blob>> {
   /** An integer constant to indicate a unique value for the  */
   private static final int TRUNCATED_COMMENT_LENGTH = 256;
+
   protected final T annotea;
   protected final String originalBodyContent;
   protected final String creatorName;
@@ -80,6 +81,7 @@ public abstract class BaseAnnotation<T extends Annotea<? extends Blob>> {
       comment = comment.substring(0, index) + abrsfx;
       assert comment.length() <= TRUNCATED_COMMENT_LENGTH;
     }
+
     return TextUtils.hyperlinkEnclosedWithPTags(comment, 25);
   }
 

@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,7 @@ import java.net.URI;
 import org.topazproject.ambra.models.Annotation;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.otm.Rdf;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -68,7 +69,6 @@ public class AnnotationModel {
     element.setAttributeNS(xmlns, "xmlns:topaz", topaz.toString());
   }
 
-
   /**
    * Append annotation meta data to a parent node.
    *
@@ -112,7 +112,6 @@ public class AnnotationModel {
     }
 
     Annotation<?> supersedes = annotation.getSupersedes();
-
     if (supersedes != null) {
       node = document.createElementNS(dtNs, "dt:replaces");
       node.setAttributeNS(rNs, "r:resource", supersedes.getId().toString());
@@ -120,7 +119,6 @@ public class AnnotationModel {
     }
 
     Annotation<?> supersededBy = annotation.getSupersededBy();
-
     if (supersededBy != null) {
       node = document.createElementNS(dtNs, "dt:isReplacedBy");
       node.setAttributeNS(rNs, "r:resource", supersededBy.getId().toString());
@@ -128,7 +126,6 @@ public class AnnotationModel {
     }
 
     String title = annotation.getTitle();
-
     if (title != null) {
       node = document.createElementNS(dNs, "d:title");
       node.appendChild(document.createTextNode(title));
@@ -136,7 +133,6 @@ public class AnnotationModel {
     }
 
     String mediator = annotation.getMediator();
-
     if (mediator != null) {
       node = document.createElementNS(dtNs, "dt:mediator");
       node.appendChild(document.createTextNode(mediator));

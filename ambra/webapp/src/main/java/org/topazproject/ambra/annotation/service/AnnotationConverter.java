@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,6 +44,7 @@ import org.topazproject.otm.OtmException;
  */
 public class AnnotationConverter {
   private static final Log log = LogFactory.getLog(AnnotationConverter.class);
+
   private UserService userService;
 
   /**
@@ -73,7 +74,7 @@ public class AnnotationConverter {
    */
   @Transactional(readOnly = true)
   public List<WebAnnotation> convert(final List<ArticleAnnotation> annotations,
-      boolean needCreatorName,boolean needBody) {
+                                     boolean needCreatorName,boolean needBody) {
     final List<WebAnnotation> wa  = new ArrayList<WebAnnotation>();
 
     for (ArticleAnnotation annotation : annotations) {
@@ -92,7 +93,7 @@ public class AnnotationConverter {
    */
   @Transactional(readOnly = true)
   public Flag[] convertAsFlags(final ArticleAnnotation[] annotations, boolean needCreatorName,
-                                 boolean needBody) {
+                               boolean needBody) {
     final Flag flags[]  = new Flag[annotations.length];
 
     for (int i = 0; i < annotations.length; i++)
@@ -140,7 +141,7 @@ public class AnnotationConverter {
    */
   @Transactional(readOnly = true)
   public WebReply[] convert(final Reply[] replies, Commentary com, boolean needCreatorName,
-      boolean needBody) {
+                            boolean needBody) {
     final List<WebReply> webReplies = new ArrayList<WebReply>();
     final LinkedHashMap<String, WebReply> repliesMap =
       new LinkedHashMap<String, WebReply>(replies.length);
@@ -158,21 +159,23 @@ public class AnnotationConverter {
       repliesMap.put(reply.getId().toString(), convertedObj);
 
       final String replyTo = reply.getInReplyTo();
-      //Setup the top level replies
+      // Setup the top level replies
       if (replyTo.equals(annotationId)) {
         webReplies.add(convertedObj);
       }
     }
 
-    //Thread the replies in a parent/child structure
+    // Thread the replies in a parent/child structure
     for (final Map.Entry<String, WebReply> entry : repliesMap.entrySet()) {
       final WebReply savedReply = entry.getValue();
       final String inReplyToId = savedReply.getInReplyTo();
 
       if (!inReplyToId.equals(annotationId)) {
         final WebReply inReplyTo = repliesMap.get(inReplyToId);
-        // If the replies are in reply to another reply and that reply isn't present
-        // then just add them to the top. This only happens when the array passed in is a subtree
+        /*
+         * If the replies are in reply to another reply and that reply isn't present then just add
+         * them to the top. This only happens when the array passed in is a subtree
+         */
         if (null == inReplyTo) {
           webReplies.add(savedReply);
         } else {
