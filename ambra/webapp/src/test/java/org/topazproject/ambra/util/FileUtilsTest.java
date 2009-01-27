@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,23 +19,42 @@
 
 package org.topazproject.ambra.util;
 
-import junit.framework.TestCase;
-
 import java.net.URISyntaxException;
 
-import org.topazproject.ambra.util.FileUtils;
+import org.testng.annotations.Test;
+import org.testng.annotations.DataProvider;
+import static org.testng.Assert.assertEquals;
 
-public class FileUtilsTest extends TestCase {
-  public void testFileNameExtraction() throws URISyntaxException {
-    assertEquals("TransformerFactory.html", FileUtils.getFileName("http://java.sun.com/j2se/1.4.2/docs/api/javax/xml/transform/TransformerFactory.html"));
-    assertEquals("TransformerFactory.txt", FileUtils.getFileName("/1.4.2/docs/api/javax/xml/transform/TransformerFactory.txt"));
-    assertEquals("TransformerFactory.txt", FileUtils.getFileName("C:\\1.4.2\\docs\\api\\javax\\xml\\transform\\TransformerFactory.txt"));
+public class FileUtilsTest {
+
+  @DataProvider(name = "files")
+  public String[][] createFiles() {
+    return new String[][]{
+        {"http://java.sun.com/j2se/1.4.2/docs/api/javax/xml/transform/TransformerFactory.html",
+          "TransformerFactory.html"},
+        {"/1.4.2/docs/api/javax/xml/transform/TransformerFactory.txt", "TransformerFactory.txt"},
+        {"C:\\1.4.2\\docs\\api\\javax\\xml\\transform\\TransformerFactory.txt",
+          "TransformerFactory.txt"}
+    };
   }
 
-  public void testFileExtForMimeType() throws Exception {
-    assertEquals("tiff", FileUtils.getDefaultFileExtByMimeType("image/tiff"));
-    assertEquals("html", FileUtils.getDefaultFileExtByMimeType("text/html"));
-    assertEquals("xml", FileUtils.getDefaultFileExtByMimeType("text/xml"));
-    assertEquals("ps", FileUtils.getDefaultFileExtByMimeType("application/postscript"));
+  @DataProvider(name = "mimeTypes")
+  public String[][] createMimeTypes() {
+    return new String[][]{
+        {"image/tiff", "tiff"},
+        {"text/html", "html"},
+        {"text/xml", "xml"},
+        {"application/postscript", "ps"},
+    };
+  }
+
+  @Test(dataProvider = "files")
+  public void testFileNameExtraction(String filename, String expected) throws URISyntaxException {
+    assertEquals(FileUtils.getFileName(filename), expected);
+  }
+
+  @Test(dataProvider = "mimeTypes")
+  public void testFileExtForMimeType(String mimeType, String expected) throws Exception {
+    assertEquals(FileUtils.getDefaultFileExtByMimeType(mimeType), expected);
   }
 }

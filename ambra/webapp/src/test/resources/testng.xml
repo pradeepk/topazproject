@@ -16,6 +16,7 @@
       <class name="org.topazproject.ambra.util.ArticleFormattingDirectiveTest"/>
       <class name="org.topazproject.ambra.util.ProfanityCheckingServiceTest"/>
       <class name="org.topazproject.ambra.util.TextUtilsTest"/>
+      <class name="org.topazproject.ambra.util.FileUtilsTest"/>
     </classes>
   </test>
 </suite>
