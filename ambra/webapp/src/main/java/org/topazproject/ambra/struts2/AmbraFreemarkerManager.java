@@ -79,7 +79,7 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
 
       public Object findTemplateSource(String name) throws IOException {
 
-        // requests are in form /jorurnals/<journal_name>/<package>/template.ftl
+        // requests are in form /journals/<journal_name>/<package>/template.ftl
 
         // First: look in journal-specific folders
         Object  r = s.findTemplateSource("struts/" + name);
