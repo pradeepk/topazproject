@@ -71,6 +71,7 @@ import org.topazproject.otm.query.Results;
 public class ClassBinder<T> implements EntityBinder {
   private final Class<T>           clazz;
   private final boolean            instantiable;
+  private final boolean            suppressAlias;
   private ClassMetadata            cm;
   private Map<Method, FieldBinder> llInterceptors = new HashMap<Method, FieldBinder>();
   private Class<?extends T>        proxy;
@@ -82,7 +83,19 @@ public class ClassBinder<T> implements EntityBinder {
    * @param clazz the java class to bind this entity to
    */
   public ClassBinder(Class<T> clazz) {
+    this(clazz, false);
+  }
+
+  /**
+   * Creates a new ClassBinder object.
+   *
+   * @param clazz the java class to bind this entity to
+   * @param suppressAlias to dis-allow registration of the class name as an alias. 
+   *                      This allows binding the same class to multiple entities.
+   */
+  public ClassBinder(Class<T> clazz, boolean suppressAlias) {
     this.clazz = clazz;
+    this.suppressAlias = suppressAlias;
 
     int mod = clazz.getModifiers();
     instantiable = !Modifier.isAbstract(mod) && !Modifier.isInterface(mod)
@@ -499,7 +512,7 @@ public class ClassBinder<T> implements EntityBinder {
    * inherited javadoc
    */
   public String[] getNames() {
-    return new String[] { clazz.getName() };
+    return suppressAlias ? new String[] {} : new String[] { clazz.getName() };
   }
 
   public static interface WriteReplace {
