@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,11 +34,61 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
   
-    <h2>RC 0.9 rc1 beta</h2>
-<p>Released July 16, 2008</p>
-<h3>Features implemented in RC 0.9 rc1</h3>
+  	<h2>RC 0.9.1 beta</h2>
+	<p>Released January 29, 2009</p>
+	<h3>Features Implemented in RC 0.9.1 beta</h3>
+	<ul>
+		<li>Revamp of Ambra search to use Mulgara (does not include update to the search UI)</li>
+		<li>Support of article packages greater than 4Gb in size</li>
+		<li>Support of article packages in tar format</li>
+		<li>Support for very large assets (e.g. supporting info files) outside of memory</li>
+		<li>Fixes to formal corrections</li>
+		<li>Fixes to citations</li>
+		<li>Fixes to citation downloads</li>
+		<li>Article-level feeds for top-level notes/comments on an article</li>
+		<li>Updates to admin panel for administering notes/comments</li>
+		<li>Many fixes to the UI including line wrap for long gene sequences, browser-specific bugs, wrapping long URLs in annotations/articles, etc.</li>
+		<li>Cleanup of content models, back-end bug fixes, etc.</li>
+	</ul>
+	<p>For more detail on RC 0.9.1, see the <a href="http://www.topazproject.org/trac/query?status=new&status=assigned&status=reopened&status=closed&milestone=0.9.1&order=priority" title="Topaz 0.9.1 Tickets">Topaz Wiki</a></p>
+
+
+	<h2>RC 0.9.0</h2>
+	<p>Released September 1, 2008</p>
+	<h3>Features Implemented in RC 0.9.0</h3>
+	<ul>
+		<li>Upgrade to Mulgara 2.0.1</li>
+		<li>Upgrade to Ehcache 1.4.1</li>
+		<li>Moved to Bitronix Transaction Manager because of bug in JOTM</li>
+		<li>Object level caching for applications</li>
+		<li>Rework of ingest to peform image processing pre-ingest and improve performance</li>
+		<li>Upgrade to Dojo 1.1</li>
+		<li>Mulgara write-lock cleanup</li>
+		<li>Many enhancements to improve performance and stability</li>
+		<li>Many fixes to the UI including volumes/issues, correction annotations, ratings, slideshow figures, etc.</li> 
+		<li>Cleanup of content models, back-end bug fixes, etc.</li>
+	</ul>
+	<p>For more detail on RC 0.9.0, see the <a href="http://www.topazproject.org/trac/query?status=new&status=assigned&status=reopened&status=closed&milestone=0.9.0&order=priority" title="Topaz 0.9.0 Tickets">Topaz Wiki</a></p>
+
+	
+<h2>RC 0.9 beta</h2>
+<p>Released September 10, 2008</p>
+<h3>Features implemented in RC 0.9 beta</h3>
 <ul>
-<li>Pre-ingest script (process_sip) for images transforms.</li>
+<li>Upgraded to Mulgara 2.0.1</li>
+</ul>
+<h3>Features fixed in RC 0.9 beta</h3>
+<ul>
+<li>Pre-ingest script (prepare-sip) bug fixes.</li>
+<li>Fixed error in search results.</li>
+<li>Various bug fixes.</li>
+</ul>
+
+<h2>RC 0.9 rc1 beta</h2>
+<p>Released July 16, 2008</p>
+<h3>Features implemented in RC 0.9 rc1 beta</h3>
+<ul>
+<li>Pre-ingest script (prepare-sip) for images transforms.</li>
 <li>Re-architected the cache code.</li>
 <li>Moved transactions to read-only queries where possible.</li>
 <li>Optimized slideshow retrieval/display.</li>
@@ -50,8 +100,7 @@
 <li>Upgraded to ehCache 1.4.1.</li>
 <li>Many Ambra configuration changes for ease of installation.</li>
 </ul>
-
-<h3>Features fixed in RC 0.9 rc1</h3>
+<h3>Features fixed in RC 0.9 rc1 beta </h3>
 <ul>
 <li>Safari bugs fixed; ratings, drop-down menus.</li>
 <li>Ingest fixes; ingest doesn't change .mov to .qt; ingest handles .swf files.</li>
@@ -62,7 +111,7 @@
   
 	<h2>RC 0.8.2.1 beta</h2>
 	<p>Released February 26, 2008</p>
-	<h3>Features Implemented in RC 0.8.2.1</h3>
+	<h3>Features Implemented in RC 0.8.2.1 beta</h3>
 	<ul>
 		<li>Minor corrections on articles</li>
 		<li>Formal corrections on articles</li>
@@ -79,9 +128,7 @@
 		<li>Support for note DOIs in the DOI resolver</li>
 		<li>Dynamic "Most Viewed" tab for journal home pages</li>
 	</ul>
-
-	<h3>Features fixed in RC 0.8.2.1</h3>
-
+	<h3>Features fixed in RC 0.8.2.1 beta</h3>
 	<ul>
 		<li>Nomenclature of annotations/discussions changed to notes/comments</li>
 		<li>Dynamic Table of Contents with article caching</li>
@@ -96,10 +143,9 @@
 		<li>Table of Contents displays "Author Summary" links for research articles</li>
 	</ul>
 
-
   <h2>RC 0.8.2 beta</h2>
   <p>Released January 11, 2008</p>
-  <h3>Features implemented in RC 0.8.2</h3>
+  <h3>Features implemented in RC 0.8.2 beta</h3>
   <ul>
 	<li>Fixes to Browse by Issue (Table of Contents) to add more article types and next/previous links</li>
 	<li>A dynamic Browse by Journal (Journal Archive) page</li>
@@ -113,7 +159,7 @@
   
   <h2>RC 0.8.1 beta</h2>
   <p>Released October 25, 2007</p>
-  <h3>Features implemented in RC 0.8.1</h3>
+  <h3>Features implemented in RC 0.8.1 beta</h3>
   <ul>
 	<li>Display links to related articles on Article and Browse pages</li>
 	<li>Administrative interface for collecting Articles into Issue and Issues into Volumes</li>
@@ -123,7 +169,7 @@
 
   <h2>RC 0.8 beta</h2>
   <p>Released September 20, 2007</p>
-  <h3>Features implemented in RC 0.8:</h3>
+  <h3>Features implemented in RC 0.8 beta</h3>
   <ul>
   	<li>Enable multiple journals using a single repository</li>
 	<li>Skins for multiple journals</li>
@@ -139,7 +185,7 @@
 
   <h2>RC 0.7 beta</h2>
   <p>Released July 9, 2007</p>
-  <h3>Features implemented in RC 0.7:</h3>
+  <h3>Features implemented in RC 0.7 beta</h3>
   <ul>
     <li>Ratings feature</li>
     <li>Architecture overhaul</li>
@@ -152,7 +198,7 @@
 
   <h2>RC 0.6 beta</h2>
   <p>Released April 20, 2007</p>
-  <h3>Features implemented in RC 0.6:</h3>
+  <h3>Features implemented in RC 0.6 beta</h3>
   <ul>
     <li>Browse features</li>
     <li>Full Safari support</li>
@@ -171,7 +217,7 @@
   
   <a name="credits"></a>
   <h2>Site Credits</h2>
-	<p>Many of the icons are adapted from the <a href="http://www.famfamfam.com/lab/icons/silk/">Silk Icon</a> set, courtesy FamFamFam.</p>
+  <p>Many of the icons are adapted from the <a href="http://www.famfamfam.com/lab/icons/silk/">Silk Icon</a> set, courtesy FamFamFam.</p>
   
 </div>
 <!-- end : main contents -->
