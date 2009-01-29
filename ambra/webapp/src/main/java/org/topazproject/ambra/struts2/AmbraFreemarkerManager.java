@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -79,33 +79,49 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
 
       public Object findTemplateSource(String name) throws IOException {
 
-        // requests are in form /journals/<journal_name>/<package>/template.ftl
+        // requests are in form journals/<journal_name>/<package>/template.ftl
 
-        // First: look in journal-specific folders
-        Object  r = s.findTemplateSource("struts/" + name);
-        if (r != null)
-          return r;
+        Object templateSource;
+
+        // First: look in journal-specific override
+        if (name.startsWith("journals")) {
+          templateSource =  s.findTemplateSource(name);
+          if (templateSource != null)
+            return templateSource;
+        }
+
+        // Second: look in journal-specific folders the way they are packed in jars
+        templateSource = s.findTemplateSource("struts/" + name);
+        if (templateSource != null)
+          return templateSource;
 
 
         String templateName = AmbraFreemarkerConfig.trimJournalFromTemplatePath(name);
 
-        // Second: look in plos default folders
-        r = s.findTemplateSource("journals/plosJournals/" + templateName);
-        if (r != null)
-          return r;
+        // Third: look in plos default folders
+        templateSource = s.findTemplateSource("journals/plosJournals/" + templateName);
+        if (templateSource != null)
+          return templateSource;
 
-        // Third: look in the ambra default folders
-        r = s.findTemplateSource(templateName);
-        if (r != null)
-          return r;
+        // Fourth: look in the ambra default folders
+        templateSource = s.findTemplateSource(templateName);
+        if (templateSource != null)
+          return templateSource;
 
-        // FIXME: theme inheritance is hard coded
-        // NOTE: The real fix is in struts. See WW-1832
-        r = s.findTemplateSource(name);
-        if (r != null)
-          return r;
+        // Fifth: look at the path for templates (does not start with "journals")
+        templateSource = s.findTemplateSource(name);
+        if (templateSource != null)
+          return templateSource;
 
-        return s.findTemplateSource(name.replace("ambra-theme", "simple"));
+        /*
+         * Sixth: try struts default theme
+         * FIXME: theme inheritance is hard coded
+         * NOTE: The real fix is in struts. See WW-1832
+         */
+        if (name.indexOf("ambra-theme") >= 0)
+          return s.findTemplateSource(name.replace("ambra-theme", "simple"));
+        else
+          return null;
 
       }
 
