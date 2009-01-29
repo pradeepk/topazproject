@@ -82,21 +82,22 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
         // requests are in form journals/<journal_name>/<package>/template.ftl
 
         Object templateSource;
+        String templateName = name;
 
         // First: look in journal-specific override
         if (name.startsWith("journals")) {
-          templateSource =  s.findTemplateSource(name);
+          templateSource = s.findTemplateSource(name);
           if (templateSource != null)
             return templateSource;
+
+          // Second: look in journal-specific folders the way they are packed in jars
+          templateSource = s.findTemplateSource("struts/" + name);
+          if (templateSource != null)
+            return templateSource;
+
+
+          templateName = AmbraFreemarkerConfig.trimJournalFromTemplatePath(name);
         }
-
-        // Second: look in journal-specific folders the way they are packed in jars
-        templateSource = s.findTemplateSource("struts/" + name);
-        if (templateSource != null)
-          return templateSource;
-
-
-        String templateName = AmbraFreemarkerConfig.trimJournalFromTemplatePath(name);
 
         // Third: look in plos default folders
         templateSource = s.findTemplateSource("journals/plosJournals/" + templateName);
