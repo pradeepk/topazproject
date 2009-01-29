@@ -47,6 +47,9 @@
       <result-type name="headless" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
         <param name="location">/templates/headless_template.ftl</param>
       </result-type>
+      <result-type name="naked" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
+        <param name="location">/templates/naked_template.ftl</param>
+      </result-type>
       <result-type name="user" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
         <param name="location">/templates/user_shared_template.ftl</param>
       </result-type>
@@ -177,15 +180,21 @@
     </action>
 
     <action name="recentArticles" class="org.topazproject.ambra.action.HomePageAction">
-      <result name="success">/article/recentArticles.ftl</result>
+      <result name="success" type="naked">
+        <param name="templateFile">/article/recentArticles.ftl</param>
+      </result>
     </action>
 
     <action name="mostCommented" class="org.topazproject.ambra.action.HomePageAction">
-      <result name="success">/article/mostCommented.ftl</result>
+      <result name="success" type="naked">
+        <param name="templateFile">/article/mostCommented.ftl</param>
+      </result>
     </action>
 
     <action name="mostViewed" class="org.topazproject.ambra.action.HomePageAction">
-      <result name="success">/article/mostViewed.ftl</result>
+      <result name="success" type="naked">
+        <param name="templateFile">/article/mostViewed.ftl</param>
+      </result>
     </action>
 
     <action name="feedbackCreate" class="org.topazproject.ambra.action.FeedbackAction" method="executeRender">
