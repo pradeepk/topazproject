@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ambra-js</artifactId>
   <packaging>pom</packaging>
-  <version>0.9.1_rc1</version>
+  <version>0.9.1_rc2-SNAPSHOT</version>
   <name>Ambra Javascript Libraries</name>
   <description>
     Home for the dojo library and the custom dojo widets used by the web application.
@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra-libs</artifactId>
-    <version>0.9.1_rc1</version>
+    <version>0.9.1_rc2-SNAPSHOT</version>
   </parent>
 
   <build>
