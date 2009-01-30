@@ -4,13 +4,13 @@
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra-libs</artifactId>
-    <version>0.9.1_rc1</version>
+    <version>0.9.1-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dom-ranges-helper</artifactId>
   <name>Ambra DOM ranges helper</name>
-  <version>0.9.1_rc1</version>
+  <version>0.9.1-SNAPSHOT</version>
 
   <dependencies>
     <dependency>
