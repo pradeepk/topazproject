@@ -118,7 +118,7 @@ div.recent a:visited		{ font-weight: bold; }*/
 .col:after 					{content:".";display:block;height:0;clear:both;visibility:hidden;}	
 #lower,
 .col 						{zoom:1;} /* IE */
-#lower h3					{ background-color: #ddd; letter-spacing: normal; font-size: 1em; margin-right: 10px 0; padding: 1px 5px; font-family: Verdana, Arial, Helvetica, sans-serif; }
+#lower h3					{ background-color: #ddd; letter-spacing: normal; font-size: 1em; margin-right: 10px; padding: 1px 5px; font-family: Verdana, Arial, Helvetica, sans-serif; }
 
 /* all homepage content blocks are wrapped in class block for padding to avoid ie box model */
 div.block 				{ margin:0; padding:0; clear: both; position: relative;}

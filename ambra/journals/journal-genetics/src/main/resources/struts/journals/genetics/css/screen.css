@@ -117,7 +117,7 @@ input,textarea { font-family: Verdana, Arial, Helvetica, sans-serif; color: #555
 .noshow { display:block; height:0px; line-height:0em; }
 
 /* can be applied to elements that need to be present in the flow but not impact vertical spacing, e.g. in-page anchors */
-.clearer { clear: both; line-height: 0; height: 0; display: hidden; }
+.clearer { clear: both; line-height: 0; height: 0; display: none; }
 
 /* Global : Icons and Links
 ----------------------------------------------------------
@@ -843,7 +843,7 @@ p#issueNav a:link,
 p#issueNav a:visited { text-decoration:none; }
 p#issueNav a:hover { text-decoration:underline; }
 div.toc div#rhc { margin-top:-9px; padding-top:0; }
-div.toc div#rhc div#floatMarker { line-height:0; margin:0; padding:0; display:hidden; } /* see floatingMenu.js */
+div.toc div#rhc div#floatMarker { line-height:0; margin:0; padding:0; display:none; } /* see floatingMenu.js */
 div.toc h1,
 div.archive h1  { width:99%; margin-bottom: 20px; padding-top: 10px; border-top: 6px solid #c90; }
 div#issueImage { margin:30px 0 15px 0; }

@@ -28,7 +28,7 @@ IE PC fixes
 * html ul, ol, dl	{ position: relative; } /* fixes disappearing background list ie bug */
 
 
-* html #nav li a, *html #nav li a:visited { /*width:12em; w\idth:7.6em; /* hack for IE5.5 */ overflow: visible;}
+* html #nav li a, * html #nav li a:visited { /*width:12em; w\idth:7.6em; /* hack for IE5.5 */ overflow: visible;}
 * html #nav li a:hover ul li a {
 	width:16em; w\idth:16em; /* hack for IE5.5 */
 }
@@ -104,7 +104,7 @@ html>body #home { height: auto }
 *:first-child+html div.banner object { margin-top: 8px; }
 
 *:first-child+html a.bug,
-*:first-child+html a:visited.bug, { margin-bottom: -20px!important; }
+*:first-child+html a:visited.bug { margin-bottom: -20px!important; }
 
 * html span.inline-rating { display: inline; position: relative; left: -85px; top: 14px; }
 * html div.commentview fieldset { margin-top: 3px; }
