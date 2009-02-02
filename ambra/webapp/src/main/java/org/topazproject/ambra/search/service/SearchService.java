@@ -345,7 +345,7 @@ public class SearchService {
 
       for (BooleanClause c : (List<BooleanClause>) lq.clauses()) {
         if (c.isProhibited()) {
-          buildOql(c.getQuery(), sel, whr, scnt);
+          buildOql(c.getQuery(), sel, whr, null);
           whr.append(" or ");
         }
       }
@@ -429,7 +429,7 @@ public class SearchService {
    * @param lq   the lucene range query; it's expected to be in &lt;field&gt;:&lt;query&gt; format
    * @param sel  the oql select clause
    * @param whr  the oql where clause
-   * @param scnt the current score-variable counter
+   * @param scnt the current score-variable counter, or null if no scores should be generated
    */
   private void buildOql(ConstantScoreRangeQuery lq, StringBuilder sel, StringBuilder whr,
                         int[] scnt) {
@@ -473,7 +473,7 @@ public class SearchService {
    * @param qs   the lucene query; it's expected to be in &lt;field&gt;:&lt;query&gt; format
    * @param sel  the oql select clause
    * @param whr  the oql where clause
-   * @param scnt the current score-variable counter
+   * @param scnt the current score-variable counter, or null if no scores should be generated
    */
   private void buildOql(String qs, StringBuilder sel, StringBuilder whr, int[] scnt) {
     int colon = qs.indexOf(':');
@@ -489,9 +489,13 @@ public class SearchService {
       //if (isSearchable(fexpr)) {
       if (SRCHB_MAP.get(field)) {
         whr.append("search(").append(fexpr).append(", '").
-            append(RdfUtil.escapeLiteral(text)).append("', score").append(scnt[0]).
-            append(") or ");
-        sel.append(", score").append(scnt[0]++).append(" ");
+            append(RdfUtil.escapeLiteral(text)).append("'");
+        if (scnt != null)
+          whr.append(", score").append(scnt[0]);
+        whr.append(") or ");
+
+        if (scnt != null)
+          sel.append(", score").append(scnt[0]++).append(" ");
       } else {
         whr.append(fexpr).append(" = '").append(RdfUtil.escapeLiteral(text)).append("'").
             append(DT_MAP.containsKey(field) ? DT_MAP.get(field) : "").
