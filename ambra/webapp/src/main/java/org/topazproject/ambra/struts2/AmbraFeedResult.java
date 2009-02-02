@@ -138,15 +138,15 @@ public class AmbraFeedResult extends Feed implements Result {
   }
 
   private String FEED_ID() {
-    return jrnlConfGetStr("ambra.services.feed.id",FEED_ID_DEF);
+    return jrnlConfGetStr("ambra.services.feed.id", FEED_ID_DEF);
   }
 
   private String FEED_EXTENDED_NS(){
-    return jrnlConfGetStr ("ambra.services.feed.extended.namespace",FEED_NS_DEF);
+    return jrnlConfGetStr("ambra.services.feed.extended.namespace", FEED_NS_DEF);
   }
 
   private String FEED_EXTENDED_PREFIX() {
-    return jrnlConfGetStr("ambra.services.feed.extended.prefix",PREFIX_DEF);
+    return jrnlConfGetStr("ambra.services.feed.extended.prefix", PREFIX_DEF);
   }
 
   private String JOURNAL_EMAIL_GENERAL(){
@@ -154,13 +154,13 @@ public class AmbraFeedResult extends Feed implements Result {
   }
 
   private String JOURNAL_COPYRIGHT() {
-    return jrnlConfGetStr("ambra.platform.copyright",COPYRIGHT_DEF);
+    return jrnlConfGetStr("ambra.platform.copyright", COPYRIGHT_DEF);
   }
 
   /**
    *  AmbraFeedResult constructor. Creates a atom_1.0 wire feed with UTF-8 encoding.
    */
-  public AmbraFeedResult () {
+  public AmbraFeedResult() {
     super("atom_1.0");
     setEncoding("UTF-8");
   }
@@ -187,7 +187,7 @@ public class AmbraFeedResult extends Feed implements Result {
     setXmlBase(JRNL_URI());
 
     // Get the article IDs that were cached by the feed.
-    Key cacheKey = (Key)ai.getStack().findValue("cacheKey");
+    Key cacheKey = (Key) ai.getStack().findValue("cacheKey");
     List<String> articleIds = (List<String>) ai.getStack().findValue("Ids");
     FEED_TYPES t =  cacheKey.feedType();
 
@@ -252,7 +252,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @return List of entries for the feed
    * @throws Exception   Exception
    */
-  private List<Entry> buildAnnotationFeed (String xmlBase) throws Exception {
+  private List<Entry> buildAnnotationFeed(String xmlBase) throws Exception {
     // Add each Article as a Feed Entry
     List<Entry> entries = new ArrayList<Entry>();
 
@@ -266,7 +266,7 @@ public class AmbraFeedResult extends Feed implements Result {
       art = articleFeedService.getArticles(IDs);
 
       // Link to annotation via xmlbase
-      Link selfLink = newSelfLink (annot, xmlBase);
+      Link selfLink = newSelfLink(annot, xmlBase);
       altLinks.add(selfLink);
 
       // Link to article via xmlbase
@@ -328,7 +328,7 @@ public class AmbraFeedResult extends Feed implements Result {
       List<Link> altLinks = new ArrayList<Link>();
 
       // Link to article via xmlbase
-      Link selfLink = newSelfLink (article, xmlBase);
+      Link selfLink = newSelfLink(article, xmlBase);
       altLinks.add(selfLink);
 
       // Get a list of alternative representations of the article
@@ -365,7 +365,7 @@ public class AmbraFeedResult extends Feed implements Result {
         }
       }
 
-      List <Content> contents = newContentsList(cacheKey,article,authorNames,authors.size());
+      List <Content> contents = newContentsList(cacheKey, article, authorNames, authors.size());
       entry.setContents(contents);
 
       // Add completed Entry to List
@@ -481,7 +481,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @throws ApplicationException   ApplicationException
    */
 
-  private List<Content>newAnnotationsList (WebAnnotation annotation, Link link)
+  private List<Content>newAnnotationsList(WebAnnotation annotation, Link link)
                          throws ApplicationException {
     List<Content> contents = new ArrayList<Content>();
     Content description = new Content();
@@ -591,7 +591,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param xmlBase XML base
    * @return  Link  an alternate link to the article
    */
-  private Link newAltLink (Article article, Representation rep, String xmlBase) {
+  private Link newAltLink(Article article, Representation rep, String xmlBase) {
     Link altLink = new Link();
     DublinCore dc = article.getDublinCore();
 
@@ -611,7 +611,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param xmlBase  xml base of article
    * @return  link to the article
    */
-  private Link newSelfLink (WebAnnotation annot, String xmlBase) {
+  private Link newSelfLink(WebAnnotation annot, String xmlBase) {
     Link link = new Link();
     String href = xmlBase + "annotation/listThread.action?inReplyTo=";
     String url = doiToUrl(annot.getId());
@@ -629,7 +629,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param xmlBase  xml base of article
    * @return  link to the article
    */
-  private Link newSelfLink (Article article, String xmlBase) {
+  private Link newSelfLink(Article article, String xmlBase) {
     Link link = new Link();
     DublinCore dc = article.getDublinCore();
     String url = doiToUrl(dc.getIdentifier());
@@ -754,7 +754,7 @@ public class AmbraFeedResult extends Feed implements Result {
    *
    * @return String identifier generated for this feed
    */
-  private String newFeedID (Key cacheKey) {
+  private String newFeedID(Key cacheKey) {
     String id = FEED_ID();
     if (cacheKey.getCategory() != null && cacheKey.getCategory().length() > 0)
       id += "?category=" + cacheKey.getCategory();
