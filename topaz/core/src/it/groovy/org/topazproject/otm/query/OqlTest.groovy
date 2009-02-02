@@ -1812,6 +1812,11 @@ public class OqlTest extends AbstractTest {
       cfd = new CriteriaFilterDefinition("critFC", dc)
       assertEquals("select o from Article o, Annotation v1 where ((o.title = 'foo' or o.authors = 'blah')) and (o = cast(v1.annotates, Article) and ((v1.created != '2007-07-08T00:00:00.000Z'^^<http://www.w3.org/2001/XMLSchema#dateTime>) and (v21 := cast(v1.supersedes, PublicAnnotation) and ((v21.note = 'a dog')))));", cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString())
 
+      // empty criteria
+      dc = new DetachedCriteria("Article")
+      cfd = new CriteriaFilterDefinition("critEC", dc)
+      assertEquals("select o from Article o;", cfd.createFilter(s).getQuery().toString())
+
       // oql -> criteria
       def qry = """select o from Article o where
         (o.title = 'foo' or o.authors = :auth) and o.nextObject.uri = <foo:bar> and

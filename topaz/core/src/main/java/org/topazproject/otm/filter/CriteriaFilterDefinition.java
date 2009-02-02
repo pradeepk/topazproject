@@ -130,7 +130,7 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
         where.append(")) and ");
       }
 
-      if (where.substring(where.length() - 5).equals(" and "))
+      if (where.length() >= 5 && where.substring(where.length() - 5).equals(" and "))
         where.setLength(where.length() - 5);
     }
   }
