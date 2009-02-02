@@ -45,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.cache.Cache;
+import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.search.SearchResultPage;
 import org.topazproject.ambra.user.AmbraUser;
@@ -72,6 +73,7 @@ public class SearchService {
   private Configuration configuration;
 
   private ArticleOtmService articleService;
+  private JournalService    journalService;
   private Session           session;
   private Cache             cache;
 
@@ -172,8 +174,8 @@ public class SearchService {
   public SearchResultPage find(final String query, final int startPage,
                                final int pageSize, AmbraUser user)
   throws ParseException, OtmException {
-    String    cacheKey = getCurrentJournal() + "|" + (user == null ? "anon" : user.getUserId()) +
-                         "|" + query;
+    String cacheKey = journalService.getCurrentJournalName() + "|" +
+                      (user == null ? "anon" : user.getUserId()) + "|" + query;
 
     // Note: we don't do any cache-invalidation, but instead rely on the ttl for this cache
     Results results = cache.get(cacheKey, -1,
@@ -184,11 +186,6 @@ public class SearchService {
         });
 
     return results.getPage(startPage, pageSize);
-  }
-
-  private String getCurrentJournal() {
-    return ((VirtualJournalContext) ServletActionContext.getRequest().
-        getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
   }
 
   private Results doSearch(String queryString) throws ParseException, OtmException {
@@ -551,6 +548,16 @@ public class SearchService {
   @Required
   public void setArticleOtmService(final ArticleOtmService articleService) {
     this.articleService = articleService;
+  }
+
+  /**
+   * Set the JournalService.
+   *
+   * @param journalService to use.
+   */
+  @Required
+  public void setJournalService(JournalService journalService) {
+    this.journalService = journalService;
   }
 
   /**
