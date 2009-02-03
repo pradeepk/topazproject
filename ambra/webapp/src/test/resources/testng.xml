@@ -17,12 +17,13 @@
       <class name="org.topazproject.ambra.util.ProfanityCheckingServiceTest"/>
       <class name="org.topazproject.ambra.util.TextUtilsTest"/>
       <class name="org.topazproject.ambra.util.FileUtilsTest"/>
+      <class name="org.topazproject.ambra.util.ArticleXMLUtilsTest"/>
     </classes>
   </test>
   <test name="Search Tests">
     <classes>
       <!-- <class name="org.topazproject.ambra.search.action.SearchActionTest"/> -->
-      <class name="org.topazproject.ambra.search.service.SearchServiceTest"/> -->
+      <class name="org.topazproject.ambra.search.service.SearchServiceTest"/>
     </classes>
   </test>
 </suite>
