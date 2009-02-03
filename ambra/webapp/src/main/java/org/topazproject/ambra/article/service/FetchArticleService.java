@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,11 +61,11 @@ public class FetchArticleService {
   public  static final String ARTICLE_LOCK     = "ArticleAnnotationCache-Lock-";
   private static final String ARTICLE_KEY      = "ArticleAnnotationCache-Article-";
 
-  private String encodingCharset;
   private ArticleXMLUtils articleXmlUtils;
 
   private static final Log log = LogFactory.getLog(FetchArticleService.class);
   private AnnotationService annotationService;
+  private ArticleOtmService articleService;
 
   private Cache articleAnnotationCache;
   private Invalidator invalidator;
@@ -121,7 +121,7 @@ public class FetchArticleService {
   /**
    *
    * @param articleDOI - the DOI of the (Article) content
-   * @return
+   * @return Article DOM document
    * @throws IOException
    * @throws NoSuchArticleIdException
    * @throws ParserConfigurationException
@@ -134,8 +134,7 @@ public class FetchArticleService {
     DataSource content;
 
     try {
-      content =
-        articleXmlUtils.getArticleService().getContent(articleDOI, articleXmlUtils.getArticleRep());
+      content = articleService.getContent(articleDOI, articleXmlUtils.getArticleRep());
     } catch (NoSuchObjectIdException ex) {
       throw new NoSuchArticleIdException(articleDOI,
                                          "(representation=" + articleXmlUtils.getArticleRep() + ")",
@@ -184,35 +183,18 @@ public class FetchArticleService {
    *
    * @param annotationService annotationService
    */
+  @Required
   public void setAnnotationService(final AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 
-  /**
-   * Get a list of ids of all articles that match the given criteria.
-   *
-   * @param startDate startDate
-   * @param endDate   endDate
-   * @param state     array of matching state values
-   * @return list of article uri's
-   * @throws ApplicationException ApplicationException
-   */
-  public List<String> getArticleIds(String startDate, String endDate, int[] state)
-      throws ApplicationException {
-    try {
-      return articleXmlUtils.getArticleService().
-                             getArticleIds(startDate, endDate, null, null, state, true, 0);
-    } catch (Exception e) {
-      throw new ApplicationException(e);
-    }
-  }
 
   /**
-   * Set the encoding charset
-   * @param encodingCharset encodingCharset
+   * @param articleService The articleService to set.
    */
-  public void setEncodingCharset(final String encodingCharset) {
-    this.encodingCharset = encodingCharset;
+  @Required
+  public void setArticleService(ArticleOtmService articleService) {
+    this.articleService = articleService;
   }
 
   /**
@@ -235,6 +217,25 @@ public class FetchArticleService {
   public void setArticleXmlUtils(ArticleXMLUtils articleXmlUtils) {
     this.articleXmlUtils = articleXmlUtils;
   }
+
+  /**
+   * Get a list of ids of all articles that match the given criteria.
+   *
+   * @param startDate startDate
+   * @param endDate   endDate
+   * @param state     array of matching state values
+   * @return list of article uri's
+   * @throws ApplicationException ApplicationException
+   */
+  public List<String> getArticleIds(String startDate, String endDate, int[] state)
+      throws ApplicationException {
+    try {
+      return articleService.getArticleIds(startDate, endDate, null, null, state, true, 0);
+    } catch (Exception e) {
+      throw new ApplicationException(e);
+    }
+  }
+
 
   private class Invalidator extends AbstractObjectListener {
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
