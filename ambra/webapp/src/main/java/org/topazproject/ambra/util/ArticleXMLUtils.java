@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +52,6 @@ import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.article.service.NoSuchObjectIdException;
-import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.xml.transform.cache.CachedSource;
 
 import org.w3c.dom.Document;
@@ -68,9 +67,8 @@ import org.xml.sax.SAXException;
  *
  */
 public class ArticleXMLUtils {
-  /** Pub Configuration */
-  private static final Configuration PUB_CONFIG = ConfigurationStore.getInstance().getConfiguration();
-  private final String PUB_APP_CONTEXT = PUB_CONFIG.getString("ambra.platform.appContext", "");
+
+  private Configuration configuration;
 
   private static final Log log = LogFactory.getLog(ArticleXMLUtils.class);
 
@@ -164,7 +162,7 @@ public class ArticleXMLUtils {
    * @throws ApplicationException
    */
   public String getTransformedDocument(Document doc) throws ApplicationException {
-    String transformedString = null;
+    String transformedString;
     try {
       if (log.isDebugEnabled())
         log.debug("Applying XSLT transform to the document...");
@@ -205,7 +203,7 @@ public class ArticleXMLUtils {
     // For each thread, instantiate a new Transformer, and perform the
     // transformations on that thread from a StreamSource to a StreamResult;
     Transformer transformer = translet.newTransformer();
-    transformer.setParameter("pubAppContext", PUB_APP_CONTEXT);
+    transformer.setParameter("pubAppContext", configuration.getString("ambra.platform.appContext", ""));
     return transformer;
   }
 
@@ -236,6 +234,49 @@ public class ArticleXMLUtils {
   }
 
   /**
+   * Setter method for configuration. Injected through Spring.
+   *
+   * @param configuration Ambra configuration
+   */
+  @Required
+  public void setAmbraConfiguration(Configuration configuration) {
+    this.configuration = configuration;
+  }
+
+  /**
+   * Setter for article represenation
+   *
+   * @param articleRep The articleRep to set.
+   */
+  @Required
+  public void setArticleRep(String articleRep) {
+    this.articleRep = articleRep;
+  }
+
+  /**
+   * @param xmlFactoryProperty The xmlFactoryProperty to set.
+   */
+  @Required
+  public void setXmlFactoryProperty(Map<String, String> xmlFactoryProperty) {
+    this.xmlFactoryProperty = xmlFactoryProperty;
+  }
+
+  /**
+   * @param articleService The articleService to set.
+   */
+  @Required
+  public void setArticleService(ArticleOtmService articleService) {
+    this.articleService = articleService;
+  }
+
+  /**
+   * @return Returns the articleRep.
+   */
+  public String getArticleRep() {
+    return articleRep;
+  }
+
+  /**
    * @param filenameOrURL filenameOrURL
    * @throws URISyntaxException URISyntaxException
    * @return the local or remote file or url as a java.io.File
@@ -248,50 +289,6 @@ public class ArticleXMLUtils {
     } else {
       return new File(resource.toURI());
     }
-  }
-
-  /**
-   * Setter for article represenation
-   *
-   * @param articleRep The articleRep to set.
-   */
-  public void setArticleRep(String articleRep) {
-    this.articleRep = articleRep;
-  }
-
-  /**
-   * @param xmlFactoryProperty The xmlFactoryProperty to set.
-   */
-  public void setXmlFactoryProperty(Map<String, String> xmlFactoryProperty) {
-    this.xmlFactoryProperty = xmlFactoryProperty;
-  }
-
-  /**
-   * @param articleService The articleService to set.
-   */
-  public void setArticleService(ArticleOtmService articleService) {
-    this.articleService = articleService;
-  }
-
-  /**
-   * @return Returns the articleService.
-   */
-  public ArticleOtmService getArticleService() {
-    return articleService;
-  }
-
-  /**
-   * @return Returns the articleRep.
-   */
-  public String getArticleRep() {
-    return articleRep;
-  }
-
-  /**
-   * @return Returns the factory.
-   */
-  public DocumentBuilderFactory getFactory() {
-    return factory;
   }
 
   /**
