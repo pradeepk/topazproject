@@ -1,7 +1,7 @@
 /* $HeadURL$
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,9 +20,12 @@
 package org.topazproject.ambra.article.service;
 
 import org.testng.annotations.Test;
-import org.testng.Assert;
-import org.easymock.classextension.EasyMock;
+import static org.testng.Assert.assertEquals;
 import org.easymock.classextension.IMocksControl;
+import static org.easymock.classextension.EasyMock.createStrictControl;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.isA;
 import org.topazproject.ambra.model.article.Years;
 import org.topazproject.ambra.cache.CacheManager;
 import org.topazproject.ambra.cache.AbstractObjectListener;
@@ -37,7 +40,7 @@ public class BrowseServiceTest {
   @Test
   public void testGetArticleDates() throws Exception{
 
-    IMocksControl ctrl = EasyMock.createStrictControl();
+    IMocksControl ctrl = createStrictControl();
 
     JournalService journalService = ctrl.createMock(JournalService.class);
     CacheManager cacheManager = ctrl.createMock(CacheManager.class);
@@ -48,18 +51,18 @@ public class BrowseServiceTest {
     MockCache cache = new MockCache();
     cache.setCacheManager(cacheManager);
 
-    cacheManager.registerListener(EasyMock.isA(AbstractObjectListener.class));
-    EasyMock.expectLastCall().times(0,1);
-    EasyMock.expect(journalService.getCurrentJournalName()).andReturn("this-test");
-    EasyMock.expect(session.createQuery("select a.dublinCore.date from Article a;")).andReturn(query);
-    EasyMock.expect(query.execute()).andReturn(results);
+    cacheManager.registerListener(isA(AbstractObjectListener.class));
+    expectLastCall().times(0,1);
+    expect(journalService.getCurrentJournalName()).andReturn("this-test");
+    expect(session.createQuery("select a.dublinCore.date from Article a;")).andReturn(query);
+    expect(query.execute()).andReturn(results);
     results.beforeFirst();
-    EasyMock.expectLastCall();
-    EasyMock.expect(results.next()).andReturn(true);
-    EasyMock.expect(results.getString(0)).andReturn("2008-02-22");
-    EasyMock.expect(results.next()).andReturn(true);
-    EasyMock.expect(results.getString(0)).andReturn("2008-11-01");
-    EasyMock.expect(results.next()).andReturn(false);
+    expectLastCall();
+    expect(results.next()).andReturn(true);
+    expect(results.getString(0)).andReturn("2008-02-22");
+    expect(results.next()).andReturn(true);
+    expect(results.getString(0)).andReturn("2008-11-01");
+    expect(results.next()).andReturn(false);
 
     ctrl.replay();
 
@@ -74,7 +77,7 @@ public class BrowseServiceTest {
     dates.getMonths(2008).getDays(2).add(22);
     dates.getMonths(2008).getDays(11).add(1);
 
-    Assert.assertEquals(result, dates);
+    assertEquals(result, dates);
     ctrl.verify();
   }
 }

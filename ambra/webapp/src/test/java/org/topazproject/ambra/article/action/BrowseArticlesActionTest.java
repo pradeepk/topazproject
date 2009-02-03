@@ -20,12 +20,17 @@
 package org.topazproject.ambra.article.action;
 
 
-import org.easymock.classextension.EasyMock;
+import static org.easymock.EasyMock.aryEq;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.createStrictMock;
+import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.classextension.EasyMock.verify;
 import org.topazproject.ambra.article.service.BrowseService;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.model.article.ArticleInfo;
 import org.topazproject.ambra.model.article.Years;
-import org.testng.annotations.*;
+import org.testng.annotations.Test;
 import org.testng.Assert;
 
 import java.util.ArrayList;
@@ -37,13 +42,13 @@ public class BrowseArticlesActionTest {
 
   @Test
   public void testExecuteForName() throws Exception {
-    BrowseService browseService = EasyMock.createStrictMock(BrowseService.class);
+    BrowseService browseService = createStrictMock(BrowseService.class);
     BrowseArticlesAction action = new BrowseArticlesAction();
     action.setStartPage(5);
     action.setPageSize(7);
     action.setCatName("category");
     action.setField("category");
-    EasyMock.expect(browseService
+    expect(browseService
         .getCategoryInfos())
         .andReturn(null);
     ArrayList<ArticleInfo> articleInfos = new ArrayList<ArticleInfo>();
@@ -51,20 +56,20 @@ public class BrowseArticlesActionTest {
     articleInfo.setId(URI.create("http://plos.org"));
     articleInfo.setDate(new Date());
     articleInfos.add(articleInfo);
-    EasyMock.expect(browseService
-        .getArticlesByCategory(EasyMock.eq("category"), EasyMock.eq(5), EasyMock.eq(7),
-        EasyMock.aryEq(new int[]{0})))
+    expect(browseService
+        .getArticlesByCategory(eq("category"), eq(5), eq(7),
+        aryEq(new int[]{0})))
         .andReturn(articleInfos);
-    EasyMock.replay(browseService);
+    replay(browseService);
     action.setBrowseService(browseService);
     Assert.assertEquals(action.execute(), BaseActionSupport.SUCCESS);
     Assert.assertEquals(action.getArticleList(), articleInfos, "Articles not same");
-    EasyMock.verify(browseService);
+    verify(browseService);
   }
 
   @Test
   public void testExecuteForDate() throws Exception {
-    BrowseService browseService = EasyMock.createStrictMock(BrowseService.class);
+    BrowseService browseService = createStrictMock(BrowseService.class);
     BrowseArticlesAction action = new BrowseArticlesAction();
     action.setStartPage(5);
     action.setPageSize(7);
@@ -85,18 +90,18 @@ public class BrowseArticlesActionTest {
     startDate.add(Calendar.DATE, -7);
     endDate.add(Calendar.DATE, 1);
 
-    EasyMock.expect(browseService
-        .getArticlesByDate(EasyMock.eq(startDate), EasyMock.eq(endDate), EasyMock.eq(5),
-        EasyMock.eq(7), EasyMock.aryEq(new int[]{0})))
+    expect(browseService
+        .getArticlesByDate(eq(startDate), eq(endDate), eq(5),
+        eq(7), aryEq(new int[]{0})))
         .andReturn(articleInfos);
-    EasyMock.expect(browseService
+    expect(browseService
         .getArticleDates())
         .andReturn(new Years());
 
-    EasyMock.replay(browseService);
+    replay(browseService);
     action.setBrowseService(browseService);
     Assert.assertEquals(action.execute(), BaseActionSupport.SUCCESS);
     Assert.assertEquals(action.getArticleList(), articleInfos, "Articles not same");
-    EasyMock.verify(browseService);
+    verify(browseService);
   }
 }
