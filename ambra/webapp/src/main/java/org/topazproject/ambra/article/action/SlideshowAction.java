@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,24 +35,12 @@ import org.topazproject.ambra.util.ArticleXMLUtils;
 /**
  * Fetch the secondary objects for a given uri
  */
-public class SecondaryObjectAction extends BaseActionSupport {
+public class  SlideshowAction extends BaseActionSupport {
   private String uri;
   private SecondaryObject[] secondaryObjects;
   private ArticleOtmService articleOtmService;
   private ArticleXMLUtils secondaryObjectService;
-  private static final Log log = LogFactory.getLog(SecondaryObjectAction.class);
-
-  @Override
-  @Transactional(readOnly = true)
-  public String execute() throws Exception {
-    try {
-      secondaryObjects = articleOtmService.listSecondaryObjects(uri);
-    } catch (Exception ex) {
-      log.error ("Could not get secondary objects for: " + uri, ex);
-      return ERROR;
-    }
-    return SUCCESS;
-  }
+  private static final Log log = LogFactory.getLog(SlideshowAction.class);
 
   /**
    * Action to return list of Secondary object for an article that are enclosed in Tables (table-warp)
@@ -61,8 +49,9 @@ public class SecondaryObjectAction extends BaseActionSupport {
    * @return webork status string
    * @throws Exception
    */
+  @Override
   @Transactional(readOnly = true)
-  public String listFiguresAndTables() throws Exception {
+  public String execute() throws Exception {
     try {
       secondaryObjects = articleOtmService.listFiguresTables(uri);
       ArrayList<SecondaryObject> figTables = new ArrayList<SecondaryObject>(secondaryObjects.length);

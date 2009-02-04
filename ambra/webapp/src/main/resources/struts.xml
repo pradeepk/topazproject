@@ -363,11 +363,7 @@
       </result>
     </action>
 
-    <action name="fetchSecondaryObjects" class="org.topazproject.ambra.article.action.SecondaryObjectAction">
-      <result name="success">/article/displayImages.ftl</result>
-    </action>
-
-    <action name="slideshow" class="org.topazproject.ambra.article.action.SecondaryObjectAction" method="listFiguresAndTables">
+    <action name="slideshow" class="org.topazproject.ambra.article.action.SlideshowAction">
       <result name="success" type="headless">
         <param name="templateFile">/article/imageWindow.ftl</param>
       </result>

@@ -23,8 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.ambra.BaseAmbraTestCase;
-import org.topazproject.ambra.article.action.FetchObjectAction;
-import org.topazproject.ambra.article.action.SecondaryObjectAction;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.Ingester;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
@@ -71,11 +69,11 @@ public class FetchObjectTest extends BaseAmbraTestCase {
 
     deleteAndIngestArticle(resourceToIngest, uri);
 
-    final SecondaryObjectAction secondaryObjectAction = getSecondaryObjectAction();
-    secondaryObjectAction.setUri(uri);
-    assertEquals(Action.SUCCESS, secondaryObjectAction.execute());
+    final SlideshowAction slideshowAction = getSecondaryObjectAction();
+    slideshowAction.setUri(uri);
+    assertEquals(Action.SUCCESS, slideshowAction.execute());
 
-    final SecondaryObject[] oi = secondaryObjectAction.getSecondaryObjects();
+    final SecondaryObject[] oi = slideshowAction.getSecondaryObjects();
     assertEquals(8, oi.length);
 
     for (final SecondaryObject objectInfo : oi) {

@@ -31,7 +31,7 @@
 
   <bean class="org.topazproject.ambra.article.action.FetchObjectAction"/>
 
-  <bean class="org.topazproject.ambra.article.action.SecondaryObjectAction"/>
+  <bean class="org.topazproject.ambra.article.action.SlideshowAction"/>
 
   <bean class="org.topazproject.ambra.annotation.action.CreateAnnotationAction"/>
 

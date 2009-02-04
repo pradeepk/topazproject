@@ -37,7 +37,7 @@ import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.article.action.FetchArticleAction;
 import org.topazproject.ambra.article.action.FetchObjectAction;
-import org.topazproject.ambra.article.action.SecondaryObjectAction;
+import org.topazproject.ambra.article.action.SlideshowAction;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.permission.service.PermissionsService;
@@ -73,7 +73,7 @@ public abstract class BaseAmbraTestCase extends AbstractDependencyInjectionSprin
   private AdminUserAlertsAction adminUserAlertsAction;
   private AssignAdminRoleAction assignAdminRoleAction;
   private FetchObjectAction fetchObjectAction;
-  private SecondaryObjectAction secondaryObjectAction;
+  private SlideshowAction slideshowAction;
   private DisplayUserAction displayUserAction;
   private CreateFlagAction createFlagAction;
   private GetFlagAction getFlagAction;
@@ -285,15 +285,15 @@ public abstract class BaseAmbraTestCase extends AbstractDependencyInjectionSprin
   /**
    * @return the SecondaryObjectAction
    */
-  public SecondaryObjectAction getSecondaryObjectAction() {
-    return secondaryObjectAction;
+  public SlideshowAction getSecondaryObjectAction() {
+    return slideshowAction;
   }
 
   /**
-   * @param secondaryObjectAction secondaryObjectAction
+   * @param slideshowAction secondaryObjectAction
    */
-  public void setSecondaryObjectAction(final SecondaryObjectAction secondaryObjectAction) {
-    this.secondaryObjectAction = secondaryObjectAction;
+  public void setSecondaryObjectAction(final SlideshowAction slideshowAction) {
+    this.slideshowAction = slideshowAction;
   }
 
   /**
