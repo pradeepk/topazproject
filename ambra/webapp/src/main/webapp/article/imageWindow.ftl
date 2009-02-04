@@ -49,7 +49,7 @@
 	<div id="figure-window-container">
 	    <@s.url id="currentImageViewLarger" includeParams="none"  namespace="/article" action="showImageLarge" uri="${currentImage.uri}"/>
 	    <@s.url id="currentImageUrl" includeParams="none" action="fetchObject" namespace="/article" uri="${currentImage.uri}"/>
- 	    <@s.url id="currentImageAttachmentUrl" includeParams="none"  action="fetchObjectAttachment" uri="${currentImage.uri}"/>
+ 	    <@s.url id="currentImageAttachmentUrl" includeParams="none"  action="fetchObjectAttachment" namespace="/article" uri="${currentImage.uri}"/>
 		<div id="figure-window-hdr">
 			<div class="figure-next">
 				<a href="#" id="previous" onclick="return ambra.slideshow.showPrevious(this);" class="previous icon<#if currentImage == secondaryObjects?first> hidden</#if>">Previous</a> | <a href="#" id="next" onclick="return ambra.slideshow.showNext(this);" class="next icon<#if currentImage == secondaryObjects?last> hidden</#if>">Next</a>
