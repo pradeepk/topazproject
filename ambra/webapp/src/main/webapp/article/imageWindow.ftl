@@ -34,7 +34,7 @@
 			<#else>
 				<div class="figure-window-nav-item">
 			</#if>
-	    <@s.url id="imageUrl" includeParams="none"  action="fetchObject" uri="${image.uri}"/>
+	    <@s.url id="imageUrl" includeParams="none"  action="fetchObject" namespace="/article" uri="${image.uri}"/>
 	    <@s.a title="Click for larger image" href="#"> <!--put code here for onclick and change the pane-->
 	    <img border="0" class="thumbnail" id="tn${image_index}" src="${imageUrl}&representation=${image.repSmall}" onclick="ambra.slideshow.show(this, ${image_index});" title="${image.title} ${image.plainCaptionTitle}" />
 	    </@s.a>
@@ -48,7 +48,7 @@
 	</div>
 	<div id="figure-window-container">
 	    <@s.url id="currentImageViewLarger" includeParams="none"  namespace="/article" action="showImageLarge" uri="${currentImage.uri}"/>
-	    <@s.url id="currentImageUrl" includeParams="none"  action="fetchObject" uri="${currentImage.uri}"/>
+	    <@s.url id="currentImageUrl" includeParams="none" action="fetchObject" namespace="/article" uri="${currentImage.uri}"/>
  	    <@s.url id="currentImageAttachmentUrl" includeParams="none"  action="fetchObjectAttachment" uri="${currentImage.uri}"/>
 		<div id="figure-window-hdr">
 			<div class="figure-next">

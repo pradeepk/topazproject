@@ -27,7 +27,7 @@
       <legend>Available images</legend>
 
       <#list secondaryObjects as image>
-        <@s.url id="imageThumbUrl"  action="fetchObject" uri="${image.uri}"/>
+        <@s.url id="imageThumbUrl"  action="fetchObject" namespace="/article" uri="${image.uri}"/>
         <@s.a href="%{imageThumbUrl}&representation=${image.repLarge}">
           <img src="${imageThumbUrl}&representation=${image.repSmall}" alt="${image.title}" height="100px" width="120px"/>
         </@s.a>
@@ -38,7 +38,7 @@
           <li>Uri: ${image.uri}</li>
           <ul>
             <#list image.representations as rep>
-              <@s.url id="imageRepUrl"  action="fetchObject" uri="${image.uri}"/>
+              <@s.url id="imageRepUrl"  action="fetchObject" namespace="/article" uri="${image.uri}"/>
               <@s.a href="%{imageRepUrl}&representation=${rep.name}">${rep.name}-${rep.contentType}</@s.a>
             </#list>
           </ul>
