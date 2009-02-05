@@ -15,6 +15,7 @@
 
   <modules>
     <module>all-journals</module>
+    <module>journal-ambraJournal</module>
     <module>journal-clinicalTrials</module>
     <module>journal-compbiol</module>
     <module>journal-genetics</module>
