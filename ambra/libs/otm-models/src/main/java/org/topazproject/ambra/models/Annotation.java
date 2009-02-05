@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
  */
 package org.topazproject.ambra.models;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import org.topazproject.otm.annotations.Entity;
@@ -33,8 +34,8 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Pradeep Krishnan
  */
 @Entity(types = {Annotation.RDF_TYPE})
-public abstract class Annotation<T> extends Annotea<T> {
-  private static final long serialVersionUID = -8982085063664548872L;
+public abstract class Annotation<T extends Serializable> extends Annotea<T> {
+  private static final long serialVersionUID = -8982085063664548873L;
 
   public static final String RDF_TYPE = Annotea.W3C_NS + "Annotation";
 

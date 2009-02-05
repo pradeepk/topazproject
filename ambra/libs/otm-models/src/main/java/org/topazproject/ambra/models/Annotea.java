@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,8 +42,8 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(graph = "ri")
 @UriPrefix("annotea:")
-public abstract class Annotea<T> implements Serializable {
-  private static final long serialVersionUID = 3367287552290220606L;
+public abstract class Annotea<T extends Serializable> implements Serializable {
+  private static final long serialVersionUID = 3367287552290220607L;
   private static final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   /**
