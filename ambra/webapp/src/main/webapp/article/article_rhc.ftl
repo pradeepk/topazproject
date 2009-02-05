@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@
 
 <div id="sideNav">
 
-	<#if articleInfoX.relatedArticles?size gt 0>
+	<#if articleInfoX?? && articleInfoX.relatedArticles?size gt 0>
 		<dl class="related">
 			<dt>Related <em>${freemarker_config.orgName}</em> Articles</dt>
 			<#list articleInfoX.relatedArticles as ra>
