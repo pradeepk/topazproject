@@ -1,4 +1,5 @@
-<ehcache>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://ehcache.sf.net/ehcache.xsd">
 
     <!--
     Sets the path to the directory where cache files are created.
@@ -284,10 +285,10 @@
             diskPersistent="false"
             diskExpiryThreadIntervalSeconds="120"
             memoryStoreEvictionPolicy="LRU">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </defaultCache>
 
     <!--
@@ -392,10 +393,10 @@
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
     <!--
     permission-revokes cache.
@@ -409,10 +410,10 @@
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
 
     <!--
@@ -427,10 +428,10 @@
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
     <!--
     permit-creator XACML cache.
@@ -444,10 +445,10 @@
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
     <!--
     permit-bootstrap XACML cache.
@@ -461,10 +462,10 @@
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
     <!--
     article-state XACML cache.
@@ -478,10 +479,10 @@
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
     <!--
     VirtualJournalMappingFilter directory cache.
@@ -495,10 +496,10 @@
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
     <!--
     Journal cache.
@@ -512,10 +513,10 @@
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="false">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
     <!--
     Article-carriers cache.
@@ -529,10 +530,10 @@
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
 
     <!--
@@ -549,10 +550,10 @@
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
     <!--
       User cache.
@@ -565,10 +566,10 @@
            timeToLiveSeconds="0"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
     <!--
     Browse cache
@@ -581,10 +582,10 @@
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
     <!--
     Article Feed cache
@@ -598,10 +599,10 @@
            timeToLiveSeconds="82800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
     <!--
     Article Search results cache.
@@ -626,10 +627,10 @@
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
            overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
     </cache>
     <!--
     Ambra cache for small binary object. Size of objects that qualifies for caching is defined in
