@@ -54,7 +54,8 @@ import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.EmbeddedMapper;
 import org.topazproject.otm.mapping.EntityBinder;
-import org.topazproject.otm.mapping.Mapper;import org.topazproject.otm.mapping.RdfMapper;
+import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.mapping.VarMapper;
 import org.topazproject.otm.query.Results;
 
@@ -237,7 +238,8 @@ public class ClassBinder<T> implements EntityBinder {
   public Object loadInstance(Object instance, String id, TripleStore.Result result, Session session)
                       throws OtmException {
     if (log.isDebugEnabled())
-      log.debug("Instantiating object with '" + id + "' for " + cm + ", fwd-triples = " + result.getFValues() + ", rev-triples = " + result.getRValues());
+      log.debug("Instantiating object with '" + id + "' for " + cm + ", fwd-triples = " +
+          result.getFValues() + ", rev-triples = " + result.getRValues());
 
     if (instance == null)
       instance = newLazyLoadedInstance(session, id);
@@ -320,8 +322,8 @@ public class ClassBinder<T> implements EntityBinder {
     throw new OtmException("Cannot find binder " + b + " in " + cm);
   }
 
-  private PropertyBinder.RawFieldData newRawFieldData(final LazyLoaded instance, final List<String> values
-  )
+  private PropertyBinder.RawFieldData newRawFieldData(final LazyLoaded instance,
+                                                      final List<String> values)
                                        throws OtmException {
     return new PropertyBinder.RawFieldData() {
         public List<String> getValues() {
