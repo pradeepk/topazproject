@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,10 +54,7 @@ import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.mapping.PropertyBinder;
 import org.topazproject.otm.mapping.EmbeddedMapper;
 import org.topazproject.otm.mapping.EntityBinder;
-import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
-import org.topazproject.otm.mapping.EntityBinder.LazyLoader;
-import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.RdfMapper;
+import org.topazproject.otm.mapping.Mapper;import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.mapping.VarMapper;
 import org.topazproject.otm.query.Results;
 
@@ -283,7 +280,7 @@ public class ClassBinder<T> implements EntityBinder {
       if ((lh == null) || !m.isAssociation() || v.isEmpty())
         b.load(instance, v, m, session);
       else {
-        lh.setRawFieldData(b = getLocal(b), newRawFieldData((LazyLoaded) instance, v, result));
+        lh.setRawFieldData(b = getLocal(b), newRawFieldData((LazyLoaded) instance, v));
 
         if (log.isDebugEnabled())
           log.debug("Stashed away raw-data for " + b + " on '" + id);
@@ -323,8 +320,8 @@ public class ClassBinder<T> implements EntityBinder {
     throw new OtmException("Cannot find binder " + b + " in " + cm);
   }
 
-  private PropertyBinder.RawFieldData newRawFieldData(final LazyLoaded instance, final List<String> values,
-                                              final TripleStore.Result r)
+  private PropertyBinder.RawFieldData newRawFieldData(final LazyLoaded instance, final List<String> values
+  )
                                        throws OtmException {
     return new PropertyBinder.RawFieldData() {
         public List<String> getValues() {
