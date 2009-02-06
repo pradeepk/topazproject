@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,6 @@
  */
 package org.topazproject.fedora.otm;
 
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -170,6 +169,7 @@ public class FedoraConnection extends AbstractConnection {
    *
    * @param blob the blob contents
    * @param ref the uploaded content reference
+   * @return true if ingest succeeded
    *
    * @throws OtmException on an error
    */
@@ -354,9 +354,8 @@ public class FedoraConnection extends AbstractConnection {
    */
   protected Boolean canPurgeObject(FedoraBlob blob) throws OtmException {
     try {
-      if (blob.hasSingleDs())
-        return true;
-      return blob.canPurgeObject(getAPIM().getDatastreams(blob.getPid(), null, null));
+      return blob.hasSingleDs() ||
+             blob.canPurgeObject(getAPIM().getDatastreams(blob.getPid(), null, null));
     } catch (Exception e) {
       if (isNoSuchObjectException(e)) {
         if (log.isDebugEnabled())
@@ -373,6 +372,7 @@ public class FedoraConnection extends AbstractConnection {
    * Purge this Blob from Fedora.
    *
    * @param blob the blob to purge
+   * @return true if operation succeeded
    *
    * @throws OtmException on an error
    */
@@ -414,7 +414,7 @@ public class FedoraConnection extends AbstractConnection {
   /**
    * Gets the blob's InputStream from Fedora.
    *
-   * @param blob the blob
+   * @param fs the blob
    * @param original to get the original instead of the uploaded
    *
    * @return the InputStream or null
