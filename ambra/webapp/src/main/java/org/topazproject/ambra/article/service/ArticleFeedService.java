@@ -18,10 +18,8 @@
  */
 package org.topazproject.ambra.article.service;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,7 +45,6 @@ import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
-import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.journal.JournalService;
@@ -105,8 +102,8 @@ public class ArticleFeedService {
    *
    * @return Key a new cache key to be used as a data model for the FeedAction.
    */
-  public Key newCacheKey() {
-    return new Key();
+  public FeedCacheKey newCacheKey() {
+    return new FeedCacheKey();
   }
 
   /**
@@ -118,7 +115,7 @@ public class ArticleFeedService {
    * @return List&lt;String&gt; if article Ids.
    * @throws ApplicationException ApplicationException
    */
-  public List<String> getArticleIds(final Key cacheKey) throws ApplicationException {
+  public List<String> getArticleIds(final FeedCacheKey cacheKey) throws ApplicationException {
     // Create a local lookup based on the feed URI.
     Cache.Lookup<List<String>, ApplicationException> lookUp =
       new Cache.SynchronizedLookup<List<String>, ApplicationException>(cacheKey) {
@@ -178,7 +175,7 @@ public class ArticleFeedService {
    * @return <code>List&lt;String&gt;</code> a list of annotation Ids
    * @throws ApplicationException   Converts all exceptions to ApplicationException
    */
-  public List<String> getAnnotationIds(final Key cacheKey, List<String> annotType)
+  public List<String> getAnnotationIds(final FeedCacheKey cacheKey, List<String> annotType)
       throws ApplicationException {
     List<String> annotIds;
     try {
@@ -202,7 +199,7 @@ public class ArticleFeedService {
    *         specified article
    * @throws ApplicationException   Converts all exceptions to ApplicationException
    */
-  public List<WebAnnotation> getAnnotations(final Key cacheKey, List<String> annotType)
+  public List<WebAnnotation> getAnnotations(final FeedCacheKey cacheKey, List<String> annotType)
       throws ApplicationException {
     AnnotationConverter converter = new AnnotationConverter();
     List<WebAnnotation> webAnnot;
@@ -249,7 +246,7 @@ public class ArticleFeedService {
    * @return  <code>List&lt;String&gt;</code> a list of article ID's.
    * @throws  ApplicationException Converts all exceptions to ApplicationException
    */
-  private List<String> fetchArticleIds(final Key cacheKey) throws ApplicationException {
+  private List<String> fetchArticleIds(final FeedCacheKey cacheKey) throws ApplicationException {
     List<String> IDs;
     List<String> categoriesList = new ArrayList<String>();
     if (cacheKey.getCategory() != null && cacheKey.getCategory().length() > 0) {
@@ -345,366 +342,6 @@ public class ArticleFeedService {
   }
 
   /**
-   * The <code>class Key</code> serves three function:
-   * <ul>
-   * <li> It provides the data model used by the action.
-   * <li> It is the cache key to the article ID's that reside in the feed cache
-   * <li> It relays these input parameters to AmbraFeedResult.
-   * </ul>
-   *
-   * Since the parameters uniquely identify the query they are used to generate the hash code for
-   * the key. Only the parameters that can affect query results are used for this purpose. The cache
-   * key is also made available to the AmbraFeedResult because it also contains parameters that
-   * affect the output.
-   *
-   * @see       ArticleFeedService
-   * @see       Invalidator
-   * @see       org.topazproject.ambra.struts2.AmbraFeedResult
-   */
-  public class Key implements Serializable, Comparable {
-    private static final long serialVersionUID = 1L;
-    private String journal;
-    private Date   sDate;
-    private Date   eDate;
-
-    // Fields set by Struts
-    private String  startDate;
-    private String  endDate;
-    private String  category;
-    private String  author;
-    private boolean relLinks = false;
-    private boolean extended = false;
-    private String  title;
-    private String  selfLink;
-    private int     maxResults;
-    private String  type = FEED_TYPES.Article.toString();
-
-    final SimpleDateFormat dateFrmt = new SimpleDateFormat("yyyy-MM-dd");
-    private int hashCode;
-
-    /**
-     * Key Constructor - currently does nothing.
-     */
-    public Key() {
-    }
-
-    /**
-     * Calculates a hash code based on the query parameters. Parameters that do not affect the
-     * results of the query (selfLink, relLinks, title etc) should not be included in the hash
-     * calculation because this will improve the probability of a cache hit.
-     *
-     * @return  <code>int hash code</code>
-     */
-    private int calculateHashKey() {
-      final int ODD_PRIME_NUMBER = 37;  // Make values relatively prime
-      int hash = 23;                    // Seed value
-
-      if (this.journal != null)
-        hash += ODD_PRIME_NUMBER * hash + this.journal.hashCode();
-      if (this.type != null)
-        hash += ODD_PRIME_NUMBER * hash + this.type.hashCode();
-      if (this.sDate != null)
-        hash += ODD_PRIME_NUMBER * hash + this.sDate.hashCode();
-      if (this.eDate != null)
-        hash += ODD_PRIME_NUMBER * hash + this.eDate.hashCode();
-      if (this.category != null)
-        hash += ODD_PRIME_NUMBER * hash + this.category.hashCode();
-      if (this.author != null)
-        hash += ODD_PRIME_NUMBER * hash + this.author.hashCode();
-
-      hash += ODD_PRIME_NUMBER * hash + this.maxResults;
-
-      return hash;
-    }
-
-    /**
-     * The hash code is calculated after the validation is complete. The results are stored here.
-     *
-     * @return  integer hash code
-     */
-    @Override
-    public int hashCode() {
-      return this.hashCode;
-    }
-
-    /**
-     * Does a complete equality comparison of fields in the Key.  Only fields that will affect the
-     * results are used.
-     */
-    @Override
-    public boolean equals(Object o) {
-      if (o == null || !(o instanceof Key))
-        return false;
-      Key key = (Key) o;
-      return (
-          key.hashCode == this.hashCode
-          &&
-          (key.getJournal() == null && this.journal == null
-           || key.getJournal() != null && key.getJournal().equals(this.journal))
-          &&
-          (key.getType() == null && this.type == null
-           || key.getType() != null && key.getType().equals(this.type))
-          &&
-          (key.getSDate() == null && this.sDate == null
-           || key.getSDate() != null && key.getSDate().equals(this.sDate))
-          &&
-          (key.getEDate() == null && this.eDate == null
-           || key.getEDate() != null && key.getEDate().equals(this.eDate))
-          &&
-          (key.getCategory() == null && this.category == null
-           || key.getCategory() != null && key.getCategory().equals(this.category))
-          &&
-          (key.getAuthor() == null && this.author == null
-           || key.getAuthor() != null && key.getAuthor().equals(this.author))
-          &&
-          (key.getMaxResults() ==  this.maxResults)
-          );
-    }
-
-    /**
-     * Builds a string using the data model prarmeters.  Only parameters that affect the search
-     * results are used.
-     *
-     * @return a string representation of all the query parameters.
-     */
-    @Override
-    public String toString() {
-      StringBuilder builder = new StringBuilder();
-
-      builder.append("journal=").append(journal);
-      builder.append("; type=").append(type);
-
-      if (sDate != null)
-        builder.append("; startDate=").append(sDate);
-
-      if (eDate != null)
-        builder.append("; endDate=").append(eDate);
-
-      if (category != null)
-        builder.append("; category=").append(category);
-
-      if (author != null)
-        builder.append("; author=").append(author);
-
-      builder.append("; maxResults=").append(maxResults);
-
-      return builder.toString();
-    }
-
-    /**
-     * Implementation of the comparable interface. TODO: doesn't conform to compare interface
-     * standard.
-     *
-     * @param o   the object to compare to.
-     * @return    the value 0 if the argument is a string lexicographically equal to this string;
-     *            a value less than 0 if the argument is a string lexicographically greater than
-     *            this string; and a value greater than 0 if the argument is a string
-     *            lexicographically less than this string.
-     */
-    public int compareTo(Object o) {
-      if (o == null)
-        return 1;
-      return toString().compareTo(o.toString());
-    }
-
-    /**
-     * The ArticleFeed supports the ModelDriven interface.  The Key class is the data model used by
-     * ArticleFeed and validates user input parameters. By the time ArticleFeed.execute is invoked
-     * the parameters should be a usable state.
-     *
-     * Defined a Maximum number of result = 200 articles.  Both sDate and eDate will not be null by
-     * the end of validate.  If sDate &gt; eDate then set sDate = eDate.
-     *
-     * @param action - the BaseSupportAction allows reporting of field errors. Pass in a reference
-     *                 incase we want to report them.
-     *
-     * @see ArticleFeedService
-     */
-    @SuppressWarnings("UnusedDeclaration")
-    public void validate(BaseActionSupport action) {
-      final int defaultMaxResult = 30;
-      final int MAXIMUM_RESULTS = 200;
-
-      try {
-        if (startDate != null)
-          setSDate(startDate);
-
-        if (endDate != null)
-          setEDate(endDate);
-      } catch (ParseException e)  {
-        action.addFieldError("Feed date parsing error.", "endDate or startDate");
-        log.warn("Feed:Unable to parse feed date.");
-      }
-
-      // If start > end then just use end.
-      if ((sDate != null) && (eDate != null) && (sDate.after(eDate)))
-        sDate = eDate;
-
-      // If there is garbage in the type default to Article
-      if (feedType() == FEED_TYPES.Invalid)
-        type = FEED_TYPES.Article.toString();
-
-      // Need a positive non-zero number of results
-      if (maxResults <= 0)
-        maxResults = defaultMaxResult;
-      else if (maxResults > MAXIMUM_RESULTS)   // Don't let them crash our servers.
-        maxResults = MAXIMUM_RESULTS;
-
-      hashCode = calculateHashKey();
-    }
-
-    /**
-     * Determine the feed type by comparing it to each of the
-     * enumerated feed types until there is a match or return
-     * Invalid.
-     *
-     * @return  FEED_TYPES (the Invalid type signifies that the
-     *          type field contains a string that does not match
-     *          any of the types)
-     */
-    public FEED_TYPES feedType() {
-      FEED_TYPES t;
-      try {
-        t = FEED_TYPES.valueOf(type);
-      } catch (Exception e) {
-        // It's ok just return invalid.
-        t = FEED_TYPES.Invalid;
-      }
-      return t;
-    }
-
-    public String getJournal() {
-      return journal;
-    }
-
-    public void setJournal(String journal) {
-      this.journal = journal;
-    }
-
-    public Date getSDate() {
-      return sDate;
-    }
-
-    /**
-     * Convert the string to a date if possible else leave the startDate null.
-     * @param date string date to be converted to Date
-     * @throws ParseException date failed to parse
-     */
-    public void setSDate(String date) throws ParseException {
-         this.sDate = dateFrmt.parse(date);
-    }
-
-    public void setSDate(Date date) {
-      this.sDate = date;
-    }
-
-    public Date getEDate() {
-      return eDate;
-    }
-
-    /**
-     * Convert the string to a date if possible else leave the endDate null.
-     * @param date string date to be converted to Date
-     * @throws ParseException date failed to parse
-     */
-    public void setEDate(String date) throws ParseException {
-        this.eDate = dateFrmt.parse(date);
-    }
-
-    public void setEDate(Date date) {
-      this.eDate = date;
-    }
-
-    public String getCategory() {
-      return category;
-    }
-
-    public void setCategory(String category) {
-      this.category = category;
-    }
-
-    public String getAuthor() {
-      return author;
-    }
-
-    public void setAuthor(String author) {
-      this.author = author;
-    }
-
-    public boolean isRelLinks() {
-      return relLinks;
-    }
-
-    public boolean getRelativeLinks() {
-      return relLinks;
-    }
-
-    public void setRelativeLinks(boolean relative) {
-      this.relLinks = relative;
-    }
-
-    public boolean isExtended() {
-      return extended;
-    }
-
-    public boolean getExtended() {
-      return extended;
-    }
-
-    public void setExtended(boolean extended) {
-      this.extended = extended;
-    }
-
-    public String getType() {
-      return type;
-    }
-
-    public void setType(String type) {
-      this.type = type;
-    }
-
-    public String getTitle() {
-      return title;
-    }
-
-    public void setTitle(String title) {
-      this.title = title;
-    }
-
-    public String getSelfLink() {
-      return selfLink;
-    }
-
-    public void setSelfLink(String link) {
-      this.selfLink = link;
-    }
-
-    public String getStartDate() {
-      return this.startDate;
-    }
-
-    public void setStartDate(String date) {
-      this.startDate = date;
-    }
-
-    public String getEndDate() {
-      return endDate;
-    }
-
-    public void setEndDate(String date) {
-      this.endDate = date;
-    }
-
-    public int getMaxResults() {
-      return maxResults;
-    }
-
-    public void setMaxResults(int max) {
-      this.maxResults = max;
-    }
-  }
-
-  /**
    * Invalidate feedCache if new articles are ingested or articles are deleted. This is accomplished
    * via a listener registered with the feed cache. This listener is notified when articles are
    * added or deleted which could potentially affect the results cached.
@@ -790,7 +427,7 @@ public class ArticleFeedService {
      */
     @SuppressWarnings("unchecked")
     private void invalidateFeedCacheForArticle(Article article) {
-      for (Key key : (Set<Key>) feedCache.getKeys()) {
+      for (FeedCacheKey key : (Set<FeedCacheKey>) feedCache.getKeys()) {
         if (matches(key, article, true))
           feedCache.remove(key);
       }
@@ -804,7 +441,7 @@ public class ArticleFeedService {
      */
     @SuppressWarnings("unchecked")
     private void invalidateFeedCacheForJournalArticle(Journal journal) {
-      for (Key key : (Set<Key>) feedCache.getKeys()) {
+      for (FeedCacheKey key : (Set<FeedCacheKey>) feedCache.getKeys()) {
         if (key.getJournal().equals(journal.getKey())) {
           feedCache.remove(key);
         }
@@ -844,7 +481,7 @@ public class ArticleFeedService {
      * @param checkJournal include journal as part of match if true.
      * @return boolean true if we need to remove this entry from the cache
      */
-    private boolean matches(ArticleFeedService.Key key, Article article, boolean checkJournal) {
+    private boolean matches(FeedCacheKey key, Article article, boolean checkJournal) {
       if (checkJournal && !matchesJournal(key, article))
         return false;
 
@@ -867,7 +504,7 @@ public class ArticleFeedService {
      * @param dc  Dublin core field from Article
      * @return  boolean true if there is a match
      */
-    private boolean matchesAuthor(Key key, DublinCore dc) {
+    private boolean matchesAuthor(FeedCacheKey key, DublinCore dc) {
       boolean matches = false;
 
       if (key.getAuthor() != null) {
@@ -894,7 +531,7 @@ public class ArticleFeedService {
      *
      * @return boolean true if the category matches (key.category = null is wildcard)
      */
-    private boolean matchesCategory(Key key, Article article) {
+    private boolean matchesCategory(FeedCacheKey key, Article article) {
       boolean matches = false;
 
       if (key.getCategory() != null) {
@@ -919,7 +556,7 @@ public class ArticleFeedService {
      *
      * @return boolean true if the article date falls between the start and end date
      */
-    private boolean matchesDates(Key key, DublinCore dc) {
+    private boolean matchesDates(FeedCacheKey key, DublinCore dc) {
       Date articleDate = dc.getDate();
       boolean matches = false;
 
@@ -947,7 +584,7 @@ public class ArticleFeedService {
      * @return boolean true if key.journal matches one of the journals returned
      *         by the journal service.
      */
-    private boolean matchesJournal(Key key, Article article) {
+    private boolean matchesJournal(FeedCacheKey key, Article article) {
       boolean matches = false;
 
       if (key.getJournal() != null) {

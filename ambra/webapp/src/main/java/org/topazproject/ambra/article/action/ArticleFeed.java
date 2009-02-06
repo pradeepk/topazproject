@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.ArticleFeedService;
-import org.topazproject.ambra.article.service.ArticleFeedService.Key;
+import org.topazproject.ambra.article.service.FeedCacheKey;
 import org.topazproject.ambra.article.service.ArticleFeedService.FEED_TYPES;
 import org.topazproject.ambra.web.VirtualJournalContext;
 
@@ -94,7 +94,7 @@ import com.opensymphony.xwork2.ModelDriven;
  *                                                     MinorCorrectionAnnot,CommentAnnot
  * </pre>
  *
- * @see       Key
+ * @see       org.topazproject.ambra.article.service.FeedCacheKey
  * @see       org.topazproject.ambra.struts2.AmbraFeedResult
  *
  * @author Jeff Suttor
@@ -109,7 +109,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   private static final String JSON_RESULT = "json";
 
   private        ArticleFeedService  articleFeedService; // Feed Service Spring injected.
-  private        Key                 cacheKey;           // The cache key and action data model
+  private        FeedCacheKey        cacheKey;           // The cache key and action data model
   private        List<String>        articleIds;         // List of Article IDs; result of search
 
   /**
@@ -186,7 +186,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    *
    * @return  Key to the cache which is also the data model of the action
    */
-  public Key getCacheKey() {
+  public FeedCacheKey getCacheKey() {
     return this.cacheKey;
   }
 

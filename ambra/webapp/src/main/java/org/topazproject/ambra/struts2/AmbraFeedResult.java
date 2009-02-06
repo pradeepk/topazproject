@@ -51,7 +51,7 @@ import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.models.UserProfile;
 import org.topazproject.ambra.article.action.ArticleFeed;
 import org.topazproject.ambra.article.service.ArticleFeedService;
-import org.topazproject.ambra.article.service.ArticleFeedService.Key;
+import org.topazproject.ambra.article.service.FeedCacheKey;
 import org.topazproject.ambra.article.service.ArticleFeedService.FEED_TYPES;
 import org.topazproject.ambra.web.VirtualJournalContext;
 import org.topazproject.ambra.configuration.ConfigurationStore;
@@ -85,7 +85,7 @@ import org.topazproject.ambra.ApplicationException;
  *
  * </pre>
  *
- * @see       org.topazproject.ambra.article.service.ArticleFeedService.Key
+ * @see       org.topazproject.ambra.article.service.FeedCacheKey
  * @see       ArticleFeed
  *
  * @author jsuttor
@@ -187,7 +187,7 @@ public class AmbraFeedResult extends Feed implements Result {
     setXmlBase(JRNL_URI());
 
     // Get the article IDs that were cached by the feed.
-    Key cacheKey = (Key) ai.getStack().findValue("cacheKey");
+    FeedCacheKey cacheKey = (FeedCacheKey)ai.getStack().findValue("cacheKey");
     List<String> articleIds = (List<String>) ai.getStack().findValue("Ids");
     FEED_TYPES t =  cacheKey.feedType();
 
@@ -310,7 +310,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param xmlBase     xml base url
    * @return List of entries for feed.
    */
-  private List<Entry> buildArticleFeed(Key cacheKey, String xmlBase) {
+  private List<Entry> buildArticleFeed(FeedCacheKey cacheKey, String xmlBase) {
     // Add each Article as a Feed Entry
     List<Entry> entries = new ArrayList<Entry>();
 
@@ -439,7 +439,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param numAuthors  author count
    * @return List<Content> consisting of HTML descriptions of the article and author
    */
-  private List<Content>newContentsList(Key cacheKey, Article article, String authorNames,
+  private List<Content>newContentsList(FeedCacheKey cacheKey, Article article, String authorNames,
       int numAuthors) {
     List<Content> contents = new ArrayList<Content>();
     Content description = new Content();
@@ -536,7 +536,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param authors   modified and returned <code>List&lt;Person&gt;</code> of article authors.
    * @return String of authors names.
    */
-  private String newAuthorsList(Key cacheKey, Article article, List<Person> authors) {
+  private String newAuthorsList(FeedCacheKey cacheKey, Article article, List<Person> authors) {
     Citation bc = article.getDublinCore().getBibliographicCitation();
     String authorNames = "";
 
@@ -711,7 +711,7 @@ public class AmbraFeedResult extends Feed implements Result {
    *
    * @return <code>Link</code> user provide link.
    */
-  private Link newLink(Key cacheKey, String uri) {
+  private Link newLink(FeedCacheKey cacheKey, String uri) {
     if (cacheKey.getSelfLink() == null || cacheKey.getSelfLink().equals("")) {
       if (uri.startsWith("/")) {
         cacheKey.setSelfLink(JRNL_URI().substring(0, JRNL_URI().length() - 1) + uri);
@@ -754,7 +754,7 @@ public class AmbraFeedResult extends Feed implements Result {
    *
    * @return String identifier generated for this feed
    */
-  private String newFeedID(Key cacheKey) {
+  private String newFeedID(FeedCacheKey cacheKey) {
     String id = FEED_ID();
     if (cacheKey.getCategory() != null && cacheKey.getCategory().length() > 0)
       id += "?category=" + cacheKey.getCategory();
@@ -770,7 +770,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param cacheKey cache key and input parameters
    * @return String feed title.
    */
-  private String newFeedTitle(Key cacheKey) {
+  private String newFeedTitle(FeedCacheKey cacheKey) {
     String feedTitle = cacheKey.getTitle();
 
     if (feedTitle == null) {
