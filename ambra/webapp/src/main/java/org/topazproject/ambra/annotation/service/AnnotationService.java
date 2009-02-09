@@ -50,14 +50,12 @@ import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
 
 import org.topazproject.otm.ClassMetadata;
-import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session.FlushMode;
-import org.topazproject.otm.criterion.Restrictions;
 
 import com.sun.xacml.PDP;
 
@@ -85,6 +83,22 @@ public class AnnotationService extends BaseAnnotationService {
   }
 
   /**
+   * Sets the article-annotation cache.
+   *
+   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
+   *                               to use.
+   */
+  @Required
+  public void setArticleAnnotationCache(Cache articleAnnotationCache) {
+    this.articleAnnotationCache = articleAnnotationCache;
+    if (invalidator == null) {
+      invalidator = new Invalidator();
+      articleAnnotationCache.getCacheManager().registerListener(invalidator);
+    }
+  }
+
+
+  /**
    * Create an annotation.
    *
    * @param annotationClass the class of annotation
@@ -96,7 +110,7 @@ public class AnnotationService extends BaseAnnotationService {
    * @param body body of this annotation
    * @param isPublic to set up public permissions
    *
-   * @param user
+   * @param user logged in user
    * @return a the new annotation id
    *
    * @throws Exception on an error
@@ -176,7 +190,7 @@ public class AnnotationService extends BaseAnnotationService {
    *
    * @throws OtmException on an error
    */
-  private List<ArticleAnnotation> lookupAnnotations(final String target)
+  private List<String> lookupAnnotations(final String target)
       throws OtmException {
     // This flush is so that our own query cache reflects change.
     // TODO : implement query caching in OTM and let it manage this cached query
@@ -187,9 +201,9 @@ public class AnnotationService extends BaseAnnotationService {
     final Object lock = (FetchArticleService.ARTICLE_LOCK + target).intern();
 
     return articleAnnotationCache.get(ANNOTATED_KEY + target, -1,
-          new Cache.SynchronizedLookup<List<ArticleAnnotation>, OtmException>(lock) {
+        new Cache.SynchronizedLookup<List<String>, OtmException>(lock) {
           @Override
-          public List<ArticleAnnotation> lookup() throws OtmException {
+          public List<String> lookup() throws OtmException {
             return loadAnnotations(target, getApplicationId(), -1, ALL_ANNOTATION_CLASSES);
           }
         });
@@ -219,22 +233,72 @@ public class AnnotationService extends BaseAnnotationService {
   }
 
   @SuppressWarnings("unchecked")
-  private List<ArticleAnnotation> loadAnnotations(final String target, final String mediator,
+  private List<String> loadAnnotations(final String target, final String mediator,
       final int state, final Set<Class<?extends ArticleAnnotation>> classTypes)
     throws OtmException {
-    List<ArticleAnnotation> combinedAnnotations = new ArrayList<ArticleAnnotation>();
+
+    List<String> annotationIds = new ArrayList<String>();
 
     for (Class<? extends ArticleAnnotation> anClass : classTypes) {
-      Criteria c = session.createCriteria(anClass);
-      setRestrictions(c, target, mediator, state);
-      combinedAnnotations.addAll(c.list());
+
+      Results results = buildQuery(target, mediator, state, anClass).execute();
+
+      while (results.next())
+        annotationIds.add(results.getURI(0).toString());
     }
 
     if (log.isDebugEnabled()) {
-      log.debug("retrieved annotation list from TOPAZ for target: " + target);
+      log.debug("retrieved " + annotationIds.size() + " annotations for target: " + target);
     }
 
-    return combinedAnnotations;
+    return annotationIds;
+  }
+
+  private Query buildQuery(String target, String mediator, int state, Class<? extends ArticleAnnotation> anClass) {
+    StringBuilder queryString = new StringBuilder();
+    queryString.append("select an.id from ");
+    queryString.append(anClass.getSimpleName());
+    queryString.append(" an where ");
+
+    boolean multipleConditions = false;
+
+    if (target != null) {
+      queryString.append("an.annotates = :target");
+      multipleConditions = true;
+    }
+
+    if (mediator != null) {
+      if (multipleConditions)
+        queryString.append(" and ");
+      queryString.append("an.mediator = :mediator");
+      multipleConditions = true;
+    }
+
+    if (state != -1) {
+      if (multipleConditions)
+        queryString.append(" and ");
+      if (state == 0) {
+        queryString.append("an.state != 0");
+      } else {
+        queryString.append("an.state = :state");
+      }
+    }
+
+    queryString.append(';');
+
+    Query query = session.createQuery(queryString.toString());
+    if (target != null) {
+      query.setParameter("target", target);
+    }
+
+    if (mediator != null) {
+      query.setParameter("mediator", mediator);
+    }
+
+    if (state > 0) {
+      query.setParameter("state", state);
+    }
+    return query;
   }
 
   /**
@@ -381,48 +445,20 @@ public class AnnotationService extends BaseAnnotationService {
    */
   @Transactional(readOnly = true)
   public List<ArticleAnnotation> getAnnotations(List<String> annotIds) {
-    List<ArticleAnnotation> annotationList = new ArrayList<ArticleAnnotation>();
+    List<ArticleAnnotation> annotations = new ArrayList<ArticleAnnotation>();
 
     for (String id : annotIds)  {
       try {
-        pep.checkAccess(AnnotationsPEP.GET_ANNOTATION_INFO, URI.create(id));
-        ArticleAnnotation a = session.get(ArticleAnnotation.class, id);
-
-        if (a != null)
-          annotationList.add(a);
+        annotations.add(getAnnotation(id));
+      } catch (IllegalArgumentException iae) {
+        if (log.isDebugEnabled())
+          log.debug("Ignored illegale annotation id:" + id);
       } catch (SecurityException se) {
         if (log.isDebugEnabled())
           log.debug("Filtering URI " + id + " from Article list due to PEP SecurityException", se);
       }
     }
-    return annotationList;
-  }
-
-  /**
-   * Helper method to set restrictions on the criteria used in listAnnotations()
-   *
-   * @param c the criteria
-   * @param target the target that is being annotated
-   * @param mediator the mediator that does the annotation on the user's behalf
-   * @param state the state to filter by (0 for all non-zero, -1 to not restrict by state)
-   */
-  private static void setRestrictions(Criteria c, final String target, final String mediator,
-                                      final int state) {
-    if (mediator != null) {
-      c.add(Restrictions.eq("mediator", mediator));
-    }
-
-    if (state != -1) {
-      if (state == 0) {
-        c.add(Restrictions.ne("state", "0"));
-      } else {
-        c.add(Restrictions.eq("state", "" + state));
-      }
-    }
-
-    if (target != null) {
-      c.add(Restrictions.eq("annotates", target));
-    }
+    return annotations;
   }
 
   /**
@@ -445,19 +481,8 @@ public class AnnotationService extends BaseAnnotationService {
     throws OtmException, SecurityException {
     pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
 
-
-    List<ArticleAnnotation> filtered = new ArrayList<ArticleAnnotation>();
-
-    for (ArticleAnnotation a : filterAnnotations(lookupAnnotations(target), annotationClassTypes)) {
-      try {
-        pep.checkAccess(AnnotationsPEP.GET_ANNOTATION_INFO, a.getId());
-        filtered.add(a);
-      } catch (Throwable t) {
-        if (log.isDebugEnabled())
-          log.debug("no permission for viewing annotation " + a.getId() +
-                    " and therefore removed from list");
-      }
-    }
+    List<ArticleAnnotation> allAnnotations = getAnnotations(lookupAnnotations(target));
+    List<ArticleAnnotation> filtered = filterAnnotations(allAnnotations, annotationClassTypes);
 
     return filtered.toArray(new ArticleAnnotation[filtered.size()]);
   }
@@ -525,9 +550,8 @@ public class AnnotationService extends BaseAnnotationService {
   public ArticleAnnotation[] listAnnotations(final String mediator, final int state)
   throws OtmException, SecurityException {
     pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS_IN_STATE, AbstractSimplePEP.ANY_RESOURCE);
-    List<ArticleAnnotation> annotations =
-      loadAnnotations(null, mediator, state, ALL_ANNOTATION_CLASSES);
-
+    List<ArticleAnnotation> annotations = getAnnotations(
+        loadAnnotations(null, mediator, state, ALL_ANNOTATION_CLASSES));
     return annotations.toArray(new ArticleAnnotation[annotations.size()]);
   }
 
@@ -570,21 +594,6 @@ public class AnnotationService extends BaseAnnotationService {
   }
 
   /**
-   * Sets the article-annotation cache.
-   *
-   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
-   *                               to use.
-   */
-  @Required
-  public void setArticleAnnotationCache(Cache articleAnnotationCache) {
-    this.articleAnnotationCache = articleAnnotationCache;
-    if (invalidator == null) {
-      invalidator = new Invalidator();
-      articleAnnotationCache.getCacheManager().registerListener(invalidator);
-    }
-  }
-
-  /**
    * Create an annotation.
    *
    * @param target target that an annotation is being created for
@@ -594,7 +603,7 @@ public class AnnotationService extends BaseAnnotationService {
    * @param mimeType mimeType
    * @param body body
    * @param isPublic isPublic
-   * @param user
+   * @param user logged in user
    * @throws Exception on an error
    * @return unique identifier for the newly created annotation
    */
