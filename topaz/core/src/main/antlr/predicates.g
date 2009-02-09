@@ -454,8 +454,8 @@ factor[boolean isProj, boolean isComp] returns [ExprType type = null]
     | #(PARAM ID)
     | type=fcall[isProj, isComp]
     | #(REF (   v:ID                 { updateAST(#v, null, type = getTypeForVar(#v), null, true); }
-              | type=c:cast[isProj]  { updateAST(findLastId(#c), null, type, null,
-                                                 ((OqlAST) #c).isVar()); }
+              | type=c:cast[isProj]  { AST last = findLastId(#c);
+                                       updateAST(last, null, type, null, ((OqlAST) last).isVar()); }
             )
             (   ! ID         { type = resolveField(currentAST, type, #ID); }
               | ! URIREF     { type = handlePredicate(currentAST, type, #URIREF); }
