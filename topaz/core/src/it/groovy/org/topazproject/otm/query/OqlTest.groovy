@@ -140,6 +140,47 @@ public class OqlTest extends AbstractTest {
       checker.verify(r) {
       }
 
+      // casts
+      r = s.createQuery("""
+            select ann from Annotation ann
+            where cast(ann.annotates, Article).title = 'Yo ho ho'
+            order by ann;
+            """).execute()
+      checker.verify(r) {
+        row { object (class:PublicAnnotation.class, id:id1) }
+        row { object (class:PublicAnnotation.class, id:id2) }
+      }
+
+      r = s.createQuery("""
+            select ann from Annotation ann
+            where cast(ann.annotates, Article).title != 'bo bo bo'
+            order by ann;
+            """).execute()
+      checker.verify(r) {
+        row { object (class:PublicAnnotation.class, id:id1) }
+        row { object (class:PublicAnnotation.class, id:id2) }
+      }
+
+      r = s.createQuery("""
+            select ann from Annotation ann
+            where foo := ann.annotates and cast(foo, Article).title = 'Yo ho ho'
+            order by ann;
+            """).execute()
+      checker.verify(r) {
+        row { object (class:PublicAnnotation.class, id:id1) }
+        row { object (class:PublicAnnotation.class, id:id2) }
+      }
+
+      r = s.createQuery("""
+            select ann from Annotation ann
+            where foo := ann.annotates and cast(foo, Article).title != 'bo bo bo'
+            order by ann;
+            """).execute()
+      checker.verify(r) {
+        row { object (class:PublicAnnotation.class, id:id1) }
+        row { object (class:PublicAnnotation.class, id:id2) }
+      }
+
       // !=
       r = s.createQuery("""
           select ann from Annotation ann where ann.annotates != <foo:1> order by ann;

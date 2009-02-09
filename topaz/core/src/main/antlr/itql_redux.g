@@ -261,7 +261,8 @@ options {
     private void simplify(AST node, Set<String> ctxtVars, List<AST> extVars, List<AST> extWcls) {
       if (node.getType() == AND) {
         if (log.isTraceEnabled())
-          log.trace("simplifying: " + node.toStringTree());
+          log.trace("simplifying: " + node.toStringTree() + ", context-vars=" + ctxtVars +
+                    ", external-vars=" + extVars);
 
         // find all $a = $b
         Map<String, Set<String>> eqls  = new HashMap<String, Set<String>>();
@@ -292,25 +293,29 @@ options {
       }
 
       // process subtrees
-      simplifySubTree(node, ctxtVars, extVars, extWcls);
+      simplifySubTree(node, node, ctxtVars, extVars, extWcls);
     }
 
-    private void simplifySubTree(AST node, Set<String> ctxtVars, List<AST> extVars,
+    private void simplifySubTree(AST node, AST top, Set<String> ctxtVars, List<AST> extVars,
                                  List<AST> extWcls) {
       if (node.getType() == TRIPLE)
         ;
       else if (node.getType() == AND) {
         // equality can only be propagated up past an AND
         for (AST n = node.getFirstChild(); n != null; n = n.getNextSibling())
-          simplifySubTree(n, ctxtVars, extVars, extWcls);
+          simplifySubTree(n, top, ctxtVars, extVars, extWcls);
       } else {
+        // update the context vars with all the variables in the rest of this tree
+        ctxtVars = new HashSet<String>(ctxtVars);
+        collectVars(top, ctxtVars, node);
+
         /* collect variables in each branch - variables in other branches will be part of
          * the untouchable context for any given branch.
          */
         List<Set<String>> branchVars = new ArrayList<Set<String>>();
         for (AST n = node.getFirstChild(); n != null; n = n.getNextSibling()) {
           Set<String> vars = new HashSet<String>();
-          collectVars(n, vars);
+          collectVars(n, vars, null);
           branchVars.add(vars);
         }
 
@@ -328,7 +333,10 @@ options {
       }
     }
 
-    private void collectVars(AST node, Set<String> vars) {
+    private void collectVars(AST node, Set<String> vars, AST stop) {
+      if (node == stop)
+        return;
+
       if (node.getType() == TRIPLE) {
         OqlAST s = (OqlAST) node.getFirstChild();
         OqlAST p = (OqlAST) s.getNextSibling();
@@ -342,7 +350,7 @@ options {
           vars.add(o.getText());
       } else {
         for (AST n = node.getFirstChild(); n != null; n = n.getNextSibling())
-          collectVars(n, vars);
+          collectVars(n, vars, stop);
       }
     }
 
