@@ -22,11 +22,11 @@
 <#function min x y><#return stack.findValue("@@min(${x}, ${y})")/></#function>
 
 <#macro renderSearchPaginationLinks totalPages, hasMore>
-  <#if (startPage gt 0) && (totalPages gt 1)>
-    <@s.url id="prevPageURL" action="simpleSearch" namespace="/search" startPage="${startPage - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
-    <@s.a href="%{prevPageURL}">&lt; Prev</@s.a> |
-  </#if>
-  <#if (totalPages > 1) >
+  <#if (totalPages gt 1) >
+    <#if (startPage gt 0) >
+      <@s.url id="prevPageURL" action="simpleSearch" namespace="/search" startPage="${startPage - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
+      <@s.a href="%{prevPageURL}">&lt; Prev</@s.a> |
+    </#if>
     <#list max(1, startPage - 9)..min(totalPages, startPage + 11) as pageNumber>
       <#if (startPage == (pageNumber-1))>
         ${pageNumber}
@@ -34,13 +34,12 @@
         <@s.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
         <@s.a href="%{searchPageURL}">${pageNumber}</@s.a>
       </#if>
-      <#if pageNumber != min(totalPages, startPage + 2)>|</#if>
+      <#if pageNumber != min(totalPages, startPage + 11)>|</#if>
     </#list>
-  </#if>
-  <#if hasMore == 1>
-    <#if (startPage gt 0)> | </#if>
-    <@s.url id="nextPageURL" action="simpleSearch" namespace="/search" startPage="${startPage + 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
-    <@s.a href="%{nextPageURL}">Next &gt;</@s.a> 
+    <#if hasMore == 1>
+      <@s.url id="nextPageURL" action="simpleSearch" namespace="/search" startPage="${startPage + 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
+      | <@s.a href="%{nextPageURL}"> Next &gt;</@s.a>
+    </#if>
   </#if>
 </#macro>
 
