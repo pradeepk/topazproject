@@ -76,8 +76,8 @@ import org.topazproject.ambra.ApplicationException;
  * <strong>
  * Param                                                Description </strong>
  * List&lt;String&gt; IDs      List of article IDs that resulted from the the query.
- *                             Set via the ValueStack <code>ai.getStack().findValue("articleIDs")
- *                             </code> call
+ *                             Set via the ValueStack <code>ai.getStack().findValue("Ids")</code>
+ *                             call
  *
  * ArticleFeed.Key cacheKey    The cache key with input parameters of the request. Some of which
  *                             affect the format of the output. Set via
@@ -258,12 +258,12 @@ public class AmbraFeedResult extends Feed implements Result {
 
     for (WebAnnotation annot : annotations) {
       Entry entry = newEntry(annot);
-      List<String> IDs = new ArrayList<String>();
+      List<String> ids = new ArrayList<String>();
       List<Article> art;
       List<Link> altLinks = new ArrayList<Link>();
 
-      IDs.add(annot.getAnnotates());
-      art = articleFeedService.getArticles(IDs);
+      ids.add(annot.getAnnotates());
+      art = articleFeedService.getArticles(ids);
 
       // Link to annotation via xmlbase
       Link selfLink = newSelfLink(annot, xmlBase);
