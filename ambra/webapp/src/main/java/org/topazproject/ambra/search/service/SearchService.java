@@ -24,17 +24,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ConstantScoreRangeQuery;
+import org.apache.lucene.search.MultiPhraseQuery;
+import org.apache.lucene.search.MultiTermQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.PhraseQuery;
+import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 
@@ -356,7 +364,7 @@ public class SearchService {
   }
 
   /**
-   * This attempts to simplify the clauses of a boolean query, specifically the minus clauses.
+   * This attempts to simplify the clauses of a boolean query, especially the minus clauses.
    * The issues are that:
    * <ul>
    *   <li>lucene's MultiFieldQueryParser often creates nested clauses for minus terms; e.g.
@@ -365,17 +373,23 @@ public class SearchService {
    *   <li>we don't really want to ever subtract from all, so if we have only minus terms then
    *       we try to pull the minus up a level. E.g. 'a (-foo -bar)' can be turned into
    *       'a -(foo OR bar)'</li>
+   *   <li>for performance we want to group all clauses with the same field into a single clause
+   *       because each clause becomes a separate lucene query when turned in tql.</li>
    * </ul>
    *
    * @param bq the boolean-query to simplify
    */
   @SuppressWarnings("unchecked")
-  private static void simplify(BooleanQuery bq) {
-    for (BooleanClause c : (List<BooleanClause>) bq.clauses()) {
+  private static void simplify(BooleanQuery q) {
+    // flatten things where possible
+    List<BooleanClause> added   = new ArrayList<BooleanClause>();
+    List<BooleanClause> removed = new ArrayList<BooleanClause>();
+
+    for (BooleanClause c : (List<BooleanClause>) q.clauses()) {
       if (!(c.getQuery() instanceof BooleanQuery))
         continue;
 
-      bq = (BooleanQuery) c.getQuery();
+      BooleanQuery bq = (BooleanQuery) c.getQuery();
       simplify(bq);
 
       if (bq.clauses().size() == 1) {
@@ -383,11 +397,34 @@ public class SearchService {
         BooleanClause c2 = (BooleanClause) bq.clauses().get(0);
         c.setOccur(combineOccurs(c.getOccur(), c2.getOccur()));
         c.setQuery(c2.getQuery());
-      } else if (bq.clauses().size() > 1 && allNegative(bq)) {
+      } else if (bq.clauses().size() > 1 && allMatch(bq, Occur.MUST_NOT)) {
+        // pull up must-not (-)
         for (BooleanClause c2 : (List<BooleanClause>) bq.clauses())
           c2.setOccur(Occur.SHOULD);
         c.setOccur(combineOccurs(c.getOccur(), Occur.MUST_NOT));
+      } else if (bq.clauses().size() > 1 && allMatch(bq, c.getOccur())) {
+        // flatten list where all elements have same occurs and it matches our occurs
+        added.addAll((List<BooleanClause>) bq.clauses());
+        bq.clauses().clear();
+        removed.add(c);
       }
+    }
+
+    q.clauses().addAll(added);
+    q.clauses().removeAll(removed);
+
+    // group clauses for same field together (note: LinkedHashMap is to make the tests stable)
+    Map<String, List<BooleanClause>> fieldMap = new LinkedHashMap<String, List<BooleanClause>>();
+    for (BooleanClause c : (List<BooleanClause>) q.clauses())
+      multiMapPut(fieldMap, getField(c.getQuery()), c);
+
+    q.clauses().clear();
+    for (String field : fieldMap.keySet()) {
+      List<BooleanClause> clauses = fieldMap.get(field);
+      if (field == null || clauses.size() == 1)
+        q.clauses().addAll(clauses);
+      else
+        q.add(new SameFieldQuery(field, clauses), Occur.SHOULD);
     }
   }
 
@@ -410,12 +447,73 @@ public class SearchService {
   }
 
   @SuppressWarnings("unchecked")
-  private static boolean allNegative(BooleanQuery bq) {
+  private static boolean allMatch(BooleanQuery bq, Occur cond) {
     for (BooleanClause c : (List<BooleanClause>) bq.clauses()) {
-      if (!c.isProhibited())
+      if (c.getOccur() != cond)
         return false;
     }
     return true;
+  }
+
+  private static String getField(Query q) {
+    if (q instanceof TermQuery)
+      return ((TermQuery) q).getTerm().field();
+    if (q instanceof MultiTermQuery)
+      return ((MultiTermQuery) q).getTerm().field();
+    if (q instanceof PhraseQuery)
+      return ((PhraseQuery) q).getTerms()[0].field();
+    if (q instanceof MultiPhraseQuery)
+      return ((Term[]) ((MultiPhraseQuery) q).getTermArrays().get(0))[0].field();
+    if (q instanceof PrefixQuery)
+      return ((PrefixQuery) q).getPrefix().field();
+    if (q instanceof RangeQuery)
+      return ((RangeQuery) q).getField();
+    if (q instanceof ConstantScoreRangeQuery)
+      return ((ConstantScoreRangeQuery) q).getField();
+    return null;
+  }
+
+  private static <K,V> void multiMapPut(Map<K, List<V>> map, K key, V value) {
+    List<V> vals = map.get(key);
+    if (vals == null)
+      map.put(key, vals = new ArrayList<V>());
+    vals.add(value);
+  }
+
+  /**
+   * This represents a query consisting of a list of boolean clauses that are all for
+   * the same field. We use this to group these clauses together and generate a single
+   * oql search term. This can significantly increase the performance because it replaces
+   * N separate lucene queries and the associated joins with a single lucene query.
+   */
+  private static class SameFieldQuery extends Query {
+    private final String              field;
+    private final List<BooleanClause> clauses;
+
+    /**
+     * Create a new query.
+     *
+     * @param field   this query's field
+     * @param clauses the clauses belonging up this query
+     */
+    public SameFieldQuery(String field, List<BooleanClause> clauses) {
+      this.field   = field;
+      this.clauses = clauses;
+    }
+
+    public String toString(String field) {
+      StringBuilder sb = new StringBuilder(clauses.size() * 10);
+      if (!this.field.equals(field))
+        sb.append(this.field).append(':');
+
+      sb.append('(');
+      for (BooleanClause c : clauses)
+        sb.append(c.getOccur()).append(c.getQuery().toString(this.field)).append(' ');
+      sb.setLength(sb.length() - 1);
+      sb.append(')');
+
+      return sb.toString();
+    }
   }
 
   /**
