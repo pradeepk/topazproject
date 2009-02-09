@@ -38,7 +38,6 @@ import org.mulgara.query.Constraint;
 import org.mulgara.query.ConstraintElement;
 import org.mulgara.query.ConstraintImpl;
 import org.mulgara.query.ConstraintIs;
-import org.mulgara.query.ConstraintNegation;
 import org.mulgara.query.ConstraintNotOccurs;
 import org.mulgara.query.ConstraintOccurs;
 import org.mulgara.query.ConstraintOccursLessThan;
@@ -193,9 +192,8 @@ public class FilterResolver implements Resolver {
   /**
    * Translate the graph (element 4) of the constraint to the underlying graph.
    *
-   * According to tests, the only classes we ever see here are ConstraintImpl and
-   * ConstraintNegation. However, to be safe, we handle all known implementations of
-   * Constraint here.
+   * According to tests, the only class we ever see here is ConstraintImpl.
+   * However, to be safe, we handle all known implementations of Constraint here.
    */
   private Constraint translateGraph(Constraint constraint) throws QueryException {
     if (logger.isDebugEnabled())
@@ -243,16 +241,6 @@ public class FilterResolver implements Resolver {
 
     if (constraint instanceof ConstraintIs)
       return new ConstraintIs(subj, obj, graph);
-
-    if (constraint instanceof ConstraintNegation) {
-      ConstraintNegation cn = (ConstraintNegation) constraint;
-      Constraint inner;
-      if (cn.isInnerConstraintIs())
-        inner = new ConstraintIs(subj, obj, graph);
-      else
-        inner = new ConstraintImpl(subj, pred, obj, graph);
-      return new ConstraintNegation(inner);
-    }
 
     if (constraint instanceof ConstraintOccurs)
       return new ConstraintOccurs(subj, obj, graph);
