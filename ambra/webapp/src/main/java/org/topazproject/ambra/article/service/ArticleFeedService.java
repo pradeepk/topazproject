@@ -247,7 +247,6 @@ public class ArticleFeedService {
    * @throws  ApplicationException Converts all exceptions to ApplicationException
    */
   private List<String> fetchArticleIds(final FeedCacheKey cacheKey) throws ApplicationException {
-    List<String> IDs;
     List<String> categoriesList = new ArrayList<String>();
     if (cacheKey.getCategory() != null && cacheKey.getCategory().length() > 0) {
       categoriesList.add(cacheKey.getCategory());
@@ -268,7 +267,7 @@ public class ArticleFeedService {
       if (cacheKey.getEDate() != null)
         endDate = cacheKey.getEDate().toString();
 
-      IDs = articleOtmService.getArticleIds(
+      return articleOtmService.getArticleIds(
               startDate, endDate,
               categoriesList.toArray(new String[categoriesList.size()]),
               authorsList.toArray(new String[authorsList.size()]),
@@ -276,8 +275,6 @@ public class ArticleFeedService {
     } catch (ParseException ex) {
       throw new ApplicationException(ex);
     }
-
-    return IDs;
   }
 
   /**
