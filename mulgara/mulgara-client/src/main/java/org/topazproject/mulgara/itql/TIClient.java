@@ -89,6 +89,9 @@ abstract class TIClient implements ItqlClient {
           res.add(new AnswerAnswer(o.toString()));
       }
 
+      if (log.isDebugEnabled())
+        log.debug("query completed: '" + res + "'");
+
       return res;
     } catch (AnswerException ae) {
       lastErr = ae;
@@ -106,6 +109,9 @@ abstract class TIClient implements ItqlClient {
 
       for (Command c : ti.parseCommands(itql))
         c.execute(con);
+
+      if (log.isDebugEnabled())
+        log.debug("udpate completed");
     } catch (Exception e) {
       lastErr = e;
       throw (IOException) new IOException("Error running update '" + itql + "'").initCause(e);
@@ -122,6 +128,9 @@ abstract class TIClient implements ItqlClient {
       lastErr = qe;
       throw (IOException) new IOException("Error beginning tx '" + txnName + "'").initCause(qe);
     }
+
+    if (log.isDebugEnabled())
+      log.debug("beginTransaction completed");
   }
 
   public void commitTxn(String txnName) throws IOException {
@@ -134,6 +143,9 @@ abstract class TIClient implements ItqlClient {
       lastErr = qe;
       throw (IOException) new IOException("Error committing tx '" + txnName + "'").initCause(qe);
     }
+
+    if (log.isDebugEnabled())
+      log.debug("commit completed");
   }
 
   public void rollbackTxn(String txnName) throws IOException {
@@ -158,6 +170,9 @@ abstract class TIClient implements ItqlClient {
           log.error("Error setting auto-commit after rolling back tx '" + txnName + "'", e);
       }
     }
+
+    if (log.isDebugEnabled())
+      log.debug("rollback completed");
   }
 
   public XAResource getXAResource() throws IOException {
@@ -195,7 +210,7 @@ abstract class TIClient implements ItqlClient {
   public void ping() throws IOException {
     try {
       if (!con.getSession().ping()) {
-        lastErr = new IOException("Ping returned falsed");
+        lastErr = new IOException("Ping returned false");
         throw (IOException) lastErr;
       }
     } catch (QueryException qe) {
