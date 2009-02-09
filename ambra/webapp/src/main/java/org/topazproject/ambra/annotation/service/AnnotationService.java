@@ -232,6 +232,7 @@ public class AnnotationService extends BaseAnnotationService {
     return filteredAnnotations;
   }
 
+  // TODO: merge with getAnnotationIds mthod
   @SuppressWarnings("unchecked")
   private List<String> loadAnnotations(final String target, final String mediator,
       final int state, final Set<Class<?extends ArticleAnnotation>> classTypes)
