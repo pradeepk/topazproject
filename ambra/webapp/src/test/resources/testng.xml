@@ -6,6 +6,11 @@
       <class name="org.topazproject.ambra.article.service.BrowseServiceTest"/>
     </classes>
   </test>
+  <test name="Annotation Tests">
+    <classes>
+      <class name="org.topazproject.ambra.annotation.service.AnnotationServiceTest"/>
+    </classes>
+  </test>
   <test name="Web Tests">
     <classes>
       <class name="org.topazproject.ambra.web.HttpResourceServerTest"/>
