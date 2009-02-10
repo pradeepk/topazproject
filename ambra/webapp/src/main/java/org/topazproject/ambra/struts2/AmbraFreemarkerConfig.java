@@ -363,19 +363,27 @@ public class AmbraFreemarkerConfig {
         return DEFAULT_TITLE;
       }
     }
-    String retVal = jc.getTitles().get(templateName);
-      if (retVal == null) {
-        retVal = jc.getDefaultTitle();
-        if ((retVal == null) && !usingDefault) {
-          jc = journals.get(defaultJournalName);
-          retVal = jc.getTitles().get(templateName);
-          if (retVal == null) {
-            retVal = jc.getDefaultTitle();
-          }
-        }
+    String defaultTemplateName = "/"+trimJournalFromTemplatePath(templateName);
+
+    String title = getJournalTitle(jc, templateName, defaultTemplateName);
+
+    if ((title == null) && !usingDefault) {
+      jc = journals.get(defaultJournalName);
+      title = getJournalTitle(jc, templateName, defaultTemplateName);
     }
 
-    return retVal != null ? retVal : DEFAULT_TITLE;
+    return title != null ? title : DEFAULT_TITLE;
+  }
+
+  private String getJournalTitle(JournalConfig jc, String templateName, String defaultTemplateName) {
+    String title = jc.getTitles().get(templateName);
+    if (title == null) {
+      title = jc.getTitles().get(defaultTemplateName);
+      if (title == null) {
+        title = jc.getDefaultTitle();
+      }
+    }
+    return title;
   }
 
   /**
