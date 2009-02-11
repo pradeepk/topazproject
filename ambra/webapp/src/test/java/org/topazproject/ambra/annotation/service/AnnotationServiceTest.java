@@ -45,6 +45,12 @@ import com.sun.xacml.ctx.ResponseCtx;
 import com.sun.xacml.ctx.Result;
 
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 /**
  * @author Dragisa Krsmanovic
@@ -53,8 +59,6 @@ public class AnnotationServiceTest {
 
   @Test
   public void listAnnotations() {
-
-    AnnotationService annotationService = new AnnotationService();
 
     IMocksControl ctl = createControl();
 
@@ -122,6 +126,8 @@ public class AnnotationServiceTest {
 
     cache.setCacheManager(cacheManager);
 
+    AnnotationService annotationService = new AnnotationService();
+
     annotationService.setArticleAnnotationCache(cache);
     annotationService.setAnnotationsPdp(pdp);
     annotationService.setOtmSession(session);
@@ -135,4 +141,118 @@ public class AnnotationServiceTest {
 
     ctl.verify();
   }
+
+  
+  @Test
+  public void getAnnotations() throws ParseException, URISyntaxException {
+
+    IMocksControl ctl = createControl();
+
+    PDP pdp = ctl.createMock(PDP.class);
+    Session session = ctl.createMock(Session.class);
+    Query query = ctl.createMock(Query.class);
+    Results results = ctl.createMock(Results.class);
+    CacheManager cacheManager = ctl.createMock(CacheManager.class);
+    MockCache cache = new MockCache();
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+
+    Date startDate = dateFormat.parse("02/01/2009");
+    Date endDate = dateFormat.parse("03/10/2009");
+    int[] states = {0, 1};
+    List<String> annotType = new ArrayList<String>();
+    annotType.add("FormalCorrection");
+    annotType.add("MinorCorrection");
+
+    String articleId = "info:doi/10.1371/journal.pone.0002250";
+    String queryString = "select a.id id, cr from Annotation a " +
+        "where cr := a.created and a.annotates = :targ and a.mediator = :med and ge(cr, :sd) " +
+        "and le(cr, :ed) and (art.state = :st0 or art.state = :st1) " +
+        "and (a.<rdf:type> = :type0 or a.<rdf:type> = :type1) " +
+        "order by cr asc, id asc limit 20;";
+    String applicationId = "test-app";
+    URI annotation1id = URI.create("info:doi/10.1371/annotation1");
+    URI annotation2id = URI.create("info:doi/10.1371/annotation2");
+    URI annotation3id = URI.create("info:doi/10.1371/annotation3");
+
+    Comment comment = new Comment();
+    comment.setId(annotation1id);
+    FormalCorrection formalCorrection = new FormalCorrection();
+    formalCorrection.setId(annotation2id);
+    MinorCorrection minorCorrection = new MinorCorrection();
+    minorCorrection.setId(annotation3id);
+
+    List<ArticleAnnotation> expected = new ArrayList<ArticleAnnotation>();
+    expected.add(comment);
+    expected.add(formalCorrection);
+    expected.add(minorCorrection);
+
+    cacheManager.registerListener(isA(AbstractObjectListener.class));
+    expectLastCall().times(0,1);
+
+    expect(pdp.evaluate(isA(EvaluationCtx.class)))
+        .andReturn(new ResponseCtx(new Result(Result.DECISION_PERMIT)))
+        .anyTimes();
+
+    expect(session.createQuery(queryString))
+        .andReturn(query);
+    expect(query.setParameter("targ", articleId))
+        .andReturn(query);
+    expect(query.setParameter("med", applicationId))
+        .andReturn(query);
+    expect(query.setParameter("sd", startDate))
+        .andReturn(query);
+    expect(query.setParameter("ed", endDate))
+        .andReturn(query);
+
+    for (int i = 0; i < states.length; i++) {
+      expect(query.setParameter("st"+i, states[i]))
+          .andReturn(query);
+    }
+
+    for (int i = 0; i < annotType.size(); i++) {
+      expect(query.setUri("type"+i, URI.create(annotType.get(i))))
+          .andReturn(query);
+    }
+
+    expect(query.execute())
+        .andReturn(results);
+
+    expect(results.next())
+        .andReturn(true).times(3)
+        .andReturn(false);
+    expect(results.getURI(0))
+        .andReturn(annotation1id)
+        .andReturn(annotation2id)
+        .andReturn(annotation3id);
+    
+    expect(session.get(ArticleAnnotation.class, annotation1id.toString()))
+        .andReturn(comment);
+    expect(session.get(ArticleAnnotation.class, annotation2id.toString()))
+        .andReturn(formalCorrection);
+    expect(session.get(ArticleAnnotation.class, annotation3id.toString()))
+        .andReturn(minorCorrection);
+    
+    ctl.replay();
+
+    cache.setCacheManager(cacheManager);
+
+    AnnotationService annotationService = new AnnotationService();
+
+    annotationService.setArticleAnnotationCache(cache);
+    annotationService.setAnnotationsPdp(pdp);
+    annotationService.setOtmSession(session);
+    annotationService.setApplicationId(applicationId);
+
+
+
+    List<ArticleAnnotation> annotations = annotationService.getAnnotations(
+        articleId, startDate, endDate, applicationId, annotType, states, true, 20);
+
+    assertEquals(annotations, expected);
+
+    ctl.verify();
+  }
+
+
 }
