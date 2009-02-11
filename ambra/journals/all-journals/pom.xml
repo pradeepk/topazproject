@@ -15,6 +15,11 @@
   <dependencies>
     <dependency>
       <groupId>org.topazproject</groupId>
+      <artifactId>journal-ambraJournal</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
       <artifactId>journal-clinicalTrials</artifactId>
       <version>${pom.version}</version>
     </dependency>
