@@ -359,24 +359,24 @@ public class AnnotationService extends BaseAnnotationService {
     if (targetId != null) {
       qry.append("select a.id id, cr from Annotation a ");
       qry.append("where cr := a.created and ");
-      qry.append("a.annotates = :targ and ");
+      qry.append("a.annotates = :targ ");
     } else {
       qry.append("select a.id id, cr from ArticleAnnotation a, Article ar ");
-      qry.append("where a.annotates = ar and cr := a.created and ");
+      qry.append("where a.annotates = ar and cr := a.created ");
     }
 
     if (mediator != null)
-      qry.append("a.mediator = :med and ");
+      qry.append("and a.mediator = :med ");
 
     // apply date constraints
     if (startDate != null)
-      qry.append("ge(cr, :sd) and ");
+      qry.append("and ge(cr, :sd) ");
     if (endDate != null)
-      qry.append("le(cr, :ed) and ");
+      qry.append("and le(cr, :ed) ");
 
     // match all states
     if (states != null && states.length > 0) {
-      qry.append("(");
+      qry.append("and (");
       for (int idx = 0; idx < states.length; idx++)
         qry.append("art.state = :st").append(idx).append(" or ");
       qry.setLength(qry.length() - 4);
@@ -385,16 +385,12 @@ public class AnnotationService extends BaseAnnotationService {
 
     // match all types
     if (annotType != null && annotType.size() > 0) {
-      qry.append("(");
+      qry.append("and (");
       for (int idx = 0; idx < annotType.size(); idx++)
         qry.append("a.<rdf:type> = :type").append(idx).append(" or ");
       qry.setLength(qry.length() - 4);
       qry.append(") ");
     }
-
-    // trim off trailing 'and'
-    if (qry.indexOf(" and ", qry.length() - 5) > 0)
-      qry.setLength(qry.length() - 4);
 
     // add ordering and limit
     qry.append("order by cr ").append(ascending ? "asc" : "desc").append(", id asc");
