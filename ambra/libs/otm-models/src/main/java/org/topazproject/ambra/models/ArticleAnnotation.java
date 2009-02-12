@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,6 +44,7 @@ public abstract class ArticleAnnotation extends Annotation<AnnotationBlob> {
    *
    * @return Returns the body of the article annotation
    */
+  @Override
   @Predicate(cascade = { CascadeType.peer, CascadeType.delete })
   public AnnotationBlob getBody() {
     return super.getBody();
