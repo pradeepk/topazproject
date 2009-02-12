@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,9 +72,11 @@ public class AnnotationService extends BaseAnnotationService {
   private              AnnotationsPEP pep;
   private              Cache          articleAnnotationCache;
   private              Invalidator    invalidator;
+  private static final BeanUtilsBean beanUtils;
 
   static {
     ALL_ANNOTATION_CLASSES.add(ArticleAnnotation.class);
+    beanUtils = new BeanUtilsBean();
   }
 
   @Required
@@ -232,7 +234,7 @@ public class AnnotationService extends BaseAnnotationService {
     return filteredAnnotations;
   }
 
-  // TODO: merge with getAnnotationIds mthod
+  // TODO: merge with getAnnotationIds method
   @SuppressWarnings("unchecked")
   private List<String> loadAnnotations(final String target, final String mediator,
       final int state, final Set<Class<?extends ArticleAnnotation>> classTypes)
@@ -581,7 +583,9 @@ public class AnnotationService extends BaseAnnotationService {
     }
 
     ArticleAnnotation newAn = newAnnotationClassType.newInstance();
-    BeanUtils.copyProperties(newAn, srcAnnotation);
+    synchronized (beanUtils) {
+      beanUtils.copyProperties(newAn, srcAnnotation);
+    }
 
     srcAnnotation.setBody(null);
     session.delete(srcAnnotation);
