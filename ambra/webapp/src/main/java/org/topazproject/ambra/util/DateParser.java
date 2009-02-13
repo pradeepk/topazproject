@@ -296,46 +296,4 @@ public class DateParser {
     return buffer.toString();
   }
 
-  public static void test(String isodate) {
-    System.out.println("----------------------------------");
-    try {
-      Date date = parse(isodate);
-      System.out.println(">> " + isodate);
-      System.out.println(">> " + date.toString() + " [" + date.getTime() + "]");
-      System.out.println(">> " + getIsoDate(date));
-    } catch (InvalidDateException ex) {
-      System.err.println(isodate + " is invalid");
-      System.err.println(ex.getMessage());
-    }
-    System.out.println("----------------------------------");
-  }
-
-  public static void test(Date date) {
-    String isodate = null;
-    System.out.println("----------------------------------");
-    try {
-      System.out.println(">> " + date.toString() + " [" + date.getTime() + "]");
-      isodate = getIsoDate(date);
-      System.out.println(">> " + isodate);
-      date = parse(isodate);
-      System.out.println(">> " + date.toString() + " [" + date.getTime() + "]");
-    } catch (InvalidDateException ex) {
-      System.err.println(isodate + " is invalid");
-      System.err.println(ex.getMessage());
-    }
-    System.out.println("----------------------------------");
-  }
-
-  public static void main(String args[]) {
-    test("1997-07-16T19:20:30.45-02:00");
-    test("1997-07-16T19:20:30+01:00");
-    test("1997-07-16T19:20:30+01:00");
-    test("1997-07-16T12:20:30-06:00");
-    test("1997-07-16T19:20");
-    test("1997-07-16");
-    test("1997-07");
-    test("1997");
-    test(new Date());
-  }
-
 }

@@ -26,6 +26,7 @@ import static org.testng.Assert.assertEquals;
 
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.util.Date;
 
 /**
  * @author Dragisa Krsmanovic
@@ -56,6 +57,19 @@ public class DateParserTest {
     };
   }
 
+  @DataProvider(name = "standardDates")
+  public String[][] createStandardData() {
+    return new String[][] {
+        {"07/16/97 19:20:30.450 -0200"},
+        {"07/16/97 19:20:30.000 +0100"},
+        {"07/16/97 12:20:30.000 -0600"},
+        {"07/16/97 19:20:00.000 +0000"},
+        {"07/16/97 00:00:00.000 +0000"},
+        {"07/01/97 00:00:00.000 +0000"},
+        {"01/01/97 00:00:00.000 +0000"}
+    };
+  }
+
   @BeforeClass
   public void setUp() {
     format = new SimpleDateFormat("MM/dd/yy HH:mm:ss.SSS Z");
@@ -70,5 +84,12 @@ public class DateParserTest {
   public void testParseMalformedDate(String date) throws InvalidDateException, ParseException{
     DateParser.parse(date);
   }
+  
+  @Test(dataProvider = "standardDates")
+  public void testBackAndForth(String date) throws InvalidDateException, ParseException{
+    Date expectdDate = format.parse(date);
+    assertEquals(DateParser.parse(DateParser.getIsoDate(expectdDate)), expectdDate);
+  }
+
 
 }
