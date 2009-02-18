@@ -25,7 +25,7 @@ audio/x-aiff				aif aiff
 audio/x-mpeg				mpeg mpg mp2
 audio/x-wav				wav
 video/mpeg				mpeg mpg mpe
-video/quicktime				qt mov
+video/quicktime				mov qt
 video/x-msvideo				avi
 
 ################################################################################
@@ -130,7 +130,7 @@ video/mpeg				mpeg mpg mpe
 # MPEG-2 video
 video/mpeg-2				mpv2 mp2v
 # Macintosh Quicktime
-video/quicktime				qt mov
+video/quicktime				mov qt
 # Microsoft video
 video/x-msvideo				avi
 # SGI Movie format
