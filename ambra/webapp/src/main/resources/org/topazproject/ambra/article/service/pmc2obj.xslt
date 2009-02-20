@@ -3,7 +3,7 @@
   $HeadURL::                                                                                      $
   $Id$
 
-  Copyright (c) 2006-2008 by Topaz, Inc.
+  Copyright (c) 2006-2009 by Topaz, Inc.
   http://topazproject.org
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -657,6 +657,8 @@
       else if ($e = 'aif' or $e = 'aiff') then 'audio/x-aiff'
       else if ($e = 'mid' or $e = 'midi' or $e = 'rmi') then 'audio/midi'
       else if ($e = 'wma') then 'audio/x-ms-wma'
+      else if ($e = 'gz' or $e = 'gzip') then 'application/x-gzip'
+      else if ($e = 'bz2' or $e = 'bzip') then 'application/x-bzip'
       else 'application/octet-stream'
       "/>
   </xsl:function>

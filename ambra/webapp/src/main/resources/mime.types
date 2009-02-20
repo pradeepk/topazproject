@@ -210,6 +210,10 @@ application/fractals			fif
 application/x-wais-source		src wsrc
 # NCSA HDF data format
 application/hdf				hdf
+# gzip
+application/x-gzip  gz gzip
+# bzip2
+application/x-bzip  bz2 bz
 
 # DOWNLOADABLE PROGRAM/SCRIPTS
 
