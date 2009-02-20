@@ -2,7 +2,7 @@
  * $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,8 +22,12 @@
  * ambra.advsearch
  * Advanced search methods.
  * @author jkirton (jopaki@gmail.com)
+ * @author ruman (ruman@plos.org)
  **/
-//dojo.provide("ambra.advsearch");
+
+ var now = new Date();
+ 
+ //dojo.provide("ambra.advsearch");
 ambra.advsearch = {
 	Config: {
 	  idAuthNmePrototype:'as_anp',
@@ -53,7 +57,7 @@ ambra.advsearch = {
 	  
 	  maxNumAuthNames: 10,
 	  
-	  pubDateYearRange: [1900, 2008],
+	  pubDateYearRange: [1900, now.getFullYear()],
 	  monthRange: [1, 12],
 	  dayRange: [1, 31]
 	},
