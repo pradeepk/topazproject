@@ -29,6 +29,7 @@ import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.Zip;
 import org.topazproject.otm.Blob;
 import org.testng.annotations.Test;
+import org.testng.annotations.BeforeClass;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.easymock.classextension.IMocksControl;
@@ -46,6 +47,15 @@ import java.util.HashSet;
  * @author Dragisa Krsmanovic
  */
 public class DocumentManagementServiceTest {
+
+
+  @BeforeClass
+  public void setUp() {
+    System.setProperty("javax.xml.transform.TransformerFactory",
+                       "net.sf.saxon.TransformerFactoryImpl");
+    System.setProperty("javax.xml.transform.Transformer",
+                       "net.sf.saxon.Controller");
+  }
 
   @Test
   public void testIngest() throws IngestException, DuplicateArticleIdException, IOException,
@@ -74,8 +84,9 @@ public class DocumentManagementServiceTest {
 
     expect(articleOtmService.ingest(ingester, false)).andReturn(article);
     expect(blob.getInputStream()).andReturn(getClass().getResourceAsStream("/article/article1.xml"));
-    expect(ingester.getZip()).andReturn(zip);
-    expect(zip.getName()).andReturn("zip name");
+    // methods in log call
+    expect(ingester.getZip()).andReturn(zip).times(0,1);
+    expect(zip.getName()).andReturn("zip name").times(0,1);
 
     ctl.replay();
     DocumentManagementService service = new DocumentManagementService();
