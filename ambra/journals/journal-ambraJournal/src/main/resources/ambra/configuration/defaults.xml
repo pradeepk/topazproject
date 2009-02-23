@@ -80,6 +80,7 @@
             <file>/javascript/init_home.js</file>
           </javascript>
         </page>
+
         <page>
           <name>/article/article_body.ftl</name>
           <title>CODE_ARTICLE_TITLE</title>
@@ -98,16 +99,12 @@
           </javascript>
         </page>
         <page>
-          <name>/article/browseIssue.ftl</name>
+          <name>/article/browse.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
+            <file>/css/article_markup.css</file>
           </css>
-          <javascript>
-            <file>/javascript/dojo/dojo/dojo.js</file>
-            <file>/javascript/dojo/dojo/ambra.js</file>
-            <file>/javascript/init_global.js</file>
-          </javascript>
         </page>
         <page>
           <name>/article/browseVolume.ftl</name>
@@ -125,38 +122,22 @@
           </javascript>
         </page>
         <page>
-          <name>/discussion/discussion.ftl</name>
-          <javascript>
-            <file>/javascript/dojo/dojo/dojo.js</file>
-            <file>/javascript/dojo/dojo/ambra.js</file>
-            <file>/javascript/init_global.js</file>
-            <file>/javascript/init_discussion.js</file>
-          </javascript>
-        </page>
-        <page>
-          <name>/discussion/startDiscussion.ftl</name>
-          <javascript>
-            <file>/javascript/dojo/dojo/dojo.js</file>
-            <file>/javascript/dojo/dojo/ambra.js</file>
-            <file>/javascript/init_global.js</file>
-            <file>/javascript/init_newDiscussion.js</file>
-          </javascript>
-        </page>
-        <page>
-          <name>/rating/index.ftl</name>
+          <name>/article/emailArticle.ftl</name>
           <css>
-            <file>/css/star_rating.css</file>
-            <file>/css/rating.css</file>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
-            <file>/css/article_markup.css</file>
+            <file>/css/forms.css</file>
+            <file>/css/static.css</file>
           </css>
-          <javascript>
-            <file>/javascript/dojo/dojo/dojo.js</file>
-            <file>/javascript/dojo/dojo/ambra.js</file>
-            <file>/javascript/init_global.js</file>
-            <file>/javascript/init_discussion.js</file>
-          </javascript>
+        </page>
+        <page>
+          <name>/article/emailSuccess.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/forms.css</file>
+            <file>/css/static.css</file>
+          </css>
         </page>
         <page>
           <name>/article/imageWindow.ftl</name>
@@ -179,32 +160,26 @@
             <file>/javascript/dojo/dojo/ambra.js</file>
           </javascript>
         </page>
+
         <page>
-          <name>/article/emailArticle.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/forms.css</file>
-            <file>/css/static.css</file>
-          </css>
+          <name>/discussion/discussion.ftl</name>
+          <javascript>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
+            <file>/javascript/init_global.js</file>
+            <file>/javascript/init_discussion.js</file>
+          </javascript>
         </page>
         <page>
-          <name>/article/emailSuccess.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/forms.css</file>
-            <file>/css/static.css</file>
-          </css>
+          <name>/discussion/startDiscussion.ftl</name>
+          <javascript>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
+            <file>/javascript/init_global.js</file>
+            <file>/javascript/init_newDiscussion.js</file>
+          </javascript>
         </page>
-        <page>
-          <name>/article/browse.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/article_markup.css</file>
-          </css>
-        </page>
+
         <page>
           <name>/feedback/feedbackEntry.ftl</name>
           <css>
@@ -223,6 +198,24 @@
             <file>/css/static.css</file>
           </css>
         </page>
+        
+        <page>
+          <name>/rating/index.ftl</name>
+          <css>
+            <file>/css/star_rating.css</file>
+            <file>/css/rating.css</file>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/article_markup.css</file>
+          </css>
+          <javascript>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
+            <file>/javascript/init_global.js</file>
+            <file>/javascript/init_discussion.js</file>
+          </javascript>
+        </page>
+        
         <page>
           <name>/search/searchStart.ftl</name>
           <css>
@@ -237,6 +230,7 @@
             <file>/javascript/init_global.js</file>
           </javascript>
         </page>
+        
         <page>
           <name>/user/alerts.ftl</name>
           <css>
@@ -287,6 +281,7 @@
             <file>/javascript/user_profile.js</file>
           </javascript>
         </page>
+        
         <page>
           <name>/static/browse.ftl</name>
           <css>
@@ -368,6 +363,172 @@
             <file>/css/static.css</file>
           </css>
         </page>
+        
+        <!-- additional static pages in plosJournals -->
+        <page>
+          <name>/static/competing.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/figureGuidelines.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/latexGuidelines.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/license.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/privacy.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/searchHelp.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/terms.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/userFaq.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+
+        <!-- additional static pages in
+             multiple other journals -->
+        <page>
+          <name>/static/about.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/authors.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/checklist.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/contact.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/edboard.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/eic.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/faq.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/guidelines.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/information.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/policies.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/reviewerGuidelines.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/static/whypublish.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        
       </journal>
     </freemarker>
   </ambra>
