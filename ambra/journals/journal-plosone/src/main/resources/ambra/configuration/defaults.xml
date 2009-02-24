@@ -63,15 +63,6 @@
         <displayName>PLoS ONE</displayName>
         <default>
           <title>PLoS ONE : Publishing science\, accelerating research</title>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-          </css>
-          <javascript>
-            <file>/javascript/dojo/dojo/dojo.js</file>
-            <file>/javascript/dojo/dojo/ambra.js</file>
-            <file>/javascript/init_global.js</file>
-          </javascript>
         </default>
         <page>
           <name>/article/article_body.ftl</name>
