@@ -22,8 +22,7 @@ package org.topazproject.ambra.util;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotSame;
+import static org.testng.Assert.assertTrue;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.topazproject.ambra.ApplicationException;
@@ -36,6 +35,10 @@ import static org.easymock.classextension.EasyMock.verify;
 import static org.easymock.classextension.EasyMock.replay;
 import static org.easymock.classextension.EasyMock.reset;
 import static org.easymock.classextension.EasyMock.expect;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.TolerantSaxDocumentBuilder;
+import org.custommonkey.xmlunit.HTMLDocumentBuilder;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.activation.URLDataSource;
@@ -70,6 +73,8 @@ public class ArticleXMLUtilsTest {
         "net.sf.saxon.TransformerFactoryImpl");
     xmlFactoryProperties.put("javax.xml.transform.Transformer",
         "net.sf.saxon.Controller");
+
+    XMLUnit.setTransformerFactory("net.sf.saxon.TransformerFactoryImpl");
     Configuration configiration = new BaseConfiguration();
     configiration.setProperty("ambra.platform.appContext", "test-context");
     secondaryObjectService = new ArticleXMLUtils();
@@ -92,7 +97,7 @@ public class ArticleXMLUtilsTest {
   @DataProvider(name = "objInfoSamples")
   public String[][] createObjInfoSamples() {
     return new String[][]{
-        {"Hello World", "Hello World"},
+        {"<p>Hello World</p>", "<p>Hello World</p>"},
         {"<sc>hello world</sc>", "<small " + OBJINFO_NAMESPACES + ">HELLO WORLD</small>"},
         {"<bold>Hello World</bold>", "<b " + OBJINFO_NAMESPACES + ">Hello World</b>"},
         {"<abbrev xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
@@ -106,9 +111,11 @@ public class ArticleXMLUtilsTest {
 
   @Test(dataProvider = "objInfoSamples")
   public void testObjInfoTransformation(String source, String expected)
-      throws URISyntaxException, ApplicationException {
+      throws URISyntaxException, ApplicationException, SAXException, IOException {
     String result = secondaryObjectService.getTranformedDocument(source);
-    assertEquals(result, expected);
+
+    Diff diff = new Diff(expected, result);
+    assertTrue(diff.identical(), "Expected " + expected + " but received " + result);
   }
 
 
@@ -131,7 +138,14 @@ public class ArticleXMLUtilsTest {
     String result = viewNLMService.getTransformedArticle("1234");
     verify();
 
-    assertNotSame(result, getFileAsString("/article/"+resultFilename));
+    String expected = getFileAsString("/article/" + resultFilename);
+
+    HTMLDocumentBuilder htmlDocumentBuilder =
+        new HTMLDocumentBuilder(new TolerantSaxDocumentBuilder(XMLUnit.newTestParser()));
+
+    Diff diff = new Diff(htmlDocumentBuilder.parse(expected), htmlDocumentBuilder.parse(result));
+
+    assertTrue(diff.identical(), "Expected " + expected + " but received " + result);
     reset(articleServiceMock);
   }
 
