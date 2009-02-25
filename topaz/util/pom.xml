@@ -22,7 +22,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>topaz-utils</artifactId>
-  <version>0.9.1</version>
+  <version>0.9.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Topaz Sundry</name>
   <description>Miscellaneous Topaz libraries.</description>
@@ -30,7 +30,7 @@
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topaz</artifactId>
-    <version>0.9.1</version>
+    <version>0.9.2-SNAPSHOT</version>
   </parent>
 
   <modules>
