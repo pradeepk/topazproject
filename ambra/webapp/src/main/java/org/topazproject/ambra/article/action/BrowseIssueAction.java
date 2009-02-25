@@ -1,7 +1,7 @@
-/* $HeadURL:: $
+/* $HeadURL$
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,6 @@ import org.topazproject.ambra.model.article.ArticleInfo;
 import org.topazproject.ambra.model.article.ArticleType;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.util.ArticleXMLUtils;
-import org.topazproject.otm.Session;
 
 /**
  * BrowseIssueAction retrieves data for presentation of an issue and a table of contents. Articles
@@ -134,13 +133,9 @@ public class BrowseIssueAction extends BaseActionSupport{
      * ArticleType to be displayed in the order defined by ArticleType.getOrderedListForDisplay()
      */
     articleGroups = new ArrayList<TOCArticleGroup>();
-    TOCArticleGroup defaultArticleGroup = null;
     for (ArticleType at : ArticleType.getOrderedListForDisplay()) {
       TOCArticleGroup newArticleGroup = new TOCArticleGroup(at);
       articleGroups.add(newArticleGroup);
-      if (at == ArticleType.getDefaultArticleType()) {
-        defaultArticleGroup = newArticleGroup;
-      }
     }
 
     List<ArticleInfo> articlesInIssue = browseService.getArticleInfosForIssue(issueInfo.getId());
@@ -236,7 +231,7 @@ public class BrowseIssueAction extends BaseActionSupport{
   /**
    * Spring injected
    *
-   * @param axu
+   * @param axu ArticleXMLUtils
    */
   @Required
   public void setArticleXmlUtils(ArticleXMLUtils axu) {
@@ -258,7 +253,7 @@ public class BrowseIssueAction extends BaseActionSupport{
 
   /**
    * returns the VolumeInfo for the current issue's parent volume
-   * @return
+   * @return VolumeInfo
    */
   public VolumeInfo getVolumeInfo() {
     return volumeInfo;
