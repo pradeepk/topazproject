@@ -51,6 +51,21 @@ public abstract class BaseAnnotation<T extends Annotea<? extends Blob>> {
   }
 
   /**
+   * Returns a value identical to the {@link #getComment()}
+   * method in this class.  This new method has been added because
+   * the subclass <strong>WebAnnotation</strong> contains the method
+   * {@link WebAnnotation#isComment()}.  The Javascript function
+   * <strong>_toRetractionHtmlElement</strong> (in the corrections.js
+   * file) mistakenly calls {@link WebAnnotation#isComment()} instead
+   * of calling BaseAnnotation.getComment() to display the comment.
+   *
+   * @return the escaped comment.  Identical to the getComment() method.
+   */
+  public String getEscapedComment() {
+    return getComment();
+  }
+
+  /**
    * @return the url linked and escaped comment.
    */
   public String getCommentWithUrlLinking() {

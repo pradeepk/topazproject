@@ -2,7 +2,7 @@
  * $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,14 +55,26 @@ var annotationConfig = {
   rangeInfoObj: new Object(),
   annTypeMinorCorrection: 'MinorCorrection',
   annTypeFormalCorrection: 'FormalCorrection',
+  annTypeRetraction: 'Retraction',
   styleMinorCorrection: 'minrcrctn', // generalized css class name for minor corrections
-  styleFormalCorrection: 'frmlcrctn' // generalized css class name for formal corrections
+  styleFormalCorrection: 'frmlcrctn', // generalized css class name for formal corrections
+  styleRetraction: 'retractionCssStyle' // generalized css class name for retractions.  Using Formal Corrections style.
 };
 var formalCorrectionConfig = {
   styleFormalCorrectionHeader: 'fch', // css class name for the formal correction header node
   fchId: 'fch', // the formal correction header node dom id
   fcListId: 'fclist', // the formal correction header sub-node referencing the ordered list
   annid: 'annid' // dom node attribute name to use to store annotation ids 
+};
+var retractionConfig = {
+    //  styleRetractionHeader: 'retractionCssStyle', // css class name for the retraction header node
+    //  The name "retractionHtmlId" is a bad choice.  The only reason it is being used is as an extension of a bad
+    //  decision (i.e., naming formalCorrectionConfig.styleFormalCorrectionHeader and formalCorrectionConfig.fchId
+    //  the same value: "fch") made when Formal Corrections were implemented.  
+  styleRetractionHeader: 'retractionHtmlId', // css class name for the retraction header node
+  retractionHtmlId: 'retractionHtmlId', // the retraction header node dom id
+  retractionListId: 'retractionlist', // the retraction header sub-node referencing the ordered list
+  retractionAnnId: 'retractionAnnId' // dom node attribute name to use to store annotation ids
 };
 var _annotationDlg;
 var _annotationForm;

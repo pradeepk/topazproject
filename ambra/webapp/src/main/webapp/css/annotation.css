@@ -61,18 +61,25 @@ div.contentwrap{ padding: 10px; background-color: #fff; margin: 0; border: 1px s
 div.contentwrap p { margin:0; }
 
 /*corrections varients*/
+div#cmtContainer.retractionCssStyle h6 a,
 div#cmtContainer.frmlcrctn h6 a,
 div#cmtContainer.minrcrctn h6 a { background:url(../images/icon_correction.gif) left 0% no-repeat; color:#ff0000 !important }
+div#cmtContainer.retractionCssStyle div.contentwrap,
 div#cmtContainer.frmlcrctn div.contentwrap,
+div#cmtContainer.retractionCssStyle h6#viewCmtTitle,
 div#cmtContainer.frmlcrctn h6#viewCmtTitle,
 div#cmtContainer.minrcrctn div.contentwrap,
 div#cmtContainer.minrcrctn h6#viewCmtTitle,
+div#cmtContainer.retractionCssStyle div#viewCmtDetail,
 div#cmtContainer.frmlcrctn div#viewCmtDetail,
+div#cmtContainer.retractionCssStyle div#viewComment,
 div#cmtContainer.frmlcrctn div#viewComment,
 div#cmtContainer.minrcrctn div#viewCmtDetail,
 div#cmtContainer.minrcrctn div#viewComment,
+div#cmtContainer.retractionCssStyle div#viewLink,
 div#cmtContainer.frmlcrctn div#viewLink,
 div#cmtContainer.minrcrctn div#viewLink { background-color:#fff4f0; }
+div#cmtContainer.retractionCssStyle div#viewCmtDetail,
 div#cmtContainer.frmlcrctn div#viewCmtDetail,
 div#cmtContainer.minrcrctn div#viewCmtDetail { border-top-color:#f00; border-bottom-color:#f00; }
 

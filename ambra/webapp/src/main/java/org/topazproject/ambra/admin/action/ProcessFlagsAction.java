@@ -1,7 +1,7 @@
 /* $$HeadURL::                                                                            $$
  * $$Id$$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,6 +34,7 @@ import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.Comment;
 import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.MinorCorrection;
+import org.topazproject.ambra.models.Retraction;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.rating.service.RatingsService;
 
@@ -45,6 +46,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
   private String[] commentsToDelete;
   private String[] convertToFormalCorrection;
   private String[] convertToMinorCorrection;
+  private String[] convertToRetraction;
   private String[] convertToNote;
   private AnnotationService annotationService;
   private RatingsService ratingsService;
@@ -80,6 +82,10 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
 
   public void setConvertToMinorCorrection(String[] convertToMinorCorrection) {
     this.convertToMinorCorrection = convertToMinorCorrection;
+  }
+
+  public void setConvertToRetraction(String[] convertToRetraction) {
+    this.convertToRetraction = convertToRetraction;
   }
 
   public void setConvertToNote(String[] convertToNote) {
@@ -176,6 +182,26 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       }
     }
 
+    if (convertToRetraction != null) {
+      for (String paramStr : convertToRetraction) {
+        if (log.isDebugEnabled()) {
+          log.debug("Converting to Retraction: "+paramStr);
+        }
+        String[] tokens = paramStr.split("_");
+        try {
+          annotationService.convertAnnotationToType(tokens[1], Retraction.class);
+          deleteFlag(tokens[1], tokens[0]);
+        } catch(Exception e) {
+          String errorMessage = "Failed to convert annotation id='" + tokens[1] +
+                                "' to Retraction annotation.";
+          addActionError(errorMessage + " Exception: " +e.getMessage());
+          log.error(errorMessage, e);
+          TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+          return ERROR;
+        }
+      }
+    }
+
     if (convertToNote != null) {
       for (String paramStr : convertToNote) {
         if (log.isDebugEnabled()) {
@@ -249,7 +275,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         targetType.equals(Annotea.WEB_TYPE_COMMENT) ||
         targetType.equals(Annotea.WEB_TYPE_NOTE) ||
         targetType.equals(Annotea.WEB_TYPE_MINOR_CORRECTION) ||
-        targetType.equals(Annotea.WEB_TYPE_FORMAL_CORRECTION)) {
+        targetType.equals(Annotea.WEB_TYPE_FORMAL_CORRECTION) ||
+        targetType.equals(Annotea.WEB_TYPE_RETRACTION)) {
       replies = replyService.listAllReplies(target, target);
     } else {
       // Flag type doesn't have Replies
@@ -281,7 +308,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         targetType.equals(Annotea.WEB_TYPE_COMMENT) ||
         targetType.equals(Annotea.WEB_TYPE_NOTE) ||
         targetType.equals(Annotea.WEB_TYPE_MINOR_CORRECTION) ||
-        targetType.equals(Annotea.WEB_TYPE_FORMAL_CORRECTION)) {
+        targetType.equals(Annotea.WEB_TYPE_FORMAL_CORRECTION) ||
+        targetType.equals(Annotea.WEB_TYPE_RETRACTION)) {
       replyService.deleteReplies(target, target);
       annotationService.deleteAnnotation(target);
       if (log.isDebugEnabled()) {

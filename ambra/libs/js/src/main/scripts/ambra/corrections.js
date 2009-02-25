@@ -2,7 +2,7 @@
  * $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,20 +32,32 @@ ambra.corrections = {
   aroot: null, // the top-most element of the article below which corrections are applied
   fch: null,
   fclist: null, // the formal corrections ordered list element ref
+  retractionHtmlId: null,
+  retractionlist: null, // the retractions ordered list element reference
 
   arrElmMc:null, // array of the minor correction elements for the article
   arrElmFc:null, // array of the formal correction elements for the article
-  
+  arrElmRetraction:null, // array of the retraction elements for the article
+
   _num: function(arr) { return arr == null ? 0 : arr.length; },
 
   numMinorCrctns: function() { return this._num(this.arrElmMc); },
   numFormalCrctns: function() { return this._num(this.arrElmFc); },
+  numRetractions: function() { return this._num(this.arrElmRetraction); },
 
   /**
    * Removes any existing formal correction entries from the formal correction header.
    */
   _clearFCEntries: function() {
     ambra.domUtil.removeChildren(this.fclist);
+    // TODO handle IE memory leaks
+  },
+
+  /**
+   * Removes any existing retraction entries from the retraction header.
+   */
+  _clearRetractionEntries: function() {
+    ambra.domUtil.removeChildren(this.retractionlist);
     // TODO handle IE memory leaks
   },
 
@@ -60,8 +72,12 @@ ambra.corrections = {
     this.fch = dojo.byId(formalCorrectionConfig.fchId);
     this.fclist = dojo.byId(formalCorrectionConfig.fcListId);
 
+    this.retractionHtmlId = dojo.byId(retractionConfig.retractionHtmlId);
+    this.retractionlist = dojo.byId(retractionConfig.retractionListId);
+
     this.arrElmMc = dojo.query('.'+annotationConfig.styleMinorCorrection, this.aroot);
     this.arrElmFc = dojo.query('.'+annotationConfig.styleFormalCorrection, this.aroot);
+    this.arrElmRetraction = dojo.query('.'+annotationConfig.styleRetraction, this.aroot);
 
     this._clearFCEntries();
     var show = (this.numFormalCrctns() > 0);
@@ -94,6 +110,37 @@ ambra.corrections = {
     }
     this.fch.style.display = show? '' : 'none';
 
+    //  Now do the same thing for the Retraction(s) associated to this Article.
+    this._clearRetractionEntries();
+    var show2 = (this.numRetractions() > 0);
+    if(show2) {
+      // [re-]fetch the retractions for the article
+      var targetUri = _annotationForm.target.value;
+      _ldc.show();
+      dojo.xhrGet({
+        url: _namespace + "/annotation/getRetractions.action?target=" + targetUri,
+        handleAs:'json-comment-filtered',
+        error: function(response, ioArgs){
+          handleXhrError(response, ioArgs);
+        },
+        load: function(response, ioArgs) {
+          var jsonObj = response;
+          if (jsonObj.actionErrors.length > 0) {
+            var errorMsg = "";
+            for (var i=0; i<jsonObj.actionErrors.length; i++) {
+              errorMsg = errorMsg + jsonObj.actionErrors[i] + "\n";
+            }
+            alert("ERROR [actionErrors]: " + errorMsg);
+          }
+          else {
+            // success
+            ambra.corrections.addRetractions(jsonObj.retractions);
+          }
+          _ldc.hide();
+        }
+      });
+    }
+    this.retractionHtmlId.style.display = show2? '' : 'none';
   },//apply
 
   /**
@@ -172,7 +219,7 @@ ambra.corrections = {
     }
     return null;
   },
-  
+
   _getAnnAnchor: function(ancestor) {
   	var cns = ancestor.childNodes;
   	if(!cns || cns.length < 1) return null;
@@ -206,5 +253,57 @@ ambra.corrections = {
       jumpToAnnotation(annId);
     }
     return false;
+  },
+  
+  /**
+   * addRetractions
+   *
+   * Adds retractions to the retraction header.
+   *
+   * @param arr Array of retractions
+   * @return void
+   */
+  addRetractions: function(arr) {
+    for(var i=0; i<arr.length; i++) {
+      this.retractionlist.appendChild(this._toRetractionHtmlElement(arr[i]));
+    }
+  },
+
+  /**
+   * _toRetractionHtmlElement
+   *
+   * @param retraction Retraction json object
+   * @retun div element containing the entire Retraction text and a link to view the Retraction
+   */
+  _toRetractionHtmlElement: function(retractionRaw) {
+    var div = document.createElement('div');
+    div.innerHTML = retractionRaw.escapedComment + ' (';
+    var a = document.createElement('a');
+    a.setAttribute('href', _namespace + "/annotation/listThread.action?inReplyTo=" + retractionRaw.id
+        + "&root=" + retractionRaw.id);
+    a.innerHTML = 'comment on this retraction';
+    div.appendChild(a);
+    div.appendChild(document.createTextNode(')'));
+    return div;
+  },
+
+  /**
+   * _findRetractionByAnnId
+   *
+   * Finds a retraction node given an annotation id
+   * by searching the retractions node array property of this object
+   *
+   * @param retractionAnnId The annotation (guid) id
+   * @return The found retraction node or null if not found
+   */
+  _findRetractionByAnnId: function(retractionAnnId) {
+    if(this.arrElmRetraction == null || retractionAnnId == null) return null;
+    var n, naid;
+    for(var i=0; i<this.arrElmRetraction.length; i++){
+      n = this.arrElmRetraction[i];
+      naid = dojo.attr(n, 'annotationid');
+      if(naid != null && naid.indexOf(retractionAnnId)>=0) return n;
+    }
+    return null;
   }
 }

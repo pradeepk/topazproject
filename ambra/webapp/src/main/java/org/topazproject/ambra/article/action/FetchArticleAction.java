@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,6 +42,7 @@ import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.models.MinorCorrection;
+import org.topazproject.ambra.models.Retraction;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -70,6 +71,7 @@ public class FetchArticleAction extends BaseActionSupport {
   private int numDiscussions = 0;
   private int numMinorCorrections = 0;
   private int numFormalCorrections = 0;
+  private int numRetractions = 0;
   /**
    * Represents the number of notes that are not corrections from  a UI stand point
    */
@@ -83,6 +85,7 @@ public class FetchArticleAction extends BaseActionSupport {
       setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
 
       ArticleAnnotation anns[] = annotationService.listAnnotations(articleURI, null);
+      // Tally the total number of each type of correction.
       for (ArticleAnnotation a : anns) {
         if (a.getContext() == null) {
           numDiscussions ++;
@@ -91,6 +94,8 @@ public class FetchArticleAction extends BaseActionSupport {
             numMinorCorrections++;
           } else if (a instanceof FormalCorrection) {
             numFormalCorrections++;
+          } else if (a instanceof Retraction) {
+            numRetractions++;
           } else {
             numComments++;
           }
@@ -239,24 +244,34 @@ public class FetchArticleAction extends BaseActionSupport {
   }
 
   /**
-   * @return Returns the numMinorCorrections.
+   * @return Returns the numFormalCorrections.
    */
   public int getNumFormalCorrections() {
     return numFormalCorrections;
   }
 
   /**
+   * Zero if this Article has not been retracted.  One if this Article has been retracted.
+   * Having multiple Retractions for a single Article does not make sense.
+   *
+   * @return Returns the number of Retractions that have been associated to this Article.
+   */
+  public int getNumRetractions() {
+    return numRetractions;
+  }
+
+  /**
    * @return Returns the calculated number of notes.
    */
   public int getNumNotes() {
-    return numComments + numMinorCorrections + numFormalCorrections;
+    return numComments + numMinorCorrections + numFormalCorrections + numRetractions;
   }
 
   /**
    * @return Returns the total number of corrections.
    */
   public int getNumCorrections() {
-    return numMinorCorrections + numFormalCorrections;
+    return numMinorCorrections + numFormalCorrections + numRetractions;
   }
 
   /**

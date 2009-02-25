@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +32,7 @@ import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.FormalCorrection;
+import org.topazproject.ambra.models.Retraction;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -82,6 +83,15 @@ public class ListAnnotationAction extends BaseActionSupport {
   }
 
   /**
+   * @return Only those annotations that represent retractions.
+   */
+  @SuppressWarnings("unchecked")
+  @Transactional(readOnly = true)
+  public String fetchRetractions() {
+    return loadAnnotations(Collections.singleton(Retraction.class), true);
+  }
+
+  /**
    * @return a list of annotations
    */
   public WebAnnotation[] getAnnotations() {
@@ -92,6 +102,13 @@ public class ListAnnotationAction extends BaseActionSupport {
    * @return List of associated formal corrections
    */
   public WebAnnotation[] getFormalCorrections() {
+    return annotations;
+  }
+
+  /**
+   * @return List of associated retractions
+   */
+  public WebAnnotation[] getRetractions() {
     return annotations;
   }
 

@@ -2,7 +2,7 @@
  * $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -282,9 +282,14 @@ ambra.displayComment = {
       // formal correction
       dojo.addClass(cmtId, annotationConfig.styleFormalCorrection);
     }
+    else if(jsonObj.annotation.type.indexOf(annotationConfig.annTypeRetraction) >= 0) {
+      // retraction of the article
+      dojo.addClass(cmtId, annotationConfig.styleRetraction);
+    }
     else {
       dojo.removeClass(cmtId, annotationConfig.styleMinorCorrection);
       dojo.removeClass(cmtId, annotationConfig.styleFormalCorrection);
+      dojo.removeClass(cmtId, annotationConfig.styleRetraction);
     }
   },
   
@@ -328,6 +333,11 @@ ambra.displayComment = {
       // formal correction
       dojo.addClass(newListItem, annotationConfig.styleFormalCorrection);
       contentDiv.className += ' ' + annotationConfig.styleFormalCorrection;
+    }
+    else if(jsonObj.annotation.type.indexOf(annotationConfig.annTypeRetraction) >= 0) {
+      // retraction of this article
+      dojo.addClass(newListItem, annotationConfig.styleRetraction);
+      contentDiv.className += ' ' + annotationConfig.styleRetraction;
     }
 
     contentDiv.innerHTML = this.buildDisplayBody(jsonObj);

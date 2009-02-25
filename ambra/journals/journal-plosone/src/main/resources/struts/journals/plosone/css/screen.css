@@ -4,7 +4,7 @@
  * $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -467,6 +467,22 @@ div.fch ol li p { margin:0; padding:0; display:inline; font-weight:normal; }
 div.fch ol li p a:link { font-weight:normal; color:#069; }
 div.fch ol li p a:visited { font-weight:normal; color:#004e9c; }
 
+/* TODO: Make the Retraction display correctly.  Left-hand spacing is too big.*/
+div.corrections td.title a,
+div.corrections td.title a:visited,
+div.retractionHtmlId p.retractionHtmlId strong { color:#ff0000; }
+div.retractionHtmlId p.retractionHtmlId em { font-weight:bold; font-style:normal; }
+div.retractionHtmlId { margin: 15px 0; padding:0; border: 1px solid #ff0000; background-color: #fff4f0; }
+div.retractionHtmlId p.retractionHtmlId,
+div.corrections td.title a,
+div#discussionContainer div.corrections div.original div.hd h3 { background:url(../images/icon_correction.gif) left 0% no-repeat; }
+div.retractionHtmlId p.retractionHtmlId { margin:8px 8px 0; text-indent:20px; }
+div.retractionHtmlId span.retractionHtmlId { margin:8px 8px 0; }
+div.retractionHtmlId span.retractionHtmlId div { margin:8px 8px 0; font-weight:normal; }
+div.retractionHtmlId span.retractionHtmlId div p { margin:0; padding:0; display:inline; font-weight:normal; }
+div.retractionHtmlId span.retractionHtmlId div p a:link { font-weight:normal; color:#069; }
+div.retractionHtmlId span.retractionHtmlId div p a:visited { font-weight:normal; color:#004e9c; }
+
 /* rhc rounded containers : top */
 div.links,
 div.tools				{ background-position: bottom; background-repeat: no-repeat; padding: 0 0 8px 0; margin: 0 0 6px 0; }
@@ -559,7 +575,7 @@ a:visited.bug {
 }
 
 /* adds correction icon to bugs containing correction notes */
-span.minrcrctn a.bug span, span.frmlcrctn a.bug span {
+span.minrcrctn a.bug span, span.frmlcrctn a.bug span, span.retractionCssStyle a.bug span {
   background:url(../images/icon_correction_small.gif) left center no-repeat;
   padding-left:10px;
 }

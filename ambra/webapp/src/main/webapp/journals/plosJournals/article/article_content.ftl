@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,6 +59,11 @@
     <#if publisher != "">
       <div id="publisher"><p>${publisher}</p></div>
     </#if>
+    <div id="retractionHtmlId" class="retractionHtmlId" style="display:none;">
+      <p class="retractionHtmlId"><strong> Retraction:</strong> This article has been <em>retracted</em> due to the following:
+        <span id="retractionlist" class="retractionHtmlId"></span>
+      </p>
+    </div>
     <div id="fch" class="fch" style="display:none;">
 	  <p class="fch"><strong> Formal Correction:</strong> This article has been <em>formally corrected</em> to address the following errors.</p>
 	  <ol id="fclist" class="fclist"></ol>

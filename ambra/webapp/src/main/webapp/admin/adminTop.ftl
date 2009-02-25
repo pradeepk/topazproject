@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -175,17 +175,22 @@
                     <br/>
                     <#if !flaggedComment.isMinorCorrection() >
                       <@s.checkbox name="convertToMinorCorrection" label="Minor Correction"
-                          fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
-                       <br/>
+                            fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                      <br/>
                     </#if>
                     <#if !flaggedComment.isFormalCorrection() >
                       <@s.checkbox name="convertToFormalCorrection" label="Formal Correction"
-                          fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                            fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                      <br/>
+                    </#if>
+                    <#if !flaggedComment.isRetraction() >
+                      <@s.checkbox name="convertToRetraction" label="Retraction"
+                            fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
                       <br/>
                     </#if>
                     <#if flaggedComment.isCorrection() >
                       <@s.checkbox name="convertToNote" label="Note"
-                          fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                            fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
                       <br/>
                     </#if>
                   </#if>

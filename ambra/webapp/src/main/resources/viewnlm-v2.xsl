@@ -5476,12 +5476,14 @@
   <xsl:variable name="regionNumComments" select="number(/article/aml:regions/aml:region[@aml:id=$regionId]/@aml:numComments)"/>
   <xsl:variable name="regionNumMinorCorrections" select="number(/article/aml:regions/aml:region[@aml:id=$regionId]/@aml:numMinorCorrections)"/>
   <xsl:variable name="regionNumFormalCorrections" select="number(/article/aml:regions/aml:region[@aml:id=$regionId]/@aml:numFormalCorrections)"/>
+  <xsl:variable name="regionNumRetractions" select="number(/article/aml:regions/aml:region[@aml:id=$regionId]/@aml:numRetractions)"/>
   <xsl:element name="span">
 
-    <!-- convey the number of comments and minor/formal corrections --> 
+    <!-- convey the number of comments, minor/formal corrections, and retractions --> 
     <xsl:attribute name="num_c"><xsl:value-of select="$regionNumComments"/></xsl:attribute>
     <xsl:attribute name="num_mc"><xsl:value-of select="$regionNumMinorCorrections"/></xsl:attribute>
     <xsl:attribute name="num_fc"><xsl:value-of select="$regionNumFormalCorrections"/></xsl:attribute>
+    <xsl:attribute name="num_retractions"><xsl:value-of select="$regionNumRetractions"/></xsl:attribute>
 
     <!-- populate the span tag's class attribute based on the presence of comments vs. corrections --> 
     <xsl:attribute name="class">
@@ -5490,6 +5492,7 @@
       <xsl:text>note public</xsl:text>
       <xsl:if test="$regionNumMinorCorrections &gt; 0"><xsl:text> minrcrctn</xsl:text></xsl:if>
       <xsl:if test="$regionNumFormalCorrections &gt; 0"><xsl:text> frmlcrctn</xsl:text></xsl:if>
+      <xsl:if test="$regionNumRetractions &gt; 0"><xsl:text> retractionCssStyle</xsl:text></xsl:if>
     </xsl:attribute>
     <xsl:attribute name="title">User Annotation</xsl:attribute>
     <xsl:attribute name="annotationId">

@@ -203,6 +203,7 @@ public class Annotator {
         int numComments = 0;
         int numMinorCorrections = 0;
         int numFormalCorrections = 0;
+        int numRetractions = 0;
 
         List<ArticleAnnotation> annotations = get(i).getUserDataList();
 
@@ -224,6 +225,9 @@ public class Annotator {
           else if(atype.indexOf("formalcorrection") >= 0) {
             numFormalCorrections++;
           }
+          else if(atype.indexOf("retraction") >= 0) {
+            numRetractions++;
+          }
         }
 
         rNode.setAttributeNS(nsUri, "aml:numComments", Integer.toString(numComments));
@@ -231,6 +235,7 @@ public class Annotator {
                              Integer.toString(numMinorCorrections));
         rNode.setAttributeNS(nsUri, "aml:numFormalCorrections",
                              Integer.toString(numFormalCorrections));
+        rNode.setAttributeNS(nsUri, "aml:numRetractions", Integer.toString(numRetractions));
 
         root.appendChild(rNode);
       }

@@ -25,6 +25,7 @@ import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Correction;
 import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.MinorCorrection;
+import org.topazproject.ambra.models.Retraction;
 import org.topazproject.ambra.models.Comment;
 
 /**
@@ -80,6 +81,9 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
     else if (isFormalCorrection()) {
       title = "Formal Correction: " + annotea.getTitle();
     }
+    else if (isRetraction()) {
+      title = "Retraction: " + annotea.getTitle();
+    }
     else {
       title = annotea.getTitle();
     }
@@ -92,6 +96,10 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
 
   public boolean isMinorCorrection() {
     return annotea instanceof MinorCorrection;
+  }
+
+  public boolean isRetraction() {
+    return annotea instanceof Retraction;
   }
 
   public boolean isCorrection() {
@@ -127,6 +135,8 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
       return "Formal Correction";
     } else if (isMinorCorrection()) {
       return "Minor Correction";
+    } else if (isRetraction()) {
+      return "Retraction";
     } else if (isCorrection()) {
       return "Correction";
     }

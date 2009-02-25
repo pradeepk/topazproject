@@ -1,7 +1,7 @@
 /* $$HeadURL::                                                                            $$
  * $$Id$$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,7 +78,8 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
 
   public boolean isCorrection() {
     return (Annotea.WEB_TYPE_FORMAL_CORRECTION.equals(targetType) ||
-        Annotea.WEB_TYPE_MINOR_CORRECTION.equals(targetType));
+        Annotea.WEB_TYPE_MINOR_CORRECTION.equals(targetType) ||
+        Annotea.WEB_TYPE_RETRACTION.equals(targetType));
   }
 
   public boolean isFormalCorrection() {
@@ -87,6 +88,10 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
 
   public boolean isMinorCorrection() {
     return (Annotea.WEB_TYPE_MINOR_CORRECTION.equals(getTargetType()));
+  }
+
+  public boolean isRetraction() {
+    return (Annotea.WEB_TYPE_RETRACTION.equals(getTargetType()));
   }
 
   /**

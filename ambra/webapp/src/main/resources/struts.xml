@@ -3,7 +3,7 @@
     "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <!--
-  Copyright (c) 2006-2008 by Topaz, Inc.
+  Copyright (c) 2006-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -470,6 +470,12 @@
     </action>
 
     <action name="getFormalCorrections" class="org.topazproject.ambra.annotation.action.ListAnnotationAction" method="fetchFormalCorrections">
+      <result name="success" type="json">
+      	<param name="excludeProperties">advisors, callbacks, annotations</param>
+      </result>
+    </action>
+
+    <action name="getRetractions" class="org.topazproject.ambra.annotation.action.ListAnnotationAction" method="fetchRetractions">
       <result name="success" type="json">
       	<param name="excludeProperties">advisors, callbacks, annotations</param>
       </result>

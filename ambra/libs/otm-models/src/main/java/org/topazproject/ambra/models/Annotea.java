@@ -66,6 +66,7 @@ public abstract class Annotea<T extends Serializable> implements Serializable {
   public static final String WEB_TYPE_FORMAL_CORRECTION = "FormalCorrection";
   public static final String WEB_TYPE_MINOR_CORRECTION = "MinorCorrection";
   public static final String WEB_TYPE_REPLY = "Reply";
+  public static final String WEB_TYPE_RETRACTION = "Retraction";
   public static final String WEB_TYPE_RATING = "Rating";
 
   static {

@@ -55,7 +55,7 @@ public class ModelsTest {
                   License.class, Reply.class, ReplyThread.class, UserAccount.class, UserPreference.class,
                   UserPreferences.class, UserProfile.class, UserRole.class, Journal.class, Issue.class,
                   Aggregation.class, EditorialBoard.class, Correction.class, FormalCorrection.class,
-                  Blob.class, ReplyBlob.class, AnnotationBlob.class
+                  Retraction.class, Blob.class, ReplyBlob.class, AnnotationBlob.class
     };
 
   /**
@@ -127,6 +127,7 @@ public class ModelsTest {
     // persist to file
     Article article = new Article();
     FormalCorrection correction = new FormalCorrection();
+    Retraction retraction = new Retraction();
     Citation citation = new Citation();
 
     File articleTmpFile = File.createTempFile("org.topazproject.ambra.models-serializationTest-", ".obj");
@@ -135,6 +136,7 @@ public class ModelsTest {
     out.writeObject(article);
     out.writeObject(citation);
     out.writeObject(correction);
+    out.writeObject(retraction);
     out.close();
 
     // restore from file
@@ -143,10 +145,12 @@ public class ModelsTest {
     Article restoredArticle = (Article) in.readObject();
     Citation restoredCitation = (Citation) in.readObject();
     FormalCorrection restoredCorrection = (FormalCorrection) in.readObject();
+    Retraction restoredRetraction = (Retraction) in.readObject();
     in.close();
 
     assert restoredArticle != null;
     assert restoredCitation != null;
     assert restoredCorrection != null;
+    assert restoredRetraction != null;
   }
 }
