@@ -1,7 +1,7 @@
 /* $HeadURL$
- * $Id$ 
+ * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.topazproject.ambra.model.UserProfileInfo;
+import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Projection;
 import org.topazproject.otm.annotations.View;
@@ -38,7 +39,8 @@ import org.topazproject.otm.annotations.View;
         "select a.id id, dc.date date, dc.title title, ci, " +
         "(select a.articleType from Article aa) at, " +
         "(select aa2.id rid, aa2.dublinCore.title rtitle from Article aa2 " +
-        "   where aa2 = a.relatedArticles.article) relatedArticles " +
+        "   where aa2 = a.relatedArticles.article) relatedArticles, " +
+        "(select fc from FormalCorrection fc where fc.annotates = a.id) corrections " +
         "from Article a, CitationInfo ci " +
         "where a.id = :id and dc := a.dublinCore and ci.id = dc.bibliographicCitation.id;")
 public class ArticleInfo implements Serializable {
@@ -48,6 +50,7 @@ public class ArticleInfo implements Serializable {
   public Set<RelatedArticleInfo> relatedArticles = new HashSet<RelatedArticleInfo>();
   public List<String>            authors = new ArrayList<String>();
   public Set<ArticleType>        articleTypes = new HashSet<ArticleType>();
+  public Set<FormalCorrection>   corrections = new HashSet<FormalCorrection>();
   private transient String unformattedTitle;
 
   /**
@@ -163,5 +166,14 @@ public class ArticleInfo implements Serializable {
   @Projection("relatedArticles")
   public void setRelatedArticles(Set<RelatedArticleInfo> relatedArticles) {
     this.relatedArticles = relatedArticles;
+  }
+
+  public Set<FormalCorrection> getCorrections() {
+    return corrections;
+  }
+
+  @Projection("corrections")
+  public void setCorrections(Set<FormalCorrection> corrections) {
+    this.corrections = corrections;
   }
 }

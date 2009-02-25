@@ -93,8 +93,21 @@
           <div class="article">
             <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
             <h3><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${articleInfo.title}</@s.a></h3>
-            <p class="authors"><#list articleInfo.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list></p>
+            <p class="authors"><#list articleInfo.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list>${articleInfo.corrections?size }</p>
 	    <@related articleInfo=articleInfo/>
+            <#if articleInfo.corrections?? && (articleInfo.corrections?size > 0)>
+            <div class="fch">
+            <p class="fch"><strong> Formal Correction: </strong> This article has been formally corrected.</p>
+            <ol class="fclist">
+            <#list articleInfo.corrections as correction>
+              <@s.url namespace="/annotation" action="listThread" id="correctionUrl" inReplyTo="${correction.id}" root="${correction.id}"/>
+              <li>
+                <p>${correction.title} (<@s.a href="%{correctionUrl}">Read formal correction</@s.a>)</p>
+              </li>
+            </#list>
+            </ol>
+            </div>
+            </#if>
           </div>
         </#list>
         </#list>

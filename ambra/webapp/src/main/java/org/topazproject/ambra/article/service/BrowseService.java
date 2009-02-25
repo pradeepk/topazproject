@@ -45,6 +45,8 @@ import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Issue;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.models.Volume;
+import org.topazproject.ambra.models.FormalCorrection;
+import org.topazproject.ambra.models.ArticleAnnotation;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Session;
@@ -682,6 +684,8 @@ public class BrowseService {
         if (log.isDebugEnabled())
           log.debug("Updating issue-info for the Issue that was modified.");
         clearIssueInfoCache(((Issue)o).getId());
+      } else if (o instanceof FormalCorrection) {
+        notifyArticlesChanged(new String[] {((ArticleAnnotation)o).getAnnotates().toString()});
       }
     }
 
@@ -699,6 +703,8 @@ public class BrowseService {
           if (log.isDebugEnabled())
             log.debug("Updating issue-info for the issue that was deleted.");
           clearIssueInfoCache(((Issue)o).getId());
+      } else if (o instanceof FormalCorrection) {
+        notifyArticlesChanged(new String[] {((ArticleAnnotation)o).getAnnotates().toString()});
       }
     }
   }
