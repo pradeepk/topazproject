@@ -23,7 +23,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import static org.testng.Assert.assertEquals;
 
 import java.net.URL;
@@ -34,7 +33,6 @@ import java.io.IOException;
  * TODO: Test ranges
  */
 public class HttpResourceServerTest {
-  private HttpResourceServer server;
   private static final String EXPECTED_TEXT = "Hello World !";
   private static final String EXPECTED_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
       "<test>Hello World !</test>";
@@ -47,15 +45,11 @@ public class HttpResourceServerTest {
     txtUrl = this.getClass().getResource("/TestResource.txt");
   }
 
-  @BeforeMethod
-  protected void setUpMethod() throws Exception {
-    server = new HttpResourceServer();
-  }
-
   @Test
   public void testServerResourceTxt() throws IOException {
     MockHttpServletResponse responseMock = new MockHttpServletResponse();
     MockHttpServletRequest requestMock = new MockHttpServletRequest();
+    HttpResourceServer server = new HttpResourceServer();
     server.serveResource(requestMock, responseMock, new HttpResourceServer.URLResource(txtUrl));
     assertEquals(responseMock.getContentAsString(), EXPECTED_TEXT, "Wrong content served");
     assertEquals(responseMock.getContentType(), "text/plain", "Wrong content type");
@@ -67,6 +61,7 @@ public class HttpResourceServerTest {
   public void testServerResourceXml() throws IOException {
     MockHttpServletResponse responseMock = new MockHttpServletResponse();
     MockHttpServletRequest requestMock = new MockHttpServletRequest();
+    HttpResourceServer server = new HttpResourceServer();
     server.serveResource(requestMock, responseMock, new HttpResourceServer.URLResource(xmlUrl));
     assertEquals(responseMock.getContentAsString(), EXPECTED_XML, "Wrong content served");
     assertEquals(responseMock.getContentType(), "application/xml", "Wrong content type");
@@ -79,6 +74,7 @@ public class HttpResourceServerTest {
     MockHttpServletResponse responseMock = new MockHttpServletResponse();
     MockHttpServletRequest requestMock = new MockHttpServletRequest();
     requestMock.setMethod("HEAD");
+    HttpResourceServer server = new HttpResourceServer();
     server.serveResource(requestMock, responseMock, new HttpResourceServer.URLResource(txtUrl));
     assertEquals(responseMock.getContentAsString(), "", "Content is not empty");
     assertEquals(responseMock.getContentType(), "text/plain", "Wrong content type");
@@ -90,6 +86,7 @@ public class HttpResourceServerTest {
   public void testServerResourceWithContent() throws IOException {
     MockHttpServletResponse responseMock = new MockHttpServletResponse();
     MockHttpServletRequest requestMock = new MockHttpServletRequest();
+    HttpResourceServer server = new HttpResourceServer();
     server.serveResource(requestMock, responseMock, true, new HttpResourceServer.URLResource(txtUrl));
     assertEquals(responseMock.getContentAsString(), EXPECTED_TEXT, "Wrong content served");
     assertEquals(responseMock.getContentType(), "text/plain", "Wrong content type");
@@ -101,6 +98,7 @@ public class HttpResourceServerTest {
   public void testServerResourceWithoutContent() throws IOException {
     MockHttpServletResponse responseMock = new MockHttpServletResponse();
     MockHttpServletRequest requestMock = new MockHttpServletRequest();
+    HttpResourceServer server = new HttpResourceServer();
     server.serveResource(requestMock, responseMock, false, new HttpResourceServer.URLResource(txtUrl));
     assertEquals(responseMock.getContentAsString(), "", "Content is not empty");
     assertEquals(responseMock.getContentType(), "text/plain", "Wrong content type");
