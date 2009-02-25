@@ -175,8 +175,14 @@ public class AnnotationService extends BaseAnnotationService {
     pep.checkAccess(AnnotationsPEP.DELETE_ANNOTATION, URI.create(annotationId));
     ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
 
-    if ((a != null) && (a.getBody() != null)) {
-      String pp[]     = new String[] { a.getBody().getId() };
+    if (a != null) {
+      String pp[];
+      if (a.getBody() != null) {
+        pp = new String[] { a.getBody().getId()};
+      } else {
+        pp = new String[] {};
+      }
+
       session.delete(a);
       permissionsService.cancelPropagatePermissions(annotationId, pp);
       cancelPublicPermissions(annotationId);
