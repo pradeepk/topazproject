@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>journal-ambraJournal</artifactId>
-  <version>0.9.1_rc2-SNAPSHOT</version>
+  <version>0.9.1</version>
   <name>Ambra Journal Resources</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>journals</artifactId>
-    <version>0.9.1_rc2-SNAPSHOT</version>
+    <version>0.9.1</version>
   </parent>
 
 </project>

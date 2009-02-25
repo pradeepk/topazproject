@@ -4,13 +4,13 @@
   <groupId>${pom.parent.groupId}</groupId>
   <artifactId>ambra-webapp</artifactId>
   <packaging>war</packaging>
-  <version>0.9.1_rc2-SNAPSHOT</version>
+  <version>0.9.1</version>
   <name>Ambra Web Application</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra</artifactId>
-    <version>0.9.1_rc2-SNAPSHOT</version>
+    <version>0.9.1</version>
   </parent>
 
   <dependencies>
