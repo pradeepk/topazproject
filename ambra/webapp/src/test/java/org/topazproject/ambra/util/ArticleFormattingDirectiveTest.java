@@ -31,17 +31,26 @@ public class ArticleFormattingDirectiveTest {
   @DataProvider(name = "content")
   public String[][] createContent() {
     return new String[][]{
-        {"foo<italic>bar</italic>", "foo<i>bar</i>"},
+        {"foo<italic>bar</italic>",             "foo<i>bar</i>"},
         {"foo&lt;italic&gt;bar&lt;/italic&gt;", "foo<i>bar</i>"},
-        {"foo<bold>bar</bold>", "foo<b>bar</b>"},
-        {"foo<monospace>bar</monospace>", "foo<span class=\"monospace\">bar</span>"},
-        {"foo<overline>bar</overline>", "foo<span class=\"overline\">bar</span>"},
-        {"foo<sc>bar</sc>", "foo<small>bar</small>"},
-        {"foo<strike>bar</strike>", "foo<s>bar</s>"},
-        {"foo<underline>bar</underline>", "foo<u>bar</u>"},
+        {"foo<bold>bar</bold>",                 "foo<b>bar</b>"},
+        {"foo<monospace>bar</monospace>",       "foo<span class=\"monospace\">bar</span>"},
+        {"foo<overline>bar</overline>",         "foo<span class=\"overline\">bar</span>"},
+        {"foo<sc>bar</sc>",                     "foo<small>bar</small>"},
+        {"foo<strike>bar</strike>",             "foo<s>bar</s>"},
+        {"foo<underline>bar</underline>",       "foo<u>bar</u>"},
         {"foo<named-content xmlns:xlink= \"http://www.w3.org/1999/xlink\" " +
             "content-type=\"genus-species\" xlink:type=\"simple\">bar</named-content>",
-            "foo<i>bar</i>"}
+            "foo<i>bar</i>"},
+        {"foo<named-content     content-type=\"genus-species\" xlink:type=\"simple\" " +
+            "xmlns:xlink= \"http://www.w3.org/1999/xlink\" >bar</named-content>",
+            "foo<i>bar</i>"},
+        {"foo<named-content>bar</named-content>","foo<i>bar</i>"},
+        {"foo<email>bar@plos.org</email>",    "foo<a href=\"mailto:bar@plos.org\">bar@plos.org</a>"},
+        {"foo<email xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\">bar@plos.org</email>",
+            "foo<a href=\"mailto:bar@plos.org\">bar@plos.org</a>"},
+        {"Something <bold>is<email>nested</email></bold> here",
+            "Something <b>is<a href=\"mailto:nested\">nested</a></b> here"} 
     };
   }
 

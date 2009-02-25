@@ -27,6 +27,7 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateModelException;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.io.IOException;
 import java.io.Writer;
 
@@ -67,9 +68,45 @@ import java.io.Writer;
  * content-type="genus-species" xlink:type="simple"&gt;</td>
  *    <td>&lt;i&gt;</td>
  *  </tr>
+ *  <tr>
+ *    <td>&lt;email xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"&gt;</td><td>&lt;a href="mailto:<i>email_address</i>"&gt;</td>
+ *  </tr>
  * </table>
  */
 public class ArticleFormattingDirective implements TemplateDirectiveModel {
+
+
+  private static final Pattern[] PATTERNS = {
+      Pattern.compile("(?:<|&lt;)italic(?:>|&gt;)(.*)(?:<|&lt;)/italic(?:>|&gt;)"),
+      Pattern.compile("<named-content(?:" +
+          "(?:\\s+xmlns:xlink\\s*=\\s*\"http://www.w3.org/1999/xlink\"\\s*)|" +
+          "(?:\\s+content-type\\s*=\\s*\"genus-species\"\\s*)|" +
+          "(?:\\s+xlink:type\\s*=\\s*\"simple\"\\s*)" +
+          ")*>(.*)</named-content>"),
+      Pattern.compile("<bold>(.*)</bold>"),
+      Pattern.compile("<monospace>(.*)</monospace>"),
+      Pattern.compile("<overline>(.*)</overline>"),
+      Pattern.compile("<sc>(.*)</sc>"),
+      Pattern.compile("<strike>(.*)</strike>"),
+      Pattern.compile("<underline>(.*)</underline>"),
+      Pattern.compile("<email(?:" +
+          "(?:\\s+xmlns:xlink\\s*=\\s*\"http://www.w3.org/1999/xlink\"\\s*)|" +
+          "(?:\\s+xlink:type\\s*=\\s*\"simple\"\\s*)" +
+          ")*>(.*)</email>")
+  };
+
+  private static final String[] REPLACEMENTS = {
+      "<i>$1</i>",
+      "<i>$1</i>",
+      "<b>$1</b>",
+      "<span class=\"monospace\">$1</span>",
+      "<span class=\"overline\">$1</span>",
+      "<small>$1</small>",
+      "<s>$1</s>",
+      "<u>$1</u>",
+      "<a href=\"mailto:$1\">$1</a>"
+  };
+
   public void execute(Environment environment, Map params, TemplateModel[] loopVars,
                       TemplateDirectiveBody body)
       throws TemplateException, IOException {
@@ -122,35 +159,11 @@ public class ArticleFormattingDirective implements TemplateDirectiveModel {
       return null;
 
     String result = str;
-
-    result = result.replaceAll("<italic>", "<i>");
-    result = result.replaceAll("</italic>", "</i>");
-
-    result = result.replaceAll("&lt;italic&gt;", "<i>");
-    result = result.replaceAll("&lt;/italic&gt;", "</i>");
-
-    result = result.replaceAll("<named-content xmlns:xlink= \"http://www.w3.org/1999/xlink\" " +
-        "content-type=\"genus-species\" xlink:type=\"simple\">", "<i>");
-    result = result.replaceAll("</named-content>", "</i>");
-
-    result = result.replaceAll("<bold>", "<b>");
-    result = result.replaceAll("</bold>", "</b>");
-
-    result = result.replaceAll("<monospace>", "<span class=\"monospace\">");
-    result = result.replaceAll("</monospace>", "</span>");
-
-    result = result.replaceAll("<overline>", "<span class=\"overline\">");
-    result = result.replaceAll("</overline>", "</span>");
-
-    result = result.replaceAll("<sc>", "<small>");
-    result = result.replaceAll("</sc>", "</small>");
-
-    result = result.replaceAll("<strike>", "<s>");
-    result = result.replaceAll("</strike>", "</s>");
-
-    result = result.replaceAll("<underline>", "<u>");
-    result = result.replaceAll("</underline>", "</u>");
+    for (int i = 0; i < PATTERNS.length; i++) {
+      result = PATTERNS[i].matcher(result).replaceAll(REPLACEMENTS[i]);
+    }
 
     return result;
+
   }
 }
