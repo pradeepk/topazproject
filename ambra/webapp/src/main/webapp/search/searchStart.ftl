@@ -138,13 +138,9 @@
               <legend>Published between: </legend>
               <ol>
                 <li>
-                  <span class="hide">(Year)</span><input type="text" name="startYear" size="4" maxlength="4" value="${startYear!"YYYY"}" id="range1"/>
-                  <span class="hide">(Month)</span><input type="text" name="startMonth" size="2" maxlength="2" value="${startMonth!"MM"}" id="range-m1"/>
-                  <span class="hide">(Day)</span><input type="text" name="startDay" size="2" maxlength="2" value="${startDay!"DD"}" id="range-d1"/>
-                  <label for="range2"> and </label>
-                  <span class="hide">(Year)</span><input type="text" name="endYear" size="4" maxlength="4" value="${endYear!"YYYY"}" id="range2"/>
-                  <span class="hide">(Month)</span><input type="text" name="endMonth" size="2" maxlength="2" value="${endMonth!"MM"}" id="range-m2"/>
-                  <span class="hide">(Day)</span><input type="text" name="endDay" size="2" maxlength="2" value="${endDay!"DD"}" id="range-d2"/>
+                  <span class="hide">(Year)</span><input type="text" name="startDate" size="10" maxlength="10" value="${startDate!"YYYY-MM-DD"}" id="startDateId"/>
+                  <label for="endDateId"> and </label>
+                  <span class="hide">(Year)</span><input type="text" name="endDate" size="10" maxlength="10" value="${endDate!"YYYY-MM-DD"}" id="endDateId"/>
                 </li>
               </ol>
             </fieldset>

@@ -20,6 +20,7 @@ package org.topazproject.ambra.search.action;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -76,12 +77,8 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   private String   textSearchWithout;
   private String   textSearchOption;
   private String   dateTypeSelect;
-  private String   startYear;
-  private String   startMonth;
-  private String   startDay;
-  private String   endYear;
-  private String   endMonth;
-  private String   endDay;
+  private String   startDate;
+  private String   endDate;
   private String   subjectCatOpt;
   private String[] limitToCategory = null;
 
@@ -240,18 +237,25 @@ public class SearchAction extends BaseSessionAwareActionSupport {
     }
 
     if (StringUtils.isNotBlank(dateTypeSelect)) {
+      String startDateStr, endDateStr;
+
       if ("range".equals(dateTypeSelect)) {
-        if (isDigit(startYear)&& isDigit(startMonth) && isDigit(startDay) &&
-            isDigit(endYear) && isDigit(endMonth) && isDigit(endDay)) {
-          StringBuilder buf = new StringBuilder("date:[");
-          buf.append(padDatePart(startYear, true)).append('-').
-              append(padDatePart(startMonth, false)).append('-').
-              append(padDatePart(startDay, false));
-          buf.append(" TO ");
-          buf.append(padDatePart(endYear, true)).append('-').append(padDatePart(endMonth, false)).
-              append('-').append(padDatePart(endDay, false));
-          buf.append("]");
-          fields.add(buf.toString());
+        synchronized(luceneDateFormat) {
+          //  Validate that the incoming date values can be parsed as Dates.
+          Date startDateAsDate = null;
+          Date endDateAsDate = null;
+          try {
+            startDateAsDate = luceneDateFormat.parse(startDate);
+          } catch (ParseException pe) {
+            log.warn("This search start date could not be parsed: " + startDate);
+          }
+          try {
+            endDateAsDate = luceneDateFormat.parse(endDate);
+          } catch (ParseException pe) {
+            log.warn("This search end date could not be parsed: " + endDate);
+          }
+          startDateStr = luceneDateFormat.format(startDateAsDate);
+          endDateStr = luceneDateFormat.format(endDateAsDate);
         }
       } else {
         Calendar cal = new GregorianCalendar();
@@ -265,16 +269,15 @@ public class SearchAction extends BaseSessionAwareActionSupport {
           cal.add(Calendar.MONTH, -3);
         }
 
-        String startDateStr, endDateStr;
         synchronized(luceneDateFormat) {
           endDateStr = luceneDateFormat.format(new Date());
           startDateStr = luceneDateFormat.format(cal.getTime());
         }
-
-        StringBuilder buf = new StringBuilder("date:[");
-        buf.append(startDateStr).append(" TO ").append(endDateStr).append("]");
-        fields.add(buf.toString());
       }
+
+      StringBuilder buf = new StringBuilder("date:[");
+      buf.append(startDateStr).append(" TO ").append(endDateStr).append("]");
+      fields.add(buf.toString());
     }
 
     if ("some".equals(subjectCatOpt)) {
@@ -295,14 +298,14 @@ public class SearchAction extends BaseSessionAwareActionSupport {
     return StringUtils.join(fields.iterator(), " AND ");
   }
 
-  private static String padDatePart(String datePart, boolean isYear) {
-    if(isYear) {
-      // presume we have a valid 4-digit year
-      return datePart;
-    }
-    // month or day date part: ensure left padding w/ 0 digit for lucene date format compliance
-    return StringUtils.leftPad(datePart, 2, '0');
-  }
+//  private static String padDatePart(String datePart, boolean isYear) {
+//    if(isYear) {
+//      // presume we have a valid 4-digit year
+//      return datePart;
+//    }
+//    // month or day date part: ensure left padding w/ 0 digit for lucene date format compliance
+//    return StringUtils.leftPad(datePart, 2, '0');
+//  }
 
   /**
    * Static helper method to escape special characters in a Lucene search string with a \
@@ -456,52 +459,20 @@ public class SearchAction extends BaseSessionAwareActionSupport {
     this.dateTypeSelect = dateTypeSelect;
   }
 
-  public String getStartYear() {
-    return startYear;
+  public String getStartDate() {
+    return startDate;
   }
 
-  public void setStartYear(String startYear) {
-    this.startYear = startYear;
+  public void setStartDate(String startDate) {
+    this.startDate = startDate;
   }
 
-  public String getStartMonth() {
-    return startMonth;
+  public String getEndDate() {
+    return endDate;
   }
 
-  public void setStartMonth(String startMonth) {
-    this.startMonth = startMonth;
-  }
-
-  public String getStartDay() {
-    return startDay;
-  }
-
-  public void setStartDay(String startDay) {
-    this.startDay = startDay;
-  }
-
-  public String getEndYear() {
-    return endYear;
-  }
-
-  public void setEndYear(String endYear) {
-    this.endYear = endYear;
-  }
-
-  public String getEndMonth() {
-    return endMonth;
-  }
-
-  public void setEndMonth(String endMonth) {
-    this.endMonth = endMonth;
-  }
-
-  public String getEndDay() {
-    return endDay;
-  }
-
-  public void setEndDay(String endDay) {
-    this.endDay = endDay;
+  public void setEndDate(String endDate) {
+    this.endDate = endDate;
   }
 
   public String getSubjectCatOpt() {

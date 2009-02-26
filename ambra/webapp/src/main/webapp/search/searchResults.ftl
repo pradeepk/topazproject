@@ -86,12 +86,8 @@
         <@s.hidden name="textSearchWithout" />
         <@s.hidden name="textSearchOption" />
         <@s.hidden name="dateTypeSelect" />
-        <@s.hidden name="startYear" />
-        <@s.hidden name="startMonth" />
-        <@s.hidden name="startDay" />
-        <@s.hidden name="endYear" />
-        <@s.hidden name="endMonth" />
-        <@s.hidden name="endDay" />
+        <@s.hidden name="startDate" />
+        <@s.hidden name="endDate" />
         <@s.hidden name="subjectCatOpt" />
         <@s.hidden name="limitToCategory" />
       </form>
@@ -105,12 +101,8 @@
         <@s.hidden name="textSearchWithout" />
         <@s.hidden name="textSearchOption" />
         <@s.hidden name="dateTypeSelect" />
-        <@s.hidden name="startYear" />
-        <@s.hidden name="startMonth" />
-        <@s.hidden name="startDay" />
-        <@s.hidden name="endYear" />
-        <@s.hidden name="endMonth" />
-        <@s.hidden name="endDay" />
+        <@s.hidden name="startDate" />
+        <@s.hidden name="endDate" />
         <@s.hidden name="subjectCatOpt" />
         <@s.hidden name="limitToCategory" />
         <a href="#" onclick="document.reviseSearch.submit();return false;">Go to Advanced Search</a> to revise <em>or</em>

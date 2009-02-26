@@ -429,10 +429,14 @@
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
             <file>/css/static.css</file>
+            <file>/javascript/calendar/calendar.css</file>
           </css>
           <javascript>
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
+            <file>/javascript/calendar/calendar.js</file>
+            <file>/javascript/calendar/calendar-setup.js</file>
+            <file>/javascript/calendar/calendar-en.js</file>
             <file>/javascript/advsearch.js</file>
             <file>/javascript/init_global.js</file>
           </javascript>

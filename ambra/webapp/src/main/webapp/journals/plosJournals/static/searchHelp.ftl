@@ -115,11 +115,11 @@
 
     <blockquote>
         <p>
-        date: <strong>[20080216 TO 20080316]</strong>
+        date: <strong>[2008-02-16 TO 2009-01-26]</strong>
         </p>
     </blockquote>
 
-    <p>This will find documents whose published date has values between <strong>20080216</strong> and <strong>20080316</strong>, inclusive. Note that Range Queries are not reserved for date fields.  You could also use range queries with non-date fields:</p>
+    <p>This will find documents whose published date has values between <strong>February 16, 2008</strong> and <strong>January 26, 2009</strong>, inclusive. Note that Range Queries are not reserved for date fields.  You could also use range queries with non-date fields:</p>
 
     <blockquote>
         <p>
@@ -127,7 +127,7 @@
         </p>
     </blockquote>
 
-    <p>This will find all documents whose titles are between <strong>Aida</strong> and <strong>Carmen</strong>, but not including <strong>Aida</strong> and <strong>Carmen</strong>.</p>
+    <p>This will find all documents whose titles are between <strong>Aida</strong> and <strong>Carmen</strong>, but not including <strong>Aida</strong> or <strong>Carmen</strong>.</p>
     
 <h2><a name="boolean"></a>Boolean Operators</h2>
 
