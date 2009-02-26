@@ -179,19 +179,22 @@ public class BrowseService {
 
   /**
    * Get articles in the given date range, from newest to oldest, of the given article type(s).
-   * One "page" of articles will be returned, i.e. articles pageNum * pageSize .. (pageNum + 1) * pageSize - 1 .
-   * Note that less than a pageSize articles may be returned, either because it's the end of the list or because
-   * some articles are not accessible.
+   * One "page" of articles will be returned,
+   * i.e. articles pageNum * pageSize .. (pageNum + 1) * pageSize - 1 .
+   * Note that less than a pageSize articles may be returned, either because it's the end
+   * of the list or because some articles are not accessible.
    * <p/>
    * Note: this method assumes the dates are truly just dates, i.e. no hours, minutes, etc.
    * <p/>
-   * If the <code>articleTypes</code> parameter is null or empty, then all types of articles are returned.
+   * If the <code>articleTypes</code> parameter is null or empty,
+   * then all types of articles are returned.
    * <p/>
    * This method should never return null.
    *
    * @param startDate    the earliest date for which to return articles (inclusive)
    * @param endDate      the latest date for which to return articles (exclusive)
-   * @param articleTypes The URIs indicating the types of articles which will be returned, or null for all types
+   * @param articleTypes The URIs indicating the types of articles which will be returned,
+   *                       or null for all types
    * @param pageNum      the page-number for which to return articles; 0-based
    * @param pageSize     the number of articles per page, or -1 for all articles
    * @param numArt       (output) the total number of articles in the given category
@@ -199,7 +202,8 @@ public class BrowseService {
    */
   @Transactional(readOnly = true)
   public List<ArticleInfo> getArticlesByDate(final Calendar startDate, final Calendar endDate,
-                                             final List<URI> articleTypes, int pageNum, int pageSize, int[] numArt) {
+                                             final List<URI> articleTypes, int pageNum,
+                                             int pageSize, int[] numArt) {
     String jnlName = getCurrentJournalName();
     String mod     = jnlName + "-" + startDate.getTimeInMillis() + "-" + endDate.getTimeInMillis();
     String key     = ARTBYDATE_LIST_KEY + mod;
@@ -373,8 +377,8 @@ public class BrowseService {
   }
 
   /**
-   * Returns a list of VolumeInfos for the given Journal. VolumeInfos are sorted in reverse order to
-   * reflect most common usage. Uses the pull-through cache.
+   * Returns a list of VolumeInfos for the given Journal. VolumeInfos are sorted in reverse order
+   * to reflect most common usage. Uses the pull-through cache.
    *
    * @param journal To find VolumeInfos for.
    * @return VolumeInfos for journal in reverse order.
@@ -569,18 +573,22 @@ public class BrowseService {
   }
 
   /**
-   * Get the URIs for all of the Articles that were published between the <code>start date</code> parameter
-   * and <code>end date</code> parameter and have at least one article type from the <code>articleTypes</code> parameter.
-   * If the <code>articleTypes</code> parameter is null or empty, then no filtering on article type is performed.
+   * Get the URIs for all of the Articles that were published between the <code>start date</code>
+   * parameter and <code>end date</code> parameter and have at least one article type from the
+   * <code>articleTypes</code> parameter.  If the <code>articleTypes</code> parameter
+   * is null or empty, then no filtering on article type is performed.
    *
-   * @param startDate The date after which an article must be published for that article to be included in the result
-   * @param endDate The date before which an article must be published for that article to be included in the result
-   * @param articleTypes The types of Articles which will be included in the result.  If null or empty, then
-   *   result will contain all article types.
-   * @return The URIs of articles published after the start date parameter, before the end date parameter,
-   *   and have at least one article type from the <code>articleTypes</code> parameter
+   * @param startDate The date after which an article must be published for that article to be
+   *   included in the result
+   * @param endDate The date before which an article must be published for that article to be
+   *   included in the result
+   * @param articleTypes The types of Articles which will be included in the result.
+   *   If null or empty, then result will contain all article types.
+   * @return The URIs of articles published after the start date parameter, before the end date
+   *   parameter, and have at least one article type from the <code>articleTypes</code> parameter
    */
-  private List<URI> loadArticlesByDate(final Calendar startDate, final Calendar endDate, final List<URI> articleTypes) {
+  private List<URI> loadArticlesByDate(final Calendar startDate, final Calendar endDate,
+                                       final List<URI> articleTypes) {
     // XsdDateTimeSerializer formats dates in UTC, so make sure that doesn't change the date
     final Calendar sd = (Calendar) startDate.clone();
     sd.add(Calendar.MILLISECOND, sd.get(Calendar.ZONE_OFFSET) + sd.get(Calendar.DST_OFFSET));
@@ -657,7 +665,8 @@ public class BrowseService {
 
     return
       browseCache.get(ARTICLE_KEY + id, -1,
-           new Cache.SynchronizedLookup<ArticleInfo, RuntimeException>((ARTICLE_LOCK + id).intern()) {
+           new Cache.SynchronizedLookup<ArticleInfo,
+               RuntimeException>((ARTICLE_LOCK + id).intern()) {
         @SuppressWarnings("synthetic-access")
         @Override
         public ArticleInfo lookup() throws RuntimeException {

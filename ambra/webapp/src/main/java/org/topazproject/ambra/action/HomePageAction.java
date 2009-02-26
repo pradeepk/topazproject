@@ -46,46 +46,50 @@ import org.topazproject.ambra.model.article.ArticleInfo;
 public class HomePageAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(HomePageAction.class);
 
-    private JournalService journalService;
-    private BrowseService browseService;
-    private SortedMap<String, Integer> categoryInfos;
+  private JournalService journalService;
+  private BrowseService browseService;
+  private SortedMap<String, Integer> categoryInfos;
 
-    private List<ArticleInfo> recentArticles;
-    private int numDaysInPast;
-    private int numArticlesToShow;
+  private List<ArticleInfo> recentArticles;
+  private int numDaysInPast;
+  private int numArticlesToShow;
 
   /**
-   * Get the URIs for the Article Types which can be displayed on the "Recent Articles" tab on the home page.
-   * If there is no list of acceptable Article Type URIs, then an empty List is returned.
+   * Get the URIs for the Article Types which can be displayed on the <i>Recent Articles</i> tab
+   * on the home page.  If there is no list of acceptable Article Type URIs,
+   * then an empty List is returned.
    * This method should never return null.
    * <p/>
    * As an example, this XML is used to create a List of two Strings for the PLoS One Journal:
-     <pre>
-       <PLoSONE>
-         <recentArticles>
-           <numDaysInPast>7</numDaysInPast>
-           <numArticlesToShow>5</numArticlesToShow>
-           <typeUriArticlesToShow>
-             <articleTypeUri>http://rdf.plos.org/RDF/articleType/Research%20Article</articleTypeUri>
-             <articleTypeUri>http://rdf.plos.org/RDF/articleType/History/Profile</articleTypeUri>
-           </typeUriArticlesToShow>
-         </recentArticles>
-       </PLoSONE>
-     </pre>
-   * The logic in this method was adapted from the ArticleType.configureArticleTypes(Configuration) method.
+   * <pre>
+   *   &lt;PLoSONE&gt;
+   *     &lt;recentArticles&gt;
+   *       &lt;numDaysInPast&gt;7&lt;/numDaysInPast&gt;
+   *       &lt;numArticlesToShow&gt;5&lt;/numArticlesToShow&gt;
+   *       &lt;typeUriArticlesToShow&gt;
+   *         &lt;articleTypeUri&gt;http://rdf.plos.org/RDF/articleType/Research%20Article&lt;/articleTypeUri&gt;
+   *         &lt;articleTypeUri&gt;http://rdf.plos.org/RDF/articleType/History/Profile&lt;/articleTypeUri&gt;
+   *       &lt;/typeUriArticlesToShow&gt;
+   *     &lt;/recentArticles&gt;
+   *   &lt;/PLoSONE&gt;
+   * </pre>
+   * The logic in this method was adapted from the ArticleType.configureArticleTypes(Configuration)
+   * method.
    *
-   * @param basePath The location (including Journal Name) of the properties which will be used to populate the
-   *   returned Set.  An example is <i>ambra.virtualJournals.PLoSONE.recentArticles</i>
-   * @return The URIs for the Article Types which will be displayed on the "Recent Articles" tab on the home page
+   * @param basePath The location (including Journal Name) of the properties which will be used to
+   *   populate the returned Set.  An example is <i>ambra.virtualJournals.PLoSONE.recentArticles</i>
+   * @return The URIs for the Article Types which will be displayed on the "Recent Articles" tab on
+   *   the home page
    */
   private List<URI> getArticleTypesToShow(String basePath) {
     String baseString = basePath + ".typeUriArticlesToShow";
     List<URI> typeUriArticlesToShow = null;
 
-    /* Iterate through the defined article types.  This is ugly since the index needs to be given in xpath format
-       to access the element, so we calculate a base string like:
-         ambra.virtualJournals.PLoSONE.recentArticles.typeUriArticlesToShow.articleTypeUri(x)
-       and check if that element is non-null.
+    /*
+     * Iterate through the defined article types.  This is ugly since the index needs to be given
+     * in xpath format to access the element, so we calculate a base string like:
+     *   ambra.virtualJournals.PLoSONE.recentArticles.typeUriArticlesToShow.articleTypeUri(x)
+     * and check if that element is non-null.
      */
     typeUriArticlesToShow = new LinkedList<URI>();
     int count = 0;
@@ -103,27 +107,32 @@ public class HomePageAction extends BaseActionSupport {
   }
 
     /**
-     * Populate the <b>recentArticles</b> (global) variable with random recent articles of appropriate Article Type(s).
+     * Populate the <b>recentArticles</b> (global) variable with random recent articles of
+     * appropriate Article Type(s).
      * <ul>
-     *   <li>The number of articles set into the <b>recentArticles</b> (global) variable determined by the
-     *     <i>ambra.virtualJournals.CURRENT_JOURNAL_NAME_FROM_JOURNAL_SERVICE.recentArticles.numArticlesToShow</i>
+     *   <li>The number of articles set into the <b>recentArticles</b>
+     *     (global) variable determined by the
+     *     <i>ambra.virtualJournals.CURRENT_JOURNAL_NAME.recentArticles.numArticlesToShow</i>
      *     configuration property
      *   </li>
-     *   <li>The type of articles set into the <b>recentArticles</b> variable is determined by the list in the
-     *     <i>ambra.virtualJournals.CURRENT_JOURNAL_NAME_FROM_JOURNAL_SERVICE.recentArticles.typeUriListArticlesToShow</i>
+     *   <li>The type of articles set into the <b>recentArticles</b> variable is determined by
+     *     the list in the
+     *   <i>ambra.virtualJournals.CURRENT_JOURNAL_NAME.recentArticles.typeUriListArticlesToShow</i>
      *     configuration property.
      *     If this property is not defined, then <b>all</b> types of articles are shown
      *   </li>
-     *   <li>The initial definition of "recent" is the number of days (before today) indicated by the
-     *     <i>ambra.virtualJournals.CURRENT_JOURNAL_NAME_FROM_JOURNAL_SERVICE.recentArticles.numDaysInPast</i>
+     *   <li>The initial definition of "recent" is the number of days (before today) indicated by
+     *     the <i>ambra.virtualJournals.CURRENT_JOURNAL_NAME.recentArticles.numDaysInPast</i>
      *     configuration property.
-     *     If not enough articles of the appropriate type are found in that span of time, then a new query is made
-     *       for a somewhat longer duration.
+     *     If not enough articles of the appropriate type are found in that span of time,
+     *       then a new query is made for a somewhat longer duration.
      *   </li>
      * </ul>
+     * The CURRENT_JOURNAL_NAME is acquired from the {@link JournalService} that was set with
+     * {@link #setJournalService(JournalService)}.
      */
     private void initRecentArticles() {
-      // Size of article pool (before random selection) = scalingFactorNumArticlesToShow * numArticlesToShow
+      // Size of article pool = scalingFactorNumArticlesToShow * numArticlesToShow
       int scalingFactorNumArticlesToShow = 3;
 
       String journalKey = journalService.getCurrentJournalName();
@@ -145,24 +154,26 @@ public class HomePageAction extends BaseActionSupport {
       Calendar endDate = (Calendar) startDate.clone();
       startDate.add(Calendar.DATE, -(numDaysInPast));
       endDate.add(Calendar.DATE, 1);
-      recentArticles = browseService.getArticlesByDate(startDate, endDate, typeUriArticlesToShow, 0,
-          numArticlesToShow * scalingFactorNumArticlesToShow, new int[1]);
+      recentArticles = browseService.getArticlesByDate(startDate, endDate, typeUriArticlesToShow,
+          0, numArticlesToShow * scalingFactorNumArticlesToShow, new int[1]);
 
-      //  If not enough articles, then query for articles published in past (20 * numDaysInPast), to get enough.
+      //  If not enough, then query for articles published in past (20 * numDaysInPast).
       if (recentArticles.size() < numArticlesToShow * scalingFactorNumArticlesToShow) {
         startDate.add(Calendar.DATE, -(numDaysInPast * 20));
-        recentArticles = browseService.getArticlesByDate(startDate, endDate, typeUriArticlesToShow, 0,
-            numArticlesToShow * scalingFactorNumArticlesToShow, new int[1]);
+        recentArticles = browseService.getArticlesByDate(startDate, endDate, typeUriArticlesToShow,
+            0, numArticlesToShow * scalingFactorNumArticlesToShow, new int[1]);
       }
 
-      /* Now choose a random selection of numArticlesToShow articles from the article pool.
-         Even if we do not have enough articles, this will still randomize their order. */
+      /*
+       * Now choose a random selection of numArticlesToShow articles from the article pool.
+       * Even if we do not have enough articles, this will still randomize their order.
+       */
       if (recentArticles.size() > 0) {
-        Random randomNumberGenerator = new Random((new Date()).getTime()); // Seeded with time = "now".
+        Random randomNumberGenerator = new Random((new Date()).getTime());  // Seed: time = "now".
         List<ArticleInfo> recentArticlesTemp = new LinkedList<ArticleInfo>();
         while (recentArticlesTemp.size() < numArticlesToShow && recentArticles.size() > 0) {
-          // Remove a random article from "recentArticles" and add it to "recentArticlesTemp".
-          int randomNumber = randomNumberGenerator.nextInt(recentArticles.size()); // Random from 0 to (size - 1).
+          // Remove one random article from "recentArticles" and add it to "recentArticlesTemp".
+          int randomNumber = randomNumberGenerator.nextInt(recentArticles.size());
           recentArticlesTemp.add(recentArticles.get(randomNumber));
           recentArticles.remove(randomNumber);
         }

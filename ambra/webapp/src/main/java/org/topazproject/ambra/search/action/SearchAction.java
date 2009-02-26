@@ -298,15 +298,6 @@ public class SearchAction extends BaseSessionAwareActionSupport {
     return StringUtils.join(fields.iterator(), " AND ");
   }
 
-//  private static String padDatePart(String datePart, boolean isYear) {
-//    if(isYear) {
-//      // presume we have a valid 4-digit year
-//      return datePart;
-//    }
-//    // month or day date part: ensure left padding w/ 0 digit for lucene date format compliance
-//    return StringUtils.leftPad(datePart, 2, '0');
-//  }
-
   /**
    * Static helper method to escape special characters in a Lucene search string with a \
    */
