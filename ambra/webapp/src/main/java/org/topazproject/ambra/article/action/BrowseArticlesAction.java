@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -160,7 +160,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
     }
     int[] numArt = new int[1];
     articleList =
-        browseService.getArticlesByDate(startDate, endDate, startPage, pageSize, numArt);
+        browseService.getArticlesByDate(startDate, endDate, null, startPage, pageSize, numArt);
     totalArticles = numArt[0];
 
     articleDates = browseService.getArticleDates();

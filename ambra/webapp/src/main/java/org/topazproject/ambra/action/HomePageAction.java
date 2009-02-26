@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,14 +19,19 @@
 
 package org.topazproject.ambra.action;
 
+import java.net.URI;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,33 +44,130 @@ import org.topazproject.ambra.model.article.ArticleInfo;
  */
 @SuppressWarnings("serial")
 public class HomePageAction extends BaseActionSupport {
+  private static final Log log = LogFactory.getLog(HomePageAction.class);
 
-  private JournalService journalService;
-  private BrowseService                   browseService;
-  private SortedMap<String, Integer>      categoryInfos;
+    private JournalService journalService;
+    private BrowseService browseService;
+    private SortedMap<String, Integer> categoryInfos;
 
-  private List<ArticleInfo> recentArticles;
-  private int numDaysInPast;
-  private int numArticlesToShow;
+    private List<ArticleInfo> recentArticles;
+    private int numDaysInPast;
+    private int numArticlesToShow;
 
-  private void initRecentArticles() {
-    String journalKey = journalService.getCurrentJournalName();
-    String rootKey = "ambra.virtualJournals." + journalKey + ".recentArticles";
+  /**
+   * Get the URIs for the Article Types which can be displayed on the "Recent Articles" tab on the home page.
+   * If there is no list of acceptable Article Type URIs, then an empty List is returned.
+   * This method should never return null.
+   * <p/>
+   * As an example, this XML is used to create a List of two Strings for the PLoS One Journal:
+     <pre>
+       <PLoSONE>
+         <recentArticles>
+           <numDaysInPast>7</numDaysInPast>
+           <numArticlesToShow>5</numArticlesToShow>
+           <typeUriArticlesToShow>
+             <articleTypeUri>http://rdf.plos.org/RDF/articleType/Research%20Article</articleTypeUri>
+             <articleTypeUri>http://rdf.plos.org/RDF/articleType/History/Profile</articleTypeUri>
+           </typeUriArticlesToShow>
+         </recentArticles>
+       </PLoSONE>
+     </pre>
+   * The logic in this method was adapted from the ArticleType.configureArticleTypes(Configuration) method.
+   *
+   * @param basePath The location (including Journal Name) of the properties which will be used to populate the
+   *   returned Set.  An example is <i>ambra.virtualJournals.PLoSONE.recentArticles</i>
+   * @return The URIs for the Article Types which will be displayed on the "Recent Articles" tab on the home page
+   */
+  private List<URI> getArticleTypesToShow(String basePath) {
+    String baseString = basePath + ".typeUriArticlesToShow";
+    List<URI> typeUriArticlesToShow = null;
 
-    numDaysInPast = configuration.getInteger(rootKey + ".numDaysInPast", 7);
-    numArticlesToShow = configuration.getInteger(rootKey + ".numArticlesToShow", 5);
+    /* Iterate through the defined article types.  This is ugly since the index needs to be given in xpath format
+       to access the element, so we calculate a base string like:
+         ambra.virtualJournals.PLoSONE.recentArticles.typeUriArticlesToShow.articleTypeUri(x)
+       and check if that element is non-null.
+     */
+    typeUriArticlesToShow = new LinkedList<URI>();
+    int count = 0;
+    String articleTypeUri;
+    while (true) {
+      articleTypeUri = configuration.getString(baseString + ".articleTypeUri(" + count + ")");
+      if (articleTypeUri != null && articleTypeUri.trim().length() > 0) {
+        typeUriArticlesToShow.add(URI.create(articleTypeUri));
+      } else {
+        break;
+      }
+      count++;
+    }
+    return typeUriArticlesToShow;
+  }
 
-    Calendar startDate = Calendar.getInstance();
-    startDate.set(Calendar.HOUR, 0);
-    startDate.set(Calendar.MINUTE, 0);
-    startDate.set(Calendar.SECOND, 0);
-    startDate.set(Calendar.MILLISECOND, 0);
+    /**
+     * Populate the <b>recentArticles</b> (global) variable with random recent articles of appropriate Article Type(s).
+     * <ul>
+     *   <li>The number of articles set into the <b>recentArticles</b> (global) variable determined by the
+     *     <i>ambra.virtualJournals.CURRENT_JOURNAL_NAME_FROM_JOURNAL_SERVICE.recentArticles.numArticlesToShow</i>
+     *     configuration property
+     *   </li>
+     *   <li>The type of articles set into the <b>recentArticles</b> variable is determined by the list in the
+     *     <i>ambra.virtualJournals.CURRENT_JOURNAL_NAME_FROM_JOURNAL_SERVICE.recentArticles.typeUriListArticlesToShow</i>
+     *     configuration property.
+     *     If this property is not defined, then <b>all</b> types of articles are shown
+     *   </li>
+     *   <li>The initial definition of "recent" is the number of days (before today) indicated by the
+     *     <i>ambra.virtualJournals.CURRENT_JOURNAL_NAME_FROM_JOURNAL_SERVICE.recentArticles.numDaysInPast</i>
+     *     configuration property.
+     *     If not enough articles of the appropriate type are found in that span of time, then a new query is made
+     *       for a somewhat longer duration.
+     *   </li>
+     * </ul>
+     */
+    private void initRecentArticles() {
+      // Size of article pool (before random selection) = scalingFactorNumArticlesToShow * numArticlesToShow
+      int scalingFactorNumArticlesToShow = 3;
 
-    Calendar endDate = (Calendar) startDate.clone();
-    startDate.add(Calendar.DATE, -(numDaysInPast));
-    endDate.add(Calendar.DATE, 1);
+      String journalKey = journalService.getCurrentJournalName();
+      String rootKey = "ambra.virtualJournals." + journalKey + ".recentArticles";
 
-    recentArticles = browseService.getArticlesByDate(startDate, endDate, 0, -1, new int[1]);
+      List<URI> typeUriArticlesToShow = getArticleTypesToShow(rootKey);
+
+      numDaysInPast = configuration.getInteger(rootKey + ".numDaysInPast", 7).intValue();
+      numArticlesToShow = configuration.getInteger(rootKey + ".numArticlesToShow", 5).intValue();
+
+      //  This is the most recent midnight.  No need to futz about with exact dates.
+      Calendar startDate = Calendar.getInstance();
+      startDate.set(Calendar.HOUR, 0);
+      startDate.set(Calendar.MINUTE, 0);
+      startDate.set(Calendar.SECOND, 0);
+      startDate.set(Calendar.MILLISECOND, 0);
+
+      //  First query.  Just get the articles from "numDaysInPast" ago.
+      Calendar endDate = (Calendar) startDate.clone();
+      startDate.add(Calendar.DATE, -(numDaysInPast));
+      endDate.add(Calendar.DATE, 1);
+      recentArticles = browseService.getArticlesByDate(startDate, endDate, typeUriArticlesToShow, 0,
+          numArticlesToShow * scalingFactorNumArticlesToShow, new int[1]);
+
+      //  If not enough articles, then query for articles published in past (20 * numDaysInPast), to get enough.
+      if (recentArticles.size() < numArticlesToShow * scalingFactorNumArticlesToShow) {
+        startDate.add(Calendar.DATE, -(numDaysInPast * 20));
+        recentArticles = browseService.getArticlesByDate(startDate, endDate, typeUriArticlesToShow, 0,
+            numArticlesToShow * scalingFactorNumArticlesToShow, new int[1]);
+      }
+
+      /* Now choose a random selection of numArticlesToShow articles from the article pool.
+         Even if we do not have enough articles, this will still randomize their order. */
+      if (recentArticles.size() > 0) {
+        Random randomNumberGenerator = new Random((new Date()).getTime()); // Seeded with time = "now".
+        List<ArticleInfo> recentArticlesTemp = new LinkedList<ArticleInfo>();
+        while (recentArticlesTemp.size() < numArticlesToShow && recentArticles.size() > 0) {
+          // Remove a random article from "recentArticles" and add it to "recentArticlesTemp".
+          int randomNumber = randomNumberGenerator.nextInt(recentArticles.size()); // Random from 0 to (size - 1).
+          recentArticlesTemp.add(recentArticles.get(randomNumber));
+          recentArticles.remove(randomNumber);
+        }
+        recentArticles = recentArticlesTemp;
+      }
   }
 
   /**

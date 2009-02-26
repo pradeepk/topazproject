@@ -22,6 +22,14 @@
             <id>info:doi/10.1371/feed.ovrj</id>
           </feed>
         </platform>
+        <!-- Configuration keys for displaying recent articles tab widget on home page -->
+        <recentArticles>
+          <numDaysInPast>14</numDaysInPast>
+          <numArticlesToShow>5</numArticlesToShow>
+          <typeUriArticlesToShow>
+            <articleTypeUri>http://rdf.plos.org/RDF/articleType/Research%20Article</articleTypeUri>
+          </typeUriArticlesToShow>
+        </recentArticles>
       </OverlayJournal>
     </virtualJournals>
 

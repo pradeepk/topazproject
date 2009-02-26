@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,35 +37,12 @@
               <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait facilisi.</p>
             </div>
             <!-- end : block -->
-            <!-- begin : block
-            <div class="block recent">
-              <h2>Recently Added to Overlay Journal</h2>
-              <ul class="articles">    
-              <@s.url id="article1" namespace="/article" action="fetchArticle" articleURI="#"/>  
-              <@s.url id="article2" namespace="/article" action="fetchArticle" articleURI="#"/>
-              <@s.url id="article3" namespace="/article" action="fetchArticle" articleURI="#"/>
-              <@s.url id="article4" namespace="/article" action="fetchArticle" articleURI="#"/>
-                <li><@s.a href="%{article1}" title="Read Open Access Article">
-                Ipsum Lorem vel eum Iriure Dolor in Hendrerit in Vulputate Velit Esse Molestie Consequat, vel Illum Dolore eu Feugiat Nulla Facilisis
-                </@s.a></li>
-                <li><@s.a href="%{article2}" title="Read Open Access Article">
-                Ut Wisi Enim ad Minim Veniam, Quis Nostrud Exerci Tation Ullamcorper Suscipit Lobortis Nisl ut Aliquip ex ea Commodo
-                </@s.a></li>
-                <li><@s.a href="%{article3}" title="Read Open Access Article">
-                Exerci eu Enim, Imputo Indoles Commodo Valde, Comis Verto
-                </@s.a></li>
-                <li><@s.a href="%{article4}" title="Read Open Access Article">
-                Tego Regula Refero Vindico, Foras, Minim Proprius Melior Blandit Occuro eros Dignissim Causa Exputo
-                </@s.a></li>
-              </ul>
-            </div>
-            end : block -->
-            
+
             <!-- begin : horizontalTabs -->
             <div class="horizontalTabs">
               <ul id="tabsContainer"></ul>
               <div id="tabPaneSet" class="contentwrap">
-                <#include "article/recentArticles.ftl">
+                <#include "/article/recentArticles.ftl">
               </div>
             </div>
             <!-- end : horizontalTabs -->

@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,27 +51,13 @@
               <a href="${rssinfo}" class="adInfo">What is RSS?</a>
             </div>
             <!-- end : calls to action blocks -->
+
+            <!-- begin : block recent -->
             <div class="block recent">
               <h2>Recently Added Clinical Trials</h2>
-              <ul class="articles">    
-              <@s.url id="article1" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001779"/>	
-              <@s.url id="article2" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001665"/>
-              <@s.url id="article3" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001610"/>
-              <@s.url id="article4" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001630"/>
-                <li><@s.a href="%{article1}" title="Read Open Access Article">
-				Open-Label Comparative Clinical Study of Chlorproguanil−Dapsone Fixed Dose Combination (Lapdap<sup>TM</sup>) Alone or with Three Different Doses of Artesunate for Uncomplicated <em>Plasmodium falciparum</em> Malaria
-				</@s.a></li>
-                <li><@s.a href="%{article2}" title="Read Open Access Article">
-				Broad Clade 2 Cross-Reactive Immunity Induced by an Adjuvanted Clade 1 rH5N1 Pandemic Influenza Vaccine
-				</@s.a></li>
- 				<li><@s.a href="%{article3}" title="Read Open Access Article">
-				Poor Reporting of Scientific Leadership Information in Clinical Trial Registers
-				</@s.a></li>
-               <li><@s.a href="%{article4}" title="Read Open Access Article">
-				Safety and Efficacy of Methylene Blue Combined with Artesunate or Amodiaquine for Uncomplicated Falciparum Malaria: A Randomized Controlled Trial from Burkina Faso
-				</@s.a></li>
-				      </ul>
+              <#include "/article/recentArticles.ftl">
             </div><!-- end : block recent -->
+
             <!-- begin : browse widget block -->
             <div id="browseWidget" class="block">
               <p>Browse Clinical Trials Articles: <a href="${browseSubjectURL}">By Subject</a> or <a href="${browseDateURL}">By Publication Date</a></p>

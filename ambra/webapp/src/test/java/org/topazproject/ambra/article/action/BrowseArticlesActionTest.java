@@ -91,8 +91,9 @@ public class BrowseArticlesActionTest {
     endDate.add(Calendar.DATE, 1);
 
     expect(browseService
-        .getArticlesByDate(eq(startDate), eq(endDate), eq(5),
-        eq(7), aryEq(new int[]{0})))
+        .getArticlesByDate(eq(startDate), eq(endDate),
+          eq((java.util.List<java.net.URI>)null),
+          eq(5), eq(7), aryEq(new int[]{0})))
         .andReturn(articleInfos);
     expect(browseService
         .getArticleDates())

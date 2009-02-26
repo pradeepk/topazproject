@@ -25,8 +25,11 @@
         </ambra>
         <!-- Configuration keys for displaying recent articles tab widget on home page -->
         <recentArticles>
-          <numDaysInPast>7</numDaysInPast>
+          <numDaysInPast>14</numDaysInPast>
           <numArticlesToShow>5</numArticlesToShow>
+          <typeUriArticlesToShow>
+            <articleTypeUri>http://rdf.plos.org/RDF/articleType/Research%20Article</articleTypeUri>
+          </typeUriArticlesToShow>
         </recentArticles>
       </PLoSONE>
     </virtualJournals>

@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@
             <div class="horizontalTabs">
               <ul id="tabsContainer"></ul>
               <div id="tabPaneSet" class="contentwrap">
-                <#include "article/recentArticles.ftl">
+                <#include "/article/recentArticles.ftl">
               </div>
             </div><!-- end : horizontalTabs -->
             <!-- begin : calls to action blocks -->

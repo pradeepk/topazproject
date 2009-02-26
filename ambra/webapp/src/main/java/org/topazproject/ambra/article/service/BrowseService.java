@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -50,6 +51,7 @@ import org.topazproject.ambra.models.ArticleAnnotation;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.Query;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session.FlushMode;
 import org.topazproject.otm.query.Results;
@@ -175,25 +177,29 @@ public class BrowseService {
     return loadArticles(uris, pageNum, pageSize);
   }
 
-
   /**
-   * Get articles in the given date range, from newest to olders. One "page" of articles will be
-   * returned, i.e. articles pageNum * pageSize .. (pageNum + 1) * pageSize - 1 . Note that less
-   * than a pageSize articles may be returned, either because it's the end of the list or because
+   * Get articles in the given date range, from newest to oldest, of the given article type(s).
+   * One "page" of articles will be returned, i.e. articles pageNum * pageSize .. (pageNum + 1) * pageSize - 1 .
+   * Note that less than a pageSize articles may be returned, either because it's the end of the list or because
    * some articles are not accessible.
+   * <p/>
+   * Note: this method assumes the dates are truly just dates, i.e. no hours, minutes, etc.
+   * <p/>
+   * If the <code>articleTypes</code> parameter is null or empty, then all types of articles are returned.
+   * <p/>
+   * This method should never return null.
    *
-   * <p>Note: this method assumes the dates are truly just dates, i.e. no hours, minutes, etc.
-   *
-   * @param startDate the earliest date for which to return articles (inclusive)
-   * @param endDate   the latest date for which to return articles (exclusive)
-   * @param pageNum   the page-number for which to return articles; 0-based
-   * @param pageSize  the number of articles per page, or -1 for all articles
-   * @param numArt    (output) the total number of articles in the given category
+   * @param startDate    the earliest date for which to return articles (inclusive)
+   * @param endDate      the latest date for which to return articles (exclusive)
+   * @param articleTypes The URIs indicating the types of articles which will be returned, or null for all types
+   * @param pageNum      the page-number for which to return articles; 0-based
+   * @param pageSize     the number of articles per page, or -1 for all articles
+   * @param numArt       (output) the total number of articles in the given category
    * @return the articles.
    */
   @Transactional(readOnly = true)
   public List<ArticleInfo> getArticlesByDate(final Calendar startDate, final Calendar endDate,
-                                             int pageNum, int pageSize, int[] numArt) {
+                                             final List<URI> articleTypes, int pageNum, int pageSize, int[] numArt) {
     String jnlName = getCurrentJournalName();
     String mod     = jnlName + "-" + startDate.getTimeInMillis() + "-" + endDate.getTimeInMillis();
     String key     = ARTBYDATE_LIST_KEY + mod;
@@ -205,7 +211,7 @@ public class BrowseService {
         @Override
         @SuppressWarnings("synthetic-access")
         public List<URI> lookup() throws RuntimeException {
-          return loadArticlesByDate(startDate, endDate);
+          return loadArticlesByDate(startDate, endDate, articleTypes);
         }
       });
 
@@ -214,7 +220,15 @@ public class BrowseService {
       return null;
     }
     numArt[0] = uris.size();
-    return loadArticles(uris, pageNum, pageSize);
+
+    List<ArticleInfo> res = loadArticles(uris, pageNum, pageSize);
+    //  Ensure that this method will NEVER return a null.
+    if (res != null ) {
+      return res;
+    }
+    else {
+      return new ArrayList<ArticleInfo>();
+    }
   }
 
   /**
@@ -261,7 +275,7 @@ public class BrowseService {
     // get the Issue
     final Issue issue = session.get(Issue.class, issueDOI.toString());
     if (issue == null) {
-      log.error("Faiiled to retrieve Issue for doi='"+issueDOI.toString()+"'");
+      log.error("Failed to retrieve Issue for doi='"+issueDOI.toString()+"'");
       return null;
     }
 
@@ -554,20 +568,56 @@ public class BrowseService {
     return dates;
   }
 
-  private List<URI> loadArticlesByDate(final Calendar startDate, final Calendar endDate) {
+  /**
+   * Get the URIs for all of the Articles that were published between the <code>start date</code> parameter
+   * and <code>end date</code> parameter and have at least one article type from the <code>articleTypes</code> parameter.
+   * If the <code>articleTypes</code> parameter is null or empty, then no filtering on article type is performed.
+   *
+   * @param startDate The date after which an article must be published for that article to be included in the result
+   * @param endDate The date before which an article must be published for that article to be included in the result
+   * @param articleTypes The types of Articles which will be included in the result.  If null or empty, then
+   *   result will contain all article types.
+   * @return The URIs of articles published after the start date parameter, before the end date parameter,
+   *   and have at least one article type from the <code>articleTypes</code> parameter
+   */
+  private List<URI> loadArticlesByDate(final Calendar startDate, final Calendar endDate, final List<URI> articleTypes) {
     // XsdDateTimeSerializer formats dates in UTC, so make sure that doesn't change the date
     final Calendar sd = (Calendar) startDate.clone();
     sd.add(Calendar.MILLISECOND, sd.get(Calendar.ZONE_OFFSET) + sd.get(Calendar.DST_OFFSET));
     // ge(date, date) is currently broken, so tweak the start-date instead
     sd.add(Calendar.MILLISECOND, -1);
 
-    Results r = session.createQuery(
-            "select a.id articleId, date from Article a where " +
-            "date := a.dublinCore.date and gt(date, :sd) and lt(date, :ed) order by date desc, articleId;").
-            setParameter("sd", sd).setParameter("ed", endDate).execute();
+    StringBuilder queryString = new StringBuilder("select a.id articleId, date from Article a "
+        + " where date := a.dublinCore.date and gt(date, :sd) and lt(date, :ed)");
+    int counter = 1;
+    if (articleTypes != null && articleTypes.size() > 0) {
+      queryString.append(" and ( ");
+      Iterator articleTypesIterator = articleTypes.iterator();
+      while (articleTypesIterator.hasNext()) {
+        queryString.append(" a.articleType = :acceptableType" + counter++);
+        articleTypesIterator.next();  //  Just to iterate.  Do not need these values yet.
+        if (articleTypesIterator.hasNext()) {
+          queryString.append(" or ");
+        }
+      }
+      queryString.append(" ) ");
+    }
+    queryString.append(" order by date desc, articleId;");
 
-    List<URI> dates = new ArrayList<URI>();
+    Query query =  session.createQuery(queryString.toString());
+    query.setParameter("sd", sd);
+    query.setParameter("ed", endDate);
+    counter = 1;
+    if (articleTypes != null && articleTypes.size() > 0) {
+      Iterator articleTypesIterator = articleTypes.iterator();
+      while (articleTypesIterator.hasNext()) {
+        query.setParameter("acceptableType" + counter++, articleTypesIterator.next());
+      }
+    }
 
+    List<URI> dates = new ArrayList<URI>();  //  The URIs which will be returned.
+
+    Results r =  query.execute();
     r.beforeFirst();
     while (r.next()) {
       dates.add(r.getURI(0));
