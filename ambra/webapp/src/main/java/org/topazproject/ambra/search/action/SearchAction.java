@@ -64,9 +64,7 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   // empty map for non-null safety
   private Map<String, Integer>  categoryInfos = new HashMap<String, Integer>();
 
-  /*
-   * Flag telling this action whether or not the search should be executed.
-   */
+  // Flag telling this action whether or not the search should be executed.
   private String   noSearchFlag;
 
   private String[] creator = null;
@@ -87,8 +85,6 @@ public class SearchAction extends BaseSessionAwareActionSupport {
    */
   @Transactional(readOnly = true)
   public String executeSimpleSearch() {
-    // the simple search text field correlates to advanced search's "for all the words" field
-    this.textSearchAll = query;
     return executeSearch(query);
   }
 
