@@ -2,6 +2,7 @@
 <suite name="Ambra Tests" parallel="tests" verbose="2">
   <test name="Admin Tests">
     <classes>
+      <class name="org.topazproject.ambra.admin.action.ProcessFlagsActionTest"/>
       <class name="org.topazproject.ambra.admin.service.DocumentManagementServiceTest"/>
     </classes>
   </test>

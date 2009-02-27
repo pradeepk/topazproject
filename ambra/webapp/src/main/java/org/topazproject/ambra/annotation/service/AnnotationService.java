@@ -588,6 +588,14 @@ public class AnnotationService extends BaseAnnotationService {
       return null;
     }
 
+    if (newAnnotationClassType.isInstance(srcAnnotation)) {
+      if (log.isDebugEnabled())
+        log.debug("Cannot convert " + srcAnnotationId + " to "
+            + newAnnotationClassType.getSimpleName()
+            + ". It is already " + srcAnnotation.getClass().getSimpleName());
+      return srcAnnotationId;
+    }
+
     ArticleAnnotation newAn = newAnnotationClassType.newInstance();
     synchronized (beanUtils) {
       beanUtils.copyProperties(newAn, srcAnnotation);
