@@ -2010,7 +2010,7 @@
     </xsl:attribute>
     <xsl:apply-templates select="label"/>
   </xsl:element>
-  <!--xsl:apply-templates select="caption/title"/-->
+  <xsl:apply-templates select="caption/title"/>
   </strong>
 
   <!-- to move file info from last para onto same line as link & title 
@@ -2864,7 +2864,6 @@
 <!-- The fn-group, if any, is output in the "back" of the
      HTML page, together with any other fn-group. -->
 <xsl:template match="title-group" mode="front">
-  <xsl:apply-templates select="article-title" mode="front"/>
   <xsl:apply-templates select="subtitle" mode="front"/>
 </xsl:template>
 
