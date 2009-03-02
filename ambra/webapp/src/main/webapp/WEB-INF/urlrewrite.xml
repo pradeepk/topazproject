@@ -45,6 +45,46 @@
 
   <rule>
     <note>
+      re-write incoming related Article URIs.
+     /article/related/doi -> /article/fetchRelatedArticle.action?articleURI=doi
+    </note>
+    <from>^(/.+)?/article/related/(info:doi/10\.1371/.+)$</from>
+    <to last="true">$1/article/fetchRelatedArticle.action?articleURI=$2</to>
+  </rule>
+
+  <outbound-rule>
+    <note>
+      re-write outbound Article URIs.
+     /article/related/fetchRelatedArticle.action?articleURI=doi -> /article/related/doi
+    </note>
+    <from>^(/.+)?/article/fetchRelatedArticle.action\?articleURI=(info%3Adoi%2F10\.1371%2F.+)</from>
+    <to>$1/article/related/$2</to>
+  </outbound-rule>
+
+  <rule>
+    <note>
+      re-write incoming article comment URIs.
+     /article/comments/doi -> /article/fetchArticleComments.action?articleURI=doi
+    </note>
+    <from>^(/.+)?/article/comments/(info:doi/10\.1371/.+)$</from>
+    <!--
+    I have to specify articleURI and target here as different actions use different
+    parameter names in the result chain specified in the struts.xml file
+    -->
+    <to last="true">$1/article/fetchArticleComments.action?articleURI=$2&amp;amp;target=$2</to>
+  </rule>
+
+  <outbound-rule>
+    <note>
+      re-write outbound Article URIs.
+     /article/fetchArticleComments.action?articleURI=doi -> /article/comments/doi
+    </note>
+    <from>^(/.+)?/article/fetchArticleComments.action\?articleURI=(info%3Adoi%2F10\.1371%2F.+)</from>
+    <to>$1/article/comments/$2</to>
+  </outbound-rule>
+
+  <rule>
+    <note>
       re-write incoming Article URIs.
      /article/doi -> /article/fetchArticle.action?articleURI=doi
     </note>

@@ -109,7 +109,7 @@ public class RateAction extends AbstractRatingAction {
                                annotatedArticle);
 
     try {
-      isResearchArticle = isResearchArticle(articleURI);
+      isResearchArticle = articleOtmService.isResearchArticle(articleURI);
     } catch (Exception ae) {
       log.info("Could not get article info for: " + articleURI, ae);
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

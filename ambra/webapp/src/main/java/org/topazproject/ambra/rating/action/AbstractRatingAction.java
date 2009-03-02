@@ -18,19 +18,13 @@
  */
 package org.topazproject.ambra.rating.action;
 
-import java.net.URI;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
-import org.topazproject.ambra.article.service.NoSuchArticleIdException;
-import org.topazproject.ambra.model.article.ArticleType;
-import org.topazproject.ambra.models.Article;
 
 /**
  * AbstractRatingAction - Common base class to rating related actions.
@@ -44,34 +38,12 @@ public abstract class AbstractRatingAction extends BaseSessionAwareActionSupport
   protected ArticleOtmService articleOtmService;
 
   /**
+   * Sets the article OTM service for any sub classes to call
+   * 
    * @param articleOtmService the ArticleOtmService to set
    */
   @Required
   public void setArticleOtmService(ArticleOtmService articleOtmService) {
     this.articleOtmService = articleOtmService;
-  }
-
-  /**
-   * Determines if an article is a research type article.
-   *
-   * @param articleURI The URI of the article.
-   * @return true/false
-   * @throws NoSuchArticleIdException When no article resolvable for the articleURI. 
-   * @throws ApplicationException When no article type is resolvable for the article.
-   */
-  protected final boolean isResearchArticle(String articleURI)
-    throws ApplicationException, NoSuchArticleIdException {
-    // resolve article type and supported properties
-    Article artInfo = articleOtmService.getArticle(URI.create(articleURI));
-    ArticleType articleType = ArticleType.getDefaultArticleType();
-    for (URI artTypeUri : artInfo.getArticleType()) {
-      if (ArticleType.getKnownArticleTypeForURI(artTypeUri) != null) {
-        articleType = ArticleType.getKnownArticleTypeForURI(artTypeUri);
-        break;
-      }
-    }
-    if (articleType == null)
-      throw new ApplicationException("Unable to resolve article type for: " + articleURI);
-    return ArticleType.isResearchArticle(articleType);
   }
 }

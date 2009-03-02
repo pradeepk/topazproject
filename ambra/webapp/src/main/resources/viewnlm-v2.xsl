@@ -2010,7 +2010,7 @@
     </xsl:attribute>
     <xsl:apply-templates select="label"/>
   </xsl:element>
-  <xsl:apply-templates select="caption/title"/>
+  <!--xsl:apply-templates select="caption/title"/-->
   </strong>
 
   <!-- to move file info from last para onto same line as link & title 

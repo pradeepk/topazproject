@@ -37,7 +37,7 @@
 
 <!-- begin : left banner slot -->
 <div class="left">
-  <iframe frameborder="0" scrolling="no" width="468px" height="60px" marginheight="0" marginwidth="0" src="http://comparenetworks.com/partnerAds/IFrameAd.aspx?adid=0&adtypeid=2&siteid=35&subsiteid=0&pagetypeid=0&pageid=0&subpageid=0">
+  <iframe frameborder="0" scrolling="no" width="468px" height="60px" marginheight="0" marginwidth="0" id="compareNetworksBanner">
   </iframe>
 </div>
 <!-- end : left banner slot -->

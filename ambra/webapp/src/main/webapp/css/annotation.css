@@ -2,7 +2,7 @@
  * $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,17 +17,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* 	-------------------------------------------------------------
-
-	Annotation Style Sheet
-	
-	CREATED ON 	: 08-26-2006
-	MODIFIED ON 	: 08-02-2007
-	
-	CREATED BY	: MARGARET SHEAR
-	MODIFIED BY	: SEBASTIAN TOOMEY
- 
-   	------------------------------------------------------------- */	
 
 /* detail wraps annotation post details such as date and posting time and username */
 div.detail{ font-size: .9em; color: #666; position: relative;}
@@ -94,6 +83,19 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .preview div.detail a { margin: 0 10px; }
 /* annotate is applied to dialog viewers in the annotation process */
 .annotate{ width: 42em; border: 3px solid #0bf; background: #fff url(../images/forms_bg.gif) repeat-x bottom; position:relative;}
+
+div.contextActionDialog { padding:0;margin:0; }
+div.context div.tip { background:transparent url(../images/dialog_pb.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; bottom: -22px; left:22px; }
+div.context div.tipu { background:transparent url(../images/dialog_pt.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; top: -22px; left:22px; }
+
+div.context{ width:22em; border:3px solid #666; background:#fff url(../images/forms_bg.gif) repeat-x bottom; position:relative;}
+div.context div.contextActionContent { border:0px; margin:4px; line-height:1.1em; }
+div.context div.contextActionContent h5 { padding:0px 0px 3px 0px; margin:0px;}
+div.context div.contextActionContent ul { padding:5px 0px 0px 0px; margin:0px; list-style-type:dot;}
+div.context div.contextActionContent li { padding:0px; margin:0px 0px 0px 17px; }
+div.context div.contextActionContent input { padding:0px; margin:0px; float:right; }
+div.context div.contextActionContent form { padding-top:5px; }
+div.dijitTooltipContainer { border:0px; }
 
 .loadingCycler { z-index: 99998 !important; }
 .loadingCycler img { z-index: 99999 !important; }

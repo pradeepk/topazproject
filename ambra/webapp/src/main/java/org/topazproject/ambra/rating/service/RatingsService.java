@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -126,8 +126,7 @@ public class RatingsService {
    * Get a Rating by Id.
    *
    * @param ratingId Rating Id
-   *
-   * @param user
+   * @param user current ambra user
    * @return Rating
    */
   @Transactional(readOnly = true)
@@ -252,10 +251,10 @@ public class RatingsService {
   public static class Average implements Serializable {
     private static final long serialVersionUID = -2890067268188424471L;
 
-    public final double total;
-    public final int    count;
-    public final double average;
-    public final double rounded;
+    private final double total;
+    private final int    count;
+    private final double average;
+    private final double rounded;
 
     Average(double total, int count) {
       this.total = total;
@@ -269,18 +268,34 @@ public class RatingsService {
       return "total = " + total + ", count = " + count + ", average = " + average +
              ", rounded = " + rounded;
     }
+
+    public double getTotal() {
+      return total;
+    }
+
+    public int getCount() {
+      return count;
+    }
+
+    public double getAverage() {
+      return average;
+    }
+
+    public double getRounded() {
+      return rounded;
+    }    
   }
 
   public static class AverageRatings implements Serializable {
     private static final long serialVersionUID = -1666766336307635633L;
 
-    public final Average style;
-    public final Average insight;
-    public final Average reliability;
-    public final Average single;
-    public final int     numUsersThatRated;
-    public final double  overall;
-    public final double  roundedOverall;
+    private final Average style;
+    private final Average insight;
+    private final Average reliability;
+    private final Average single;
+    private final int     numUsersThatRated;
+    private final double  overall;
+    private final double  roundedOverall;
 
     AverageRatings() {
       style = new Average(0, 0);
@@ -317,6 +332,35 @@ public class RatingsService {
              ", overall = " + overall +
              ", roundedOverall = " + roundedOverall;
     }
+
+    public Average getStyle() {
+      return style;
+    }
+
+    public Average getInsight() {
+      return insight;
+    }
+
+    public Average getReliability() {
+      return reliability;
+    }
+
+    public Average getSingle() {
+      return single;
+    }
+
+    public int getNumUsersThatRated() {
+      return numUsersThatRated;
+    }
+
+    public double getOverall() {
+      return overall;
+    }
+
+    public double getRoundedOverall()
+    {
+      return roundedOverall;
+    }      
   }
 
   private class Invalidator extends AbstractObjectListener {

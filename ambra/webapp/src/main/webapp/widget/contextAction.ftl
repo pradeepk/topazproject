@@ -1,0 +1,52 @@
+<div dojoType="ambra.widget.ContextAction" id="ContextActionDialog" class="contextActionDialog">
+	<div class="dialog context">
+		<div class="tipu" id="caTipu"></div>
+		<div class="contextActionContent">
+			<h5><img src="images/tooltip_addannotation.gif" /> Add a note to this text.</h5>
+			Please follow our <a href="">guidelines for commenting/rating</a>. Comments that do
+			not conform to our guidelines will be promptly removed and the
+			user account disabled.  The following must be avoided:
+			<ul>
+				<li>Remarks that could be interpreted as allegations of misconduct</li>
+				<li>Unsupported assertations or statements</li>
+				<li>Inflammatory and insulting language</li>
+			</ul>
+			<form name="contextActionForm" id="contextActionForm" method="post" action="">
+        <input type="button" name="Continue" value="Continue" id="ContextActionDialogContinueButton" onmouseup="ambra.displayAnnotationContext.startComment(event);" title="Add a note to this text"></form>
+			<div class="clearer"></div>
+		</div>
+		<div class="tip" id="caTip"></div>
+	</div>
+</div>
+<div dojoType="ambra.widget.ContextAction" id="ContextActionDialogNotLogged" class="contextActionDialog">
+	<div class="dialog context">
+		<div class="tipu" id="canlTipu"></div>
+		<div class="contextActionContent">
+			<h5><img src="images/tooltip_addannotation.gif" /> Add a note to this text.</h5>
+			You must be logged into to add a note to an article.
+      You may log in by <a onmousedown="ambra.displayAnnotationContext.disconnect(event);" href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}">clicking here</a>.
+		</div>
+		<div class="tip" id="canlTip"></div>
+	</div>
+</div>
+<div dojoType="ambra.widget.ContextAction" id="ContextActionDialogBadSelection" class="contextActionDialog">
+	<div class="dialog context">
+		<div class="tipu" id="canBDTipu"></div>
+		<div class="contextActionContent">
+			<h5><img src="images/tooltip_addannotation.gif" /> Add a note to this text.</h5>
+      You can not annotate this area of the document.
+		</div>
+		<div class="tip" id="canBDTip"></div>
+	</div>
+</div>
+<div dojoType="ambra.widget.ContextAction" id="ContextActionDialogBadRangeSelection" class="contextActionDialog">
+	<div class="dialog context">
+		<div class="tipu" id="canbrTipu"></div>
+		<div class="contextActionContent">
+			<h5><img src="images/tooltip_addannotation.gif" /> Add a note to this text.</h5>
+      You can not create an annotation that spans different sections of the document, please
+      adjust your selection.
+		</div>
+		<div class="tip" id="canbrTip"></div>
+	</div>
+</div>

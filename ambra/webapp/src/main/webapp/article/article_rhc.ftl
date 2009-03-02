@@ -1,16 +1,16 @@
 <#--
   $HeadURL::                                                                            $
   $Id$
-  
+
   Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
-  
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,95 +18,103 @@
   limitations under the License.
 -->
 <!-- begin : right hand column -->
-<div id="rhc">
+<@s.url id="articleArticleRepXML"  namespace="/article" action="fetchObjectAttachment" includeParams="none" uri="${articleURI}">
+  <@s.param name="representation" value="%{'XML'}"/>
+</@s.url>
+<@s.url id="articleArticleRepPDF"  namespace="/article" action="fetchObjectAttachment" includeParams="none" uri="${articleURI}">
+  <@s.param name="representation" value="%{'PDF'}"/>
+</@s.url>
+<@s.url id="articleCitationURL"  namespace="/article" action="citationList" includeParams="none" articleURI="${articleURI}" />
+<@s.url id="emailArticleURL" namespace="/article" action="emailArticle" articleURI="${articleURI}"/>
+<@s.url id="relatedArticleURL" namespace="/article" action="fetchRelatedArticle" articleURI="${articleURI}"/>
 
-<div id="sideNav">
-
-	<#if articleInfoX?? && articleInfoX.relatedArticles?size gt 0>
-		<dl class="related">
-			<dt>Related <em>${freemarker_config.orgName}</em> Articles</dt>
-			<#list articleInfoX.relatedArticles as ra>
-			<@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${ra.uri}" includeParams="none"/>
-			<dd><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${ra.title}</@s.a></dd>
-			</#list>
-		</dl>
-	</#if>
-  
-  <div id="floatMarker"></div>
-
-  <div id="postcomment">
-    <div class="commentview">
-      <h6>Start a discussion on this article</h6>
-      <ol>
-        <#if Session[freemarker_config.userAttributeKey]?exists>
-            <li><a href="#" id="addAnnotation" class="addannotation icon" title="First select text, then click here" onmousedown="createAnnotationOnMouseDown();">Add a note to the text</a></li>
-        <#else>
-            <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation icon">Add a note to the text</a></li>
-        </#if>
-
-        <!-- begin : expanded block -->
-        <!--  <fieldset>
-            <form>
-            <ol id="toggleAnnotations">
-              <li>Yours  <div><input class="input" type="radio" title="Choose from one of the options" name="yours" value="On" checked>
-                    <label for="yours">On</label>
-                    <input class="input" type="radio" title="Choose from one of the options" name="yours" value="Off">
-                    <label for="yours">Off</label></div>
-              </li>
-              <li>Authors  <div><input class="input" type="radio" title="Choose from one of the options" name="authors" value="On" checked>
-                    <label for="authors">On</label>
-                    <input class="input" type="radio" title="Choose from one of the options" name="authors" value="Off">
-                    <label for="authors">Off</label></div>
-              </li>
-              <li>All Public
-                    <div><input class="input" type="radio" title="Choose from one of the options" name="public" value="On" checked>
-                    <label for="public">On</label>
-                    <input class="input" type="radio" title="Choose from one of the options" name="public" value="Off">
-                    <label for="public">Off</label></div>
-              </li>
-            </ol>
-            </form>
-          </fieldset>-->
-        <!-- end : expanded block -->
-        
-        <@s.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
-
-        <#if Session[freemarker_config.userAttributeKey]?exists>
-        	<li><a href="${createDiscussionURL}" class="discuss icon">Make a general comment</a></li>
-        <#else>
-            <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="discuss icon">Make a general comment</a></li>
-        </#if>
-
-        <@s.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
-        <li><a href="${commentsURL}" class="commentary icon">View/join ongoing discussions</a>
-          <ul id="dcCount1">
-            <#include "/article/article_rhc_count.ftl">
-          </ul>
-        </li>
-
-        <#if numCorrections gt 0>
-        <@s.url id="correctionsURL" namespace="/annotation" action="getCorrectionsCommentary" includeParams="none" target="${articleURI}"/>
-        <li><a href="${correctionsURL}" class="corrections icon">View all corrections</a></li>
-        </#if>
-        
-        <li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn notes on/off">Hide notes</a></li>
-
-        <@s.url id="trackbackURL" namespace="/article" action="listTrackbacks" includeParams="none" trackbackId="${articleURI}"/>
-        <li><a href="${trackbackURL}" class="trackback icon">Trackbacks (${trackbackList?size})</a></li>
-
-  <!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your annotation!</li> -->
-      </ol>
+<div id="rhc" xpathLocation="noDialog">
+ 
+  <div id="download" class="rhcBox_type1">
+    <div class="wrap">
+      <ul>
+        <li class="download icon"><strong>Download:</strong> <a href="${articleArticleRepPDF}">PDF</a> | <a href="${articleCitationURL}">Citation</a> | <a href="${articleArticleRepXML}">XML</a></li>
+        <li class="print icon"><a href="#" onclick="window.print();return false;"><strong>Print article</strong></a></li>
+      </ul>
     </div>
+  </div>
 
+  <#if publisher != "">
+    <div id="published" xpathLocation="noSelect" class="rhcBox_type2">
+      <p>${publisher}</p>
+    </div>
+  </#if>
 
-    <div class="commentview" id="ratingRhc1">
+  <div id="impact" class="rhcBox_type2">
+    <div id="ratingRhc1">
       <#include "/article/article_rhc_rating.ftl">
     </div>
-
-    <div id="sectionNavTop" class="tools"></div>
   </div>
-</div>
 
+  <div id="related" class="rhcBox_type2">
+    <h6>Related Content</h6>
+  <#if articleInfoX?? && articleInfoX.relatedArticles?size gt 0>
+    <dl class="related">
+      <dt>Related <em>${freemarker_config.orgName}</em> Articles</dt>
+      <#list articleInfoX.relatedArticles as ra>
+      <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${ra.uri}" includeParams="none"/>
+      <dd><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${ra.title}</@s.a></dd>
+      </#list>
+    </dl>
+  </#if>
+    <p><strong>Related subject categories</strong><br/>
+    <#list articleInfo.categories as cat>
+      <a href="browse.action?catName=${cat.mainCategory?url}">${cat.mainCategory}</a><#if cat_has_next>, </#if>
+    </#list></p>
 
+    <div class="more clearfix"><a href="${relatedArticleURL}">More</a></div>
+  </div>
+
+  <div id="share" class="rhcBox_type2">
+    <h6>Share this Article <a href="#" class="info">info</a></h6>
+    <ul>
+      <li class="bookmarklets">Bookmark:
+
+          <#-- StumbleUpon -->
+          <a href="http://www.stumbleupon.com/submit?url=${jDocURL}" target="_new"> <img border=0 src="http://cdn.stumble-upon.com/images/16x16_su_solid.gif" alt="StumbleUpon" title="Add to StumbleUpon"></a>
+          <#-- for more info, see http://www.stumbleupon.com/buttons.php -->
+          <#-- Facebook -->
+          <script>function fbs_click() {u='${docURL}';t='${articleInfoX.title?url}';window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t),'sharer','toolbar=0,status=0,width=626,height=436');return false;}</script><a href="http://www.facebook.com/share.php?u=${docURL?url}" onclick="return fbs_click()"><img src="http://static.ak.fbcdn.net/images/share/facebook_share_icon.gif" alt="Facebook" title="Add to Facebook" /></a>       <!-- for mor info, see http://www.facebook.com/share_partners.php -->
+          <#-- Connotea -->
+          <script type="text/javascript">
+            function bookmark_in_connotea(u) {
+                a=false; x=window; e=x.encodeURIComponent; d=document;
+                w=open('http://www.connotea.org/addpopup?continue=confirm&uri='+e(u),
+                    'add', 'width=600, height=400, scrollbars, resizable');
+                void(x.setTimeout('w.focus()',200));
+            }
+          </script>
+          <a style='cursor: pointer;' onclick='javascript:bookmark_in_connotea("${docURL}");'><img src='${freemarker_config.getContext()}/journals/plosJournals/images/icon_connotea_16x16.gif' alt="Connotea" title="Add to Connotea"/></a>
+          <#-- See: http://www.connotea.org/wiki/AddToConnoteaButton -->
+          <#-- Citeulike -->
+          <a href="http://www.citeulike.org/posturl?url=${docURL?url}&title=${articleInfoX.title?url}" target="_new"><img src='${freemarker_config.getContext()}/journals/plosJournals/images/icon_citeulike_16x16.gif' alt="CiteULike" title="Add to CiteULike" /></a>
+          <#-- For more info see http://www.citeulike.org/faq/all.adp -->
+          <#-- Digg
+            TODO:Eventually we should be passing the abstract as the bodytext to digg.  We could also switch up and
+            start figuring out and sending a topic as well
+            -->
+          <script type="text/javascript">
+          digg_url = '${jDocURL}';
+          digg_skin = 'icon';
+          digg_title = '${articleInfoX.title?replace("'","\\'")}';
+          digg_bodytext = '';
+          digg_topic = '';
+          digg_media = 'news';
+          digg_window = 'new';
+
+          </script>
+          <script src="http://digg.com/tools/diggthis.js" type="text/javascript"></script>
+          <#-- for more info see http://digg.com/tools/integrate -->
+
+      </li>
+      <li class="email icon"><a href="${emailArticleURL}">Email this article</a></li>
+      <li class="twitter icon"><a href="http://twitter.com/home/?status=${"Check+out+this+article%3A+" + docURL?url}" title="Tweet about this article">Tweet about this article</a></li>
+    </ul>
+  </div>
 </div>
 <!-- end : right hand column -->

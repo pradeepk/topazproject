@@ -259,17 +259,6 @@
   <package name="rate" extends="default" namespace="/rate">
 
     <default-action-ref name="pageNotFound" />
-
-    <action name="getAverageRatingsForArticle" class="org.topazproject.ambra.rating.action.GetAverageRatingsAction">
-      <interceptor-ref name="chain">
-        <param name="excludes">targetSource, callbacks, exposeProxy</param>
-      </interceptor-ref>
-      <interceptor-ref name="ambraUserStack"/>
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/article/article_body.ftl</param>
-        <param name="noCache">true</param>
-      </result>
-    </action>
     <action name="getAverageRatings" class="org.topazproject.ambra.rating.action.GetAverageRatingsAction">
       <result name="success">/WEB-INF/pages/article/articleRatings.ftl</result>
       <result name="error">/WEB-INF/pages/article/articleRatings.ftl</result>
@@ -345,21 +334,27 @@
       </result>
     </action>
 
-    <action name="getNumTrackbacksForArticle" class="org.topazproject.ambra.action.TrackbackAction" method="getTrackbackCount">
-      <interceptor-ref name="chain">
-        <param name="excludes">targetSource, callbacks, exposeProxy</param>
-      </interceptor-ref>
-      <interceptor-ref name="ambraUserStack"/>
-      <result type="chain">
-        <param name="actionName">getAverageRatingsForArticle</param>
-        <param name="namespace">/rate</param>
+    <action name="fetchArticle" class="org.topazproject.ambra.article.action.FetchArticleAction" method="FetchArticle">
+      <result name="success" type="ambraFreemarker">
+        <param name="templateFile">/article/article_body.ftl</param>
       </result>
     </action>
 
-    <action name="fetchArticle" class="org.topazproject.ambra.article.action.FetchArticleAction">
-      <result type="chain">
-        <param name="actionName">getNumTrackbacksForArticle</param>
-        <param name="namespace">/article</param>
+    <action name="fetchArticleComments" class="org.topazproject.ambra.article.action.FetchArticleAction" method="FetchArticleComments">
+      <result name="success" type="ambraFreemarker">
+        <param name="templateFile">/article/article_comments.ftl</param>
+      </result>
+    </action>
+
+    <action name="fetchArticleCorrections" class="org.topazproject.ambra.article.action.FetchArticleAction" method="FetchArticleCorrections">
+      <result name="success" type="ambraFreemarker">
+        <param name="templateFile">/article/article_comments.ftl</param>
+      </result>
+    </action>
+
+    <action name="fetchRelatedArticle" class="org.topazproject.ambra.article.action.FetchArticleAction" method="FetchArticleRelated">
+      <result name="success" type="ambraFreemarker">
+        <param name="templateFile">/article/article_related.ftl</param>
       </result>
     </action>
 
@@ -397,14 +392,14 @@
        <result name="success">/article/displayArticle.ftl</result>
     </action>
 
-    <action name="fetchBody" class="org.topazproject.ambra.article.action.FetchArticleAction">
+    <action name="fetchBody" class="org.topazproject.ambra.article.action.FetchArticleAction" method="fetchArticle">
       <result name="success" type="ambraFreemarker">
         <param name="location">/article/article_content.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
-    <action name="fetchArticleRhc" class="org.topazproject.ambra.article.action.FetchArticleAction">
+    <action name="fetchArticleRhc" class="org.topazproject.ambra.article.action.FetchArticleAction" method="fetchArticle">
       <result name="success" type="ambraFreemarker">
         <param name="location">/article/article_rhc_count.ftl</param>
         <param name="noCache">true</param>

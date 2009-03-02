@@ -1,0 +1,94 @@
+<#--
+  $HeadURL::                                                                            $
+  $Id$
+
+  Copyright (c) 2007-2008 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<#include "article_variables.ftl">
+<@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
+<@s.url namespace="/article" includeParams="none" id="articleURL" action="fetchArticle" articleURI="${articleInfo.id}"/>
+<@s.url namespace="/annotation/secure" includeParams="none" id="startDiscussionUrl" action="startDiscussion" target="${articleInfo.id}"/>
+<@s.url namespace="/article" includeParams="none" id="correctionsURL" action="fetchArticleCorrections" articleURI="${articleInfo.id}"/>
+<@s.url namespace="/article" includeParams="none" id="commentsURL" action="fetchArticleComments" articleURI="${articleInfo.id}"/>
+
+<#assign corrections=false/>
+<#list commentary as comment>
+  <#if (comment.annotation.isCorrection() == true)>
+    <#assign corrections=true />
+  </#if>
+</#list>
+
+<div id="content" class="article" style="visibility:visible;">
+  <#include "article_rhc.ftl">
+
+  <div id="articleContainer">
+   <#if corrections == true>
+    <div id="researchArticle" class="content corrections">
+   <#else>
+    <div id="researchArticle" class="content">
+   </#if>
+      <a id="top" name="top" toc="top" title="Top"></a>
+      <div id="contentHeader">
+        <p>Open Access</p>
+        <p id="articleType">${articleType.heading}</p>
+      </div>
+      <h1>${articleInfoX.title}</h1>
+      <#assign tab="comments" />
+      <#include "article_tabs.ftl">
+      <#if commentary?size == 0>
+        <p>There are currently no notes or comments yet on this article.
+        You can <a href="${startDiscussionUrl}" title="Click to make a new comment on this article" class="discuss icon">add a comment</a> or return to the original article to add a note.<p>
+      <#else>
+        <#if corrections == true>
+         <a href="${commentsURL}" title="View all corrections" class="discuss icon">View all Comments</a></p>
+        <#else>
+         <a href="${correctionsURL}" title="View all corrections" class="corrections icon">View all corrections</a></p>
+        </#if>
+        <a href="${startDiscussionUrl}" title="Click to make a new comment on this article" class="discuss icon">Make a new comment on this article</a></p>
+        <table class="directory" cellpadding="0" cellspacing="0">
+          <#list commentary as comment>
+            <@s.url namespace="/annotation" includeParams="none" id="listThreadURL" action="listThread" root="${comment.annotation.id}" inReplyTo="${comment.annotation.id}"/>
+            <@s.url namespace="/user" includeParams="none" id="showUserURL" action="showUser" userId="${comment.annotation.creator}"/>
+
+            <#if ((comment.annotation.context)!"")?length == 0>
+              <#assign class="discuss"/>
+            <#else>
+              <#assign class="annotation"/>
+            </#if>
+            <#assign numReplies = comment.numReplies>
+            <#if numReplies != 1>
+              <#assign label = "responses">
+            <#else>
+              <#assign label = "response">
+            </#if>
+
+            <tr>
+              <td class="replies">${comment.numReplies} ${label}<br /></td>
+              <td class="title"><a href="${listThreadURL}" title="View Full Discussion Thread" class="${class} icon">${comment.annotation.commentTitle}</a></td>
+              <td class="info">Posted by <a href="${showUserURL}" title="Discussion Author" class="user icon">${comment.annotation.creatorName}</a> on <strong>${comment.annotation.createdAsDate?string("dd MMM yyyy '</strong>at<strong>' HH:mm zzz")}</strong></td>
+            </tr>
+            <tr>
+              <td colspan="3" class="last">Most recent response on <strong>${comment.lastModifiedAsDate?string("dd MMM yyyy '</strong>at<strong>' HH:mm zzz")}</strong></td>
+            </tr>
+          </#list>
+        </table>
+      </#if>
+    </div>
+  </div>
+</div>
+<div style="visibility:hidden">
+  <#include "/widget/ratingDialog.ftl">
+</div>

@@ -18,106 +18,106 @@
  */
 package org.topazproject.ambra.article.action;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Set;
+import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
+import org.topazproject.ambra.model.article.ArticleInfo;
+import org.topazproject.ambra.model.article.ArticleType;
+import org.topazproject.ambra.rating.service.RatingsService;
+import org.topazproject.ambra.article.service.BrowseService;
+import org.topazproject.ambra.article.service.ArticleOtmService;
+import org.topazproject.ambra.article.service.NoSuchArticleIdException;
+import org.topazproject.ambra.article.service.FetchArticleService;
+import org.topazproject.ambra.journal.JournalService;
+import org.topazproject.ambra.models.Journal;
+import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.Retraction;
+import org.topazproject.ambra.models.ArticleAnnotation;
+import org.topazproject.ambra.models.MinorCorrection;
+import org.topazproject.ambra.models.FormalCorrection;
+import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.annotation.service.AnnotationService;
+import org.topazproject.ambra.annotation.service.WebAnnotation;
+import org.topazproject.ambra.annotation.service.AnnotationConverter;
+import org.topazproject.ambra.annotation.service.ReplyService;
+import org.topazproject.ambra.annotation.Commentary;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
-
-import org.topazproject.ambra.action.BaseActionSupport;
-import org.topazproject.ambra.annotation.service.AnnotationService;
-import org.topazproject.ambra.article.service.BrowseService;
-import org.topazproject.ambra.article.service.FetchArticleService;
-import org.topazproject.ambra.article.service.NoSuchArticleIdException;
-import org.topazproject.ambra.article.service.ArticleOtmService;
-import org.topazproject.ambra.journal.JournalService;
-import org.topazproject.ambra.model.article.ArticleInfo;
-import org.topazproject.ambra.model.article.ArticleType;
-import org.topazproject.ambra.models.Article;
-import org.topazproject.ambra.models.ArticleAnnotation;
-import org.topazproject.ambra.models.FormalCorrection;
-import org.topazproject.ambra.models.Journal;
-import org.topazproject.ambra.models.MinorCorrection;
-import org.topazproject.ambra.models.Retraction;
+import java.net.URI;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
- * Fetch article action.
+ * This class fetches the information from the service tier for the artcle
+ * Tabs.  Common data is defined in the setCommonData.  One method is defined
+ * for each tab.
+ *
+ * Freemarker builds rest like URLs, inbound and outbound as
+ * defined in the /WEB-INF/urlrewrite.xml file. These URLS then map to the
+ * methods are referenced in the struts.xml file.
+ *
+ * ex: http://localhost/article/related/info%3Adoi%2F10.1371%2Fjournal.pone.0299
+ *
+ * Gets rewritten to:
+ *
+ * http://localhost/fetchRelatedArticle.action&articleURI=info%3Adoi%2F10.1371%2Fjournal.pone.0299
+ *
+ * Struts picks this up and translates it call the FetchArticleRelated method
+ * ex: <action name="fetchRelatedArticle"
+ *    class="org.topazproject.ambra.article.action.FetchArticleAction"
+ *    method="FetchArticleRelated">
+ * 
  */
-@SuppressWarnings("serial")
-public class FetchArticleAction extends BaseActionSupport {
+public class FetchArticleAction extends BaseSessionAwareActionSupport {
+  private static final Log log = LogFactory.getLog(FetchArticleAction.class);
+  private final ArrayList<String> messages = new ArrayList<String>();
+
   private String articleURI;
+  private String transformedArticle;
   private String annotationId = "";
 
-  private final ArrayList<String> messages = new ArrayList<String>();
-  private static final Log log = LogFactory.getLog(FetchArticleAction.class);
-  private BrowseService browseService;
-  private FetchArticleService fetchArticleService;
-  private ArticleOtmService articleOtmService;
-  private JournalService journalService;
-  private Set<Journal> journalList;
-  private Article articleInfo;
-  private ArticleType articleType;
-  private ArticleInfo articleInfoX;
-  private String transformedArticle;
-  // Displayed article type (assigned default)
-  private final String articleTypeHeading = "Research Article";
-  private AnnotationService annotationService;
   private int numDiscussions = 0;
   private int numMinorCorrections = 0;
+  private int numComments = 0;
   private int numFormalCorrections = 0;
   private int numRetractions = 0;
+
+  private boolean isResearchArticle;
+  private boolean hasRated;
+
+  private ArticleInfo articleInfoX;
+  private Article articleInfo;
+  private ArticleType articleType;
+  private Commentary[] commentary;
+
+  private ReplyService replyService;
+  private AnnotationConverter annotationConverter;
+  private FetchArticleService fetchArticleService;
+  private AnnotationService annotationService;
+  private BrowseService browseService;
+  private JournalService journalService;
+  private RatingsService ratingsService;
+  private ArticleOtmService articleOtmService;
+
+  private Set<Journal> journalList;
+  private RatingsService.AverageRatings averageRatings;
+
   /**
-   * Represents the number of notes that are not corrections from  a UI stand point
+   * Fetch common data the article HTML text
+   * @return "success" on succes, "error" on error
    */
-  private int numComments = 0;
-
-
-  @Override
   @Transactional(readOnly = true)
-  public String execute() {
+  public String FetchArticle() {
     try {
-      setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
+      setCommonData();
 
-      ArticleAnnotation anns[] = annotationService.listAnnotations(articleURI, null);
-      // Tally the total number of each type of correction.
-      for (ArticleAnnotation a : anns) {
-        if (a.getContext() == null) {
-          numDiscussions ++;
-        } else {
-          if (a instanceof MinorCorrection) {
-            numMinorCorrections++;
-          } else if (a instanceof FormalCorrection) {
-            numFormalCorrections++;
-          } else if (a instanceof Retraction) {
-            numRetractions++;
-          } else {
-            numComments++;
-          }
-        }
-      }
+      transformedArticle = fetchArticleService.getURIAsHTML(articleURI);
 
-      Article artInfo = articleOtmService.getArticle(URI.create(articleURI));
-
-      setArticleInfo(artInfo);
-
-      articleType = ArticleType.getDefaultArticleType();
-      for (URI artTypeUri : artInfo.getArticleType()) {
-        if (ArticleType.getKnownArticleTypeForURI(artTypeUri)!= null) {
-          articleType = ArticleType.getKnownArticleTypeForURI(artTypeUri);
-          break;
-        }
-      }
-
-      // get the alternate ArticleInfo, e.g. contains RelatedArticles
-      articleInfoX = browseService.getArticleInfo(URI.create(articleURI));
-
-      journalList  = journalService.getJournalsForObject(URI.create(articleURI));
     } catch (NoSuchArticleIdException e) {
       messages.add("No article found for id: " + articleURI);
       log.info("Could not find article: " + articleURI, e);
@@ -131,39 +131,145 @@ public class FetchArticleAction extends BaseActionSupport {
   }
 
   /**
-   * A struts Action method used to display the annotated article. 
-   * The transformedArticle field is populated with the annotated articleURI content. 
-   * 
-   * @return Annotated Article XML String
+   * Fetch common data and annotations
+   * @return "success" on succes, "error" on error
    */
   @Transactional(readOnly = true)
-  public String displayAnnotatedArticle() {
+  public String FetchArticleComments() {
     try {
-      setTransformedArticle(fetchArticleService.getAnnotatedContent(articleURI));
+      setCommonData();
+      setAnnotations(annotationService.COMMENT_SET);
+
+    } catch (NoSuchArticleIdException e) {
+      messages.add("No article found for id: " + articleURI);
+      log.info("Could not find article: " + articleURI, e);
+      return ERROR;
     } catch (Exception e) {
-      log.error ("Could not get annotated article:" + articleURI, e);
+      messages.add(e.getMessage());
+      log.error("Error retrieving article: " + articleURI, e);
       return ERROR;
     }
     return SUCCESS;
   }
 
   /**
-   * @return transformed output
+   * Fetch common data and article corrections
+   * @return "success" on succes, "error" on error
    */
-  public String getTransformedArticle() {
-    return transformedArticle;
+  @Transactional(readOnly = true)
+  public String FetchArticleCorrections() {
+    try {
+      setCommonData();
+      setAnnotations(annotationService.CORRECTION_SET);
+
+    } catch (NoSuchArticleIdException e) {
+      messages.add("No article found for id: " + articleURI);
+      log.info("Could not find article: " + articleURI, e);
+      return ERROR;
+    } catch (Exception e) {
+      messages.add(e.getMessage());
+      log.error("Error retrieving article: " + articleURI, e);
+      return ERROR;
+    }
+    return SUCCESS;
   }
 
-  private void setTransformedArticle(final String transformedArticle) {
-    this.transformedArticle = transformedArticle;
+  /**
+   * Fetches common data and nothing else
+   * @return "success" on succes, "error" on error
+   */
+  @Transactional(readOnly = true)
+  public String FetchArticleRelated() {
+    try {
+      setCommonData();
+
+    } catch (NoSuchArticleIdException e) {
+      messages.add("No article found for id: " + articleURI);
+      log.info("Could not find article: " + articleURI, e);
+      return ERROR;
+    } catch (Exception e) {
+      messages.add(e.getMessage());
+      log.error("Error retrieving article: " + articleURI, e);
+      return ERROR;
+    }
+    return SUCCESS;
   }
 
-  /** Set the fetch article service
-   * @param fetchArticleService fetchArticleService
+  /**
+   * Sets up data used by the right hand column in the freemarker templates
+   *
+   * @throws ApplicationException when there is an error talking to the OTM
+   * @throws NoSuchArticleIdException when the article can not be found
    */
-  @Required
-  public void setFetchArticleService(final FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
+  private void setCommonData() throws ApplicationException, NoSuchArticleIdException {
+    articleInfoX = browseService.getArticleInfo(URI.create(articleURI));
+    averageRatings = ratingsService.getAverageRatings(articleURI);
+    journalList  = journalService.getJournalsForObject(URI.create(articleURI));
+    isResearchArticle = articleOtmService.isResearchArticle(articleURI);
+    hasRated = ratingsService.hasRated(articleURI, getCurrentUser());
+
+    ArticleAnnotation anns[] = annotationService.listAnnotations(articleURI, null);
+
+    //Tally the total number of each type of correction
+    for (ArticleAnnotation a : anns) {
+      if (a.getContext() == null) {
+        numDiscussions++;
+      } else {
+        if (a instanceof MinorCorrection) {
+          numMinorCorrections++;
+        } else if (a instanceof FormalCorrection) {
+          numFormalCorrections++;
+        } else if (a instanceof Retraction) {
+ 	        numRetractions++;
+        } else {
+          numComments++;
+        }
+      }
+    }
+
+    Article artInfo = articleOtmService.getArticle(URI.create(articleURI));
+    artInfo.getCategories();
+
+    this.articleInfo = artInfo;
+
+    articleType = ArticleType.getDefaultArticleType();
+    for (URI artTypeUri : artInfo.getArticleType()) {
+      if (ArticleType.getKnownArticleTypeForURI(artTypeUri)!= null) {
+        articleType = ArticleType.getKnownArticleTypeForURI(artTypeUri);
+        break;
+      }
+    }
+  }
+
+  /**
+   * Grabs annotations from the service tier
+   * @param annotationTypeClasses The type of annotation to grab.
+   */
+  private void setAnnotations(Set<Class<? extends ArticleAnnotation>> annotationTypeClasses) {
+    WebAnnotation[] annotations =
+        annotationConverter.convert(annotationService.listAnnotations(articleURI, annotationTypeClasses), true, false);
+
+    commentary = new Commentary[annotations.length];
+    Commentary com;
+
+    if (annotations.length > 0) {
+      for (int i = 0; i < annotations.length; i++) {
+        com = new Commentary();
+        com.setAnnotation(annotations[i]);
+
+        try {
+          annotationConverter.convert(replyService.listAllReplies(annotations[i].getId(),
+                                                        annotations[i].getId()), com, false,
+                                                         false);
+        } catch (SecurityException t) {
+          // don't error if you can't list the replies
+          com.setNumReplies(0);
+          com.setReplies(null);
+        }
+        commentary[i] = com;
+      }
+      Arrays.sort(commentary, new Commentary.Sorter());
+    }
   }
 
   /** Set the fetch article service
@@ -173,6 +279,59 @@ public class FetchArticleAction extends BaseActionSupport {
   public void setArticleOtmService(ArticleOtmService articleOtmService) {
     this.articleOtmService = articleOtmService;
   }
+
+    /** Set the fetch article service
+   * @param fetchArticleService fetchArticleService
+   */
+  @Required
+  public void setFetchArticleService(final FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
+  }
+
+  /**
+   * @param browseService The browseService to set.
+   */
+  @Required
+  public void setBrowseService(BrowseService browseService) {
+    this.browseService = browseService;
+  }
+
+  @Required
+  public void setReplyService(final ReplyService replyService) {
+    this.replyService = replyService;
+  }
+
+  @Required
+  public void setAnnotationConverter(AnnotationConverter annotationConverter) {
+    this.annotationConverter = annotationConverter;
+  }
+
+  /**
+   * Set the ratings service.
+   *
+   * @param ratingsService the ratings service
+   */
+  @Required
+  public void setRatingsService(final RatingsService ratingsService) {
+    this.ratingsService = ratingsService;
+  }
+
+  /**
+   * @param annotationService The annotationService to set.
+   */
+  @Required
+  public void setAnnotationService(AnnotationService annotationService) {
+    this.annotationService = annotationService;
+  }
+
+  /**
+   * @param journalService The journalService to set.
+   */
+  @Required
+  public void setJournalService(JournalService journalService) {
+    this.journalService = journalService;
+  }
+
 
   /**
    * @return articleURI
@@ -190,8 +349,26 @@ public class FetchArticleAction extends BaseActionSupport {
     this.articleURI = articleURI;
   }
 
-  public ArrayList<String> getMessages() {
-    return messages;
+  /**
+   * @return transformed output
+   */
+  public String getTransformedArticle() {
+    return transformedArticle;
+  }
+
+  /**
+   * Return the ArticleInfo from the Browse cache.
+   *
+   * TODO: convert all usages of "articleInfo" (ObjectInfo) to use the Browse cache version of
+   * ArticleInfo.  Note that for all templates to use ArticleInfo, it will have to
+   * be enhanced.  articleInfo & articleInfoX are both present, for now, to support:
+   *   - existing templates/services w/o a large conversion
+   *   - access to RelatedArticles
+   *
+   * @return Returns the articleInfoX.
+   */
+  public ArticleInfo getArticleInfoX() {
+    return articleInfoX;
   }
 
   /**
@@ -209,17 +386,75 @@ public class FetchArticleAction extends BaseActionSupport {
   }
 
   /**
-   * @return Returns the annotationService.
+   * Get the article object
+   * @return Returns article.
    */
-  public AnnotationService getAnnotationService() {
-    return annotationService;
+  public Article getArticleInfo() {
+    return articleInfo;
   }
 
   /**
-   * @param annotationService The annotationService to set.
+   * Gets the article Type
+   * @return Returns articleType
    */
-  public void setAnnotationService(AnnotationService annotationService) {
-    this.annotationService = annotationService;
+  public ArticleType getArticleType() {
+    return articleType;
+  }
+
+  public ArrayList<String> getMessages() {
+    return messages;
+  }
+
+  /**
+   * @return Returns the journalList.
+   */
+  public Set<Journal> getJournalList() {
+    return journalList;
+  }
+
+  /**
+   * Tests if this article has been rated by the current user
+   *
+   * @return Returns the hasRated.
+   */
+  public boolean getHasRated() {
+    return hasRated;
+  }
+
+  /**
+   * @return the isResearchArticle
+   */
+  public boolean getIsResearchArticle() {
+    return isResearchArticle;
+  }
+
+  /*
+  * Gets averageRatings info
+  *
+  * @return returns averageRatings info
+  * */
+  public RatingsService.AverageRatings getAverageRatings()
+  {
+    return averageRatings;
+  }
+
+  /**
+   * Get the total number of user comments
+   * @return total number of user comments
+   */
+  public int getTotalComments()
+  {
+    return numDiscussions + numComments + numMinorCorrections + numFormalCorrections + numRetractions;
+  }
+
+  /**
+   * Zero if this Article has not been retracted.  One if this Article has been retracted.
+   * Having multiple Retractions for a single Article does not make sense.
+   *
+   * @return Returns the number of Retractions that have been associated to this Article.
+   */ 
+  public int getNumRetractions() {
+    return numRetractions;
   }
 
   /**
@@ -251,91 +486,9 @@ public class FetchArticleAction extends BaseActionSupport {
   }
 
   /**
-   * Zero if this Article has not been retracted.  One if this Article has been retracted.
-   * Having multiple Retractions for a single Article does not make sense.
-   *
-   * @return Returns the number of Retractions that have been associated to this Article.
+   * @return The commentary array
    */
-  public int getNumRetractions() {
-    return numRetractions;
-  }
-
-  /**
-   * @return Returns the calculated number of notes.
-   */
-  public int getNumNotes() {
-    return numComments + numMinorCorrections + numFormalCorrections + numRetractions;
-  }
-
-  /**
-   * @return Returns the total number of corrections.
-   */
-  public int getNumCorrections() {
-    return numMinorCorrections + numFormalCorrections + numRetractions;
-  }
-
-  /**
-   * Return the ArticleInfo from the Browse cache.
-   *
-   * TODO: convert all usages of "articleInfo" (ObjectInfo) to use the Browse cache version of
-   * ArticleInfo.  Note that for all templates to use ArticleInfo, it will have to
-   * be enhanced.  articleInfo & articleInfoX are both present, for now, to support:
-   *   - existing templates/services w/o a large conversion
-   *   - access to RelatedArticles
-   *
-   * @return Returns the articleInfoX.
-   */
-  public ArticleInfo getArticleInfoX() {
-    return articleInfoX;
-  }
-
-  /**
-   * @return Returns the articleInfo.
-   */
-  public Article getArticleInfo() {
-    return articleInfo;
-  }
-
-  /**
-   * The article type displayed by article_content.ftl as per #693
-   *
-   * @return the article type heading
-   */
-  public String getArticleTypeHeading() {
-    return articleTypeHeading;
-  }
-
-  /**
-   * @param articleInfo The articleInfo to set.
-   */
-  private void setArticleInfo(Article articleInfo) {
-    this.articleInfo = articleInfo;
-  }
-
-  /**
-   * @param journalService The journalService to set.
-   */
-  @Required
-  public void setJournalService(JournalService journalService) {
-    this.journalService = journalService;
-  }
-
-  /**
-   * @return Returns the journalList.
-   */
-  public Set<Journal> getJournalList() {
-    return journalList;
-  }
-
-  /**
-   * @param browseService The browseService to set.
-   */
-  @Required
-  public void setBrowseService(BrowseService browseService) {
-    this.browseService = browseService;
-  }
-
-  public ArticleType getArticleType() {
-    return articleType;
+  public Commentary[] getCommentary() {
+    return commentary;
   }
 }

@@ -1,7 +1,7 @@
 /*$HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,6 +34,8 @@ import org.topazproject.ambra.models.RatingSummary;
 import org.topazproject.ambra.models.RatingSummaryContent;
 import org.topazproject.ambra.models.UserAccount;
 import org.topazproject.ambra.rating.service.RatingsPEP;
+import org.topazproject.ambra.rating.service.RatingsService;
+import org.topazproject.ambra.rating.service.RatingsService.AverageRatings;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
@@ -48,18 +50,19 @@ import com.sun.xacml.PDP;
 @SuppressWarnings("serial")
 public class GetArticleRatingsAction extends AbstractRatingAction {
   protected static final Log log = LogFactory.getLog(GetArticleRatingsAction.class);
+  private RatingsService ratingsService;
 
-  private Session                          session;
-  private String                           articleURI;
-  private String                           articleTitle;
-  private String                           articleDescription;
-  private boolean                          isResearchArticle;
-  private boolean                          hasRated = false;
+  private Session session;
+  private String articleURI;
+  private String  articleTitle;
+  private String articleDescription;
+  private boolean isResearchArticle;
+  private AverageRatings averageRatings;
   private final List<ArticleRatingSummary> articleRatingSummaries =
                                              new ArrayList<ArticleRatingSummary>();
-  private double                           articleOverall = 0;
-  private double                           articleSingleRating = 0;
-  private RatingsPEP                       pep;
+  private double articleOverall = 0;
+  private double articleSingleRating = 0;
+  private RatingsPEP pep;
 
   private RatingsPEP getPEP() {
     return pep;
@@ -88,8 +91,9 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
 
     articleTitle = article.getDublinCore().getTitle();
     articleDescription = article.getDublinCore().getDescription();
+    averageRatings = ratingsService.getAverageRatings(articleURI);
 
-    isResearchArticle = isResearchArticle(articleURI);
+    isResearchArticle = articleOtmService.isResearchArticle(articleURI);
 
     // assume if valid RatingsPEP.GET_RATINGS, OK to GET_STATS
     // RatingSummary for this Article
@@ -116,8 +120,7 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
 
     // create ArticleRatingSummary(s)
     for (Rating rating : articleRatings) {
-      ArticleRatingSummary summary = new ArticleRatingSummary(
-          getArticleURI(), getArticleTitle());
+      ArticleRatingSummary summary = new ArticleRatingSummary(getArticleURI(), getArticleTitle());
       summary.setRating(rating);
       summary.setCreated(rating.getCreated());
       summary.setArticleURI(getArticleURI());
@@ -133,10 +136,6 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
                   " for Rating " + rating.getId());
       }
       articleRatingSummaries.add(summary);
-    }
-
-    if(articleRatingSummaries.size() > 0) {
-      hasRated = true;
     }
 
     if(log.isDebugEnabled()) {
@@ -238,6 +237,16 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
   }
 
   /**
+   * Set the ratings service.
+   *
+   * @param ratingsService the ratings service
+   */
+  @Required
+  public void setRatingsService(final RatingsService ratingsService) {
+    this.ratingsService = ratingsService;
+  }
+
+  /**
    * Set the OTM session. Called by spring's bean wiring.
    *
    * @param session The otm session to set.
@@ -248,29 +257,29 @@ public class GetArticleRatingsAction extends AbstractRatingAction {
   }
 
   /**
-   * Tests if this article has been rated.
-   *
-   * @return Returns the hasRated.
-   */
-  public boolean isHasRated() {
-    return hasRated;
-  }
-
-  /**
-   * Sets a flag to indicate that an article has been rated.
-   *
-   * @param hasRated The hasRated to set.
-   */
-  public void setHasRated(boolean hasRated) {
-    this.hasRated = hasRated;
-  }
-
-  /**
    * Gets all ratings for the Article.
    *
    * @return Returns Ratings for the Article.
    */
   public Collection<ArticleRatingSummary> getArticleRatingSummaries() {
     return articleRatingSummaries;
+  }
+
+  /*
+  * Gets averageRatings info
+  *
+  * @return returns averageRatings info
+  */
+  public RatingsService.AverageRatings getAverageRatings() {
+    return averageRatings;
+  }
+
+ /**
+  * Has this article been rated?
+  *
+  * @return true if the article has been rated
+  */
+  public boolean getHasRated() {
+    return (articleRatingSummaries.size() > 0);
   }
 }

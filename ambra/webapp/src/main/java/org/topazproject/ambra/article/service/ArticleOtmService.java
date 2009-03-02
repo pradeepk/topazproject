@@ -26,6 +26,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.Iterator;
 
 import javax.activation.DataSource;
 
@@ -37,12 +39,24 @@ import org.apache.commons.configuration.Configuration;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.cache.Cache;
+import org.topazproject.ambra.rating.action.ArticleRatingSummary;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Representation;
+import org.topazproject.ambra.models.RatingSummary;
+import org.topazproject.ambra.models.Rating;
+import org.topazproject.ambra.models.UserAccount;
+import org.topazproject.ambra.models.Trackback;
+import org.topazproject.ambra.models.Category;
+import org.topazproject.ambra.model.article.ArticleType;
 import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Query;
+import org.topazproject.otm.OtmException;
+import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.query.Results;
 
 import com.sun.xacml.PDP;
@@ -52,6 +66,7 @@ import com.sun.xacml.PDP;
  */
 public class ArticleOtmService {
   private static final Log log = LogFactory.getLog(ArticleOtmService.class);
+  private static final String TRACK_BACKS_KEY = "Trackbacks-";
 
   private String smallImageRep;
   private String largeImageRep;
@@ -60,6 +75,7 @@ public class ArticleOtmService {
   private ArticlePEP pep;
   private Session session;
   private PermissionsService permissionsService;
+  private Cache articleAnnotationCache;
   private Configuration configuration;
 
   public ArticleOtmService() {
@@ -393,10 +409,11 @@ public class ArticleOtmService {
    *
    * @param articleIds  list of article id's
    * @return <code>List&lt;Article&gt;</code> of articles requested
-   * @throws ParseException
+   * @throws ParseException  when article ids are invalid
+   * @throws OtmException when session.get fails.
    */
   @Transactional(readOnly = true)
-  public List<Article> getArticles(List<String> articleIds) throws ParseException {
+  public List<Article> getArticles(List<String> articleIds) throws OtmException,ParseException {
     List<Article> articleList = new ArrayList<Article>();
     for (String id : articleIds)
       articleList.add(session.get(Article.class, id));
@@ -467,6 +484,32 @@ public class ArticleOtmService {
   }
 
   /**
+   * Determines if the articleURI is of type researchArticle
+   * @param articleURI The URI of the article
+   * @return True if the article is a research article
+   * @throws ApplicationException if there was a problem talking to the OTM
+   * @throws NoSuchArticleIdException When the article does not exist
+   */
+  public boolean isResearchArticle(String articleURI)
+    throws ApplicationException, NoSuchArticleIdException {
+    // resolve article type and supported properties
+    Article artInfo = getArticle(URI.create(articleURI));
+    ArticleType articleType = ArticleType.getDefaultArticleType();
+
+    for (URI artTypeUri : artInfo.getArticleType()) {
+      if (ArticleType.getKnownArticleTypeForURI(artTypeUri) != null) {
+        articleType = ArticleType.getKnownArticleTypeForURI(artTypeUri);
+        break;
+      }
+    }
+
+    if (articleType == null) {
+      throw new ApplicationException("Unable to resolve article type for: " + articleURI);
+    }
+    return ArticleType.isResearchArticle(articleType);
+  }  
+
+  /**
    * Get the most commented Articles.  The actual # of Articles returned maybe &lt; maxArticles as
    * PEP filtering is done on the results.
    *
@@ -510,6 +553,107 @@ public class ArticleOtmService {
     }
 
     return returnArticles.toArray(new Article[returnArticles.size()]);
+  }
+
+  /**
+   * Get rating summaries for the passed in articleURI 
+   *
+   * @param articleURI articleURI to get rating summaries for
+   * @return List<RatingSummary> of rating Summaries
+   */
+  @Transactional(readOnly = true)
+  public List<RatingSummary> getRatingSummaries(URI articleURI) {
+    /* assume if valid RatingsPEP.GET_RATINGS, OK to GET_STATS
+     * RatingSummary for this Article
+     */
+    return session.createCriteria(RatingSummary.class).add(
+        Restrictions.eq("annotates", articleURI)).list();
+  }
+
+  /**
+   * Get article rating summaries for the passed in articleURI
+   *
+   * @param articleURI articleURI to get rating summaries for
+   * @return List<ArticleRatingSummary> of rating Summaries
+   */
+  @Transactional(readOnly = true)
+  public List<ArticleRatingSummary> getArticleRatingSummaries(URI articleURI)
+  {
+    List<ArticleRatingSummary> articleRatingSummaries = new ArrayList<ArticleRatingSummary>();
+
+    List<Rating> articleRatings = session.createCriteria(Rating.class).add(
+        Restrictions.eq("annotates", articleURI)).addOrder(new Order("created", true)).list();
+
+    // create ArticleRatingSummary(s)
+    for (Rating rating : articleRatings) {
+      ArticleRatingSummary summary = new ArticleRatingSummary(articleURI.toString(), null);
+      summary.setRating(rating);
+      summary.setCreated(rating.getCreated());
+      summary.setArticleURI(articleURI.toString());
+      summary.setCreatorURI(rating.getCreator());
+
+      // get public 'name' for user
+      UserAccount ua = session.get(UserAccount.class, rating.getCreator());
+      if (ua != null) {
+        summary.setCreatorName(ua.getProfile().getDisplayName());
+      } else {
+        summary.setCreatorName("Unknown");
+        log.error("Unable to look up UserAccount for " + rating.getCreator() +
+                  " for Rating " + rating.getId());
+      }
+      articleRatingSummaries.add(summary);
+    }
+
+    return articleRatingSummaries;
+  }
+
+  /**
+   * Get track backs for a given trackbackId
+   *
+   * @param trackbackId
+   * @return List<Trackback> List of track backs
+   */
+  @Transactional(readOnly = true)
+  public List<Trackback> getTrackbacks(String trackbackId) {
+    final String fTrackbackId = trackbackId;
+    
+    List<String> ids = articleAnnotationCache.get(TRACK_BACKS_KEY  + trackbackId, -1,
+            new Cache.SynchronizedLookup<List<String>, OtmException>(trackbackId.intern()) {
+              public List<String> lookup() throws OtmException {
+                return getIds(fTrackbackId);
+              }
+            });
+
+    List<Trackback> trackbackList = new ArrayList<Trackback>(ids.size());
+
+    for (String id : ids) {
+      Trackback t = session.get(Trackback.class, id);
+      trackbackList.add(t);
+
+      t.getBlog_name(); // for lazy load
+    }
+
+    return trackbackList;
+  }
+
+  /**
+   * Return a list of track backs for a particular track back ID
+   * @param trackbackId The Trackback ID
+   * @return a list of IDs for track back records
+   * @throws OtmException When there is an error talking to the OTM
+   */
+  private List<String> getIds(String trackbackId) throws OtmException {
+    if (log.isDebugEnabled())
+      log.debug("retrieving trackbacks for: " + trackbackId);
+
+    List<String> ids = new ArrayList<String>();
+    Results r = session.createQuery("select t.id, t.created created from Trackback t where "
+       + "t.annotates = :id order by created desc;").setParameter("id", trackbackId).execute();
+
+    while (r.next())
+      ids.add(r.getString(0));
+
+    return ids;
   }
 
   private SecondaryObject convert(final ObjectInfo objectInfo) {
@@ -576,6 +720,14 @@ public class ArticleOtmService {
     this.configuration = configuration;
   }
 
+  /**
+   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
+   *   to use.
+   */
+  @Required
+  public void setArticleAnnotationCache(Cache articleAnnotationCache) {
+    this.articleAnnotationCache = articleAnnotationCache;
+  }
 
   private static class ByteArrayDataSource implements DataSource {
     private final Representation rep;

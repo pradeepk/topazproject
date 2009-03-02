@@ -72,7 +72,7 @@
         <li>
           <span class="date">Published ${art.date?string("dd MMM yyyy")}</span>
           <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${art.id}" includeParams="none"/>
-          <span class="article"><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${art.title}</@s.a></span>
+          <span class="article"><@s.a href="%{fetchArticleURL}" title="Read Open Access Article"><@articleFormat>${art.title}</@articleFormat></@s.a></span>
           <span class="authors">
             <#list art.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list>
           </span>

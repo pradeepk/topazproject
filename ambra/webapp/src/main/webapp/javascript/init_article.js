@@ -21,17 +21,6 @@
 // the "loading..." widget
 var _ldc;
 
-// rating related globals
-var ratingConfig =  {
-  insight:  "rateInsight",
-  reliability: "ratingReliability",
-  style: "rateStyle"
-};
-var _ratingDlg;
-var _ratingsForm;
-var _ratingTitle;
-var _ratingComments;
-
 // annotation related globals
 var annotationConfig = {
   articleContainer: "articleContainer",
@@ -103,8 +92,6 @@ var _commentMultiDlg;
 
 var _titleCue          = 'Enter your note title...';
 var _commentCue        = 'Enter your note...';
-var _ratingTitleCue    = 'Enter your comment title...';
-var _ratingCommentCue   = 'Enter your comment...';
 
 var elLocation;
 
@@ -177,18 +164,14 @@ function jumpToAnnotation(annotationId) {
 
 function toggleExpand(obj, isOpen, textOn, textOff) {
   if (isOpen == false) {
-    obj.className = obj.className.replace(/collapse/, "expand");
-    if (textOn) dojox.data.dom.textContent(obj, textOn);
+    if (textOn) { dojox.data.dom.textContent(obj, textOn); }
   }
-  else if (obj.className.match('collapse')) {
-    obj.className = obj.className.replace(/collapse/, "expand");
-    if (textOn) dojox.data.dom.textContent(obj, textOn);
+  else if (obj.innerHTML == textOff) {
+    if (textOn) { dojox.data.dom.textContent(obj, textOn); }
   }
   else {
-    obj.className = obj.className.replace(/expand/, "collapse");
-    if (textOff) dojox.data.dom.textContent(obj, textOff);
+    if (textOff) { dojox.data.dom.textContent(obj, textOff); }
   }
-  
 }
 
 function showAnnotationDialog() {
@@ -302,6 +285,9 @@ function getArticle() {
       ambra.corrections.apply();
       document.articleInfo.annotationId.value = ''; // reset
       _ldc.hide();
+      
+      //Rebind the text selection event
+      ambra.displayAnnotationContext.init("researchArticle");
     }
   });
 }
@@ -341,82 +327,6 @@ function createAnnotationOnMouseDown() {
   return false;
 }
 
-dojo.addOnLoad(function() {
-  // int loading "throbber"
-  _ldc = dijit.byId("LoadingCycle");
-  
-  // ---------------------
-  // rating dialog related
-  // ---------------------
-  _ratingsForm = document.ratingForm;
-  _ratingTitle = _ratingsForm.cTitle;
-  _ratingComments = _ratingsForm.cArea;
-  _ratingDlg = dijit.byId("Rating");
-  //_ratingDlg.setCloseControl(dojo.byId('btn_cancel_rating'));
-  
-  dojo.connect(_ratingTitle, "onfocus", function () { 
-    ambra.formUtil.textCues.off(_ratingTitle, _ratingTitleCue); 
-  });
-  
-  dojo.connect(_ratingTitle, "onchange", function () {
-    var fldTitle = _ratingsForm.commentTitle;
-    if(_ratingsForm.cTitle.value != "" && _ratingsForm.cTitle.value != _ratingTitleCue) {
-      fldTitle.value = _ratingsForm.cTitle.value;
-    }
-    else {
-      fldTitle.value = "";
-    }
-  });
-
-  dojo.connect(_ratingTitle, "onblur", function () { 
-    var fldTitle = _ratingsForm.commentTitle;
-    if(_ratingsForm.cTitle.value != "" && _ratingsForm.cTitle.value != _ratingTitleCue) {
-      fldTitle.value = _ratingsForm.cTitle.value;
-    }
-    else {
-      fldTitle.value = "";
-    }
-    ambra.formUtil.textCues.on(_ratingTitle, _ratingTitleCue); 
-  });
-  
-  dojo.connect(_ratingComments, "onfocus", function () {
-    ambra.formUtil.textCues.off(_ratingComments, _ratingCommentCue);
-  });
-
-  dojo.connect(_ratingComments, "onchange", function () {
-    var fldTitle = _ratingsForm.comment;
-    if(_ratingsForm.cArea.value != "" && _ratingsForm.cArea.value != _ratingCommentCue) {
-      fldTitle.value = _ratingsForm.cArea.value;
-    }
-    else {
-      fldTitle.value = "";
-    }
-  });
-  
-  dojo.connect(_ratingComments, "onblur", function () {
-    var fldTitle = _ratingsForm.comment;
-    if(_ratingsForm.cArea.value != "" && _ratingsForm.cArea.value != _ratingCommentCue) {
-      fldTitle.value = _ratingsForm.cArea.value;
-    }
-    else {
-      fldTitle.value = "";
-    }
-    ambra.formUtil.textCues.on(_ratingComments, _ratingCommentCue); 
-    //ambra.formUtil.checkFieldStrLength(_ratingComments, 500);
-  });
-  
-  dojo.connect(dojo.byId("btn_post_rating"), "onclick", function(e) {
-    updateRating();
-    e.preventDefault();
-    return false;
-  });
-
-  dojo.connect(dojo.byId("btn_cancel_rating"), "onclick", function(e) {
-    ambra.rating.hide();
-    e.preventDefault();
-    return false;
-  });
-  
   // --------------------------------
   // annotation (note) dialog related
   // --------------------------------
@@ -497,6 +407,10 @@ dojo.addOnLoad(function() {
     e.preventDefault();
   });
   */
+
+dojo.addOnLoad(function() {
+  // int loading "throbber"
+  _ldc = dijit.byId("LoadingCycle");
   
   dojo.connect(dojo.byId("btn_post"), "click", function(e) {
     validateNewComment();
@@ -518,6 +432,10 @@ dojo.addOnLoad(function() {
       ambra.annotation.undoPendingAnnotation();
     }
     e.preventDefault();
+
+    //Reinit the contextMenu as the regional dialog disables it
+    ambra.displayAnnotationContext.init("researchArticle");
+
     return false;
   });
 
@@ -565,7 +483,8 @@ dojo.addOnLoad(function() {
   ambra.displayComment.init();
   ambra.displayComment.processBugCount();
   ambra.corrections.apply();
-
+  ambra.displayAnnotationContext.init("researchArticle");
+  
   // jump to annotation?
   jumpToAnnotation(document.articleInfo.annotationId.value);
 

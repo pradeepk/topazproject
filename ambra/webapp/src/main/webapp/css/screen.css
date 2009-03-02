@@ -81,6 +81,8 @@ textarea	{ font-family: Verdana, Arial, Helvetica, sans-serif; color: #555; font
 */
 .noshow { display:block; height:0px; line-height:0em; } /* can be applied to elements that need to be present in the flow but not impact vertical spacing, e.g. in-page anchors */
 .clearer  { clear:both; line-height:0; height:0; display:none; }
+.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix { zoom:1; } /*zoom allows self-clearing floats to work in IE*/
 
 /* Global : Icons and Links
 ----------------------------------------------------------
@@ -109,7 +111,6 @@ a.tooltip	/* use for any functional icon for on page actions */
 #user a.icon		{ padding: 0 16px 0 0; background-repeat: no-repeat; background-position: 100% -14px; padding-top: 1px; padding-bottom: 1px;}
 
 a.rating      { padding: 0 0 2px 5px; border: none; background: transparent; }
-h6 a.rating { font-size: .9em; }
 
 /* portions of this icon set have been adapted Mark Jame's Silk icon set available under a Creative Commons Attribution 2.5 license at http://www.famfamfam.com/lab/icons/silk/ */
 a.new			{ padding: 6px; }
@@ -193,7 +194,7 @@ div.pane div.post a:hover	{ background-color: #393; }
 */
 #container 			{ position: relative; }
 #container, #hdr	{ margin: 0 auto; min-width: 675px; max-width: 930px; }
-#content 			{ margin: 50px 4px 50px 22px; line-height: 1.8em; font-size: .9em; }
+#content 			{ margin: 30px 4px 50px 22px; line-height: 1.8em; font-size: .9em; }
 
 /* Horizontal Advertising Banners : Top & Bottom Slots
 
@@ -328,7 +329,22 @@ div.powered a:hover { text-decoration:none; }
 /* Research Article : Elements
 ----------------------------------------------------------=
 */
-div#rhc			{ float: right; width: 240px; position: relative; }
+
+/*TEMP STYLE: suppresses 2nd instance of research article title on the article page*/
+div#articleMenu + h1 { display:none; }
+
+/* article page tabs */
+div.horizontalTabs	{ position:relative; border:0; margin-top:15px; padding:0; background:transparent; width:100%; }
+div.horizontalTabs:after  { content:"."; display: block; height:0; clear:left; visibility:hidden; }
+/*div#articleContainer div#researchArticle*/ ul#tabsContainer  { float:left;  margin:0!important; padding:0 0 0 10px!important; /* "!important" required for IE7 */ line-height:normal; background:transparent url("../images/tab_bg.gif") repeat-x bottom; width:640px; }
+ul#tabsContainer ul { margin:0; padding:10px 10px 0; }
+ul#tabsContainer li		{ cursor:pointer; float:left; background:url("../images/tab_left.gif") no-repeat 0% 0%; margin:0 2px; padding:0 0 0 8px; list-style:none; font-size:.9em; font-weight:bold; color:#666; }
+ul#tabsContainer li a { display:block; float:left; background:url("../images/tab_right.gif") no-repeat 100% 0%;  padding:8px 16px 8px 8px!important; /* "!important" required for IE7 */ color:#666; text-decoration:none; }
+ul#tabsContainer li a:hover { color:#f60 }
+ul#tabsContainer li.active { background-position:0% -40px; }
+ul#tabsContainer li.active a { background-position:100% -40px; padding-bottom: 9px!important; }
+
+div#rhc			{ float: right; width: 240px; position: relative; margin-top:8px; }
 div.browse div#rhc { padding:0; }
 div.content 	{ margin-right: 255px; }
 
@@ -407,14 +423,17 @@ div.content div.box h4 { margin:0; }
 span.genus-species { font-style:italic; }
 
 /* Menu next to article title containing download links, print link, etc. */
-div#articleMenu { float:right; width:165px!important; margin:10px 0 20px 10px; padding:0 0 12px 10px; background:#fff; }
-div#articleMenu ul { list-style-type:none; margin:0 15px 0 0; padding:0; background:none; position:static!important; } /* position:static fixes display issues in IE6 */
-div#articleMenu ul li { border-bottom: 1px solid #ccc; margin:0; padding:1px 0; font-size:.85em; background:none; }
-div#articleMenu ul li a:link,
-div#articleMenu ul li a:visited { background-color:transparent; background-position:5% 50%; background-repeat:no-repeat; padding:2px 0 2px 25px; color:#666; text-decoration:none; }
-div#articleMenu ul li a:hover { text-decoration:underline; color:#f60; }
+div.content div#articleMenu { float:right; width:200px; margin:18px 0 0 15px; padding-bottom:15px; background:#fcd3b8 url(../images/articleMenu_btm.gif) no-repeat bottom left; font-size:0.9em; zoom:1; }
+div.content div#articleMenu div.wrap { background:#fcd3b8 url(../images/articleMenu_top.gif) no-repeat top left; margin-bottom:8px; padding-top:8px; zoom:1; }
+div.content div#articleMenu p { margin-bottom:0; padding:0 8px 0 23px; }
+div.content div#articleMenu ul { margin:0; padding:0 8px 0 23px; position:static!important; } /* position:static fixes display issues in IE6 */
+div.content div#articleMenu ul li { background-image:none; padding:2px 0; line-height:1.5em; }
+div.content div#articleMenu ul li.annotation,
+div.content div#articleMenu ul li.discuss { background-position:0 2px; background-repeat:no-repeat; padding-left:18px; }
+div.content div#articleMenu ul li.annotation	{ background-image: url(../images/icon_annotation.gif); }
+div.content div#articleMenu ul li.discuss	{ background-image: url(../images/icon_discuss.gif); }
 
-/* Related articles at top of right column on article pages */
+/* Related articles in right column on article pages */
 div#sideNav dl.related { margin:0 0 20px 0; padding:9px 0 .5em 0; border-bottom:1px solid #999; background-color:#fff; }
 div#sideNav dl.related dt { font-size:1em; text-transform:uppercase; color:#303030; margin-bottom:.5em; }
 div#sideNav dl.related dt em { text-transform:none; font-style:normal }
@@ -423,24 +442,36 @@ div#sideNav dl.related dd a:link,
 div#sideNav dl.related dd a:visited { font-size:.95em; text-decoration:none; }
 div#sideNav dl.related dd a:hover { text-decoration:underline; }
 
-#rhc ul li a,
-#rhc ul li a:visited	{ display: block; font-size: .85em; padding: 0 5px; text-decoration: none; color: #333; }
-#rhc ul li a,
-#rhc ul li a:visited 	{ background-color: transparent; background-position: 5% 50%; background-repeat: no-repeat; padding:1px 0 2px 0; padding-left:30px; border-bottom: 1px solid #ccc; margin: 0 3px; }
-#rhc ul li a:hover		{ background-color: #ddd; color: #000;}
-#rhc ul li a.last		{ border-bottom-width: 0; }
-#rhc ol li a.commentary { background-image: none; display:block; margin-top:5px; padding: 2px 0 2px 0; font-weight: bold; }
-#rhc ol li a.corrections { display:inline; background-position:left 0%; }
-/* Valid use of child selector to hide these from IE6 which doubles bottom margin. Results in no bottom margin display for IE6 */ 
-div#rhc > div#sideNav > div#postcomment > div.commentview > ol > li > a.corrections,
-div#rhc > div#sideNav > div#postcommentfloat > div.commentview > ol > li > a.corrections/*for Safari*/ { display:block; margin-bottom:5px; background-position:left 0.2em; }
-/* temp styles for TOC floating nav - these should be removed when this menu is generated in the same way as the menu in articles */
-div.toc div#rhc div#sectionNavTop { position:static; width:240px; margin-top:8px; }
-div.toc div#rhc div#sectionNavTop ul li a,
-div.toc div#rhc div#sectionNavTop ul li a:visited { border-bottom:0; border-top:1px solid #ccc; }
-div.toc div#rhc div#sectionNavTop ul li a.first { border-top:0!important; }
+/* Right column on article pages */
+#rhc { font-size:0.9em; line-height:1.5em; }
+#rhc h6 { font-size:1em; }
+#rhc h6 a.info { display:inline-block; background:url(../images/button_info.png) no-repeat bottom left; text-indent:-9999px; height:15px; width:14px; }
+#rhc p { margin:3px 5px 5px 5px; }
+#rhc div.rhcBox_type1 { margin-bottom:18px; padding-bottom:8px; background:#fcd3b8 url(../images/rhcBox_btm.gif) no-repeat bottom left; zoom:1; }
+#rhc div.rhcBox_type1 div.wrap { background:#fcd3b8 url(../images/rhcBox_top.gif) no-repeat top left; padding-top:8px; }
+#rhc div.rhcBox_type2 { margin-bottom:8px; border:1px solid #bababa; }
+#rhc div.rhcBox_type2 h6 { margin:0; padding:1px 5px; color:#fff; background-color:#cc6600; }
+#rhc div.rhcBox_type2 div.more { text-align:right; margin:bottom:0; }
+#rhc div.rhcBox_type2 div.more a { display:block; float:right; background:transparent url(../images/rhcBox_more.gif) no-repeat top left; width:4em; text-decoration:none; font-weight:bold; line-height:2em; padding:0 5px 0 0; text-align:right; }
+#rhc div.rhcBox_type2 div.more > a { float:right; text-align:right; }  /* for non-IE6 browers */
 
-ul#dcCount1 { margin-bottom:5px; } /* increases spacing below note and comment counts to help block view/join discussion section */
+#rhc div#download ul,
+#rhc div#share ul  { margin:0 5px 0 8px; padding:0; }
+#rhc div#download ul li,
+#rhc div#share ul { background-image:none; padding:2px 0; line-height:1.8em; list-style-type:none; }
+#rhc div#download ul li.download,
+#rhc div#download ul li.print,
+#rhc div#share ul li.email,
+#rhc div#share ul li.twitter { background-position:0 3px; background-repeat:no-repeat; padding-left:21px; }
+#rhc div#download ul li.download	{ background-image: url(../images/icon_download.gif); }
+#rhc div#download ul li.print	{ background-image: url(../images/icon_print.gif); }
+#rhc div#share ul li.email { background-image: url(../images/icon_email.gif); }
+#rhc div#share ul li.twitter  { background-image: url(../images/icon_twitter.gif); }
+#rhc div#share div.bookmarklets { display:inline-block; }
+#rhc div#share li.bookmarklets { height:2em; margin-top:3px; }
+#rhc div#share li.bookmarklets div { display:inline-block; }
+#rhc div#share li.bookmarklets img,
+#rhc div#share li.bookmarklets iframe { margin-bottom:-0.3em; } /*iframe for digg.com bookmarklet*/
 
 /* correction article type styles */
 div.correction span#oa { /* open access image */ background: #3D3D3D url(../images/correction_oa.gif) no-repeat 0 0; }
@@ -456,6 +487,7 @@ div.fch p.fch em { font-weight:bold; font-style:normal; }
 div.fch { margin: 15px 0; padding:0; border: 1px solid #ff0000; background-color: #fff4f0; }
 div.fch p.fch,
 div.corrections td.title a,
+a.corrections,
 div#discussionContainer div.corrections div.original div.hd h3 { background:url(../images/icon_correction.gif) left 0% no-repeat; }
 div.fch p.fch { margin:8px 8px 0; text-indent:20px; }
 div.fch ol { margin:0 8px 8px; }
@@ -464,58 +496,20 @@ div.fch ol li p { margin:0; padding:0; display:inline; font-weight:normal; }
 div.fch ol li p a:link { font-weight:normal; color:#069; }
 div.fch ol li p a:visited { font-weight:normal; color:#004e9c; }
 
-
-/* rhc rounded containers : top */
-div.links,
-div.tools				{ background-position: bottom; background-repeat: no-repeat; padding: 0 0 8px 0; margin: 0 0 6px 0; }
-div.links				{ background-image: url(../images/sidenav_bg.gif); position: relative;}
-div.tools				{ background-image: url(../images/tools_bg.gif);}
-
-
-/* rhc rounded containers : bottom */
-div.links ul,
-div.tools ul			{ background-repeat: no-repeat; background-position: top; padding: 8px 0 0 0; margin: 0; list-style-type: none; }
-div.links ul			{ background-image: url(../images/sidenav_bg.gif);}
-div.tools ul			{ background-image: url(../images/tools_bg.gif); padding-bottom: 2px;}
-div.links li
-div.tools li			{ list-style-type: none; margin: 0; padding: 0; }				
-
-/* rhc square box */
-div.rhcBox { position:relative; top:0pt; width:240px; border:3px solid #999999; margin:0; padding:0; }
-
-div.commentview			{ padding: 5px; border: 3px solid #999; margin: 8px 0; background: url(../images/toolbar_bg.gif) repeat-x top;}
-div.commentview	div#ratingAverages { border: 1px solid #ccc; border-width: 1px 0; margin: 5px -5px; padding: 10px; background-color: #eee; position: relative; width:214px; }
-div.commentview	 li 	{ font-size: .9em; }
-div.commentview h6,
-div.rhcBox h6 { margin: 0; }
-div.commentview ol,
-div.commentview li		{ margin: 0; padding: 0; list-style-type: none; }
-div.commentview  div#ratingAverages li	{ font-weight: bold; position: relative; }
-div.commentview label	{ font-weight: normal; }
-div.commentview li ul 	{ margin: 0; padding: 0; list-style-type: none; }
-div.commentview li ul li	{ background: url(../images/tools_li.gif) no-repeat 0 2px; font-weight: bold; padding-left: 14px; margin-left: 20px; font-size: 1em; color: #666;}
+div#ratingRhc1 { margin-bottom:5px;}
+div#ratingRhc1 ol,
+div#ratingRhc1 li { margin:0; padding:0; list-style-type: none; }
+div#rhc div#ratingRhc1 h6 { font-weight:bold; margin-top:2px; margin-bottom:3px; color:#303030; background-color:transparent; } /*when the Impact tab is put in and the ratings box becomes part of the Impact box, this header should be changed to a h7 or p*/
+div#ratingRhc1 div#ratingAverages li	{ font-weight: bold; position: relative; }
+div#ratingRhc1 label { font-weight: normal; }
+div#ratingRhc1 a.rating { white-space:nowrap; }
+div#ratingRhc1 div#ratingAverages { background-color:#EEEEEE; border-color:#CCCCCC; border-style:solid; border-width:1px 0; margin:3px 0; padding:10px;}
 
 ol.ratingAvgs { padding: 0; margin: 0; }
 ol.ratingAvgs,
 ol.ratingAvgs ul { list-style: none; }
 ol.ratingAvgs li { padding: 0 0 0 10px; margin: 0; height: 2em;}
-ol.ratingAvgs label {  }
-ol.ratingAvgs ul { left: 8em; top: -2em;}
 ol.ratingAvgs li ul li { display: inline; background: none; margin: 0; padding: 0; width: auto;}
-
-#postcomment, #postcommentfloat { width: 240px; top: 0; position: relative; }
-#postcommentfloat { position: fixed; display: none; }
-.fixed { position: fixed !important; }
-
-#sectionNav ul li a,
-#sectionNavTop ul li a,
-#sectionNavTopFloat ul li a, /* sectionNavTopFloat style is for Safari only*/
-#sectionNav ul li a:visited,
-#sectionNavTop ul li a:visited,
-#sectionNavTopFloat ul li a:visited { padding-right:5px; background: transparent url(../images/sectionnav_li_bg.gif) no-repeat 5% .7em; border-color: #999;}
-
-#sectionNav 			{ width: 240px; top: 20px; background-color: #FFF; position: fixed; /* hide temporarily until js is implemented */ display: none; }
-
 
 div.buttons				{ margin: 6px 0; padding: 0; background: url(../images/buttons_bg.gif) no-repeat; background-position: 0 -32px; position: relative;}
 div.buttons span		{ height: 30px; width: 120px; display: table-cell; }

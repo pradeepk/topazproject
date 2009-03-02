@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+<#include "article_variables.ftl">
 <div id="content" class="article" style="visibility:visible;">
 <#include "/article/article_rhc.ftl">
 <form name="articleInfo" id="articleInfo" method="" action="">
@@ -30,6 +31,7 @@
 <div id="articleContainer"><#include "article_content.ftl"></div>
 <div style="visibility:hidden">
 <#include "/widget/annotation_add.ftl">
+<#include "/widget/contextAction.ftl">
 <#include "/widget/commentDialog.ftl">
 <#include "/widget/ratingDialog.ftl">
 <#include "/widget/loadingCycle.ftl">
