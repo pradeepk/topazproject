@@ -96,9 +96,9 @@ public class ListReplyAction extends BaseActionSupport {
 
       /*
        * construct citation string
-       * we're only showing annotation citations for formal corrections
+       * we're showing annotation citations for formal corrections and retractions.
        */
-      if(baseAnnotation.isFormalCorrection()) {
+      if(baseAnnotation.isFormalCorrection() || baseAnnotation.isRetraction()) {
         // lock @ Article level
         citation = article.getDublinCore().getBibliographicCitation();
         citation.getAuthors();
