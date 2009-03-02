@@ -473,38 +473,38 @@ ambra.displayAnnotationContext =
 
     if(textRange)
     {
-      if(!loggedIn)
+      if(this.validateSelection(textRange))
       {
-        contextActionTT = dijit.byId("ContextActionDialogNotLogged");
-      } else {
-        if(this.validateSelection(textRange))
+        if(!loggedIn)
         {
-          contextActionTT = dijit.byId("ContextActionDialog");
+          contextActionTT = dijit.byId("ContextActionDialogNotLogged");
         } else {
-          if(this.selectionError == annotationContextConstants.badDocumentArea)
-          {
-            //Perform a no-op on the current selection
-            console.log('no-op' + annotationContextConstants.ignoreSelection);
-            return;
-          }
-
-          if(this.selectionError == annotationContextConstants.badSelection)
-          {
-            contextActionTT = dijit.byId("ContextActionDialogBadSelection");
-          }
-
-          if(this.selectionError == annotationContextConstants.badElementSelection)
-          {
-            contextActionTT = dijit.byId("ContextActionDialogBadSelection");
-          }
-
-          if(this.selectionError == annotationContextConstants.badRangeSelection)
-          {
-            contextActionTT = dijit.byId("ContextActionDialogBadRangeSelection");
-          }
-
-          console.log('this.selectionError:' + this.selectionError);
+          contextActionTT = dijit.byId("ContextActionDialog");
         }
+      } else {
+        if(this.selectionError == annotationContextConstants.badDocumentArea)
+        {
+          //Perform a no-op on the current selection
+          console.log('no-op' + annotationContextConstants.ignoreSelection);
+          return;
+        }
+
+        if(this.selectionError == annotationContextConstants.badSelection)
+        {
+          contextActionTT = dijit.byId("ContextActionDialogBadSelection");
+        }
+
+        if(this.selectionError == annotationContextConstants.badElementSelection)
+        {
+          contextActionTT = dijit.byId("ContextActionDialogBadSelection");
+        }
+
+        if(this.selectionError == annotationContextConstants.badRangeSelection)
+        {
+          contextActionTT = dijit.byId("ContextActionDialogBadRangeSelection");
+        }
+
+        console.log('this.selectionError:' + this.selectionError);
       }
 
       console.log(contextActionTT.id);
