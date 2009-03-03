@@ -31,8 +31,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.StringTokenizer;
 
 /**
  * Class to configure the FreeMarker templates with css and javascript files and the title of page.
@@ -50,7 +51,7 @@ public class AmbraFreemarkerConfig {
   private static String DEFAULT_JOURNAL_NAME_CONFIG_KEY = "ambra.platform.defaultJournalName";
 
   private final boolean dojoDebug;
-  private HashMap<String, JournalConfig> journals;
+  private Map<String, JournalConfig> journals;
   private String dirPrefix;
   private String subdirPrefix;
   private String host;
@@ -100,7 +101,7 @@ public class AmbraFreemarkerConfig {
         log.trace("Default Title: " + j.getDefaultTitle());
         log.trace("Default CSS: " + printArray(j.getDefaultCss()));
         log.trace("Default JavaScript: " + printArray(j.getDefaultCss()));
-        HashMap<String, String[]> map = j.getCssFiles();
+        Map<String, String[]> map = j.getCssFiles();
         for (String name : map.keySet()) {
           log.trace("PageName: " + name);
           log.trace("CSS FILES: " + printArray(map.get(name)));
@@ -111,7 +112,7 @@ public class AmbraFreemarkerConfig {
           log.trace("JS FILES: " + printArray(map.get(name)));
         }
 
-        HashMap<String, String> m = j.getTitles();
+        Map<String, String> m = j.getTitles();
         for (String name : m.keySet()) {
           log.trace("PageName: " + name);
           log.trace("Title: " + m.get(name));
@@ -230,15 +231,15 @@ public class AmbraFreemarkerConfig {
         int numCss, numJavaScript, j;
         String pageName, page;
 
-        HashMap<String, String> titles = jc.getTitles();
+        Map<String, String> titles = jc.getTitles();
         if (titles == null) {
           titles = new HashMap<String, String>();
         }
-        HashMap<String, String[]> cssFiles = jc.getCssFiles();
+        Map<String, String[]> cssFiles = jc.getCssFiles();
         if (cssFiles == null) {
           cssFiles = new HashMap<String, String[]>();
         }
-        HashMap<String, String[]> javaScriptFiles = jc.getJavaScriptFiles();
+        Map<String, String[]> javaScriptFiles = jc.getJavaScriptFiles();
         if (javaScriptFiles == null) {
           javaScriptFiles = new HashMap<String, String[]>();
         }
@@ -762,9 +763,9 @@ public class AmbraFreemarkerConfig {
   }
 
   private class JournalConfig {
-    private HashMap<String, String[]> cssFiles;
-    private HashMap<String, String[]> javaScriptFiles;
-    private HashMap<String, String> titles;
+    private Map<String, String[]> cssFiles;
+    private Map<String, String[]> javaScriptFiles;
+    private Map<String, String> titles;
 
     private String[] defaultCss;
     private String[] defaultJavaScript;
@@ -781,13 +782,13 @@ public class AmbraFreemarkerConfig {
     /**
      * @return Returns the cssFiles.
      */
-    public HashMap<String, String[]> getCssFiles() {
+    public Map<String, String[]> getCssFiles() {
       return cssFiles;
     }
     /**
      * @param cssFiles The cssFiles to set.
      */
-    public void setCssFiles(HashMap<String, String[]> cssFiles) {
+    public void setCssFiles(Map<String, String[]> cssFiles) {
       this.cssFiles = cssFiles;
     }
     /**
@@ -829,25 +830,25 @@ public class AmbraFreemarkerConfig {
     /**
      * @return Returns the javaScriptFiles.
      */
-    public HashMap<String, String[]> getJavaScriptFiles() {
+    public Map<String, String[]> getJavaScriptFiles() {
       return javaScriptFiles;
     }
     /**
      * @param javaScriptFiles The javaScriptFiles to set.
      */
-    public void setJavaScriptFiles(HashMap<String, String[]> javaScriptFiles) {
+    public void setJavaScriptFiles(Map<String, String[]> javaScriptFiles) {
       this.javaScriptFiles = javaScriptFiles;
     }
     /**
      * @return Returns the titles.
      */
-    public HashMap<String, String> getTitles() {
+    public Map<String, String> getTitles() {
       return titles;
     }
     /**
      * @param titles The titles to set.
      */
-    public void setTitles(HashMap<String, String> titles) {
+    public void setTitles(Map<String, String> titles) {
       this.titles = titles;
     }
     /**
