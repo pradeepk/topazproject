@@ -1,7 +1,7 @@
 /* $$HeadURL::                                                                            $$
  * $$Id$$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@
 package org.topazproject.ambra.admin.action;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
@@ -35,7 +36,7 @@ public class EditAnnotationAction extends BaseActionSupport {
   private String saveAnnotationId;
   private String saveAnnotationContext;
   private AnnotationService annotationService;
-  private AnnotationConverter converter;
+  private AnnotationConverter annotationConverter;
 
   @Override
   public String execute() throws Exception {
@@ -54,7 +55,7 @@ public class EditAnnotationAction extends BaseActionSupport {
   public String loadAnnotation() throws Exception {
 
     ArticleAnnotation a = annotationService.getAnnotation(loadAnnotationId);
-    annotation = converter.convert(a, true, true);
+    annotation = annotationConverter.convert(a, true, true);
     // tell Struts to continue
     return SUCCESS;
   }
@@ -225,5 +226,10 @@ public class EditAnnotationAction extends BaseActionSupport {
    */
   public void setAnnotationService(AnnotationService annotationService) {
     this.annotationService = annotationService;
+  }
+
+  @Required
+  public void setAnnotationConverter(AnnotationConverter converter) {
+    this.annotationConverter = converter;
   }
 }
