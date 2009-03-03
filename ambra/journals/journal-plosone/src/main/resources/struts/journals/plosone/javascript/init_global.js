@@ -1,4 +1,3 @@
-ls
 /*
  * $HeadURL::                                                                            $
  * $Id$
