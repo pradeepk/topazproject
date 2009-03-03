@@ -27,45 +27,46 @@
       <input type="hidden" name="doi" id="doi" value="${articleURI}" />
     </form>
 
-    <div id="researchArticle" class="content">
+    <div id="researchArticle" class="content related">
       <a id="top" name="top" toc="top" title="Top"></a>
       <div id="contentHeader"><p>Open Access</p><p id="articleType">${articleType.heading}</p></div>
       <h1>${articleInfoX.title}</h1>
       <#assign tab="related" />
       <#include "article_tabs.ftl">
 
-      <h1>Related Articles (i)</h1>
+      <h2>Related Articles <a href="#" class="info">info</a></h2>
 
-      <div>Related Subject Categories</div>
+      <h3>Related Subject Categories</h3>
       <ul>
         <#list articleInfo.categories as cat>
           <li><a href="browse.action?catName=${cat.mainCategory?url}">${cat.mainCategory}</a></li>
         </#list>
       </ul>
 
-      <div>Related Articles on the web <img id="relatedArticlesSpinner" src="../../images/loading.gif" height="20" width="20" class="loading" /></div>
+      <h3>Related Articles on the web <img id="relatedArticlesSpinner" src="../../images/loading.gif" height="20" width="20" class="loading" /></h3>
       <ul>
         <li><a href="http://scholar.google.com/scholar?hl=en&lr=&q=related:${docURL?url}&btnG=Search">Google Scholar</a></li>
         <li id="pubMedRelatedLI" style="display:none;"><a id="pubMedRelatedURL">Pubmed</a></li>
       </ul>
 
-      <div>Cited in: <img id="relatedCitesSpinner" src="../../images/loading.gif" height="20" width="20" class="loading" /></div>
+      <h3>Cited in <img id="relatedCitesSpinner" src="../../images/loading.gif" height="20" width="20" class="loading" /></h3>
       <div id="relatedCites"></div>
       <div>Search for citations on <a href="http://scholar.google.com/scholar?hl=en&lr=&cites=${docURL?url}">Google Scholar</a>.</div>
 
-      <div>Related Blog Posts (i) <img id="relatedBlogSpinner" src="../../images/loading.gif" height="20" width="20" class="loading" /></div>
+      <h2>Related Blog Posts <a href="#" class="info">info</a> <img id="relatedBlogSpinner" src="../../images/loading.gif" height="20" width="20" class="loading" /></h2>
       <div id="relatedBlogPosts"></div>
 
-      Search for related blog posts on <a href="http://blogsearch.google.com/blogsearch?hl=en&ie=UTF-8&q=${shortDOI?url}&btnG=Search+Blogs">Google Blogs</a></div>
+      Search for related blog posts on <a href="http://blogsearch.google.com/blogsearch?hl=en&ie=UTF-8&q=${shortDOI?url}&btnG=Search+Blogs">Google Blogs</a>
 
-      <div>Trackbacks</div>
+      <h3>Trackbacks</h3>
       <div>To trackback this article use the following trackback URL:<br/>
         <@s.url namespace="/" includeParams="none" id="trackbackURL" action="trackback" trackbackId="${articleURI}"/>
         <#assign trackbackLink = Request[freemarker_config.journalContextAttributeKey].baseHostUrl + trackbackURL>
         <a href="${trackbackLink}" title="Trackback URL">${trackbackLink}</a>
       </div>
     </div>
-</div>
-<div style="visibility:hidden">
-  <#include "/widget/ratingDialog.ftl">
+  </div>
+  <div style="visibility:hidden">
+    <#include "/widget/ratingDialog.ftl">
+  </div>
 </div>

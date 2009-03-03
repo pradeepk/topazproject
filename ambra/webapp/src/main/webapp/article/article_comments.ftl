@@ -38,7 +38,7 @@
    <#if corrections == true>
     <div id="researchArticle" class="content corrections">
    <#else>
-    <div id="researchArticle" class="content">
+    <div id="researchArticle" class="content comments">
    </#if>
       <a id="top" name="top" toc="top" title="Top"></a>
       <div id="contentHeader">
@@ -48,16 +48,18 @@
       <h1>${articleInfoX.title}</h1>
       <#assign tab="comments" />
       <#include "article_tabs.ftl">
+      <div class="rss"><a href="#">Comments RSS</a></div>
       <#if commentary?size == 0>
-        <p>There are currently no notes or comments yet on this article.
-        You can <a href="${startDiscussionUrl}" title="Click to make a new comment on this article" class="discuss icon">add a comment</a> or return to the original article to add a note.<p>
+        <p>There are currently no notes or comments yet on this article. You can <a href="${startDiscussionUrl}" title="Click to make a new comment on this article" class="discuss icon">add a comment</a> or return to the original article to add a note.</p>
       <#else>
+        <ul>
         <#if corrections == true>
-         <a href="${commentsURL}" title="View all corrections" class="discuss icon">View all Comments</a></p>
+          <li><a href="${commentsURL}" title="View all corrections" class="discuss icon">View all Comments</a></li>
         <#else>
-         <a href="${correctionsURL}" title="View all corrections" class="corrections icon">View all corrections</a></p>
+          <li><a href="${correctionsURL}" title="View all corrections" class="corrections icon">View all corrections</a></li>
         </#if>
-        <a href="${startDiscussionUrl}" title="Click to make a new comment on this article" class="discuss icon">Make a new comment on this article</a></p>
+          <li><a href="${startDiscussionUrl}" title="Click to make a new comment on this article" class="discuss icon">Make a new comment on this article</a></li>
+        </ul>
         <table class="directory" cellpadding="0" cellspacing="0">
           <#list commentary as comment>
             <@s.url namespace="/annotation" includeParams="none" id="listThreadURL" action="listThread" root="${comment.annotation.id}" inReplyTo="${comment.annotation.id}"/>

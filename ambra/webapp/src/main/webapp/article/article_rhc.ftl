@@ -89,10 +89,10 @@
                 void(x.setTimeout('w.focus()',200));
             }
           </script>
-          <a style='cursor: pointer;' onclick='javascript:bookmark_in_connotea("${docURL}");'><img src='${freemarker_config.getContext()}/journals/plosJournals/images/icon_connotea_16x16.gif' alt="Connotea" title="Add to Connotea"/></a>
+          <a style='cursor: pointer;' onclick='javascript:bookmark_in_connotea("${docURL}");'><img src='${freemarker_config.getContext()}/images/icon_connotea_16x16.gif' alt="Connotea" title="Add to Connotea"/></a>
           <#-- See: http://www.connotea.org/wiki/AddToConnoteaButton -->
           <#-- Citeulike -->
-          <a href="http://www.citeulike.org/posturl?url=${docURL?url}&title=${articleInfoX.title?url}" target="_new"><img src='${freemarker_config.getContext()}/journals/plosJournals/images/icon_citeulike_16x16.gif' alt="CiteULike" title="Add to CiteULike" /></a>
+          <a href="http://www.citeulike.org/posturl?url=${docURL?url}&title=${articleInfoX.title?url}" target="_new"><img src='${freemarker_config.getContext()}/images/icon_citeulike_16x16.gif' alt="CiteULike" title="Add to CiteULike" /></a>
           <#-- For more info see http://www.citeulike.org/faq/all.adp -->
           <#-- Digg
             TODO:Eventually we should be passing the abstract as the bodytext to digg.  We could also switch up and
@@ -113,7 +113,6 @@
 
       </li>
       <li class="email icon"><a href="${emailArticleURL}">Email this article</a></li>
-      <li class="twitter icon"><a href="http://twitter.com/home/?status=${"Check+out+this+article%3A+" + docURL?url}" title="Tweet about this article">Tweet about this article</a></li>
     </ul>
   </div>
 </div>

@@ -123,6 +123,7 @@ a.preferences 	{ background-image: url(../images/icon_user_preferences.gif); }
 a.rss			{ background-image: url(../images/icon_rss1.gif); }
 a.advanced		{ background-image: url(../images/icon_advanced.gif); }
 a.browse		{ background-image: url(../images/icon_browse.gif); }
+a.info { background:url(../images/button_info.png); }
 
 /* Article Icons */
 a.yourfeedback	{ background-image: url(../images/icon_feedback.gif);} /* keep at top of all classes to avoid weird ie multiple class bug */
@@ -310,6 +311,8 @@ ul#links li.browse a,
 ul#links li.browse a:visited { background-image: url(../images/links_browse_bg.gif); }
 ul#links li.rss a,
 ul#links li.rss a:visited { background-image: url(../images/links_rss_bg.gif); }
+ul#links li.alerts a,
+ul#links li.alerts a:visited { background-image: url(../images/links_alerts_bg.gif); }
 
 span.new { color: #fff; float: left; display: block; }
 /* Footer : Elements
@@ -330,13 +333,10 @@ div.powered a:hover { text-decoration:none; }
 ----------------------------------------------------------=
 */
 
-/*TEMP STYLE: suppresses 2nd instance of research article title on the article page*/
-div#articleMenu + h1 { display:none; }
-
 /* article page tabs */
-div.horizontalTabs	{ position:relative; border:0; margin-top:15px; padding:0; background:transparent; width:100%; }
+div.horizontalTabs	{ /*position:relative;*/ border:0; margin-top:15px; padding:0; background:transparent; width:99%; }
 div.horizontalTabs:after  { content:"."; display: block; height:0; clear:left; visibility:hidden; }
-/*div#articleContainer div#researchArticle*/ ul#tabsContainer  { float:left;  margin:0!important; padding:0 0 0 10px!important; /* "!important" required for IE7 */ line-height:normal; background:transparent url("../images/tab_bg.gif") repeat-x bottom; width:640px; }
+/*div#articleContainer div#researchArticle*/ ul#tabsContainer  { float:left; clear:none; margin:0!important; padding:0 0 0 10px!important; /* "!important" required for IE7 */ line-height:normal; background:transparent url("../images/tab_bg.gif") repeat-x bottom; width:640px; }
 ul#tabsContainer ul { margin:0; padding:10px 10px 0; }
 ul#tabsContainer li		{ cursor:pointer; float:left; background:url("../images/tab_left.gif") no-repeat 0% 0%; margin:0 2px; padding:0 0 0 8px; list-style:none; font-size:.9em; font-weight:bold; color:#666; }
 ul#tabsContainer li a { display:block; float:left; background:url("../images/tab_right.gif") no-repeat 100% 0%;  padding:8px 16px 8px 8px!important; /* "!important" required for IE7 */ color:#666; text-decoration:none; }
@@ -350,7 +350,7 @@ div.content 	{ margin-right: 255px; }
 
 div.static h1,
 div.content h1,
-div.search h1 { /* article title */font-size: 2.2em;	line-height: 1.1em;	margin: 10px 0 0 0;font-weight: normal; }
+div.search h1 { font-size:1.7em; line-height:1.2em;	margin:10px 0 0 0; font-weight:bold; }
 
 
 div.static h1,
@@ -358,7 +358,6 @@ div.search h1		{ padding-top: 10px; border-top: 6px solid #f60; }
 div.pageerror h1	{ background-color: #f60; color:#fff; padding: 8px;}
 div.pageerror p		{ margin-left: 8px; }
 div.content h2	{ /* article sub-title */ margin: 10px 0; font-style: italic; font-size: 1.5em; background: none; padding: 0;}
-
 div.static h2,
 div.content h3	{ /* article main body heading */ font-size: 1.6em; margin: 20px 0 0 0; border-bottom: 1px solid #ccc; padding-bottom: 3px;}
 
@@ -410,7 +409,7 @@ p.authors		{ margin: 10px 0 0 0; font-weight: bold; font-size: 1.1em; }
 p.affiliations	{ font-size: .85em; margin: 0; }
 
 div.abstract	{ margin: 15px 0; }
-div.articleinfo	{ font-size: .9em; padding: 10px;  margin: 10px 0; background: #DBDBDB url(../images/abstract_bg.gif) repeat-x top; }
+div.articleinfo	{ font-size: .9em; padding:0 10px;  margin:20px 0 40px 0; border-left:5px solid #c60; }
 div.contributions { }
 div.articleinfo p
 /*div.abstract p -this is causing bad spacing between h2 and abstract on article pages. Not sure why this is in here.*/	{ margin: 0 0 1em 0; }
@@ -445,7 +444,7 @@ div#sideNav dl.related dd a:hover { text-decoration:underline; }
 /* Right column on article pages */
 #rhc { font-size:0.9em; line-height:1.5em; }
 #rhc h6 { font-size:1em; }
-#rhc h6 a.info { display:inline-block; background:url(../images/button_info.png) no-repeat bottom left; text-indent:-9999px; height:15px; width:14px; }
+#rhc h6 a.info { display:inline-block; background-repeat:no-repeat; background-position:0 .1em; text-indent:-9999px; width:14px; }
 #rhc p { margin:3px 5px 5px 5px; }
 #rhc div.rhcBox_type1 { margin-bottom:18px; padding-bottom:8px; background:#fcd3b8 url(../images/rhcBox_btm.gif) no-repeat bottom left; zoom:1; }
 #rhc div.rhcBox_type1 div.wrap { background:#fcd3b8 url(../images/rhcBox_top.gif) no-repeat top left; padding-top:8px; }
@@ -533,6 +532,23 @@ span.equation span     { margin-top: -30px; display: block; margin-right: 10px; 
 span.equation span.note { margin-top: 5px;}
 span.equation span span.note { display:inline; margin: 0;}
 span.equation img       { margin: 0 auto; display: block; padding-bottom: 10px;}
+
+/* ------ Related Page Styles ------- */
+div.related h2 { font-style:normal; }
+div.related h2 a.info { display:inline-block; background-repeat:no-repeat; background-position:0 .25em; text-indent:-9999px; width:14px; margin-top:15px; }
+div.related h3 { font-family:Verdana, Arial, Helvetica, sans-serif; font-size:1em; font-weight:bold; border:0; margin:1em 0 0 0; padding:0; }
+div.related ul { margin:0; }
+div.related ul li { list-style-type:none; background-image:none; display:inline; padding-left:0; padding-right:0.5em; }
+
+/* ------ Comment Page Styles ------- */
+div.comments ul { margin:10px 0 0 0; }
+div.comments ul li { list-style-type:none; background-image:none; padding:0; }
+div.comments ul li a.corrections { color:#f00; }
+div.comments div.rss { float:right; margin-top:10px; }
+div.comments div.rss a { background:transparent url(../images/icon_rss_small.gif) no-repeat scroll right 0.15em; padding-right:15px; }
+div.comments table.directory { margin:15px 0 0 0; width:100%; }
+div.comments table.directory { width:99%; }
+div.comments > table.directory { width:100%; } /* for modern browsers */
 
 /* ------ Inline Annotation Styles ------- */
 span.active				{ color: #000; } /* apply to all spans during hover state on the bug */
