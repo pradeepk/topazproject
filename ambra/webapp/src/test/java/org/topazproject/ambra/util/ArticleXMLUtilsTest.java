@@ -122,7 +122,7 @@ public class ArticleXMLUtilsTest {
   @DataProvider(name = "viewNLMFiles")
   public String[][] createViewNLMSamples() {
     return new String[][]{
-        {"article1.xml","result1.txt"}
+        {"article1.xml","result1.html"}
     };
   }
 
