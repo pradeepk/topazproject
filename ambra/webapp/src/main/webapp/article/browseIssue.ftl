@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -103,6 +103,19 @@
               <@s.url namespace="/annotation" action="listThread" id="correctionUrl" inReplyTo="${correction.id}" root="${correction.id}"/>
               <li>
                 <p>${correction.title} (<@s.a href="%{correctionUrl}">Read formal correction</@s.a>)</p>
+              </li>
+            </#list>
+            </ol>
+            </div>
+            </#if>
+            <#if articleInfo.retractions?? && (articleInfo.retractions?size > 0)>
+            <div class="retractionHtmlId">
+            <p class="retractionHtmlId"><strong> Retraction:</strong> This article has been <em>retracted</em> due to the following:</p>
+            <ol class="retractionHtmlId">
+            <#list articleInfo.retractions as retraction>
+              <@s.url namespace="/annotation" action="listThread" id="retractionUrl" inReplyTo="${retraction.id}" root="${retraction.id}"/>
+              <li>
+                <p>${retraction.title} (<@s.a href="%{retractionUrl}">Read retraction</@s.a>)</p>
               </li>
             </#list>
             </ol>
