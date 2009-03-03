@@ -3,8 +3,6 @@
 
 
 
-<h1 xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:aml="http://topazproject.org/aml/" xmlns:d="http://purl.org/dc/elements/1.1/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xpathLocation="noSelect">Title has
-          <i>Italics</i></h1>
 <p xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:aml="http://topazproject.org/aml/" xmlns:d="http://purl.org/dc/elements/1.1/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" class="authors" xpathLocation="noSelect">Hervé Derelle<sup><a href="#aff1">1</a></sup><sup>,</sup><sup><a href="#aff2">2</a></sup>, Marie-Line Escande<sup><a href="#aff1">1</a></sup><sup>,</sup><sup><a href="#aff2">2</a></sup></p><p xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:aml="http://topazproject.org/aml/" xmlns:d="http://purl.org/dc/elements/1.1/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" class="affiliations" xpathLocation="noSelect"><a name="aff1" id="aff1"></a><strong>1</strong> Université Lab with foreign character, <a name="aff2" id="aff2"></a><strong>2</strong> CNRS, UMR7628, Laboratoire Arago, Banyuls-sur-Mer, France</p><div xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:aml="http://topazproject.org/aml/" xmlns:d="http://purl.org/dc/elements/1.1/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" class="abstract" xpathLocation="/article[1]/front[1]/article-meta[1]/abstract[1]"><a id="abstract0" name="abstract0" toc="abstract0" title="Abstract"></a><h2>Abstract</h2><p xpathLocation="/article[1]/front[1]/article-meta[1]/abstract[1]/p[1]">AbstractText.</p>
 </div>
 
