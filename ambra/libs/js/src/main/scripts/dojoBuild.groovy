@@ -56,26 +56,28 @@ ant.uptodate(property: 'isUpToDate', targetfile: artifact) {
   srcfiles(dir: new File(project.basedir, project.build.scriptSourceDirectory), includes: "*")
 }
 
-if (ant.project.properties.'isUpToDate')
+if (ant.project.properties.'isUpToDate') {
+  println 'dojo build is up to date'
   return
+}
 
 // dojo build settings 
 // IMPT: paths in the following setting vars are relative to the 'dojo-release-xxx-src/util/buildscripts' dir
-final String profileFile = '../../../ambra.profile.js';
+final String profileFile = '../../../../src/main/scripts/ambra.profile.js';
 final String action = 'release';
 final String releaseName = 'dojo';
-final String releaseDir = '../../../../../../target/';
+final String releaseDir = '../../../';
 final String localeList = 'en-us';
 final String optimize = ''
 final String layerOptimize = 'shrinksafe'
 final String copyTests = 'false'
 final String version = project.version;
 
-final String rhinoJarPath = (project.basedir.toString() + '/' + project.build.scriptSourceDirectory + '/dojo/util/shrinksafe/custom_rhino.jar')
-final String rhinoWorkingDir = (project.basedir.toString() + '/' + project.build.scriptSourceDirectory + '/dojo/util/buildscripts') 
+final String rhinoJarPath = (project.build.directory + '/dojo-src/util/shrinksafe/custom_rhino.jar')
+final String rhinoWorkingDir = (project.build.directory + '/dojo-src/util/buildscripts')
 
 // java -jar ../shrinksafe/custom_rhino.jar build.js %*
-println 'Invoking ambra dojo build (' + profileFile + ')...' 
+println 'Invoking ambra dojo build (' + profileFile + ')...'
 ant.java(jar: rhinoJarPath, fork:true, dir: rhinoWorkingDir, resultproperty:'dojoBuildResult') {
   arg(value: 'build.js')
   arg(value: 'profileFile=' + profileFile)
@@ -93,7 +95,7 @@ if(dojoBuildResult != '0') {
   println 'dojo build error (exit code: ' + dojoBuildResult+ ').  Aborting!'
   System.exit(1)
 }
-println 'dojo build complete' 
+println 'dojo build complete'
 
 // inject the locales to the built files
 println 'Injecting locale(s)...'

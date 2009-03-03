@@ -34,6 +34,6 @@ dependencies = {
   prefixes: [
     [ "dijit", "../dijit" ],
     [ "dojox", "../dojox" ],
-    [ "ambra", "../../ambra" ]
+    [ "ambra", "../../../src/main/scripts/ambra" ]
   ]
 }
