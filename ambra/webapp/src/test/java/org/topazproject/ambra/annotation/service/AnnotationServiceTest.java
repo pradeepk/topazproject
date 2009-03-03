@@ -29,6 +29,7 @@ import org.topazproject.ambra.models.MinorCorrection;
 import org.topazproject.ambra.cache.MockCache;
 import org.topazproject.ambra.cache.CacheManager;
 import org.topazproject.ambra.cache.AbstractObjectListener;
+import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.query.Results;
@@ -38,6 +39,9 @@ import static org.easymock.classextension.EasyMock.createControl;
 import static org.easymock.classextension.EasyMock.expect;
 import static org.easymock.classextension.EasyMock.expectLastCall;
 import static org.easymock.classextension.EasyMock.isA;
+import static org.easymock.classextension.EasyMock.eq;
+import static org.easymock.classextension.EasyMock.anyObject;
+import org.easymock.EasyMock;
 
 import com.sun.xacml.PDP;
 import com.sun.xacml.EvaluationCtx;
@@ -252,6 +256,46 @@ public class AnnotationServiceTest {
     assertEquals(annotations, expected);
 
     ctl.verify();
+  }
+
+  @Test
+  public void testDeletAnnotationWithoutBody() {
+    IMocksControl ctl = createControl();
+
+    PDP pdp = ctl.createMock(PDP.class);
+    Session session = ctl.createMock(Session.class);
+    PermissionsService permissionsService = ctl.createMock(PermissionsService.class);
+
+    expect(pdp.evaluate(isA(EvaluationCtx.class)))
+        .andReturn(new ResponseCtx(new Result(Result.DECISION_PERMIT)))
+        .anyTimes();
+
+    String annotationId = "info:doi/123.456/annotation1";
+    FormalCorrection annotation = new FormalCorrection();
+    annotation.setId(URI.create(annotationId));
+
+    expect(session.get(ArticleAnnotation.class, annotationId)).andReturn(annotation);
+    expect(session.delete(annotation)).andReturn(annotationId);
+    permissionsService.cancelPropagatePermissions(EasyMock.eq(annotationId), (String[]) anyObject());
+    expectLastCall();
+    permissionsService.cancelGrants(eq(annotationId), (String[]) anyObject(), (String[]) anyObject());
+    expectLastCall().once();
+    permissionsService.cancelRevokes(eq(annotationId), (String[]) anyObject(), (String[]) anyObject());
+    expectLastCall();
+
+    AnnotationService annotationService = new AnnotationService();
+    annotationService.setAnnotationsPdp(pdp);
+    annotationService.setOtmSession(session);
+    annotationService.setPermissionsService(permissionsService);
+
+
+    ctl.replay();
+
+    annotationService.deleteAnnotation(annotationId);
+
+    ctl.verify();
+
+
   }
 
 
