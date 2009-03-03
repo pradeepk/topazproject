@@ -24,7 +24,7 @@
   <ambra>
     <platform>
       <dummySsoEnabled>true</dummySsoEnabled>
-      <defaultJournalName>PLoSONE</defaultJournalName>
+      <defaultJournalName>AmbraJournal</defaultJournalName>
     </platform>
 
     <!-- 
@@ -59,10 +59,10 @@
     <!-- virtual journal config -->
     <virtualJournals>
       <default>
-        <journal>PLoSONE</journal>
-        <mappingPrefix>/journals/plosone</mappingPrefix>
+        <journal>AmbraJournal</journal>
+        <mappingPrefix>/journals/ambraJournal</mappingPrefix>
       </default>
-      <journals>PLoSClinicalTrials,PLoSCompBiol,PLoSGenetics,PLoSNTD,PLoSONE,PLoSPathogens</journals>
+      <journals>AmbraJournal,PLoSClinicalTrials,PLoSCompBiol,PLoSGenetics,PLoSNTD,PLoSONE,PLoSPathogens</journals>
     </virtualJournals>
 
     <articleTypeList>
