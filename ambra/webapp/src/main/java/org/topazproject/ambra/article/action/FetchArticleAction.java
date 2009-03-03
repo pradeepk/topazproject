@@ -65,12 +65,12 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  *
  * Gets rewritten to:
  *
- * http://localhost/fetchRelatedArticle.action&articleURI=info%3Adoi%2F10.1371%2Fjournal.pone.0299
+ * http://localhost/fetchRelatedArticle.action&amp;articleURI=info%3Adoi%2F10.1371%2Fjournal.pone.0299
  *
  * Struts picks this up and translates it call the FetchArticleRelated method
- * ex: <action name="fetchRelatedArticle"
+ * ex: &lt;action name="fetchRelatedArticle"
  *    class="org.topazproject.ambra.article.action.FetchArticleAction"
- *    method="FetchArticleRelated">
+ *    method="FetchArticleRelated"&gt;
  * 
  */
 public class FetchArticleAction extends BaseSessionAwareActionSupport {
@@ -112,7 +112,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    * @return "success" on succes, "error" on error
    */
   @Transactional(readOnly = true)
-  public String FetchArticle() {
+  public String fetchArticle() {
     try {
       setCommonData();
 
@@ -135,7 +135,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    * @return "success" on succes, "error" on error
    */
   @Transactional(readOnly = true)
-  public String FetchArticleComments() {
+  public String fetchArticleComments() {
     try {
       setCommonData();
       setAnnotations(annotationService.COMMENT_SET);
@@ -157,7 +157,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    * @return "success" on succes, "error" on error
    */
   @Transactional(readOnly = true)
-  public String FetchArticleCorrections() {
+  public String fetchArticleCorrections() {
     try {
       setCommonData();
       setAnnotations(annotationService.CORRECTION_SET);
@@ -179,10 +179,9 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    * @return "success" on succes, "error" on error
    */
   @Transactional(readOnly = true)
-  public String FetchArticleRelated() {
+  public String fetchArticleRelated() {
     try {
       setCommonData();
-
     } catch (NoSuchArticleIdException e) {
       messages.add("No article found for id: " + articleURI);
       log.info("Could not find article: " + articleURI, e);
@@ -214,16 +213,14 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
     for (ArticleAnnotation a : anns) {
       if (a.getContext() == null) {
         numDiscussions++;
+      } else if (a instanceof MinorCorrection) {
+        numMinorCorrections++;
+      } else if (a instanceof FormalCorrection) {
+        numFormalCorrections++;
+      } else if (a instanceof Retraction) {
+        numRetractions++;
       } else {
-        if (a instanceof MinorCorrection) {
-          numMinorCorrections++;
-        } else if (a instanceof FormalCorrection) {
-          numFormalCorrections++;
-        } else if (a instanceof Retraction) {
- 	        numRetractions++;
-        } else {
-          numComments++;
-        }
+        numComments++;
       }
     }
 
@@ -246,8 +243,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    * @param annotationTypeClasses The type of annotation to grab.
    */
   private void setAnnotations(Set<Class<? extends ArticleAnnotation>> annotationTypeClasses) {
-    WebAnnotation[] annotations =
-        annotationConverter.convert(annotationService.listAnnotations(articleURI, annotationTypeClasses), true, false);
+    WebAnnotation[] annotations = annotationConverter.convert(annotationService.listAnnotations(articleURI, annotationTypeClasses), true, false);
 
     commentary = new Commentary[annotations.length];
     Commentary com;
@@ -361,7 +357,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    *
    * TODO: convert all usages of "articleInfo" (ObjectInfo) to use the Browse cache version of
    * ArticleInfo.  Note that for all templates to use ArticleInfo, it will have to
-   * be enhanced.  articleInfo & articleInfoX are both present, for now, to support:
+   * be enhanced.  articleInfo and articleInfoX are both present, for now, to support:
    *   - existing templates/services w/o a large conversion
    *   - access to RelatedArticles
    *
@@ -452,7 +448,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    * Having multiple Retractions for a single Article does not make sense.
    *
    * @return Returns the number of Retractions that have been associated to this Article.
-   */ 
+   */
   public int getNumRetractions() {
     return numRetractions;
   }

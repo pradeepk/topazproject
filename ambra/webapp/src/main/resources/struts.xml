@@ -334,25 +334,25 @@
       </result>
     </action>
 
-    <action name="fetchArticle" class="org.topazproject.ambra.article.action.FetchArticleAction" method="FetchArticle">
+    <action name="fetchArticle" class="org.topazproject.ambra.article.action.FetchArticleAction" method="fetchArticle">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/article_body.ftl</param>
       </result>
     </action>
 
-    <action name="fetchArticleComments" class="org.topazproject.ambra.article.action.FetchArticleAction" method="FetchArticleComments">
+    <action name="fetchArticleComments" class="org.topazproject.ambra.article.action.FetchArticleAction" method="fetchArticleComments">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/article_comments.ftl</param>
       </result>
     </action>
 
-    <action name="fetchArticleCorrections" class="org.topazproject.ambra.article.action.FetchArticleAction" method="FetchArticleCorrections">
+    <action name="fetchArticleCorrections" class="org.topazproject.ambra.article.action.FetchArticleAction" method="fetchArticleCorrections">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/article_comments.ftl</param>
       </result>
     </action>
 
-    <action name="fetchRelatedArticle" class="org.topazproject.ambra.article.action.FetchArticleAction" method="FetchArticleRelated">
+    <action name="fetchRelatedArticle" class="org.topazproject.ambra.article.action.FetchArticleAction" method="fetchArticleRelated">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/article_related.ftl</param>
       </result>
