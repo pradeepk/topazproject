@@ -21,6 +21,7 @@ dojo.require("dojo.fx");
 
 dojo.addOnLoad(function()
   {
+    //TODO: Move this server setting to a configuration file
     var almService = new ambra.alm('alm-dev.plos.org');
     var doi = escape(dojo.byId('doi').value);
 
@@ -35,10 +36,10 @@ dojo.addOnLoad(function()
 function setIDs(response, args)
 {
   dojo.fadeOut({ node:'relatedArticlesSpinner', duration: 1000 }).play();
-
+  
   if(response == null)
   {
-    setError('relatedArticlesSpinner');
+    setError('pubMedRelatedErr');
     return;
   }
 
@@ -53,12 +54,12 @@ function setIDs(response, args)
 
 function setCites(response, args)
 {
-  dojo.fadeOut({ node:'relatedCitesSpinner', duration: 1000 }).play();
   dojo.byId('relatedCites').style.display = 'none';
+  dojo.fadeOut({ node:'relatedCitesSpinner', duration: 1000 }).play();
 
   if(response == null)
   {
-    setError('relatedCitesSpinner');
+    setError('relatedCites');
     return;
   }
 
@@ -83,12 +84,12 @@ function setRelatedBlogs(response, args)
 {
   var html = "";
 
-  dojo.fadeOut({ node:'relatedBlogSpinner', duration: 1000 }).play();
   dojo.byId('relatedBlogPosts').style.display = 'none';
+  dojo.fadeOut({ node:'relatedBlogSpinner', duration: 1000 }).play();
 
   if(response == null)
   {
-    setError('relatedBlogSpinner');
+    setError('relatedBlogPosts');
     return;
   }
 
@@ -109,8 +110,8 @@ function setRelatedBlogs(response, args)
   dojo.fx.wipeIn({ node:'relatedBlogPosts', duration: 1000 }).play();
 }
 
-function setError(id)
+function setError(textID)
 {
-  dojo.byId(id).src = 'broken.jpg';
-  dojo.byId(id).title = 'An error occured requesting the';
+  dojo.byId(textID).innerHTML = '<span class="inlineError"><img src="../../images/icon_error.gif"/>&nbsp;Unable to retrieve this data at this time.</span>';
+  dojo.fx.wipeIn({ node:textID, duration: 1000 }).play();
 }

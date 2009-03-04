@@ -44,6 +44,7 @@
       </ul>
 
       <h3>Related Articles on the web <img id="relatedArticlesSpinner" src="../../images/loading.gif" height="20" width="20" class="loading" /></h3>
+      <div id="pubMedRelatedErr" style="display:none;"></div>
       <ul>
         <li><a href="http://scholar.google.com/scholar?hl=en&lr=&q=related:${docURL?url}&btnG=Search">Google Scholar</a></li>
         <li id="pubMedRelatedLI" style="display:none;"><a id="pubMedRelatedURL">Pubmed</a></li>

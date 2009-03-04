@@ -51,9 +51,11 @@
       <#else>
         <ul>
         <#if corrections == true>
-          <li><a href="${commentsURL}" title="View all corrections" class="discuss icon">View all Comments</a></li>
+          <li><a href="${commentsURL}" title="View all Comments" class="discuss icon">View all Comments</a></li>
         <#else>
+          <#if ((numFormalCorrections + numMinorCorrections) > 0)>
           <li><a href="${correctionsURL}" title="View all corrections" class="corrections icon">View all corrections</a></li>
+          </#if>
         </#if>
           <li><a href="${startDiscussionUrl}" title="Click to make a new comment on this article" class="discuss icon">Make a new comment on this article</a></li>
         </ul>
