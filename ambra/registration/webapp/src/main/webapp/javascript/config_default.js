@@ -2,7 +2,7 @@
  * $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
  * limitations under the License.
  */
 var djConfig = {
-	isDebug: true,
-	debugContainerId : "dojoDebug",
+	isDebug: false,
+	debugContainerId: "dojoDebug",
 	debugAtAllCosts: false
 };
 

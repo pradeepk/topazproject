@@ -182,6 +182,14 @@
       <artifactId>commons-collections</artifactId>
       <version>3.2</version>
     </dependency>
+    
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-js</artifactId>
+      <version>${pom.parent.version}</version>
+      <type>zip</type>
+      <classifier>js</classifier>
+    </dependency>
   </dependencies>
 
   <build>
@@ -213,7 +221,6 @@
           </dependency>
         </dependencies>
         <configuration>
-          <contextPath>/ambra-registration</contextPath>
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
               <port>7080</port>
@@ -233,7 +240,39 @@
           </systemProperties>
           <scanIntervalSeconds>5</scanIntervalSeconds>
           <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
+          <webAppConfig>
+            <contextPath>/ambra-registration</contextPath>
+            <baseResource implementation="org.mortbay.resource.ResourceCollection">
+              <resourcesAsCSV>${project.build.sourceDirectory}/../webapp,jar:file:${settings.localRepository}/org/topazproject/ambra-js/${pom.parent.version}/ambra-js-${pom.parent.version}-js.zip!/</resourcesAsCSV>
+            </baseResource>
+          </webAppConfig>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.0</version>
+        <executions>
+          <execution>
+            <id>unpack dojo js and css</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.topazproject</groupId>
+                  <artifactId>ambra-js</artifactId>
+                  <version>${pom.parent.version}</version>
+                  <type>zip</type>
+                  <classifier>js</classifier>
+                  <outputDirectory>${project.build.directory}/ambra-registration</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
      </plugins>
   </build>

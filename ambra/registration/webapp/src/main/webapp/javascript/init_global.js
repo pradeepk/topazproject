@@ -2,7 +2,7 @@
  * $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,12 +21,12 @@ var container;
 var topBanner;
 
 function globalInit() {
-  if (BrowserDetect.browser == "Explorer") {
+  if (dojo.isIE) {
     container = dojo.byId("container");
     topBanner = dojo.byId("topBanner");
     
     if (container) {
-      topaz.domUtil.setContainerWidth(container, 675, 940);
+      ambra.domUtil.setContainerWidth(container, 675, 940);
       
       dojo.event.connect(window, "onresize", function() {
           setTimeout("topaz.domUtil.setContainerWidth(container, 675, 940)", 100);
@@ -35,7 +35,7 @@ function globalInit() {
     }
     
     if (topBanner) {
-      topaz.domUtil.setContainerWidth(topBanner, 942, 944);
+      ambra.domUtil.setContainerWidth(topBanner, 942, 944);
       
       dojo.event.connect(window, "onresize", function() {
           setTimeout("topaz.domUtil.setContainerWidth(topBanner, 942, 944)", 100);

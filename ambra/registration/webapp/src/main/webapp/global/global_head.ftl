@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,20 +25,8 @@
 
 <#include "../css/global_css.ftl">
 
-<script type="text/javascript" src="javascript/prototype.js"></script>	
-<script type="text/javascript" src="javascript/browserDetection.js"></script>	
 <script type="text/javascript" src="javascript/config_default.js"></script>
-<script type="text/javascript" src="javascript/dojo/dojo.js"></script>
-<script type="text/javascript" src="javascript/topaz/topaz.js"></script>
-<script type="text/javascript">  
-  dojo.registerModulePath("topaz", "../topaz");
-  dojo.require("topaz.topaz");
-  dojo.require("dojo.html.*");
-  dojo.require("dojo.io.*");
-  dojo.require("dojo.event.*");
-</script>
-<script type="text/javascript" src="javascript/topaz/formUtil.js"></script>   
-<script type="text/javascript" src="javascript/topaz/domUtil.js"></script>
+<script type="text/javascript" src="javascript/dojo/dojo/dojo.js"></script>
 <script type="text/javascript" src="javascript/init_global.js"></script>  
 <script type="text/javascript" src="javascript/init_navigation.js"></script>  
 
