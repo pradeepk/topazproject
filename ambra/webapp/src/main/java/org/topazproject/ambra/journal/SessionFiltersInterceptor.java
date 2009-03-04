@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,12 +23,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.struts2.StrutsStatics;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.springframework.beans.factory.annotation.Required;
@@ -49,13 +47,11 @@ public class SessionFiltersInterceptor extends AbstractInterceptor {
   private JournalService journalService;
 
   public String intercept(ActionInvocation invocation) throws Exception {
-    setupFilters(invocation);
+    setupFilters();
     return invocation.invoke();
   }
 
-  private void setupFilters(ActionInvocation invocation) throws ServletException {
-    HttpServletRequest request =
-        (HttpServletRequest) invocation.getInvocationContext().get(StrutsStatics.HTTP_REQUEST);
+  private void setupFilters() throws ServletException {
 
     String jName = journalService.getCurrentJournalName();
     if (jName == null)
@@ -63,17 +59,15 @@ public class SessionFiltersInterceptor extends AbstractInterceptor {
 
     Set<String> jf = journalService.getFilters(jName);
     if (jf == null)
-      //throw new ServletException("No journal found with name '" + jName + "'");
       log.error("No journal found with name '" + jName + "'");
 
-    // XXX: guard against jf == null, we don't have any journals yet, allow development to continue
+    // Guard against jf == null, we don't have any journals yet, allow development to continue
     for (String fName : (jf != null ? jf : new HashSet<String>(0))) {
       Filter f = session.enableFilter(fName);
       if (f == null)            // shouldn't happen
         throw new ServletException("Filter '" + fName +
-                                   "' has not been registered with the session-factory");
+            "' has not been registered with the session-factory");
 
-      // XXX: set parameters
     }
   }
 
