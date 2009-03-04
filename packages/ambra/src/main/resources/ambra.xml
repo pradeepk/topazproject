@@ -183,70 +183,87 @@
         <typeUri>http://rdf.plos.org/RDF/articleType/1</typeUri>
         <typeHeading>Unclassified</typeHeading>
         <default>true</default>
+        <typeCode>unclassified</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20the%20Founders</typeUri>
         <typeHeading>Message from the Founders</typeHeading>
+        <typeCode>founder_message</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20the%20PLoS%20Founders</typeUri>
         <typeHeading>Message from the PLoS Founders</typeHeading>
+        <typeCode>plos_founder_message</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20PLoS</typeUri>
         <typeHeading>Message from PLoS</typeHeading>
+        <typeCode>plos_message</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Editorial</typeUri>
         <typeHeading>Editorial</typeHeading>
+        <typeCode>editorial</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Online%20Only:%20Editorial</typeUri>
         <typeHeading>Online Only: Editorial</typeHeading>
+        <typeCode>editorial_online_only</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Overview</typeUri>
         <typeHeading>Overview</typeHeading>
+        <typeCode>overview</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20ISCB</typeUri>
         <typeHeading>Message from ISCB</typeHeading>
+        <typeCode>message_from_iscb</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Synopsis</typeUri>
         <typeHeading>Synopsis</typeHeading>
+        <typeCode>synopsis</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Education</typeUri>
         <typeHeading>Education</typeHeading>
+        <typeCode>education</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Interview</typeUri>
         <typeHeading>Interview</typeHeading>
+        <typeCode>interview</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Debate</typeUri>
         <typeHeading>Debate</typeHeading>
+        <typeCode>debate</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/The%20PLoS%20Medicine%20Debate</typeUri>
         <typeHeading>The PLoS Medicine Debate</typeHeading>
+        <typeCode>plos_medicine_dabate</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Viewpoint</typeUri>
         <typeHeading>Viewpoint</typeHeading>
+        <typeCode>viewpoint</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Expert%20Commentary</typeUri>
         <typeHeading>Expert Commentary</typeHeading>
+        <typeCode>expert_commentary</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Essay</typeUri>
         <typeHeading>Essay</typeHeading>
+        <typeCode>essay</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Feature</typeUri>
         <typeHeading>Feature</typeHeading>
+        <typeCode>feature</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Unsolved%20Mystery</typeUri>
@@ -255,146 +272,182 @@
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Neglected%20Diseases</typeUri>
         <typeHeading>Neglected Diseases</typeHeading>
+        <typeCode>neglected_diseases</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Special%20Report</typeUri>
         <typeHeading>Special Report</typeHeading>
+        <typeCode>special_report</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Opinion</typeUri>
         <typeHeading>Opinion</typeHeading>
+        <typeCode>opinion</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Perspective</typeUri>
         <typeHeading>Perspective</typeHeading>
+        <typeCode>perspective</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Historical%20and%20Philosophical%20Perspectives</typeUri>
         <typeHeading>Historical and Philosophical Perspectives</typeHeading>
+        <typeCode>historical_and_philosphical_perspectives</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Book%20Review</typeUri>
         <typeHeading>Book Review</typeHeading>
+        <typeCode>book_review</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Book%20Review%2FScience%20in%20the%20Media</typeUri>
         <typeHeading>Book Review/Science in the Media</typeHeading>
+        <typeCode>bookreview_science_in_the_media</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Obituary</typeUri>
         <typeHeading>Obituary</typeHeading>
+        <typeCode>obituary</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Journal%20Club</typeUri>
         <typeHeading>Journal Club</typeHeading>
+        <typeCode>journal_club</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Primer</typeUri>
         <typeHeading>Primer</typeHeading>
+        <typeCode>primer</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Community%20Page</typeUri>
         <typeHeading>Community Page</typeHeading>
+        <typeCode>community_page</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Health%20in%20Action</typeUri>
         <typeHeading>Health in Action</typeHeading>
+        <typeCode>health_in_action</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Policy%20Platform</typeUri>
         <typeHeading>Policy Platform</typeHeading>
+        <typeCode>policy_platform</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Policy%20Forum</typeUri>
         <typeHeading>Policy Forum</typeHeading>
+        <typeCode>policy_forum</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Guidelines%20and%20Guidance</typeUri>
         <typeHeading>Guidelines and Guidance</typeHeading>
+        <typeCode>guidelines_and_guidance</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Historical%20Profiles%20and%20Perspectives</typeUri>
         <typeHeading>Historical Profiles and Perspectives</typeHeading>
+        <typeCode>historical_profiles_and_perspectives</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/From%20Innovation%20to%20Application</typeUri>
         <typeHeading>From Innovation to Application</typeHeading>
+        <typeCode>from_innovation_to_application</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Research%20in%20Translation</typeUri>
         <typeHeading>Research in Translation</typeHeading>
+        <typeCode>resarch_in_translation</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Best%20Practice</typeUri>
         <typeHeading>Best Practice</typeHeading>
+        <typeCode>best_practice</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Student%20Forum</typeUri>
         <typeHeading>Student Forum</typeHeading>
+        <typeCode>student_forum</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Symposium</typeUri>
         <typeHeading>Symposium</typeHeading>
+        <typeCode>symposium</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Learning%20Forum</typeUri>
         <typeHeading>Learning Forum</typeHeading>
+        <typeCode>learning_forum</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Case%20Report</typeUri>
         <typeHeading>Case Report</typeHeading>
+        <typeCode>case_report</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Review</typeUri>
         <typeHeading>Review</typeHeading>
+        <typeCode>review</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Technical%20Report</typeUri>
         <typeHeading>Technical Report</typeHeading>
+        <typeCode>technical_report</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Research%20Article</typeUri>
         <typeHeading>Research Article</typeHeading>
+        <typeCode>research_article</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Correspondence</typeUri>
         <typeHeading>Correspondence</typeHeading>
+        <typeCode>correspondence</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Correspondence%20and%20Other%20Communications</typeUri>
         <typeHeading>Correspondence and Other Communications</typeHeading>
+        <typeCode>correspondance_and_other_communications</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Reader%20Poll</typeUri>
         <typeHeading>Reader Poll</typeHeading>
+        <typeCode>reader_poll</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Quiz</typeUri>
         <typeHeading>Quiz</typeHeading>
+        <typeCode>quiz</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Correction</typeUri>
         <typeHeading>Correction</typeHeading>
+        <typeCode>correction</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Retraction</typeUri>
         <typeHeading>Retraction</typeHeading>
+        <typeCode>retraction</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/History/Profile</typeUri>
         <typeHeading>History/Profile</typeHeading>
+        <typeCode>history_profile</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Retrospective</typeUri>
         <typeHeading>Retrospective</typeHeading>
+        <typeCode>retrospective</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Medical%20Image</typeUri>
         <typeHeading>Medical Image</typeHeading>
+        <typeCode>medical_image</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Issue%20Image</typeUri>
         <typeHeading>Issue Image</typeHeading>
+        <typeCode>issue_image</typeCode>
         <imageSetConfigName>issueImage</imageSetConfigName>
       </articleType>
     </articleTypeList>

@@ -29,7 +29,7 @@
 
     <div id="researchArticle" class="content related">
       <a id="top" name="top" toc="top" title="Top"></a>
-      <div id="contentHeader"><p>Open Access</p><p id="articleType">${articleType.heading}</p></div>
+      <#include "article_blurb.ftl">
       <h1>${articleInfoX.title}</h1>
       <#assign tab="related" />
       <#include "article_tabs.ftl">

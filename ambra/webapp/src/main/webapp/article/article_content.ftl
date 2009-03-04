@@ -17,12 +17,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<@s.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
+<@s.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion"
+  includeParams="none" target="${articleURI}" />
 <div id="researchArticle" class="content">
   <a id="top" name="top" toc="top" title="Top"></a>
   <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
-  <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
-  <div id="contentHeader" xpathLocation="noSelect"><p>Open Access</p><p id="articleType">${articleType.heading}</p></div>
+  <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate"
+    page="${thisPageURL?url}"/>
+  <#include "article_blurb.ftl">
   <h1 xpathLocation="noSelect">${articleInfoX.title}</h1>
   <#assign tab="article" />
   <#include "article_tabs.ftl">

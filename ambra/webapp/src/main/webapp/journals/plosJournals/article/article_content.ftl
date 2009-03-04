@@ -22,7 +22,7 @@
   <a id="top" name="top" toc="top" title="Top"></a>
   <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
   <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
-  <div id="contentHeader" xpathLocation="noSelect"><p>Open Access</p><p id="articleType">${articleType.heading}</p></div>
+  <#include "article_blurb.ftl">
   <h1 xpathLocation="noSelect">${articleInfoX.title}</h1>
   <#assign tab="article" />
   <#include "article_tabs.ftl">

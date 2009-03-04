@@ -1,7 +1,7 @@
 /* $HeadURL$
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,16 +51,18 @@ public class ArticleType implements Serializable {
 
   private final URI uri;
   private final String heading;
+  private final String code;
 
-  private ArticleType(URI articleTypeUri, String displayHeading) {
+  private ArticleType(URI articleTypeUri, String articleTypeCode, String displayHeading) {
     uri = articleTypeUri;
+    code = articleTypeCode;
     heading = displayHeading;
   }
 
   /**
    * Returns an ArticleType if configured in defaults.xml (etc) or null otherwise
    *
-   * @param uri 
+   * @param uri a URI
    * @return the article type
    */
   public static ArticleType getKnownArticleTypeForURI(URI uri) {
@@ -73,8 +75,8 @@ public class ArticleType implements Serializable {
    * (although shall not be recognized as an official ArticleType by getKnownArticleTypeForURI).
    * If createIfAbsent is false, an ArticleType shall not be created and null shall be returned.
    *
-   * @param uri
-   * @param createIfAbsent
+   * @param uri a URI
+   * @param createIfAbsent create article type if absent
    * @return The ArticleType for the given URI
    */
   public static ArticleType getArticleTypeForURI(URI uri, boolean createIfAbsent) {
@@ -90,7 +92,7 @@ public class ArticleType implements Serializable {
           } catch (UnsupportedEncodingException e) {
             // ignore and just use encoded uriStr :(
           }
-          at = new ArticleType(uri, uriStr);
+          at = new ArticleType(uri, null, uriStr);
           newArticleTypes.put(uri, at);
         }
       }
@@ -103,29 +105,53 @@ public class ArticleType implements Serializable {
    * called when deserializing an object. ArticleType objects are serialized and deserialized when
    * propagated over the ehcache from one VM to another.
    *
-   * @return
+   * @return ArticleType
    * @throws ObjectStreamException
    */
   private Object readResolve() throws ObjectStreamException {
     return getArticleTypeForURI(this.uri, true);
   }
 
-  public static ArticleType addArticleType(URI uri, String heading) {
+  /**
+   * Add an article type to the list
+   *
+   * @param uri uri
+   * @param code article type code
+   * @param heading article type heading
+   * @return created article type object
+   */
+  public static ArticleType addArticleType(URI uri, String code, String heading) {
     if (knownArticleTypes.containsKey(uri)) {
       return knownArticleTypes.get(uri);
     }
-    ArticleType at = new ArticleType(uri, heading);
+    ArticleType at = new ArticleType(uri, code, heading);
     knownArticleTypes.put(uri, at);
     articleTypeOrder.add(at);
     return at;
   }
 
+  /**
+   * Get the URI for an article Type
+   * @return the URI
+   */
   public URI getUri() {
     return uri;
   }
 
+  /**
+   * Get the heading
+   * @return heading
+   */
   public String getHeading() {
     return heading;
+  }
+
+  /**
+   * Get the article code
+   * @return the article code
+   */
+  public String getCode() {
+    return code;
   }
 
   /**
@@ -143,6 +169,8 @@ public class ArticleType implements Serializable {
    * and add them to the list of known ArticleType(s). The order of article types found in the
    * configuration is significant and is returned in a Collection from getOrderedListForDisplay().
    * The defaultArticleType is set to the first article type defined unless configured explicitly.
+   *
+   * @param myConfig configuration class
    */
   public static void configureArticleTypes(Configuration myConfig) {
     int count = 0;
@@ -158,8 +186,9 @@ public class ArticleType implements Serializable {
       String baseString = basePath + "(" + count + ").";
       uriStr = myConfig.getString(baseString + "typeUri");
       String headingStr = myConfig.getString(baseString + "typeHeading");
+      String codeStr = myConfig.getString(baseString + "typeCode");
       if ((uriStr != null) && (headingStr != null)) {
-        ArticleType at = addArticleType(URI.create(uriStr), headingStr);
+        ArticleType at = addArticleType(URI.create(uriStr), codeStr, headingStr);
         if (("true".equalsIgnoreCase(myConfig.getString(baseString + "default"))) ||
             (theDefaultArticleType == null)) {
           theDefaultArticleType = at;
@@ -169,13 +198,17 @@ public class ArticleType implements Serializable {
     } while (uriStr != null);
   }
 
+  /**
+   * Get the default article type
+   * @return ArticleType
+   */
   public static ArticleType getDefaultArticleType() {
     return theDefaultArticleType;
   }
 
   /**
    * Is the given {@link ArticleType} research related?
-   * @param articleType
+   * @param articleType an artictleType
    * @return true/false
    */
   public static boolean isResearchArticle(ArticleType articleType) {
@@ -189,7 +222,7 @@ public class ArticleType implements Serializable {
    * This method returns <code>true</code> when one occurrence of
    * {@link ArticleType#ARTICLE_TYPE_HEADING_RESEARCH} is encountered.
    *
-   * @param articleTypeURIs
+   * @param articleTypes a collection of article types
    * @return true/false
    */
   public static boolean isResearchArticle(Collection<ArticleType> articleTypes) {
@@ -207,6 +240,8 @@ public class ArticleType implements Serializable {
    * If super.equals() returns false, we compare the uri. Note that readResolve() is implemented
    * above so that the super.equals() object-identity comparison should succeed if this
    * object was deserialized. This implementation is a safety net in case that fails.
+   *
+   * @param obj articleType
    */
   @Override
   public boolean equals(Object obj) {
@@ -221,6 +256,10 @@ public class ArticleType implements Serializable {
     return false;
   }
 
+  /**
+   * Hashcode for the article tyoe
+   * @return hashcode
+   */
   @Override
   public int hashCode() {
     return getUri().hashCode();
