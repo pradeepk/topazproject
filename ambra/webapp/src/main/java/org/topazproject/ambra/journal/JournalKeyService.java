@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,6 @@ import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.web.VirtualJournalContext;
 
 import org.topazproject.otm.ClassMetadata;
-import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
 
@@ -62,12 +61,12 @@ class JournalKeyService {
     journalCache.getCacheManager().registerListener(new AbstractObjectListener() {
       public void objectRemoved(Session s, ClassMetadata cm, String id, Object o) {
         if (o instanceof Journal) 
-          journalRemoved(((Journal)o).getKey(), s);
+          journalRemoved(((Journal)o).getKey());
       }
     });
   }
 
-  private void journalRemoved(String jName, Session sess) {
+  private void journalRemoved(String jName) {
     journalCache.remove(keyPrefix);
     journalCache.remove(keyPrefix + jName);
   }
