@@ -282,8 +282,13 @@ ambra.slideshow = {
     return false;
   },
   
-  closeReturn: function() {
-    self.close();
-    window.opener.focus();
+  closeReturn: function(url) {
+    if(window.name == 'plosSlideshow' || window.opener != null)
+    {
+      self.close();
+      window.opener.focus();
+    } else {
+      document.location = url;
+    }
   }
 }

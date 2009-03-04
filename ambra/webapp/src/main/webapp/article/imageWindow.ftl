@@ -17,7 +17,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<a href="#" class="close" onclick="ambra.slideshow.closeReturn();">Return to article</a>
+<#assign jDocURL = freemarker_config.getJournalUrl(journalContext) + "/article/" + uri />
+<a href="#" class="close" onclick="ambra.slideshow.closeReturn('${jDocURL}');">Return to article</a>
 
 <div id="figure-window-wrapper">
 <#if Parameters.imageURI?exists>
