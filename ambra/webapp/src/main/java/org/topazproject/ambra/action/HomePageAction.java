@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.article.service.BrowseService;
-import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.model.article.ArticleInfo;
 
 /**
@@ -46,7 +45,6 @@ import org.topazproject.ambra.model.article.ArticleInfo;
 public class HomePageAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(HomePageAction.class);
 
-  private JournalService journalService;
   private BrowseService browseService;
   private SortedMap<String, Integer> categoryInfos;
 
@@ -83,7 +81,7 @@ public class HomePageAction extends BaseActionSupport {
    */
   private List<URI> getArticleTypesToShow(String basePath) {
     String baseString = basePath + ".typeUriArticlesToShow";
-    List<URI> typeUriArticlesToShow = null;
+    List<URI> typeUriArticlesToShow;
 
     /*
      * Iterate through the defined article types.  This is ugly since the index needs to be given
@@ -128,20 +126,19 @@ public class HomePageAction extends BaseActionSupport {
      *       then a new query is made for a somewhat longer duration.
      *   </li>
      * </ul>
-     * The CURRENT_JOURNAL_NAME is acquired from the {@link JournalService} that was set with
-     * {@link #setJournalService(JournalService)}.
+     * The CURRENT_JOURNAL_NAME is acquired from the {@link BaseActionSupport#getCurrentJournal()}
      */
     private void initRecentArticles() {
       // Size of article pool = scalingFactorNumArticlesToShow * numArticlesToShow
       int scalingFactorNumArticlesToShow = 3;
 
-      String journalKey = journalService.getCurrentJournalName();
+      String journalKey = getCurrentJournal();
       String rootKey = "ambra.virtualJournals." + journalKey + ".recentArticles";
 
       List<URI> typeUriArticlesToShow = getArticleTypesToShow(rootKey);
 
-      numDaysInPast = configuration.getInteger(rootKey + ".numDaysInPast", 7).intValue();
-      numArticlesToShow = configuration.getInteger(rootKey + ".numArticlesToShow", 5).intValue();
+      numDaysInPast = configuration.getInteger(rootKey + ".numDaysInPast", 7);
+      numArticlesToShow = configuration.getInteger(rootKey + ".numArticlesToShow", 5);
 
       //  This is the most recent midnight.  No need to futz about with exact dates.
       Calendar startDate = Calendar.getInstance();
@@ -241,11 +238,6 @@ public class HomePageAction extends BaseActionSupport {
     }
 
     return returnArray;
-  }
-
-  @Required
-  public void setJournalService(JournalService journalService) {
-    this.journalService = journalService;
   }
 
   /**
