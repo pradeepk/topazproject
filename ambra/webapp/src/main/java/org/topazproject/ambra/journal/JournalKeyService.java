@@ -142,6 +142,7 @@ class JournalKeyService {
         });
   }
 
+  // FIXME: Service classes should not be aware of servlets nor work with request objects.
   public String getCurrentJournalKey() {
     VirtualJournalContext vjc = (VirtualJournalContext) ServletActionContext.getRequest()
       .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
