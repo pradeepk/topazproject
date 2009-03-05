@@ -30,18 +30,26 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.struts2.interceptor.RequestAware;
 import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.ambra.web.VirtualJournalContext;
 
 /**
  * Base class for all actions.
  */
-public abstract class BaseActionSupport extends ActionSupport {
-  private static final Log           log  = LogFactory.getLog(BaseActionSupport.class);
+public abstract class BaseActionSupport extends ActionSupport implements RequestAware {
+  private static final Log  log  = LogFactory.getLog(BaseActionSupport.class);
 
   protected Configuration configuration;
+  protected Map requestAttributes;
+
   private static final String FEED_DEFAULT_NAME = "ambra.services.feed.defaultName";
   private static final String FEED_BASE_PATH = "ambra.services.feed.basePath";
   private static final String FEED_DEFAULT_FILE = "ambra.services.feed.defaultFile";
+
+  public void setRequest(Map map) {
+    requestAttributes = map;
+  }
 
   /**
    * This overrides the deprecated super inplementation and returns an empty implementation as we
@@ -100,6 +108,7 @@ public abstract class BaseActionSupport extends ActionSupport {
     this.configuration = configuration;
   }
 
+
   /**
    * Add profane words together into a message.
    * @param profaneWords profaneWords
@@ -119,5 +128,23 @@ public abstract class BaseActionSupport extends ActionSupport {
       addFieldError(fieldName, "Profanity filter found: " + joinedWords + ". Please remove " +
                                msg + ".");
     }
+  }
+
+  /**
+   * Retrieve VirtualJournalContext that is bound to the request by VirtualJournalContextFilter
+   * @see org.topazproject.ambra.web.VirtualJournalContextFilter
+   * @return Virtual journal context
+   */
+  protected VirtualJournalContext getVirtualJournalContext() {
+    return (VirtualJournalContext) requestAttributes.get(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
+  }
+
+  /**
+   * Returns key of the current journal based on the request url
+   * @return Journal key, NULL if no journal context
+   */
+  protected String getCurrentJournal() {
+    VirtualJournalContext context = getVirtualJournalContext();
+    return (context == null) ? null : context.getJournal();
   }
 }

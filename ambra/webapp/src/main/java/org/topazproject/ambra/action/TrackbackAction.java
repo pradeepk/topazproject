@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,6 @@ import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Trackback;
 import org.topazproject.ambra.models.TrackbackContent;
-import org.topazproject.ambra.web.VirtualJournalContext;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.Results;
@@ -91,10 +90,6 @@ public class TrackbackAction extends BaseActionSupport {
       return returnError ("HTTP method must be POST");
     }
 
-    // TODO: you should not need to access request directly in struts action, use parameter map here
-    VirtualJournalContext journalContext = (VirtualJournalContext) ServletActionContext.getRequest()
-        .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
-
     final URL permalink;
     final URI trackback;
     try {
@@ -129,7 +124,7 @@ public class TrackbackAction extends BaseActionSupport {
       }
 
       LinkbackExtractor linkback = new LinkbackExtractor(url,
-                                 getArticleUrl(journalContext.getBaseUrl(), trackbackId));
+          getArticleUrl(getVirtualJournalContext().getBaseUrl(), trackbackId));
       if (linkback.getExcerpt() == null) {
         if (log.isDebugEnabled()) {
           log.debug("Trackback failed verification: " + permalink);

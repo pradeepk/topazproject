@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.ServletActionContext;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +31,6 @@ import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.ArticleFeedService;
 import org.topazproject.ambra.article.service.FeedCacheKey;
 import org.topazproject.ambra.article.service.ArticleFeedService.FEED_TYPES;
-import org.topazproject.ambra.web.VirtualJournalContext;
 
 import com.opensymphony.xwork2.ModelDriven;
 
@@ -203,16 +201,4 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     return (cacheKey == null) ? cacheKey = articleFeedService.newCacheKey() : cacheKey;
   }
 
-  /**
-   * Retrieve the <code>VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT</code> from the servlet
-   * container. This is set by the <code>VirtualJournalContextFilter.doFilter</code>
-   *
-   * @see org.topazproject.ambra.web.VirtualJournalContextFilter
-   *
-   * @return String virtual journal of request
-   */
-  private String getCurrentJournal() {
-    return ((VirtualJournalContext) ServletActionContext.getRequest().
-        getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
-  }
 }
