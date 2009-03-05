@@ -282,6 +282,8 @@ function getArticle() {
       // re-apply article "decorations"
       ambra.displayComment.processBugCount();
       ambra.corrections.apply();
+      ambra.navigation.buildTOC(dojo.byId('sectionNavTop'));
+      
       document.articleInfo.annotationId.value = ''; // reset
       _ldc.hide();
       
