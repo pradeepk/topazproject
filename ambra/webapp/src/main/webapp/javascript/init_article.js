@@ -280,7 +280,6 @@ function getArticle() {
       // refresh article HTML content
       dojo.byId(annotationConfig.articleContainer).innerHTML = response;
       // re-apply article "decorations"
-      getAnnotationCount();
       ambra.displayComment.processBugCount();
       ambra.corrections.apply();
       document.articleInfo.annotationId.value = ''; // reset
@@ -288,23 +287,6 @@ function getArticle() {
       
       //Rebind the text selection event
       ambra.displayAnnotationContext.init("researchArticle");
-    }
-  });
-}
-
-function getAnnotationCount() {
-  var refreshArea1 = dojo.byId(annotationConfig.rhcCount + "1");
-  var targetUri = _annotationForm.target.value;
-  dojo.xhrGet({
-    url: _namespace + "/article/fetchArticleRhc.action?articleURI=" + targetUri,
-    handleAs:'text',
-    error: function(response, ioArgs){
-      handleXhrError(response, ioArgs);
-    },
-    load: function(response, ioArgs){
-      var docFragment = document.createDocumentFragment();
-      docFragment = response;
-      refreshArea1.innerHTML = docFragment;
     }
   });
 }

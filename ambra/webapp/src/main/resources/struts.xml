@@ -399,13 +399,6 @@
       </result>
     </action>
 
-    <action name="fetchArticleRhc" class="org.topazproject.ambra.article.action.FetchArticleAction" method="fetchArticle">
-      <result name="success" type="ambraFreemarker">
-        <param name="location">/article/article_rhc_count.ftl</param>
-        <param name="noCache">true</param>
-      </result>
-    </action>
-
     <action name="browse" class="org.topazproject.ambra.article.action.BrowseArticlesAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/browse.ftl</param>
