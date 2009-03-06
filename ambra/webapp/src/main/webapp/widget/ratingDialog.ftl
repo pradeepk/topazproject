@@ -20,67 +20,96 @@
 <div dojoType="dijit.Dialog" id="Rating">
   <div class="dialog annotate">
     <div class="tipu" id="dTipu"></div>
-    <div class="btn close" title="Click to close and cancel"><a id="btn_cancel_rating" title="Click to close and cancel">Cancel</a></div>
     <div class="comment">
       <h5><span class="commentPublic">Rate This Article</span></h5>
-      <p>See also <a href="${freemarker_config.getContext()}/static/ratingGuidelines.action" class="instructions">guidelines for rating</a>.</p>
-      <div class="posting pane"><form name="ratingForm" id="ratingForm" method="post" action="">
-        <input type="hidden" name="articleURI" value="${articleURI}" />  
-        <input type="hidden" name="commentTitle" id="commentTitle" value="" />
-        <input type="hidden" name="comment" id="commentArea" value="" />
-        <fieldset>
-          <legend>Compose Your Annotation</legend>
-          <span id="submitRatingMsg" class="error"></span>
-<#if isResearchArticle == true>
-          <label for="insight">Insight</label>
-          <ul class="star-rating rating edit" title="Rate insight" id="rateInsight">
-            <li class="current-rating pct0"></li>
-            <li><a href="javascript:void(0);" title="Bland" class="one-star" onclick="ambra.rating.setRatingCategory(this, 'insight', 1);">1</a></li>
-            <li><a href="javascript:void(0);" title="" class="two-stars" onclick="ambra.rating.setRatingCategory(this, 'insight', 2);">2</a></li>
-            <li><a href="javascript:void(0);" title="" class="three-stars" onclick="ambra.rating.setRatingCategory(this, 'insight', 3);">3</a></li>
-            <li><a href="javascript:void(0);" title="" class="four-stars" onclick="ambra.rating.setRatingCategory(this, 'insight', 4);">4</a></li>
-            <li><a href="javascript:void(0);" title="Profound" class="five-stars" onclick="ambra.rating.setRatingCategory(this, 'insight', 5);">5</a></li>
-          </ul>    
-          <input type="hidden" name="insight" title="insight" value="" />
-          <label for="reliability">Reliability</label>
-          <ul class="star-rating rating edit" title="Rate reliability" id="rateReliability">
-            <li class="current-rating pct0"></li>
-            <li><a href="javascript:void(0);" title="Tenuous" class="one-star" onclick="ambra.rating.setRatingCategory(this, 'reliability', 1);">1</a></li>
-            <li><a href="javascript:void(0);" title="" class="two-stars" onclick="ambra.rating.setRatingCategory(this, 'reliability', 2);">2</a></li>
-            <li><a href="javascript:void(0);" title="" class="three-stars" onclick="ambra.rating.setRatingCategory(this, 'reliability', 3);">3</a></li>
-            <li><a href="javascript:void(0);" title="" class="four-stars" onclick="ambra.rating.setRatingCategory(this, 'reliability', 4);">4</a></li>
-            <li><a href="javascript:void(0);" title="Unassailable" class="five-stars" onclick="ambra.rating.setRatingCategory(this, 'reliability', 5);">5</a></li>
-          </ul>    
-          <input type="hidden" name="reliability" title="reliability" value="" />
-          <label for="style">Style</label>
-          <ul class="star-rating rating edit" title="Rate style" id="rateStyle">
-            <li class="current-rating pct0"></li>
-            <li><a href="javascript:void(0);" title="Crude" class="one-star" onclick="ambra.rating.setRatingCategory(this, 'style', 1);">1</a></li>
-            <li><a href="javascript:void(0);" title="" class="two-stars" onclick="ambra.rating.setRatingCategory(this, 'style', 2);">2</a></li>
-            <li><a href="javascript:void(0);" title="" class="three-stars" onclick="ambra.rating.setRatingCategory(this, 'style', 3);">3</a></li>
-            <li><a href="javascript:void(0);" title="" class="four-stars" onclick="ambra.rating.setRatingCategory(this, 'style', 4);">4</a></li>
-            <li><a href="javascript:void(0);" title="Elegant" class="five-stars" onclick="ambra.rating.setRatingCategory(this, 'style', 5);">5</a></li>
-          </ul>    
-          <input type="hidden" name="style" title="style" value="" />
-<#else>
-          <label for="singleRating">Rating</label>
-          <ul class="star-rating rating edit" title="Rate single" id="rateSingleRating">
-            <li class="current-rating pct0"></li>
-            <li><a href="javascript:void(0);" title="Bland" class="one-star" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 1);">1</a></li>
-            <li><a href="javascript:void(0);" title="" class="two-stars" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 2);">2</a></li>
-            <li><a href="javascript:void(0);" title="" class="three-stars" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 3);">3</a></li>
-            <li><a href="javascript:void(0);" title="" class="four-stars" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 4);">4</a></li>
-            <li><a href="javascript:void(0);" title="Profound" class="five-stars" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 5);">5</a></li>
-          </ul>    
-          <input type="hidden" name="singleRating" title="singleRating" value="" />
-</#if>
-          <label for="cTitle" class="commentPublic"><span class="none">Enter your comment title</span><!-- error message text <em>A title is required for all public annotations</em>--></label>
-          <input type="text" name="cTitle" id="cTitle" value="Enter your comment title..." class="title commentPublic" alt="Enter your comment title..." />
-          <label for="cArea"><span class="none">Enter your comment</span><!-- error message text <em>Please enter your annotation</em>--></label>
-          <textarea name="cArea" id="cArea" value="Enter your comment..." alt="Enter your comment...">Enter your comment...</textarea>
-          <div class="btnwrap commentPublic"><input type="button" value="Post" class="commentPublic" title="Click to post your annotation publicly" id="btn_post_rating"/></div>
-        </fieldset>
-      </form></div>
+      <div class="instructions">Please follow our <a  href="/static/commentGuidelines.action">guidelines for commenting/rating</a> and review our <a href="#">competing interests policy</a>. Comments that do not conform to our guidelines will be promptly removed and the user account disabled. The following must be avoided:
+        <ol>
+          <li>Remarks that could be interpreted as allegations of misconduct</li>
+          <li>Unsupported assertions or statements</li>
+          <li>Inflammatory or insulting language</li>
+        </ol>
+      </div>
+      <div class="posting pane">
+        <form name="ratingForm" id="ratingForm" method="post" action="">
+          <input type="hidden" name="articleURI" value="${articleURI}" />  
+          <input type="hidden" name="commentTitle" id="commentTitle" value="" />
+          <input type="hidden" name="comment" id="commentArea" value="" />
+          <fieldset>
+            <legend>Compose Your Annotation</legend>
+            <span id="submitRatingMsg" class="error"></span>
+            <table class="layout">
+              <tr>
+                <td rowspan="2">
+      <#if isResearchArticle == true>
+                  <label for="insight">Insight</label>
+                  <ul class="star-rating rating edit" title="Rate insight" id="rateInsight">
+                    <li class="current-rating pct0"></li>
+                    <li><a href="javascript:void(0);" title="Bland" class="one-star" onclick="ambra.rating.setRatingCategory(this, 'insight', 1);">1</a></li>
+                    <li><a href="javascript:void(0);" title="" class="two-stars" onclick="ambra.rating.setRatingCategory(this, 'insight', 2);">2</a></li>
+                    <li><a href="javascript:void(0);" title="" class="three-stars" onclick="ambra.rating.setRatingCategory(this, 'insight', 3);">3</a></li>
+                    <li><a href="javascript:void(0);" title="" class="four-stars" onclick="ambra.rating.setRatingCategory(this, 'insight', 4);">4</a></li>
+                    <li><a href="javascript:void(0);" title="Profound" class="five-stars" onclick="ambra.rating.setRatingCategory(this, 'insight', 5);">5</a></li>
+                  </ul>    
+                  <input type="hidden" name="insight" title="insight" value="" />
+                  <label for="reliability">Reliability</label>
+                  <ul class="star-rating rating edit" title="Rate reliability" id="rateReliability">
+                    <li class="current-rating pct0"></li>
+                    <li><a href="javascript:void(0);" title="Tenuous" class="one-star" onclick="ambra.rating.setRatingCategory(this, 'reliability', 1);">1</a></li>
+                    <li><a href="javascript:void(0);" title="" class="two-stars" onclick="ambra.rating.setRatingCategory(this, 'reliability', 2);">2</a></li>
+                    <li><a href="javascript:void(0);" title="" class="three-stars" onclick="ambra.rating.setRatingCategory(this, 'reliability', 3);">3</a></li>
+                    <li><a href="javascript:void(0);" title="" class="four-stars" onclick="ambra.rating.setRatingCategory(this, 'reliability', 4);">4</a></li>
+                    <li><a href="javascript:void(0);" title="Unassailable" class="five-stars" onclick="ambra.rating.setRatingCategory(this, 'reliability', 5);">5</a></li>
+                  </ul>    
+                  <input type="hidden" name="reliability" title="reliability" value="" />
+                  <label for="style">Style</label>
+                  <ul class="star-rating rating edit" title="Rate style" id="rateStyle">
+                    <li class="current-rating pct0"></li>
+                    <li><a href="javascript:void(0);" title="Crude" class="one-star" onclick="ambra.rating.setRatingCategory(this, 'style', 1);">1</a></li>
+                    <li><a href="javascript:void(0);" title="" class="two-stars" onclick="ambra.rating.setRatingCategory(this, 'style', 2);">2</a></li>
+                    <li><a href="javascript:void(0);" title="" class="three-stars" onclick="ambra.rating.setRatingCategory(this, 'style', 3);">3</a></li>
+                    <li><a href="javascript:void(0);" title="" class="four-stars" onclick="ambra.rating.setRatingCategory(this, 'style', 4);">4</a></li>
+                    <li><a href="javascript:void(0);" title="Elegant" class="five-stars" onclick="ambra.rating.setRatingCategory(this, 'style', 5);">5</a></li>
+                  </ul>    
+                  <input type="hidden" name="style" title="style" value="" />
+      <#else>
+                  <label for="singleRating">Rating</label>
+                  <ul class="star-rating rating edit" title="Rate single" id="rateSingleRating">
+                    <li class="current-rating pct0"></li>
+                    <li><a href="javascript:void(0);" title="Bland" class="one-star" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 1);">1</a></li>
+                    <li><a href="javascript:void(0);" title="" class="two-stars" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 2);">2</a></li>
+                    <li><a href="javascript:void(0);" title="" class="three-stars" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 3);">3</a></li>
+                    <li><a href="javascript:void(0);" title="" class="four-stars" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 4);">4</a></li>
+                    <li><a href="javascript:void(0);" title="Profound" class="five-stars" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 5);">5</a></li>
+                  </ul>    
+                  <input type="hidden" name="singleRating" title="singleRating" value="" />
+      </#if>
+                  <label for="cTitle" class="commentPublic"><span class="none">Enter your comment title</span><!-- error message text <em>A title is required for all public annotations</em>--></label>
+                  <input type="text" name="cTitle" id="cTitle" value="Enter your comment title..." class="title commentPublic" alt="Enter your comment title..." />
+                  <label for="cArea"><span class="none">Enter your comment</span><!-- error message text <em>Please enter your annotation</em>--></label>
+                  <textarea name="cArea" id="cArea" value="Enter your comment..." alt="Enter your comment...">Enter your comment...</textarea>
+                </td>
+                <td rowspan="2">&nbsp;</td>
+                <td class="coi">
+                  <fieldset>
+                    <legend>Declare any competing interests.</legend>
+                    <ul>
+                      <li><label><input id="temp" type="radio" checked="checked" name="noCOI" value="blah"  /> No, I don't have any competing interests to declare.</label></li>
+                      <li><label><input id="temp2" type="radio" name="yesCOI" value="blahblah"  /> Yes, I have competing interests to declare (enter below):</label></li>
+                    </ul>
+                    <textarea name="coi" id="temp" value="Enter your competing interests..." alt="Enter your competing interests...">Enter your competing interests...</textarea>
+                  </fieldset>
+                </td>
+              </tr>
+              <tr>
+                <td class="buttons">
+                  <input type="button" value="Cancel" title="Click to close and cancel" id="btn_cancel_rating"/>
+                  <input type="button" value="Submit" title="Click to post your annotation publicly" id="btn_post_rating" class="primary"/>
+                </td>
+              </tr>
+            </table>
+          </fieldset>
+        </form>
+      </div>
     </div>
   </div>
 </div>

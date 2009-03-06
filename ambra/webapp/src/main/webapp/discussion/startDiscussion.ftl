@@ -31,24 +31,49 @@
       <!-- begin : posting response -->
       <div class="posting pane" id="DiscussionPanel">
         <h5>Post Your Discussion Comment</h5>
-        <div class="close btn" id="btnCancelResponse"><@s.a href="%{articlePageURL}" title="Cancel and go back to original article">Cancel</@s.a></div>
+        <div class="instructions">Please follow our <a  href="/static/commentGuidelines.action">guidelines for commenting/rating</a> and review our <a href="#">competing interests policy</a>. Comments that do not conform to our guidelines will be promptly removed and the user account disabled. The following must be avoided:
+        <ol>
+          <li>Remarks that could be interpreted as allegations of misconduct</li>
+          <li>Unsupported assertions or statements</li>
+          <li>Inflammatory or insulting language</li>
+        </ol>
+      </div>
+        <!-- You may want the url variables here for targeting by the new cancel button at the bottom of the form. <div class="close btn" id="btnCancelResponse"><@s.a href="%{articlePageURL}" title="Cancel and go back to original article">Cancel</@s.a></div>-->
           <form name="discussionResponse" method="post" action="">
           <input type="hidden" name="target" value="${articleInfo.id}" />        
           <input type="hidden" name="commentTitle" value="" />
           <input type="hidden" name="comment" value="" />
-          <input type="hidden" name="isPublic" value="true" />
-
-          <div id="responseSubmitMsg" class="error"/>                
+          <input type="hidden" name="isPublic" value="true" />             
           <fieldset>
             <legend>Compose Your Response</legend>
-
-            <label for="responseTitle"><span class="none">Enter your comment title</span><!-- error message text <em>A title is required for all public annotations</em>--></label>
-            <input type="text" name="responseTitle" id="responseTitle" value="Enter your comment title..." class="title" alt="Enter your comment title..." />
-
-            <label for="responseArea"><span class="none">Enter your comment</span><!-- error message style <em>Please enter your response</em>--></label>
-            <textarea id="responseArea" title="Enter your comment..." class="response" name="responseArea" >Enter your comment...</textarea>
-
-            <div class="btnwrap"><input name="post" value="Post" type="button" id="btnPostResponse" title="Click to Post Your Response"/></div>
+            <div id="responseSubmitMsg" class="error"></div>
+            <table class="layout">
+              <tr>
+                <td>
+                  <label for="title"><span class="none">Enter your comment title</span></label>
+                  <input type="text" name="responseTitle" id="title" value="Enter your comment title..." class="title" alt="Enter your comment title..." />
+                  <label for="responseArea"><span class="none">Enter your comment</span></label>
+                  <textarea id="responseArea" title="Enter your comment..." class="response" name="responseArea" >Enter your comment...</textarea>
+                </td>
+                <td>&nbsp;</td>
+                <td class="coi">
+                  <fieldset>
+                    <legend>Declare any competing interests.</legend>
+                    <ul>
+                      <li><label><input id="temp" type="radio" checked="checked" name="noCOI" value="blah"  /> No, I don't have any competing interests to declare.</label></li>
+                      <li><label><input id="temp2" type="radio" name="yesCOI" value="blahblah"  /> Yes, I have competing interests to declare (enter below):</label></li>
+                    </ul>
+                    <textarea name="coi" id="temp" value="Enter your competing interests..." alt="Enter your competing interests...">Enter your competing interests...</textarea>
+                  </fieldset>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3" class="buttons">
+                  <input type="button" value="Cancel" title="Click to close and cancel" id="btnCancelResponse"/>
+                  <input name="post" value="Submit" type="button" id="btnPostResponse" title="Click to Post Your Response" class="primary"/>
+                </td>
+              </tr>
+            </table>
           </fieldset>
         </form>
       </div>
