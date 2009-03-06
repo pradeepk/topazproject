@@ -39,8 +39,6 @@ import org.topazproject.fedora.otm.FedoraBlobFactory;
 
 import org.topazproject.mulgara.itql.EmbeddedClient;
 
-import javax.transaction.TransactionManager;
-
 /**
  * Convenience class to manage configuration of OTM Session Factory
  *
@@ -61,7 +59,6 @@ public class OtmConfiguration {
    *
    * @param tripleStoreUrl the URL for the store
    * @param blobStore the blob-store to use
-   * @param jtaTransactionManager JTA transaction manager
    */
   public OtmConfiguration(String tripleStoreUrl, BlobStore blobStore) {
     this.tripleStoreUrl = tripleStoreUrl;
