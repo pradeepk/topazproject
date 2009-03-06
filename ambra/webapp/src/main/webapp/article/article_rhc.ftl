@@ -63,8 +63,8 @@
     </dl>
   </#if>
     <p><strong>Related subject categories</strong><br/>
-    <#list articleInfo.categories as cat>
-      <a href="browse.action?catName=${cat.mainCategory?url}">${cat.mainCategory}</a><#if cat_has_next>, </#if>
+    <#list mainCategories as cat>
+      <a href="browse.action?catName=${cat?url}">${cat}</a><#if cat_has_next>, </#if>
     </#list></p>
 
     <div class="more clearfix"><a href="${relatedArticleURL}">More</a></div>

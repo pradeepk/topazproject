@@ -33,6 +33,7 @@ import org.topazproject.ambra.models.Retraction;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.MinorCorrection;
 import org.topazproject.ambra.models.FormalCorrection;
+import org.topazproject.ambra.models.Category;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
@@ -49,6 +50,7 @@ import java.net.URI;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -486,5 +488,27 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    */
   public Commentary[] getCommentary() {
     return commentary;
+  }
+
+  /**
+   * Return a list of this article's main categories
+   * @return
+   */
+  public Set<String> getMainCategories() throws ApplicationException
+  {
+    Set<String> mainCats = new HashSet<String>();
+
+    if(articleInfo == null) {
+      throw new ApplicationException("Article not set");
+    }
+
+    for(Category curCategory : articleInfo.getCategories()) {
+      if(!mainCats.contains(curCategory.getMainCategory()))
+      {
+        mainCats.add(curCategory.getMainCategory());
+      }
+    }
+
+    return mainCats;
   }
 }
