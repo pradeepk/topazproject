@@ -23,6 +23,7 @@
   <h2>Article:</h2>
   <p class="intro">
     <#assign isCorrection=false/>
+    <#assign isRetraction=true/>
     <#include "citation.ftl"/>
   </p>
   <h2>Download the article citation in the following formats:</h2>

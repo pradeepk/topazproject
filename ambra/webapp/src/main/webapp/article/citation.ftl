@@ -39,7 +39,7 @@
 </#if>
 
 <span class="citation_date"><#if isCorrection>(${citation.year?string('0000')})<#else>${citation.year?string('0000')}</#if></span>
-<span class="citation_article_title"><#if isCorrection>Correction: </#if><@articleFormat>${citation.title}</@articleFormat>. </span>
+<span class="citation_article_title"><#if isCorrection><#if isRetraction>Retraction: <#else>Correction: </#if></#if><@articleFormat>${citation.title}</@articleFormat>. </span>
 <span class="citation_journal_title">${citation.journal!}</span><#if isCorrection>:
 <#else>
 <span class="citation_issue"> ${citation.volume}(${citation.issue}):</span>
