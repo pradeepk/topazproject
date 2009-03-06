@@ -492,7 +492,8 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
 
   /**
    * Return a list of this article's main categories
-   * @return
+   * @return a Set<String> of category names
+   * @throws ApplicationException when the article has not been set
    */
   public Set<String> getMainCategories() throws ApplicationException
   {
