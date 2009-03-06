@@ -431,8 +431,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
   *
   * @return returns averageRatings info
   * */
-  public RatingsService.AverageRatings getAverageRatings()
-  {
+  public RatingsService.AverageRatings getAverageRatings() {
     return averageRatings;
   }
 
@@ -440,8 +439,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    * Get the total number of user comments
    * @return total number of user comments
    */
-  public int getTotalComments()
-  {
+  public int getTotalComments() {
     return numDiscussions + numComments + numMinorCorrections + numFormalCorrections + numRetractions;
   }
 
@@ -495,8 +493,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    * @return a Set<String> of category names
    * @throws ApplicationException when the article has not been set
    */
-  public Set<String> getMainCategories() throws ApplicationException
-  {
+  public Set<String> getMainCategories() throws ApplicationException {
     Set<String> mainCats = new HashSet<String>();
 
     if(articleInfo == null) {
@@ -504,10 +501,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
     }
 
     for(Category curCategory : articleInfo.getCategories()) {
-      if(!mainCats.contains(curCategory.getMainCategory()))
-      {
-        mainCats.add(curCategory.getMainCategory());
-      }
+      mainCats.add(curCategory.getMainCategory());
     }
 
     return mainCats;
