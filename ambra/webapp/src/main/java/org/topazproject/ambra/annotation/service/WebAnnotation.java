@@ -90,24 +90,52 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
     return escapeText(title);
   }
 
+  /**
+   * Is this annotation a formal correction?
+   * @return Returns true if this annotation is a formal correction.
+   */
   public boolean isFormalCorrection() {
     return annotea instanceof FormalCorrection;
   }
 
+  /**
+   * Is this annotation a minor correction?
+   * @return Returns true if this annotation is a minor correction.
+   */
   public boolean isMinorCorrection() {
     return annotea instanceof MinorCorrection;
   }
 
+  /**
+   * Is this annotation a retraction?
+   * @return Returns true if this annotation is a retraction.
+   */
   public boolean isRetraction() {
     return annotea instanceof Retraction;
   }
 
+  /**
+   * Is this annotation a correction?
+   * @return Returns true if this annotation is a correction.
+   */
   public boolean isCorrection() {
     return annotea instanceof Correction;
   }
 
+  /**
+   * Is this annotation a comment?
+   * @return Returns true if this annotation is a comment.
+   */
   public boolean isComment() {
     return annotea instanceof Comment;
+  }
+
+ /**
+  * Escaped text of CIStatement.
+  * @return CIStatement as String.
+  */
+  public String getCIStatement() {
+    return escapeText(annotea.getBody().getCIStatement());
   }
 
   /**
@@ -128,7 +156,6 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
    * @return display name as String.
    */
   public String getDisplayName() {
-
     if (isComment()) {
       return (getContext() != null) ? "Note" : "Comment";
     } else if (isFormalCorrection()) {

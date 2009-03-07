@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id:CreateAnnotationAction.java 722 2006-10-02 16:42:45Z viru $
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,10 +44,12 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 public class CreateAnnotationAction extends BaseSessionAwareActionSupport {
   private String target;
   private String commentTitle;
+  private String ciStatement;
   private String comment;
   private String mimeType = "text/plain";
   private String annotationId;
   private boolean isPublic = false;
+  private boolean isCompetingInterest = false;
   private String noteType;
   private String startPath;
   private int startOffset;
@@ -72,13 +74,19 @@ public class CreateAnnotationAction extends BaseSessionAwareActionSupport {
     try {
       final List<String> profaneWordsInTitle = profanityCheckingService.validate(commentTitle);
       final List<String> profaneWordsInBody = profanityCheckingService.validate(comment);
+      final List<String> profaneWordsInCIStatement = profanityCheckingService.validate(ciStatement);
 
-      if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty()) {
+      if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty() && profaneWordsInCIStatement.isEmpty()) {
         final String scontext =
           ContextFormatter.asXPointer(new Context(startPath, startOffset, endPath, endOffset,
                                                   target));
+
+        if (log.isDebugEnabled()) {
+          log.debug("Creating Annotation, comment: " + comment + "; ciStatement: " + ciStatement);
+        }
+
         annotationId = annotationService.createComment(target, scontext, supercedes, commentTitle,
-                                                       mimeType, comment, isPublic,
+                                                       mimeType, comment, ciStatement, isPublic,
                                                        getCurrentUser());
         if (log.isDebugEnabled()) {
           log.debug("CreateAnnotationAction called and annotation created with id: " +
@@ -91,6 +99,7 @@ public class CreateAnnotationAction extends BaseSessionAwareActionSupport {
       } else {
         addProfaneMessages(profaneWordsInBody, "comment", "comment");
         addProfaneMessages(profaneWordsInTitle, "commentTitle", "title");
+        addProfaneMessages(profaneWordsInCIStatement, "ciStatement", "statement");
         return INPUT;
       }
     } catch (final Exception e) {
@@ -114,6 +123,14 @@ public class CreateAnnotationAction extends BaseSessionAwareActionSupport {
       addFieldError("comment", "You must say something in your comment");
       invalid = true;
     }
+
+    if(this.isCompetingInterest) {
+      if (StringUtils.isEmpty(ciStatement)) {
+        addFieldError("statement", "You must say something in your competing interest statement");
+        invalid = true;
+      }
+    }
+
     return invalid;
   }
 
@@ -139,6 +156,19 @@ public class CreateAnnotationAction extends BaseSessionAwareActionSupport {
    */
   public void setComment(final String comment) {
     this.comment = comment;
+  }
+
+  /**
+   * Set the competing interest statement of the annotation
+   * @param ciStatement Statement
+   */
+  public void setCiStatement(final String ciStatement) {
+    this.ciStatement = ciStatement;
+  }
+
+  /** @param isPublic set the visibility of annotation */
+  public void setIsPublic(final boolean isPublic) {
+    this.isPublic = isPublic;
   }
 
   /**
@@ -194,9 +224,9 @@ public class CreateAnnotationAction extends BaseSessionAwareActionSupport {
     this.profanityCheckingService = profanityCheckingService;
   }
 
-  /** @param isPublic set the visibility of annotation */
-  public void setIsPublic(final boolean isPublic) {
-    this.isPublic = isPublic;
+  /** @param isCompetingInterest does this annotation have competing interests? */
+  public void setIsCompetingInterest(final boolean isCompetingInterest) {
+    this.isCompetingInterest = isCompetingInterest;
   }
 
   /** @return whether the annotation is public */

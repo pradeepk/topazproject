@@ -1,16 +1,16 @@
 <#--
   $HeadURL::                                                                            $
   $Id$
-  
-  Copyright (c) 2007-2008 by Topaz, Inc.
+
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
-  
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,7 @@
 <div id="discussionContainer">
   <!-- begin : main content -->
   <div id="content">
-    <h1>Start a Discussion</h1>        
+    <h1>Start a Discussion</h1>
     <div class="source">
       <span>On the Article</span>
       <@s.url id="articlePageURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
@@ -38,15 +38,16 @@
           <li>Inflammatory or insulting language</li>
         </ol>
       </div>
-        <!-- You may want the url variables here for targeting by the new cancel button at the bottom of the form. <div class="close btn" id="btnCancelResponse"><@s.a href="%{articlePageURL}" title="Cancel and go back to original article">Cancel</@s.a></div>-->
           <form name="discussionResponse" method="post" action="">
-          <input type="hidden" name="target" value="${articleInfo.id}" />        
+          <input type="hidden" name="target" value="${articleInfo.id}" />
           <input type="hidden" name="commentTitle" value="" />
           <input type="hidden" name="comment" value="" />
-          <input type="hidden" name="isPublic" value="true" />             
+          <input type="hidden" name="ciStatement" id="statementArea" value="" />
+          <input type="hidden" name="isCompetingInterest" id="isCompetingInterest" value="false" />
+          <input type="hidden" name="isPublic" value="true" />
           <fieldset>
             <legend>Compose Your Response</legend>
-            <div id="responseSubmitMsg" class="error"></div>
+            <div id="responseSubmitMsg" class="error" style="display:none;"></div>
             <table class="layout">
               <tr>
                 <td>
@@ -60,10 +61,10 @@
                   <fieldset>
                     <legend>Declare any competing interests.</legend>
                     <ul>
-                      <li><label><input id="temp" type="radio" checked="checked" name="noCOI" value="blah"  /> No, I don't have any competing interests to declare.</label></li>
-                      <li><label><input id="temp2" type="radio" name="yesCOI" value="blahblah"  /> Yes, I have competing interests to declare (enter below):</label></li>
+                      <li><label><input id="isCompetingInterestNo" type="radio" checked="checked" name="competingInterest" value="false"  /> No, I don't have any competing interests to declare.</label></li>
+                      <li><label><input id="isCompetingInterestYes" type="radio" name="competingInterest" value="true"  /> Yes, I have competing interests to declare (enter below):</label></li>
                     </ul>
-                    <textarea name="coi" id="temp" value="Enter your competing interests..." alt="Enter your competing interests...">Enter your competing interests...</textarea>
+                    <textarea name="ciStatementArea" id="ciStatementArea" disabled value="Enter your competing interests..." alt="Enter your competing interests...">Enter your competing interests...</textarea>
                   </fieldset>
                 </td>
               </tr>

@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@
 			<h6 id="viewCmtTitle"></h6>
 			<div class="detail" id="viewCmtDetail"></div>
 			<div class="contentwrap" id="viewComment"></div>
+      <div class="contentwrap" id="viewCIStatement"></div>
 			<div class="detail" id="viewLink">
 				<!--<a href="#" class="commentary icon" title="Click to view full thread and respond">View all responses</a>
 				<a href="#" class="respond tooltip" title="Click to respond to this posting">Respond to this</a>-->

@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  */
 @UriPrefix("topaz:RatingContent/")
 @Entity(graph = "ri", types = {"topaz:RatingContent"})
-public class RatingContent implements Serializable {
+public class RatingContent implements Serializable, CompetingInterest {
   private static final long serialVersionUID = -8354040136278478548L;
 
   /**
@@ -55,13 +55,14 @@ public class RatingContent implements Serializable {
    * Weight to use for single-rating calculation.
    */
   public static final int STYLE_WEIGHT = 4;
-  private String           id;
-  private int              insightValue;
-  private int              reliabilityValue;
-  private int              styleValue;
-  private int              singleRatingValue;
-  private String           commentTitle;
-  private String           commentValue;
+  private String id;
+  private int insightValue;
+  private int reliabilityValue;
+  private int styleValue;
+  private int singleRatingValue;
+  private String commentTitle;
+  private String commentValue;
+  private String ciStatement;
   private static final Log log = LogFactory.getLog(RatingContent.class);
 
   /**
@@ -222,6 +223,22 @@ public class RatingContent implements Serializable {
   @Predicate
   public void setCommentValue(String commentValue) {
     this.commentValue = commentValue;
+  }
+
+  /**
+   * Get the competing Interest statement
+   * @return the competing interest statement
+   */
+  public String getCIStatement() {
+    return ciStatement;
+  }
+
+  /**
+   * Set the competing interest statement
+   * @param ciStatement The statement to save
+   */
+  public void setCIStatement(String ciStatement) {
+    this.ciStatement = ciStatement;
   }
 
   /**

@@ -39,17 +39,20 @@ ambra.displayComment = {
   sectionDetail: "",
   
   sectionComment: "",
+
+  sectionCIStatement: "",
   
   sectionLink: "",
   
   retrieveMsg: "",
   
   init: function() {
-    this.sectionTitle   = dojo.byId(commentConfig.sectionTitle);
+    this.sectionTitle = dojo.byId(commentConfig.sectionTitle);
     this.sectionDetail  = dojo.byId(commentConfig.sectionDetail);
     this.sectionComment = dojo.byId(commentConfig.sectionComment);
-    this.sectionLink    = dojo.byId(commentConfig.sectionLink);
-    this.retrieveMsg    = dojo.byId(commentConfig.retrieveMsg);    
+    this.sectionCIStatement = dojo.byId(commentConfig.sectionCIStatement);
+    this.sectionLink = dojo.byId(commentConfig.sectionLink);
+    this.retrieveMsg = dojo.byId(commentConfig.retrieveMsg);    
   },
   
   isMultiple: function(attr) {
@@ -76,6 +79,10 @@ ambra.displayComment = {
   
   setSectionComment: function(configObj) {
     this.sectionComment = dojo.byId(configObj.sectionComment);
+  },
+
+  setSectionCIStatement: function(configObj) {
+    this.sectionCIStatement = dojo.byId(configObj.sectionCIStatement);
   },
   
   setSectionLink: function(configObj) {
@@ -225,6 +232,24 @@ ambra.displayComment = {
     
     return commentFrag;
   },
+
+  /**
+   * ambra.displayComment.buildDisplayCIStatement(JSON jsonObj)
+   *
+   * Builds the competing interest body of the annotation comment display dialog.
+   *
+   * @param		jsonObj				JSON object					JSON object containing the data that
+   * 														 						 		 retrieved from the database.
+   *
+   * @return	ciStatementFrag		Document fragment		Resulting document fragment created.
+   */
+  buildDisplayCIStatement: function (jsonObj) {
+    // Insert formatted comment
+    var ciStatementFrag = document.createDocumentFragment();
+    ciStatementFrag = jsonObj.annotation.CIStatement;
+
+    return ciStatementFrag;
+  },
   
   /**
    * ambra.displayComment.buildDisplayViewLink(JSON jsonObj)
@@ -268,6 +293,9 @@ ambra.displayComment = {
     if (ambra.displayComment.sectionComment.hasChildNodes) ambra.domUtil.removeChildren(ambra.displayComment.sectionComment);
     ambra.displayComment.sectionComment.innerHTML = this.buildDisplayBody(jsonObj);
     //alert("jsonObj.annotation.commentWithUrlLinking = " + jsonObj.annotation.commentWithUrlLinking);
+
+    if (ambra.displayComment.sectionCIStatement.hasChildNodes) ambra.domUtil.removeChildren(ambra.displayComment.sectionCIStatement);
+    ambra.displayComment.sectionCIStatement.innerHTML = this.buildDisplayCIStatement(jsonObj);
     
     if (ambra.displayComment.sectionLink.hasChildNodes) ambra.domUtil.removeChildren(ambra.displayComment.sectionLink);
     this.sectionLink.appendChild(this.buildDisplayViewLink(jsonObj));
@@ -358,6 +386,7 @@ ambra.displayComment = {
     
     cDetailDiv.appendChild(commentLink);
     cDetailDiv.appendChild(responseLink);*/
+    cDetailDiv.appendChild(this.buildDisplayCIStatement(jsonObj));
     cDetailDiv.appendChild(this.buildDisplayViewLink(jsonObj));
     contentDiv.appendChild(cDetailDiv);
 
@@ -383,7 +412,6 @@ ambra.displayComment = {
         
         ambra.displayComment.adjustDialogHeight(container, secondaryContainer, 50);
       }
-
   },
   
   /**
