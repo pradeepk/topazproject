@@ -134,7 +134,7 @@ div.dijitTooltipContainer { border:0px; }
 .dialog .text label,
 .dialog legend,
 .post legend	{ display: none; }
-.pane .error	{ padding:5px; border:1px solid #c00; background-color: #fff; font-style: normal; }
+.pane .error	{ display:none; padding:5px; border:1px solid #c00; background-color: #fff; font-style: normal; }
 
 .dialog .response { width: 100%; height: 8em; overflow: auto; }
 .dialog .submit input { display: inline;}

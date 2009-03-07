@@ -18,8 +18,6 @@
  * limitations under the License.
  */
 
-dojo.require("dojo.fx");
-
 // the "loading..." widget
 var _ldc;
 
@@ -75,8 +73,7 @@ var commentConfig = {
   cmtContainer: "cmtContainer",
   sectionTitle: "viewCmtTitle",
   sectionDetail: "viewCmtDetail",  
-  sectionComment: "viewComment",
-  sectionCIStatement: "viewCIStatement",
+  sectionComment: "viewComment", 
   sectionLink: "viewLink", 
   retrieveMsg: "retrieveMsg",  
   tipDownDiv: "cTip",
@@ -85,8 +82,7 @@ var commentConfig = {
 var multiCommentConfig = {
   sectionTitle: "viewCmtTitle",
   sectionDetail: "viewCmtDetail",  
-  sectionComment: "viewComment",
-  sectionCIStatement: "viewCIStatement",
+  sectionComment: "viewComment",  
   retrieveMsg: "retrieveMsg",  
   tipDownDiv: "mTip",
   tipUpDiv: "mTipu"
@@ -96,9 +92,35 @@ var _commentMultiDlg;
 
 var _titleCue          = 'Enter your note title...';
 var _commentCue        = 'Enter your note...';
-var _statementCue      = 'Enter your competing interests...';
 
 var elLocation;
+
+/*
+var activeToggleId = "";
+var activeWidget = "";
+
+function setActiveToggle(widgetId, boxId) {
+  activeToggleId = boxId;
+  activeWidget = dojo.byId(widgetId);
+}
+
+function singleView(obj) {
+  if (activeToggleId != "") {
+    ambra.domUtil.swapDisplayMode(activeToggleId, "none");
+    toggleExpand(activeWidget, false); 
+  }
+}
+
+function singleExpand(obj, targetId) {
+  if (targetId != activeToggleId) {
+    singleView(obj);
+  }
+  setActiveToggle
+   (obj.id, targetId);
+  ambra.domUtil.swapDisplayMode(targetId);
+  toggleExpand(obj); 
+}
+*/
 
 function toggleAnnotation(obj, userType) {
   _ldc.show();
@@ -159,24 +181,7 @@ function showAnnotationDialog() {
   _annotationDlg.show();
 }
 
-/**
- * clears out any error messages and then calls sendupdateRating
- * @param targetObj
- */
 function validateNewComment() {
-  ambra.formUtil.disableFormFields(_annotationForm);
-  var submitMsg = dojo.byId('submitMsg');
-
-  if(submitMsg.style.display != 'none') {
-    var ani = dojo.fx.wipeOut({ node:submitMsg, duration: 500 });
-    dojo.connect(ani, "onEnd", function () { startValidateNewComment(); });
-    ani.play();
-  } else {
-    startValidateNewComment();
-  }
-}
-
-function startValidateNewComment() {
   var submitMsg = dojo.byId('submitMsg');
   ambra.domUtil.removeChildren(submitMsg);
   ambra.formUtil.disableFormFields(_annotationForm);
@@ -200,7 +205,6 @@ function startValidateNewComment() {
          }
          var err = document.createTextNode(errorMsg);
          submitMsg.appendChild(err);
-         dojo.fx.wipeIn({ node:submitMsg.id, duration: 500 }).play();
          ambra.formUtil.enableFormFields(_annotationForm);
          _annotationDlg.placeModalDialog();
        }
@@ -222,7 +226,6 @@ function startValidateNewComment() {
            }
          }
          submitMsg.appendChild(fieldErrors);
-         dojo.fx.wipeIn({ node:submitMsg.id, duration: 500 }).play();
          ambra.formUtil.enableFormFields(_annotationForm);
          _annotationDlg.placeModalDialog();
        }
@@ -230,7 +233,6 @@ function startValidateNewComment() {
          _annotationDlg.hide();
          ambra.formUtil.textCues.reset(_annotationForm.cTitle, _titleCue);
          ambra.formUtil.textCues.reset(_annotationForm.cArea, _commentCue);
-         ambra.formUtil.textCues.reset(_annotationForm.ciStatementArea, _statementCue);
          ambra.formUtil.enableFormFields(_annotationForm);
          // remember the newly added annotation
          document.articleInfo.annotationId.value = jsonObj.annotationId;
@@ -267,15 +269,14 @@ function markDirty(dirty) { dojo.cookie(dirtyToken,dirty?'a':'b'); }
  */
 function getArticle() {
   _ldc.show();
-  dojo.xhrGet( {
+  dojo.xhrGet({
     url: _namespace + "/article/fetchBody.action?articleURI=" + _annotationForm.target.value,
     handleAs:'text',
-    
-    error: function(response, ioArgs) {
+    error: function(response, ioArgs){
       handleXhrError(response);
     },
     
-    load: function(response, ioArgs) {
+    load: function(response, ioArgs){
       // refresh article HTML content
       dojo.byId(annotationConfig.articleContainer).innerHTML = response;
       // re-apply article "decorations"
@@ -301,17 +302,10 @@ function getArticle() {
 function createAnnotationOnMouseDown() {
   // reset form
   ambra.formUtil.textCues.reset(_annotationForm.cTitle, _titleCue); 
-  ambra.formUtil.textCues.reset(_annotationForm.cArea, _commentCue);
-  ambra.formUtil.textCues.reset(_annotationForm.ciStatementArea, _statementCue);
-
+  ambra.formUtil.textCues.reset(_annotationForm.cArea, _commentCue); 
   _annotationForm.noteType.value = "";
   _annotationForm.commentTitle.value = "";
   _annotationForm.comment.value = "";
-  _annotationForm.ciStatement.value = "";
-
-  _annotationForm.competingInterest[0].checked = true;
-  _annotationForm.competingInterest[1].checked = false;
-
   // create it
   ambra.annotation.createNewAnnotation();
   return false;
@@ -376,47 +370,27 @@ function createAnnotationOnMouseDown() {
     ambra.formUtil.textCues.on(_annotationForm.cArea, _commentCue); 
     //ambra.formUtil.checkFieldStrLength(_annotationForm.cArea, 500);
   });
-
-  dojo.connect(_annotationForm.ciStatementArea, "focus", function () {
-    ambra.formUtil.textCues.off(_annotationForm.ciStatementArea, _statementCue);
+  
+  /*
+  dojo.connect(privateFlag, "onclick", function() {
+    ambra.formUtil.toggleFieldsByClassname('commentPrivate', 'commentPublic'); 
+    _annotationDlg.placeModalDialog();
+    //var btn = btnAnnotationSave;
+    //__annotationDlg.setCloseControl(btn);
   });
-
-  dojo.connect(_annotationForm.ciStatementArea, "change", function () {
-    var fldTitle = _annotationForm.ciStatement;
-    if(_annotationForm.ciStatementArea.value != "" && _annotationForm.ciStatementArea.value != _statementCue) {
-      fldTitle.value = _annotationForm.ciStatementArea.value;
-    }
-    else {
-      fldTitle.value = "";
-    }
+  dojo.connect(publicFlag, "onclick", function() {
+    ambra.formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate'); 
+    _annotationDlg.placeModalDialog();
+    //_annotationDlg.setCloseControl(dojo.byId("btn_post"));
   });
-
-  dojo.connect(_annotationForm.ciStatementArea, "blur", function () {
-    var fldTitle = _annotationForm.ciStatement;
-    if(_annotationForm.ciStatementArea.value != "") {
-      fldTitle.value = _annotationForm.ciStatementArea.value;
-    }
-    else {
-      fldTitle.value = "";
-    }
-    ambra.formUtil.textCues.on(_annotationForm.ciStatementArea, _statementCue);
+  
+  // Annotation Dialog Box: Save button
+  dojo.connect(btnAnnotationSave, "onclick", function(e) {
+    //getCommentValues();
+    validateNewComment();
+    e.preventDefault();
   });
-
-  dojo.connect(_annotationForm.competingInterest[0], "click", function () {
-    var fldTitle = _annotationForm.isCompetingInterest;
-
-    _annotationForm.ciStatementArea.disabled = true;
-
-    fldTitle.value = "false";
-  });
-
-  dojo.connect(_annotationForm.competingInterest[1], "click", function () {
-    var fldTitle = _annotationForm.isCompetingInterest;
-
-    _annotationForm.ciStatementArea.disabled = false;
-
-    fldTitle.value = "true";
-  });
+  */
 
 dojo.addOnLoad(function() {
   // int loading "throbber"
@@ -457,6 +431,7 @@ dojo.addOnLoad(function() {
   _annotationDlg.setTipDown(dojo.byId(annotationConfig.tipDownDiv));
   _annotationDlg.setTipUp(dojo.byId(annotationConfig.tipUpDiv));
 
+  
   // -------------------------
   // comment dialog related
   // -------------------------

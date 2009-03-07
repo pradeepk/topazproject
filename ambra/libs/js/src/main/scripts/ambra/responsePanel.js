@@ -2,7 +2,7 @@
  * $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2009 by Topaz, Inc.
+ * Copyright (c) 2006-2008 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,8 +28,6 @@
 dojo.provide("ambra.responsePanel");
 dojo.require("ambra.domUtil");
 dojo.require("ambra.formUtil");
-dojo.require("dojo.fx");
-
 ambra.responsePanel = {
   togglePanel:{},
   
@@ -92,10 +90,6 @@ ambra.responsePanel = {
     this.targetForm.reasonCode[0].checked = true;
     this.targetForm.comment.value = "";
     this.targetForm.responseArea.value = targetObj.responseCue;
-    this.targetForm.competingInterest[0].checked = false;
-    this.targetForm.competingInterest[1].checked = true;
-    this.targetForm.ciStatementArea.value = "";
-    
     var submitMsg = targetObj.error;
     ambra.domUtil.removeChildren(submitMsg);
   },
@@ -109,30 +103,11 @@ ambra.responsePanel = {
     dojo.byId('flagForm').style.display = "block";
     dojo.byId('flagConfirm').style.display = "none";  
   }
-}
+}  
 
-/**
- * clears out any error messages and then calls sendResponseInfo
- * @param targetObj
- */
 function submitResponseInfo(targetObj) {
-  if(targetObj.error.style.display != 'none') {
-    var ani = dojo.fx.wipeOut({ node:targetObj.error, duration: 500 });
-    dojo.connect(ani, "onEnd", function () { sendResponseInfo(targetObj); });
-    ani.play();
-  } else {
-    sendResponseInfo(targetObj);
-  }
-}
-
-/**
- * Send the information to the server and handle errors
- * @param targetObj
- */
-function sendResponseInfo(targetObj) {
   var submitMsg = targetObj.error;
   var targetForm = targetObj.form;
-
   ambra.domUtil.removeChildren(submitMsg);
   //ambra.formUtil.disableFormFields(targetForm);
 
@@ -167,7 +142,6 @@ function sendResponseInfo(targetObj) {
        }
        var err = document.createTextNode(errorMsg);
        submitMsg.appendChild(err);
-       dojo.fx.wipeIn({ node:submitMsg, duration: 500 }).play();
        ambra.formUtil.enableFormFields(targetForm);
        _ldc.hide();
      }
@@ -186,7 +160,6 @@ function sendResponseInfo(targetObj) {
          }
        }
        submitMsg.appendChild(fieldErrors);
-       dojo.fx.wipeIn({ node:submitMsg, duration: 500 }).play();
        ambra.formUtil.enableFormFields(targetForm);
        _ldc.hide();
      }

@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id:CreateReplyAction.java 722 2006-10-02 16:42:45Z viru $
  *
- * Copyright (c) 2006-2009 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,9 +45,7 @@ public class CreateReplyAction extends BaseSessionAwareActionSupport {
   private String commentTitle;
   private String mimeType = "text/plain";
   private String comment;
-  private String ciStatement;
-  private boolean isCompetingInterest = false;
-  
+
   private ProfanityCheckingService profanityCheckingService;
   protected ReplyService replyService;
 
@@ -57,22 +54,16 @@ public class CreateReplyAction extends BaseSessionAwareActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   @Override
   public String execute() throws Exception {
-    if (isInvalid())
-      return INPUT;
-    
     try {
       final List<String> profaneWordsInTitle = profanityCheckingService.validate(commentTitle);
       final List<String> profaneWordsInBody = profanityCheckingService.validate(comment);
-      final List<String> profaneWordsCiStatement = profanityCheckingService.validate(ciStatement);
 
-      if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty() &&
-          profaneWordsCiStatement.isEmpty()) {
+      if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty()) {
         replyId = replyService.createReply(root, inReplyTo, commentTitle, mimeType, comment,
-            ciStatement, getCurrentUser());
+                                           getCurrentUser());
       } else {
         addProfaneMessages(profaneWordsInBody, "comment", "comment");
         addProfaneMessages(profaneWordsInTitle, "commentTitle", "title");
-        addProfaneMessages(profaneWordsCiStatement, "ciStatement", "statement");
         return INPUT;
       }
     } catch (Exception e) {
@@ -86,40 +77,8 @@ public class CreateReplyAction extends BaseSessionAwareActionSupport {
     return SUCCESS;
   }
 
-  private boolean isInvalid() {
-    /*
-    * This is a little odd that part of validation happens here and
-    * part of it occurs as validators on the object properties
-    * TODO: Revisit and recombine?  Or perhaps author a generic validator that can handle
-     * the logic defined below
-    * */
-    boolean invalid = false;
-
-    if(this.isCompetingInterest) {
-      if (StringUtils.isEmpty(ciStatement)) {
-        addFieldError("statement", "You must say something in your competing interest statement");
-        invalid = true;
-      }
-    }
-
-    return invalid;
-  }
-
   public String getReplyId() {
     return replyId;
-  }
-
-  /**
-   * Set the competing interest statement of the annotation
-   * @param ciStatement Statement
-   */
-  public void setCiStatement(final String ciStatement) {
-    this.ciStatement = ciStatement;
-  }
-
-  /** @param isCompetingInterest does this annotation have competing interests? */
-  public void setIsCompetingInterest(final boolean isCompetingInterest) {
-    this.isCompetingInterest = isCompetingInterest;
   }
 
   public void setRoot(final String root) {

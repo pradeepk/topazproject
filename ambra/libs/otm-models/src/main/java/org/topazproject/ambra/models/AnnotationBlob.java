@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2009 by Topaz, Inc.
+ * Copyright (c) 2007-2008 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,10 +29,9 @@ import org.topazproject.otm.annotations.Searchable;
  * @author Pradeep Krishnan
  */
 @Entity()
-public class AnnotationBlob extends Blob implements CompetingInterest {
+public class AnnotationBlob extends Blob {
   private static final long serialVersionUID = 6834878451274759551L;
   private String id;
-  private String ciStatement;
 
   /**
    * Creates a new AnnotationBlob object.
@@ -75,21 +74,5 @@ public class AnnotationBlob extends Blob implements CompetingInterest {
   @org.topazproject.otm.annotations.Blob  // FIXME: remove
   public void setBody(org.topazproject.otm.Blob body) {
     super.setBody(body);
-  }
-
-  /**
-   * Get the competing Interest statement
-   * @return the competing interest statement
-   */
-  public String getCIStatement() {
-    return ciStatement;
-  }
-
-  /**
-   * Set the competing interest statement
-   * @param ciStatement The statement to save
-   */
-  public void setCIStatement(String ciStatement) {
-    this.ciStatement = ciStatement;
   }
 }

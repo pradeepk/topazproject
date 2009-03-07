@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2009 by Topaz, Inc.
+ * Copyright (c) 2007-2008 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,19 +54,26 @@ import com.sun.xacml.PDP;
 public class RateAction extends AbstractRatingAction {
   private static final Log log = LogFactory.getLog(RateAction.class);
 
-  private double insight;
-  private double reliability;
-  private double style;
-  private double singleRating;
-  private String articleURI;
-  private boolean isResearchArticle;
-  private String commentTitle;
-  private String ciStatement;
-  private boolean isCompetingInterest = false;
-  private String comment;
-  private Session session;
-  private RatingsPEP pep;
+  private double                   insight;
+  private double                   reliability;
+  private double                   style;
+  private double                   singleRating;
+  private String                   articleURI;
+  private boolean                  isResearchArticle;
+  private String                   commentTitle;
+  private String                   comment;
+  private Session                  session;
+  private RatingsPEP               pep;
   private ProfanityCheckingService profanityCheckingService;
+
+  private RatingsPEP getPEP() {
+    return pep;
+  }
+
+  @Required
+  public void setRatingsPdp(PDP pdp) {
+    this.pep = new RatingsPEP(pdp);
+  }
 
   /**
    * Rates an article for the currently logged in user.  Will look to see if there are
@@ -126,21 +132,12 @@ public class RateAction extends AbstractRatingAction {
       }
     }
 
-    if(this.isCompetingInterest) {
-      if (StringUtils.isEmpty(ciStatement)) {
-        addFieldError("statement", "You must say something in your competing interest statement");
-        return INPUT;
-      }
-    }    
-
     // reject profanity in content
     final List<String> profaneWordsInCommentTitle = profanityCheckingService.validate(commentTitle);
     final List<String> profaneWordsInComment      = profanityCheckingService.validate(comment);
-    final List<String> profaneWordsInCIStatement  = profanityCheckingService.validate(ciStatement);
-    if (profaneWordsInCommentTitle.size() != 0 || profaneWordsInComment.size() != 0 || profaneWordsInCIStatement.size() != 0) {
+    if (profaneWordsInCommentTitle.size() != 0 || profaneWordsInComment.size() != 0) {
       addProfaneMessages(profaneWordsInCommentTitle, "commentTitle", "title");
       addProfaneMessages(profaneWordsInComment, "comment", "comment");
-      addProfaneMessages(profaneWordsInComment, "ciStatementArea", "statement");
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return INPUT;
     }
@@ -263,14 +260,6 @@ public class RateAction extends AbstractRatingAction {
     articleRating.getBody().setCommentTitle(commentTitle);
     articleRating.getBody().setCommentValue(comment);
 
-    //If the user decides that they no longer have competing interests
-    //Let's delete the text.
-    if(isCompetingInterest) {
-      articleRating.getBody().setCIStatement(ciStatement);
-    } else {
-      articleRating.getBody().setCIStatement("");
-    }
-
     // if this is a new Rating, the summary needs to know
     if (newRating) {
       articleRatingSummary.getBody().
@@ -319,35 +308,9 @@ public class RateAction extends AbstractRatingAction {
 
     setCommentTitle(rating.getBody().getCommentTitle());
     setComment(rating.getBody().getCommentValue());
-    setCiStatement(rating.getBody().getCIStatement());
 
     return SUCCESS;
   }
-
-  private RatingsPEP getPEP() {
-    return pep;
-  }
-
-  @Required
-  public void setRatingsPdp(PDP pdp) {
-    this.pep = new RatingsPEP(pdp);
-  }
-
-  /**
-   * Return the competing Interest statement
-   * @return the statement
-   */
-  public String getCiStatement() {
-    return ciStatement;
-  }
-
-  /**
-   * Set the competing interest statement
-   * @param ciStatement the statement
-   */
-  public void setCiStatement(String ciStatement) {
-    this.ciStatement = ciStatement;
-  }  
 
   /**
    * Gets the URI of the article being rated.
@@ -387,8 +350,6 @@ public class RateAction extends AbstractRatingAction {
     return style;
   }
 
-
-
   /**
    * Sets the style rating.
    *
@@ -417,11 +378,6 @@ public class RateAction extends AbstractRatingAction {
       log.debug("setting insight to: " + insight);
 
     this.insight = insight;
-  }
-
-  /** @param isCompetingInterest does this annotation have competing interests? */
-  public void setIsCompetingInterest(final boolean isCompetingInterest) {
-    this.isCompetingInterest = isCompetingInterest;
   }
 
   /**

@@ -1,16 +1,16 @@
 <#--
   $HeadURL::                                                                            $
   $Id$
-
-  Copyright (c) 2007-2009 by Topaz, Inc.
+  
+  Copyright (c) 2007-2008 by Topaz, Inc.
   http://topazproject.org
-
+  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-
+  
   http://www.apache.org/licenses/LICENSE-2.0
-
+  
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,19 +24,17 @@
 			<h5><span class="commentPrivate">Add Your Note (For Private Viewing)</span><span class="commentPublic">Post Your Note (For Public Viewing)</span></h5>
 			<div class="posting pane">
 				<form name="createAnnotation" id="createAnnotation" method="post" action="">
-					<input type="hidden" name="target" value="${articleURI}" />
+					<input type="hidden" name="target" value="${articleURI}" />	
 					<input type="hidden" name="startPath" value="" />
 					<input type="hidden" name="startOffset" value="" />
 					<input type="hidden" name="endPath" value="" />
 					<input type="hidden" name="endOffset" value="" />
 					<input type="hidden" name="commentTitle" id="commentTitle" value="" />
 					<input type="hidden" name="comment" id="commentArea" value="" />
-          <input type="hidden" name="ciStatement" id="statementArea" value="" />
-          <input type="hidden" name="isCompetingInterest" id="isCompetingInterest" value="false" />
           <input type="hidden" name="noteType" id="noteType" value="" />
 					<fieldset>
 						<legend>Compose Your Note</legend>
-						<span id="submitMsg" class="error" style="display:none;"></span>
+						<span id="submitMsg" class="error"></span>
 						<table class="layout">
               <tr>
                 <td>
@@ -54,10 +52,10 @@
                   <fieldset>
                     <legend>Declare any competing interests.</legend>
                     <ul>
-                      <li><label><input id="isCompetingInterestNo" type="radio" checked="checked" name="competingInterest" value="false"  /> No, I don't have any competing interests to declare.</label></li>
-                      <li><label><input id="isCompetingInterestYes" type="radio" name="competingInterest" value="true"  /> Yes, I have competing interests to declare (enter below):</label></li>
+                      <li><label><input id="temp" type="radio" checked="checked" name="noCOI" value="blah"  /> No, I don't have any competing interests to declare.</label></li>
+                      <li><label><input id="temp2" type="radio" name="yesCOI" value="blahblah"  /> Yes, I have competing interests to declare (enter below):</label></li>
                     </ul>
-                    <textarea name="ciStatementArea" id="ciStatementArea" disabled value="Enter your competing interests..." alt="Enter your competing interests...">Enter your competing interests...</textarea>
+                    <textarea name="coi" id="temp" value="Enter your competing interests..." alt="Enter your competing interests...">Enter your competing interests...</textarea>
                   </fieldset>
                 </td>
               </tr>
@@ -75,3 +73,5 @@
 		<div class="tip" id="dTip"></div>
 	</div>
 </div>
+
+

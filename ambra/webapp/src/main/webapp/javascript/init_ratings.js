@@ -11,7 +11,6 @@ var _ratingComments;
 
 var _ratingTitleCue    = 'Enter your comment title...';
 var _ratingCommentCue   = 'Enter your comment...';
-var _ratingStatementCue   = 'Enter your competing interests...';
 
 dojo.addOnLoad(function() {
   // ---------------------
@@ -20,7 +19,6 @@ dojo.addOnLoad(function() {
   _ratingsForm = document.ratingForm;
   _ratingTitle = _ratingsForm.cTitle;
   _ratingComments = _ratingsForm.cArea;
-  _ratingCIStatement = _ratingsForm.ciStatementArea;
   _ratingDlg = dijit.byId("Rating");
   //_ratingDlg.setCloseControl(dojo.byId('btn_cancel_rating'));
 
@@ -74,52 +72,6 @@ dojo.addOnLoad(function() {
     ambra.formUtil.textCues.on(_ratingComments, _ratingCommentCue);
     //ambra.formUtil.checkFieldStrLength(_ratingComments, 500);
   });
-
-  dojo.connect(_ratingCIStatement, "onfocus", function () {
-    ambra.formUtil.textCues.off(_ratingCIStatement, _ratingStatementCue);
-  });
-
-  dojo.connect(_ratingCIStatement, "onchange", function () {
-    var fldTitle = _ratingsForm.ciStatement;
-    if(_ratingsForm.ciStatementArea.value != "" &&
-       _ratingsForm.ciStatementArea.value != _ratingStatementCue) {
-      fldTitle.value = _ratingsForm.ciStatementArea.value;
-    }
-    else {
-      fldTitle.value = "";
-    }
-  });
-
-  dojo.connect(_ratingCIStatement, "onblur", function () {
-    var fldTitle = _ratingsForm.ciStatement;
-    if(_ratingsForm.ciStatementArea.value != "" &&
-       _ratingsForm.ciStatementArea.value != _ratingStatementCue) {
-      fldTitle.value = _ratingsForm.ciStatementArea.value;
-    }
-    else {
-      fldTitle.value = "";
-    }
-    ambra.formUtil.textCues.on(_ratingCIStatement, _ratingStatementCue);
-    //ambra.formUtil.checkFieldStrLength(_ratingComments, 500);
-  });
-
-  dojo.connect(_ratingsForm.competingInterest[0], "click", function () {
-    var fldTitle = _ratingsForm.isCompetingInterest;
-
-    _ratingsForm.ciStatementArea.disabled = true;
-
-    fldTitle.value = "false";
-  });
-
-  dojo.connect(_ratingsForm.competingInterest[1], "click", function () {
-    var fldTitle = _ratingsForm.isCompetingInterest;
-
-    _ratingsForm.ciStatementArea.disabled = false;
-
-    fldTitle.value = "true";
-  });
-
-
 
   dojo.connect(dojo.byId("btn_post_rating"), "onclick", function(e) {
     updateRating();

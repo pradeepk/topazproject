@@ -2,7 +2,7 @@
  * $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2009 by Topaz, Inc.
+ * Copyright (c) 2006-2008 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,13 +37,11 @@ dojo.addOnLoad( function() {
   _dcr.form = document.discussionResponse;
   _dcr.formAction = "/annotation/secure/createReplySubmit.action";
   _dcr.responseTitleCue = "Enter your response title...";
-  _dcr.ciStatementTitleCue = "Enter your competing interests...";
   _dcr.responseCue = "Enter your response...";
   _dcr.error = dojo.byId('responseSubmitMsg');
   _dcr.requestType = "response";
   var responseTitle = _dcr.form.responseTitle;
   var responseArea = _dcr.form.responseArea;
-  var ciStatementArea = _dcr.form.ciStatementArea;
 
   dojo.connect(_dcr.btnCancel, "onclick", function(e) {
     ambra.responsePanel.hide(_dcr.widget);
@@ -153,46 +151,6 @@ dojo.addOnLoad( function() {
     } else {
       fldResponse.value = "";
     }
-  });
-
-  dojo.connect(_dcr.form.competingInterest[0], "click", function () {
-    var fldTitle = _dcr.form.isCompetingInterest;
-
-    _dcr.form.ciStatementArea.disabled = true;
-
-    fldTitle.value = "false";
-  });
-
-  dojo.connect(_dcr.form.competingInterest[1], "click", function () {
-    var fldTitle = _dcr.form.isCompetingInterest;
-
-    _dcr.form.ciStatementArea.disabled = false;
-
-    fldTitle.value = "true";
-  });
-
-  dojo.connect(ciStatementArea, "onfocus", function(e) {
-    ambra.formUtil.textCues.off(ciStatementArea, _dcr.ciStatementTitleCue);
-  });
-
-  dojo.connect(ciStatementArea, "onblur", function(e) {
-    var fldResponse = _dcr.form.ciStatement;
-    if (ciStatementArea.value != "" && ciStatementArea.value != _dcr.ciStatementTitleCue) {
-      fldResponse.value = ciStatementArea.value;
-    } else {
-      fldResponse.value = "";
-    }
-    ambra.formUtil.textCues.on(ciStatementArea, _dcr.ciStatementTitleCue);
-  });
-
-  dojo.connect(ciStatementArea, "onchange", function(e) {
-    var fldResponse = _dcr.form.ciStatement;
-    if (ciStatementArea.value != "" && ciStatementArea.value != _dcr.ciStatementTitleCue) {
-      fldResponse.value = ciStatementArea.value;
-    } else {
-      fldResponse.value = "";
-    }
-    ambra.formUtil.textCues.on(ciStatementArea, _dcr.ciStatementTitleCue);
   });
 
 });
