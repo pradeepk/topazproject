@@ -1,9 +1,28 @@
+<#--
+  $HeadURL::                                                                            $
+  $Id$
+
+  Copyright (c) 2007-2009 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 <div dojoType="ambra.widget.ContextAction" id="ContextActionDialog" class="contextActionDialog">
 	<div class="dialog context">
 		<div class="tipu" id="caTipu"></div>
 		<div class="contextActionContent">
 			<h5><img src="../images/tooltip_addannotation.gif" /> Add a note to this text.</h5>
-			Please follow our <a href="">guidelines for commenting/rating</a> and review our <a href="#">competing interests policy</a>. Comments that do not conform to our guidelines will be promptly removed and the user account disabled. The following must be avoided:
+			Please follow our <a href="${comment}">guidelines for commenting/rating</a> and review our <a href="#">competing interests policy</a>. Comments that do not conform to our guidelines will be promptly removed and the user account disabled. The following must be avoided:
 			<ul>
 				<li>Remarks that could be interpreted as allegations of misconduct</li>
 				<li>Unsupported assertations or statements</li>
