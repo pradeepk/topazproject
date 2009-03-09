@@ -1,8 +1,8 @@
-<#--
+textSearchAll<#--
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -67,7 +67,7 @@
           <li>
             <@s.url id="searchHelpURL" includeParams="none" namespace="/static" action="searchHelp" />
             <label id="lblAuthorName" for="authorName">Author Name (<a href="${searchHelpURL}">help</a>): </label>
-            <span id="as_anp"><input id="authorName" type="text" name="creator" size="35" value="${creatorStr}"/>
+            <span id="as_anp"><input id="authorName" type="text" name="creator" size="35" value="${creatorStr?html}"/>
             <span class="controls"><span id="as_spn_ra" style="display:none;"><a id="as_a_ra" href="#" onclick="ambra.advsearch.onClickRmvAuthNameHandler(event); return false;">Remove</a><span id="as_a_spcr">&nbsp;|&nbsp;</span></span><a id="as_a_aa" href="#" onclick="ambra.advsearch.onClickAddAuthNameHandler(event); return false;">Add another author...</a></span></span>
           </li>
           <li id="as_an_opts" class="options" style="display:none;">
@@ -93,19 +93,19 @@
         <ol>
           <li>
             <label for="textSearch-atLeastOne">for <em>at least one</em> of the words: </label>
-            <input type="text" name="textSearchAtLeastOne" size="50" value="${textSearchAtLeastOne!""}" id="textSearch-atLeastOne"/>
+            <input type="text" name="textSearchAtLeastOne" size="50" value="${textSearchAtLeastOne?html!""}" id="textSearch-atLeastOne"/>
           </li>
           <li>
             <label for="textSearch-all">for <em>all</em> the words: </label>
-            <input type="text" name="textSearchAll" size="50" value="${textSearchAll!""}" id="textSearch-all"/>
+            <input type="text" name="textSearchAll" size="50" value="${textSearchAll?html!""}" id="textSearch-all"/>
           </li>
           <li>
             <label for="textSearch-exactPhrase">for the <em>exact phrase</em>: </label>
-            <input type="text" name="textSearchExactPhrase" size="50" value="${textSearchExactPhrase!""}" id="textSearch-exactPhrase"/>
+            <input type="text" name="textSearchExactPhrase" size="50" value="${textSearchExactPhrase?html!""}" id="textSearch-exactPhrase"/>
           </li>
           <li>
             <label for="textSearch-without"><em>without</em> the words: </label>
-            <input type="text" name="textSearchWithout" size="50" value="${textSearchWithout!""}" id="textSearch-without"/>
+            <input type="text" name="textSearchWithout" size="50" value="${textSearchWithout?html!""}" id="textSearch-without"/>
           </li>
           <li>
             <label for="textSearch-where"><em>where</em> my words occur: </label>

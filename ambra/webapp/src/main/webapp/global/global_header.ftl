@@ -81,8 +81,13 @@
     <@s.url action="advancedSearch" namespace="/search" includeParams="none" id="advancedSearch"/>
     <form name="gasf" action="${advancedSearch}" method="get">
       <@s.hidden name="noSearchFlag" value="true" />
+      <@s.hidden name="creatorStr" value="" />
+      <@s.hidden name="textSearchAtLeastOne" value="" />
+      <@s.hidden name="textSearchAll" value="" />
+      <@s.hidden name="textSearchExactPhrase" value="" />
+      <@s.hidden name="textSearchWithout" value="" />
     </form>
-    <a id="advSearch" href="#" onclick="if(document.searchForm.query.value!='Search articles...')document.gasf.textSearchAtLeastOne.value=document.searchForm.query.value;document.gasf.submit();return false;">Advanced Search</a>
+    <a id="advSearch" href="#" onclick="if(document.searchForm.query.value!='Search articles...')document.gasf.textSearchAll.value=document.searchForm.query.value;document.gasf.submit();return false;">Advanced Search</a>
   </div>
   <!-- end : dashboard -->
 

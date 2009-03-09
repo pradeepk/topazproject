@@ -85,6 +85,9 @@ public class SearchAction extends BaseSessionAwareActionSupport {
    */
   @Transactional(readOnly = true)
   public String executeSimpleSearch() {
+    // the simple search text field correlates to advanced search's "for all the words" field
+    this.textSearchAll = query;
+
     return executeSearch(query);
   }
 
