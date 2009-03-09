@@ -25,8 +25,8 @@ import org.topazproject.otm.annotations.Entity;
 /**
  * Represents objects that will need a competing interest statement
  */
-@Entity(graph = "ri")
-@UriPrefix("annotea:")
+@Entity(graph = "ri", types = {"plos:CompetingInterests"})
+@UriPrefix("plos:CompetingInterests/")
 public interface CompetingInterest {
   /**
    * Get the competing Interest statement
