@@ -38,8 +38,8 @@
 
       <h3>Related Subject Categories</h3>
       <ul>
-        <#list articleInfo.categories as cat>
-          <li><a href="browse.action?catName=${cat.mainCategory?url}">${cat.mainCategory}</a></li>
+        <#list mainCategories as cat>
+          <li><a href="browse.action?catName=${cat?url}">${cat}</a></li>
         </#list>
       </ul>
 
