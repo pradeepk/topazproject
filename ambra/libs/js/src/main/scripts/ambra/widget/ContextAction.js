@@ -22,44 +22,45 @@ dojo.provide("ambra.widget.ContextAction");
 dojo.require("dojo.io.iframe");
 dojo.require("dijit.Tooltip");
 
-(function(){
-
+(function() {
   var contextActionTT = null;
 
-	dojo.declare("ambra.widget._MasterContextAction", [dijit._MasterTooltip],
-		{
-			//This method is a direct copy of the parent's show method, less one call
-			//This method has been changed to call the above method while also passing through the event object
-
+  dojo.declare("ambra.widget._MasterContextAction", [dijit._MasterTooltip], {
       offSetX:39,
       offSetY:22,
 
-			show: function(/*String*/ id, /*String*/ innerHTML, /*DomNode*/ aroundNode, /*String[]?*/ position, /*Integer*/ eventX, /*Integer*/ eventY)
-      {
-				// summary:
-				//	Display tooltip w/specified contents to right specified node
-				//	(To left if there's no space on the right, or if LTR==right)
+      /**
+       * This method is a direct copy of the parent's show method, less one call
+       * This method has been changed to call the above method while also passing through the event object
+       */
 
-				if(this.aroundNode && this.aroundNode == aroundNode)
-        {
-					return;
-				}
+      show: function(/*String*/ id, /*String*/ innerHTML, /*DomNode*/ aroundNode, /*String[]?*/ position, /*Integer*/ eventX, /*Integer*/ eventY) {
+        /*
+         * summary:
+         * Display tooltip w/specified contents to right specified node
+         * (To left if there's no space on the right, or if LTR==right)
+         */
 
-				if(this.fadeOut.status() == "playing")
-        {
-					// previous tooltip is being hidden; wait until the hide completes then show new one
-					this._onDeck=arguments;
-					return;
-				}
+        if (this.aroundNode && this.aroundNode == aroundNode) {
+          return;
+        }
 
-				this.containerNode.innerHTML = innerHTML;
+        if (this.fadeOut.status() == "playing") {
+          // previous tooltip is being hidden; wait until the hide completes then show new one
+          this._onDeck=arguments;
+          return;
+        }
 
-				// Firefox bug. when innerHTML changes to be shorter than previous
-				// one, the node size will not be updated until it moves.
-				this.domNode.style.top = (this.domNode.offsetTop + 1) + "px";
+        this.containerNode.innerHTML = innerHTML;
 
-			  //var pos = ambra.placeOnScreenAroundNode(this.domNode, aroundNode, align, dojo.hitch(this, "orient"), evt);
-      	var choices = this.makePos(["BL", "TL", "TR", "BR"], eventX, eventY);
+        /*
+         *  Firefox bug. when innerHTML changes to be shorter than previous
+         *  one, the node size will not be updated until it moves.
+         */
+        this.domNode.style.top = (this.domNode.offsetTop + 1) + "px";
+
+        //var pos = ambra.placeOnScreenAroundNode(this.domNode, aroundNode, align, dojo.hitch(this, "orient"), evt);
+        var choices = this.makePos(["BL", "TL", "TR", "BR"], eventX, eventY);
 
         var pos = dijit._place(this.domNode, choices);
 
@@ -68,8 +69,7 @@ dojo.require("dijit.Tooltip");
 
         var targetTip = null;
 
-        if(pos.corner.charAt(0) == "B")
-        {
+        if (pos.corner.charAt(0) == "B") {
           targetTip = dojo.query(".tip", this.domNode);
         } else {
           targetTip = dojo.query(".tipu", this.domNode);
@@ -79,25 +79,18 @@ dojo.require("dijit.Tooltip");
 
         var node = dojo.byId(id);
 
-        //console.log('node: ' + node);
-        //var tt = targetTip[0].getBoundingClientRect();
-        //console.log('pos:' + pos.x);
-
         dojo.style(targetTip[0], "display", "block");
 
         this.fadeIn.play();
-				this.isShowingNow = true;
-				this.aroundNode = aroundNode;
-			},
+        this.isShowingNow = true;
+        this.aroundNode = aroundNode;
+      },
 
-      makePos:function(/*String[]?*/corners, eventX, eventY)
-      {
+      makePos:function(/*String[]?*/corners, eventX, eventY) {
         var res = [];
 
-        for(var a = 0; a < corners.length; a++)
-        {
-          switch(corners[a])
-          {
+        for(var a = 0; a < corners.length; a++) {
+          switch(corners[a]) {
             case "BL":
               res[res.length] = { corner:corners[a], pos:{x:eventX - this.offSetX, y:eventY - this.offSetY } };
               break;
@@ -122,68 +115,73 @@ dojo.require("dijit.Tooltip");
         //console.log('test');
 
         return res;
-		 }
+     }
   });
 
-	dojo.declare("ambra.widget.ContextAction", [dijit.Tooltip],
-	{
+  dojo.declare("ambra.widget.ContextAction", [dijit.Tooltip], {
     templatePath: dojo.moduleUrl('ambra.widget', 'templates/ContextAction.html'),
     templateString: "ambra.widget.ContextAction",
 
-		//Over ride the dojo Tooltip method
-		//This will allow the mouse to hover over the created tooltip dialog
-		//Dojo doesn't do this by default
-		_onUnHover: function(/*Event*/ e)
-		{
-			return;
-		},
+    /*
+     * Over ride the dojo Tooltip method
+     * This will allow the mouse to hover over the created tooltip dialog
+     * Dojo doesn't do this by default
+     */
+    _onUnHover: function(/*Event*/ e) {
+      return;
+    },
 
-		open: function(/*DomNode*/ target, /*Integer*/ eventX, /*Integer*/ eventY)
-    {
-			// summary: display the tooltip; usually not called directly.
-			target = target || this._connectNodes[0];
+    open: function(/*DomNode*/ target, /*Integer*/ eventX, /*Integer*/ eventY) {
+      // summary: display the tooltip; usually not called directly.
+      target = target || this._connectNodes[0];
 
-			if(!target){ return; }
+      if (!target){ return; }
 
-			if(this._showTimer){
-				clearTimeout(this._showTimer);
-				delete this._showTimer;
-			}
+      if (this._showTimer) {
+        clearTimeout(this._showTimer);
+        delete this._showTimer;
+      }
 
-			ambra.showContextAction(this.domNode.id, this.label || this.domNode.innerHTML, target, this.position, eventX, eventY);
+      ambra.showContextAction(this.domNode.id, this.label || this.domNode.innerHTML, target, this.position, eventX, eventY);
 
       this._connectNode = target;
-		},
+    },
 
-		close: function()
-    {
-			// summary: hide the tooltip; usually not called directly.
-			ambra.hideContextAction(this._connectNode);
-			delete this._connectNode;
+    close: function() {
+      // summary: hide the tooltip; usually not called directly.
+      ambra.hideContextAction(this._connectNode);
+      delete this._connectNode;
 
-      if(this._showTimer)
-      {
-				clearTimeout(this._showTimer);
-				delete this._showTimer;
-			}
-		}
-	});
+      if (this._showTimer) {
+        clearTimeout(this._showTimer);
+        delete this._showTimer;
+      }
+    }
+  });
 
-	ambra.showContextAction = function(/* String */id,/*String*/ innerHTML, /*DomNode*/ aroundNode, /*String[]?*/ position, /*Integer*/ eventX, /*Integer*/ eventY){
-		// summary:
-		//	Display tooltip w/specified contents in specified position.
-		//	See description of dijit.Tooltip.defaultPosition for details on position parameter.
-		//	If position is not specified then dijit.Tooltip.defaultPosition is used.
-		if(!ambra._MasterCA){ ambra._MasterCA = new ambra.widget._MasterContextAction(); }
-		//console.log('test: ' + ambra._MasterCA);
-		return ambra._MasterCA.show(id, innerHTML, aroundNode, position, eventX, eventY);
-	};
+  ambra.showContextAction = function(/* String */id,/*String*/ innerHTML, /*DomNode*/ aroundNode, /*String[]?*/ position, /*Integer*/ eventX, /*Integer*/ eventY) {
+    /*
+     * summary:
+     * Display tooltip w/specified contents in specified position.
+     * See description of dijit.Tooltip.defaultPosition for details on position parameter.
+     * If position is not specified then dijit.Tooltip.defaultPosition is used.
+     */
+    if (!ambra._MasterCA) {
+      ambra._MasterCA = new ambra.widget._MasterContextAction();
+    }
 
-	ambra.hideContextAction = function(aroundNode){
-		// summary: hide the tooltip
-		if(!ambra._MasterCA){ ambra._MasterCA = new ambra.widget._MasterContextAction(); }
-		return ambra._MasterCA.hide(aroundNode);
-	};
+    //console.log('test: ' + ambra._MasterCA);
+    return ambra._MasterCA.show(id, innerHTML, aroundNode, position, eventX, eventY);
+  };
+
+  ambra.hideContextAction = function(aroundNode) {
+    // summary: hide the tooltip
+    if (!ambra._MasterCA) {
+      ambra._MasterCA = new ambra.widget._MasterContextAction();
+    }
+    
+    return ambra._MasterCA.hide(aroundNode);
+  };
 
   dijit.Tooltip.defaultPosition = ["left", "below"];
 })();

@@ -31,28 +31,22 @@ dojo.require("ambra.formUtil");
 dojo.require("dojo.io.script");
 
 (function() {
-
-  dojo.declare("ambra.alm", null,
-  {
-    constructor:function(hostName)
-    {
+  dojo.declare("ambra.alm", null, {
+    constructor:function(hostName) {
       this.host = hostName;
     },
 
-    getIDs:function(doi, callBack)
-    {
+    getIDs:function(doi, callBack) {
       var request = "articles/" + doi + ".json?history=0";
       this.getData(request, callBack);
     },
 
-    getRelatedBlogs:function(doi, callBack)
-    {
+    getRelatedBlogs:function(doi, callBack) {
       var request = "articles/" + doi + ".json?citations=1&source=Bloglines,Nature,Postgenomic";
       this.getData(request, callBack);
     },
 
-    getCites:function(doi, callBack)
-    {
+    getCites:function(doi, callBack) {
       var request = "articles/" + doi + ".json?citations=1&source=CrossRef,PubMed,Scopus,Citeulike";
       this.getData(request, callBack);
     },
@@ -62,8 +56,7 @@ dojo.require("dojo.io.script");
       *  chartIndex is the  current index of the charts[] array
       *  callback is the method that populates the chart of  "chartIndex"
       **/
-    getData:function(request, callBack)
-    {
+    getData:function(request, callBack) {
       var url = "http://" + this.host + "/" + request;
 
       console.log(url);

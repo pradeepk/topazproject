@@ -31,7 +31,7 @@ dojo.require("ambra.general");
 dojo.require("ambra.domUtil");
 dojo.require("ambra.formUtil");
 ambra.rating = {
-	rateScale: 5,
+  rateScale: 5,
 
   init: function() {
   },
@@ -51,9 +51,9 @@ ambra.rating = {
   hide: function() { _ratingDlg.hide(); },
   
   buildCurrentRating: function(liNode, rateIndex) {
-		var ratedValue = (parseInt(rateIndex)/this.rateScale)*100;
-		liNode.className += " pct" + ratedValue;
-		dojox.data.dom.textContent(liNode, "Currently " + rateIndex + "/" + this.rateScale + " Stars");
+    var ratedValue = (parseInt(rateIndex)/this.rateScale)*100;
+    liNode.className += " pct" + ratedValue;
+    dojox.data.dom.textContent(liNode, "Currently " + rateIndex + "/" + this.rateScale + " Stars");
   },
   
   buildDialog: function(jsonObj) {
@@ -61,54 +61,54 @@ ambra.rating = {
     
     // build rating stars
     for (var i=0; i<ratingList.length; i++) {
-    	var currentNode = ratingList[i];
+      var currentNode = ratingList[i];
 
-    	if (currentNode.className.match("edit") != null) {
-	    	var rateChildNodes = currentNode.childNodes;
-	      var rateItem = currentNode.id.substr(4);
+      if (currentNode.className.match("edit") != null) {
+        var rateChildNodes = currentNode.childNodes;
+        var rateItem = currentNode.id.substr(4);
         rateItem = rateItem.charAt(0).toLowerCase() + rateItem.substring(1); 
-	      var rateItemCount = jsonObj[rateItem];
+        var rateItemCount = jsonObj[rateItem];
 
-	      var indexInt = 0;
-				for (var n=0; n<rateChildNodes.length; n++) {
-					var currentChild = rateChildNodes[n];
-		      if (currentChild.nodeName == "#text" && (currentChild.nodeValue.match(new RegExp("\n")) || currentChild.nodeValue.match(new RegExp("\r")))) {
-		        continue;
-		      }
+        var indexInt = 0;
+        for (var n=0; n<rateChildNodes.length; n++) {
+          var currentChild = rateChildNodes[n];
+          if (currentChild.nodeName == "#text" && (currentChild.nodeValue.match(new RegExp("\n")) || currentChild.nodeValue.match(new RegExp("\r")))) {
+            continue;
+          }
 
-		      if (currentChild.className.match("average") != null || ratingList[i].className.match("overall-rating") != null) {
-		      	continue;
-		      }
+          if (currentChild.className.match("average") != null || ratingList[i].className.match("overall-rating") != null) {
+            continue;
+          }
 
-		      if(currentChild.className.match("current-rating")) {
-						this.buildCurrentRating(currentChild, rateItemCount);
-						firstSet = true;
-						continue;
-		      }
+          if(currentChild.className.match("current-rating")) {
+            this.buildCurrentRating(currentChild, rateItemCount);
+            firstSet = true;
+            continue;
+          }
 
-					if (indexInt < rateItemCount) {
-						currentChild.onmouseover = function() { ambra.rating.hover.on(this); }
-						currentChild.onmouseout  = function() { ambra.rating.hover.off(this); }
+          if (indexInt < rateItemCount) {
+            currentChild.onmouseover = function() { ambra.rating.hover.on(this); }
+            currentChild.onmouseout  = function() { ambra.rating.hover.off(this); }
 
-						indexInt++;
-					}
-				}
+            indexInt++;
+          }
+        }
 
-	    	_ratingsForm[rateItem].value = jsonObj[rateItem];
+        _ratingsForm[rateItem].value = jsonObj[rateItem];
 
-    	}
+      }
     }
     
     // add title
     if (jsonObj.commentTitle != null) {
-    	_ratingsForm.commentTitle.value = jsonObj.commentTitle;
-    	_ratingsForm.cTitle.value = jsonObj.commentTitle;
+      _ratingsForm.commentTitle.value = jsonObj.commentTitle;
+      _ratingsForm.cTitle.value = jsonObj.commentTitle;
     }
     
     // add comments
     if (jsonObj.comment) {
-    	_ratingsForm.comment.value = jsonObj.comment;
-    	_ratingsForm.cArea.value = jsonObj.comment;
+      _ratingsForm.comment.value = jsonObj.comment;
+      _ratingsForm.cArea.value = jsonObj.comment;
     }
 
     // add comments
@@ -132,42 +132,42 @@ ambra.rating = {
     
     // build rating stars
     for (var i=0; i<ratingList.length; i++) {
-	      if (ratingList[i].className.match("average") != null || ratingList[i].className.match("overall-rating") != null) {
-	      	continue;
-	      }
+        if (ratingList[i].className.match("average") != null || ratingList[i].className.match("overall-rating") != null) {
+          continue;
+        }
 
-	      ratingList[i].className = ratingList[i].className.replaceStringArray(" ", "pct", "pct0");
+        ratingList[i].className = ratingList[i].className.replaceStringArray(" ", "pct", "pct0");
     }
     
-		ambra.formUtil.textCues.reset(_ratingTitle, _ratingTitleCue);
-		ambra.formUtil.textCues.reset(_ratingComments, _ratingCommentCue);
+    ambra.formUtil.textCues.reset(_ratingTitle, _ratingTitleCue);
+    ambra.formUtil.textCues.reset(_ratingComments, _ratingCommentCue);
     ambra.formUtil.textCues.reset(_ratingCIStatement, _ratingStatementCue);
   },
   
   hover: {
-  	on: function(node) {
-  		var sibling = ambra.domUtil.firstSibling(node);
-  		sibling.style.display = "none"
-  	},
+    on: function(node) {
+      var sibling = ambra.domUtil.firstSibling(node);
+      sibling.style.display = "none"
+    },
 
-  	off: function(node) {
-  		var sibling = ambra.domUtil.firstSibling(node);
-  		sibling.style.display = "block";
-  	}
+    off: function(node) {
+      var sibling = ambra.domUtil.firstSibling(node);
+      sibling.style.display = "block";
+    }
   },
   
   setRatingCategory: function(node, categoryId, rateNum) {
-  	_ratingsForm[categoryId].value = rateNum;
-  	var sibling = ambra.domUtil.firstSibling(node.parentNode);
-  	var rateStyle = "pct" + (parseInt(rateNum) * 20);
-  	sibling.className = sibling.className.replaceStringArray(" ", "pct", rateStyle);
-		this.buildCurrentRating(sibling, rateNum);
+    _ratingsForm[categoryId].value = rateNum;
+    var sibling = ambra.domUtil.firstSibling(node.parentNode);
+    var rateStyle = "pct" + (parseInt(rateNum) * 20);
+    sibling.className = sibling.className.replaceStringArray(" ", "pct", rateStyle);
+    this.buildCurrentRating(sibling, rateNum);
   }
 }
   
 function getRatingsForUser() {
-	var targetUri = _ratingsForm.articleURI.value;
-	dojo.xhrGet({
+  var targetUri = _ratingsForm.articleURI.value;
+  dojo.xhrGet({
     url: _namespace + "/rate/secure/getRatingsForUser.action?articleURI=" + targetUri,
     handleAs:'json-comment-filtered',
     error: function(response, ioArgs){
@@ -183,7 +183,7 @@ function getRatingsForUser() {
          alert("ERROR: " + errorMsg);
        }
        else {
-  		   _ratingDlg.show();
+         _ratingDlg.show();
          ambra.rating.buildDialog(jsonObj);
        }
     }
@@ -195,10 +195,10 @@ function getRatingsForUser() {
  * @param targetObj
  */
 function updateRating(targetObj) {
-	ambra.formUtil.disableFormFields(_ratingsForm);
+  ambra.formUtil.disableFormFields(_ratingsForm);
   var submitMsg = dojo.byId('submitRatingMsg');
 
-  if(submitMsg.style.display != 'none') {
+  if (submitMsg.style.display != 'none') {
     var ani = dojo.fx.wipeOut({ node:submitMsg, duration: 500 });
     dojo.connect(ani, "onEnd", function () { sendupdateRating(); });
     ani.play();
@@ -251,7 +251,7 @@ function sendupdateRating() {
            }
          }
        }
-	     submitMsg.appendChild(fieldErrors);
+       submitMsg.appendChild(fieldErrors);
        dojo.fx.wipeIn({ node:submitMsg, duration: 500 }).play();
        ambra.formUtil.enableFormFields(_ratingsForm);
        _ldc.hide();

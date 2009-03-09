@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,7 +62,7 @@ public class RatingContent implements Serializable, CompetingInterest {
   private int              singleRatingValue;
   private String           commentTitle;
   private String           commentValue;
-  private String ciStatement;
+  private String           ciStatement;
   private static final Log log = LogFactory.getLog(RatingContent.class);
 
   /**

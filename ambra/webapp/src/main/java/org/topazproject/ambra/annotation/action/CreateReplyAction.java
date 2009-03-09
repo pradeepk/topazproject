@@ -31,7 +31,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.util.ProfanityCheckingService;
-import org.topazproject.ambra.user.AmbraUser;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -87,15 +86,15 @@ public class CreateReplyAction extends BaseSessionAwareActionSupport {
   }
 
   private boolean isInvalid() {
-    /*
+   /**
     * This is a little odd that part of validation happens here and
     * part of it occurs as validators on the object properties
     * TODO: Revisit and recombine?  Or perhaps author a generic validator that can handle
-     * the logic defined below
-    * */
+    * the logic defined below
+    **/
     boolean invalid = false;
 
-    if(this.isCompetingInterest) {
+    if (this.isCompetingInterest) {
       if (StringUtils.isEmpty(ciStatement)) {
         addFieldError("statement", "You must say something in your competing interest statement");
         invalid = true;
@@ -117,7 +116,10 @@ public class CreateReplyAction extends BaseSessionAwareActionSupport {
     this.ciStatement = ciStatement;
   }
 
-  /** @param isCompetingInterest does this annotation have competing interests? */
+  /**
+   * Set wether this reply has a competing interest statement or not
+   * @param isCompetingInterest does this annotation have competing interests?
+   */
   public void setIsCompetingInterest(final boolean isCompetingInterest) {
     this.isCompetingInterest = isCompetingInterest;
   }
