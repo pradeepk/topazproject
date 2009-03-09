@@ -38,7 +38,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  */
 @UriPrefix("topaz:RatingContent/")
 @Entity(graph = "ri", types = {"topaz:RatingContent"})
-public class RatingContent implements Serializable {
+public class RatingContent implements Serializable, CompetingInterest {
   private static final long serialVersionUID = -8354040136278478548L;
 
   /**
@@ -62,6 +62,7 @@ public class RatingContent implements Serializable {
   private int              singleRatingValue;
   private String           commentTitle;
   private String           commentValue;
+  private String ciStatement;
   private static final Log log = LogFactory.getLog(RatingContent.class);
 
   /**
@@ -222,6 +223,22 @@ public class RatingContent implements Serializable {
   @Predicate
   public void setCommentValue(String commentValue) {
     this.commentValue = commentValue;
+  }
+
+  /**
+   * Get the competing Interest statement
+   * @return the competing interest statement
+   */
+  public String getCIStatement() {
+    return ciStatement;
+  }
+
+  /**
+   * Set the competing interest statement
+   * @param ciStatement The statement to save
+   */
+  public void setCIStatement(String ciStatement) {
+    this.ciStatement = ciStatement;
   }
 
   /**

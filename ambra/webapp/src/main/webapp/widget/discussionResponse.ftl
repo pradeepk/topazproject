@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,25 +30,28 @@
   <form name="discussionResponse" method="post" action="">
   <input type="hidden" name="commentTitle" value="" />
   <input type="hidden" name="comment" value="" />
+  <input type="hidden" name="ciStatement" id="statementArea" value="" />
+  <input type="hidden" name="isCompetingInterest" id="isCompetingInterest" value="false" />
   <fieldset>
     <legend>Compose Your Response</legend>
-    <div id="responseSubmitMsg" class="error"></div>
+    <div id="responseSubmitMsg" class="error" style="display:none;"></div>
     <table class="layout">
         <tr>
           <td>
             <label for="title"><span class="none">Enter your response title</span></label>
             <input type="text" name="responseTitle" id="title" value="Enter your response title..." class="title" alt="Enter your response title..." />
-            <label for="reponseArea"><span class="none">Enter your response</span></label>
+            <label for="responseArea"><span class="none">Enter your response</span></label>
             <textarea id="responseArea" title="Enter your response..." class="response" name="responseArea" >Enter your response...</textarea>
+          </td>
           <td>&nbsp;</td>
           <td class="coi">
             <fieldset>
               <legend>Declare any competing interests.</legend>
               <ul>
-                <li><label><input id="temp" type="radio" checked="checked" name="noCOI" value="blah"  /> No, I don't have any competing interests to declare.</label></li>
-                <li><label><input id="temp2" type="radio" name="yesCOI" value="blahblah"  /> Yes, I have competing interests to declare (enter below):</label></li>
+                <li><label><input id="isCompetingInterestNo" type="radio" checked="checked" name="competingInterest" value="false"  /> No, I don't have any competing interests to declare.</label></li>
+                <li><label><input id="isCompetingInterestYes" type="radio" name="competingInterest" value="true"  /> Yes, I have competing interests to declare (enter below):</label></li>
               </ul>
-              <textarea name="coi" id="temp" value="Enter your competing interests..." alt="Enter your competing interests...">Enter your competing interests...</textarea>
+              <textarea name="ciStatementArea" id="ciStatementArea" disabled value="Enter your competing interests..." alt="Enter your competing interests...">Enter your competing interests...</textarea>
             </fieldset>
           </td>
         </tr>

@@ -110,6 +110,14 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
     return annotea instanceof Comment;
   }
 
+ /**
+  * Escaped text of CIStatement.
+  * @return CIStatement as String.
+  */
+  public String getCIStatement() {
+    return escapeText(annotea.getBody().getCIStatement());
+  }
+
   /**
    * Creates a WebAnnotation object.
    *
@@ -128,7 +136,6 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
    * @return display name as String.
    */
   public String getDisplayName() {
-
     if (isComment()) {
       return (getContext() != null) ? "Note" : "Comment";
     } else if (isFormalCorrection()) {

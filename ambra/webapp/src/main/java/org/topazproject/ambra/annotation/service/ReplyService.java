@@ -79,7 +79,7 @@ public class ReplyService extends BaseAnnotationService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String createReply(final String root, final String inReplyTo, final String title,
-                            final String mimeType, final String body, AmbraUser user)
+                            final String mimeType, final String body, final String ciStatement, AmbraUser user)
                      throws Exception {
     pep.checkAccess(RepliesPEP.CREATE_REPLY, URI.create(root));
 
@@ -89,6 +89,7 @@ public class ReplyService extends BaseAnnotationService {
     final String contentType = getContentType(mimeType);
     String userId = user.getUserId();
     ReplyBlob blob = new ReplyBlob(contentType);
+    blob.setCIStatement(ciStatement);
 
     final Reply r = new ReplyThread();
     r.setMediator(getApplicationId());

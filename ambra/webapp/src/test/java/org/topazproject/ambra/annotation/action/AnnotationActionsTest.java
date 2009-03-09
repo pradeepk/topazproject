@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id:AnnotationActionsTest.java 722 2006-10-02 16:42:45Z viru $
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,18 +37,6 @@ import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.annotation.Context;
 import org.topazproject.ambra.annotation.ContextFormatter;
-import org.topazproject.ambra.annotation.action.CreateAnnotationAction;
-import org.topazproject.ambra.annotation.action.CreateFlagAction;
-import org.topazproject.ambra.annotation.action.CreateReplyAction;
-import org.topazproject.ambra.annotation.action.DeleteAnnotationAction;
-import org.topazproject.ambra.annotation.action.DeleteFlagAction;
-import org.topazproject.ambra.annotation.action.DeleteReplyAction;
-import org.topazproject.ambra.annotation.action.GetAnnotationAction;
-import org.topazproject.ambra.annotation.action.GetFlagAction;
-import org.topazproject.ambra.annotation.action.GetReplyAction;
-import org.topazproject.ambra.annotation.action.ListAnnotationAction;
-import org.topazproject.ambra.annotation.action.ListFlagAction;
-import org.topazproject.ambra.annotation.action.ListReplyAction;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.AnnotationsPEP;
 import org.topazproject.ambra.annotation.service.Flag;
@@ -64,6 +52,7 @@ import com.opensymphony.xwork2.Action;
 public class AnnotationActionsTest extends BaseAmbraTestCase {
   private static final String target = "http://here.is/viru";
   private final String body = "spmething that I always wanted to say about everything and more about nothing\n";
+  private final String ciStatement = "I hearby disclose that I work for PLOS";
   final String ANON_PRINCIPAL = "anonymous:user/";
 //  private final String target = "doi:10.1371/annotation/21";
 
@@ -179,7 +168,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
   public String createAnnotation(final String target, final boolean publicVisibility) throws Exception {
     final String title = "Annotation1";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body, ciStatement);
     final String context = getContext(createAnnotationAction);
     createAnnotationAction.setIsPublic(publicVisibility);
     assertEquals(SUCCESS, createAnnotationAction.execute());
@@ -192,13 +181,14 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
+    assertEquals(ciStatement, savedAnnotation.getCIStatement());
 
     return annotationId;
   }
 
   public void testCreatePrivateAnnotation() throws Exception {
     final String title = "AnnotationPrivate";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body, ciStatement);
     final String context = getContext(createAnnotationAction);
     final boolean visibility = false;
     createAnnotationAction.setIsPublic(visibility);
@@ -212,7 +202,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
-    assertEquals(body, savedAnnotation.getComment());
+    assertEquals(ciStatement, savedAnnotation.getCIStatement());
 
     AnnotationActionsTest.annotationId = annotationId;
   }
@@ -469,7 +459,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
   public void testPublicAnnotationShouldHaveTheRightGrantsAndRevokations() throws Exception {
     final String title = "Annotation1";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body, ciStatement);
     final String context = getContext(createAnnotationAction);
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
@@ -481,6 +471,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
+    assertEquals(ciStatement, savedAnnotation.getCIStatement());
 
     final AnnotationService annotationService = getAnnotationService();
     final PermissionsService permissionsService = getPermissionsService();
@@ -527,6 +518,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     final String endPath1    = "/doc/chapter/para";
     final String context1Body = "My annotation content 1";
     final String title       = "Title";
+    final String statement       = "Competing Interest statement";
 
     final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
     listAnnotationAction.setTarget(target);
@@ -539,8 +531,8 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     }
 
     class AnnotationCreator {
-      public String execute(final String target, final String startPath, final String endPath, final String title, final String body) throws Exception {
-        final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
+      public String execute(final String target, final String startPath, final String endPath, final String title, final String body, final String statement) throws Exception {
+        final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body, statement);
         createAnnotationAction.setStartPath(startPath);
         createAnnotationAction.setStartOffset(3);
         createAnnotationAction.setEndPath(endPath);
@@ -554,7 +546,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
     final Collection<String> annotationIdList = new ArrayList<String>();
     annotationIdList.add(
-            new AnnotationCreator().execute(target, startPath1, endPath1, title, context1Body));
+            new AnnotationCreator().execute(target, startPath1, endPath1, title, context1Body, statement));
 
     final String annotatedContent = getFetchArticleService().getAnnotatedContent(target);
     for (final String annotationId : annotationIdList) {
@@ -584,12 +576,14 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     final String endPath1    = startPath1;
     final int endOffset1 = 20;
     final String context1Body = "Content for the first annotation1";
+    final String statement1 = "Content for the first competing interest statement";
 
     final String startPath2    = "/article[1]/body[1]/sec[2]/sec[2]/p[1]";
     final int startOffset2 = 1;
     final String endPath2    = startPath2;
     final int endOffset2 = 60;
     final String context2Body = "Content for the second annotation1";
+    final String statement2 = "Content for the second competing interest statement";
 
     final String title       = "Title";
 
@@ -604,8 +598,8 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     }
 
     class AnnotationCreator {
-      public String execute(final String target, final String startPath, final int startOffset, final String endPath, final int endOffset, final String title, final String body) throws Exception {
-        final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
+      public String execute(final String target, final String startPath, final int startOffset, final String endPath, final int endOffset, final String title, final String body, final String statement) throws Exception {
+        final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body, statement);
         createAnnotationAction.setStartPath(startPath);
         createAnnotationAction.setStartOffset(startOffset);
         createAnnotationAction.setEndPath(endPath);
@@ -620,9 +614,9 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
     final Collection<String> annotationIdList = new ArrayList<String>();
     annotationIdList.add(
-            new AnnotationCreator().execute(target, startPath1, startOffset1, endPath1, endOffset1, title, context1Body));
+            new AnnotationCreator().execute(target, startPath1, startOffset1, endPath1, endOffset1, title, context1Body, statement1));
     annotationIdList.add(
-            new AnnotationCreator().execute(target, startPath2, startOffset2, endPath2, endOffset2, title, context2Body));
+            new AnnotationCreator().execute(target, startPath2, startOffset2, endPath2, endOffset2, title, context2Body, statement2));
 
     final String annotatedContent = getFetchArticleService().getAnnotatedContent(target);
 
@@ -689,11 +683,11 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     return createReplyAction;
   }
 
-  private CreateAnnotationAction getCreateAnnotationAction(final String target, final String title, final String body) {
-    return getCreateAnnotationAction(target, title, "text/plain", body);
+  private CreateAnnotationAction getCreateAnnotationAction(final String target, final String title, final String body, final String statement) {
+    return getCreateAnnotationAction(target, title, "text/plain", body, statement);
   }
 
-  private CreateAnnotationAction getCreateAnnotationAction(final String target, final String title, final String mimeType, final String body) {
+  private CreateAnnotationAction getCreateAnnotationAction(final String target, final String title, final String mimeType, final String body, final String statement) {
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction();
     createAnnotationAction.setCommentTitle(title);
     createAnnotationAction.setTarget(target);
@@ -703,6 +697,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     createAnnotationAction.setEndOffset(2);
     createAnnotationAction.setMimeType(mimeType);
     createAnnotationAction.setComment(body);
+    createAnnotationAction.setCiStatement(statement);
     return createAnnotationAction;
   }
 
@@ -728,11 +723,11 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     final Collection<String> annotationIdList = new ArrayList<String>();
     AmbraUser ambraUser = new AmbraUser("123");
     annotationIdList.add(
-      service.createComment(subject, context1, null, title, "text/plain", "body", false, ambraUser));
+      service.createComment(subject, context1, null, title, "text/plain", "body", "statement",false, ambraUser));
     annotationIdList.add(
-      service.createComment(subject, context2, null, title, "text/plain", "body", false, ambraUser));
+      service.createComment(subject, context2, null, title, "text/plain", "body", "statement", false, ambraUser));
     annotationIdList.add(
-      service.createComment(subject, context3, null, title, "text/plain", "body", false, ambraUser));
+      service.createComment(subject, context3, null, title, "text/plain", "body", "statement", false, ambraUser));
 
     String annotatedContent = getFetchArticleService().getAnnotatedContent(subject);
     for (final String annotationId : annotationIdList) {
@@ -765,9 +760,9 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     }
 
     AmbraUser ambraUser = new AmbraUser("123");
-    service.createComment(subject, context1, null, title, "text/plain", "body", false, ambraUser);
-    service.createComment(subject, context2, null, title, "text/plain", "body", false, ambraUser);
-    service.createComment(subject, context3, null, title, "text/plain", "body", false, ambraUser);
+    service.createComment(subject, context1, null, title, "text/plain", "body", "statement", false, ambraUser);
+    service.createComment(subject, context2, null, title, "text/plain", "body", "statement", false, ambraUser);
+    service.createComment(subject, context3, null, title, "text/plain", "body", "statement", false, ambraUser);
 
     String content = getFetchArticleService().getAnnotatedContent(subject);
     log.debug(content);
@@ -781,7 +776,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
   public void testFlagActions() throws Exception {
     //Create an annotation
     final String title = "Annotation1";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body, ciStatement);
     createAnnotationAction.setIsPublic(true);
     final String context = getContext(createAnnotationAction);
     assertEquals(SUCCESS, createAnnotationAction.execute());
@@ -795,6 +790,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
+    assertEquals(ciStatement, savedAnnotation.getCIStatement());
 
     final String reasonCode = "spam";
     final String flagComment = "This a viagra selling spammer. " +
@@ -887,7 +883,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
 
     //Create an annotation
     final String title = "Annotation1";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body, ciStatement);
     createAnnotationAction.setIsPublic(true);
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();

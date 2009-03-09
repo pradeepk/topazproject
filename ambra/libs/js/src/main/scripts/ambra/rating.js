@@ -2,7 +2,7 @@
  * $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@ dojo.require("ambra.domUtil");
 dojo.require("ambra.formUtil");
 ambra.rating = {
 	rateScale: 5,
-	
+
   init: function() {
   },
   
@@ -62,40 +62,40 @@ ambra.rating = {
     // build rating stars
     for (var i=0; i<ratingList.length; i++) {
     	var currentNode = ratingList[i];
-    	
+
     	if (currentNode.className.match("edit") != null) {
 	    	var rateChildNodes = currentNode.childNodes;
 	      var rateItem = currentNode.id.substr(4);
         rateItem = rateItem.charAt(0).toLowerCase() + rateItem.substring(1); 
 	      var rateItemCount = jsonObj[rateItem];
-					     
+
 	      var indexInt = 0;
 				for (var n=0; n<rateChildNodes.length; n++) {
 					var currentChild = rateChildNodes[n];
 		      if (currentChild.nodeName == "#text" && (currentChild.nodeValue.match(new RegExp("\n")) || currentChild.nodeValue.match(new RegExp("\r")))) {
 		        continue;
 		      }
-		      
+
 		      if (currentChild.className.match("average") != null || ratingList[i].className.match("overall-rating") != null) {
 		      	continue;
 		      }
-		      
+
 		      if(currentChild.className.match("current-rating")) {
 						this.buildCurrentRating(currentChild, rateItemCount);
 						firstSet = true;
 						continue;
 		      }
-		      
+
 					if (indexInt < rateItemCount) {
 						currentChild.onmouseover = function() { ambra.rating.hover.on(this); }
 						currentChild.onmouseout  = function() { ambra.rating.hover.off(this); }
-						
+
 						indexInt++;
 					}
 				}
-				
+
 	    	_ratingsForm[rateItem].value = jsonObj[rateItem];
-				
+
     	}
     }
     
@@ -110,6 +110,20 @@ ambra.rating = {
     	_ratingsForm.comment.value = jsonObj.comment;
     	_ratingsForm.cArea.value = jsonObj.comment;
     }
+
+    // add comments
+    if (jsonObj.ciStatement) {
+      _ratingsForm.ciStatement.value = jsonObj.ciStatement;
+      _ratingsForm.ciStatementArea.value = jsonObj.ciStatement;
+      _ratingsForm.competingInterest[0].checked = false;
+      _ratingsForm.competingInterest[1].checked = true;
+    } else {
+      _ratingsForm.ciStatement.value = '';
+      _ratingsForm.ciStatementArea.value = '';
+      _ratingsForm.competingInterest[0].checked = true;
+      _ratingsForm.competingInterest[1].checked = false;
+      _ratingsForm.ciStatementArea.disabled = true;
+    }
   },
   
   resetDialog: function() {
@@ -121,13 +135,13 @@ ambra.rating = {
 	      if (ratingList[i].className.match("average") != null || ratingList[i].className.match("overall-rating") != null) {
 	      	continue;
 	      }
-	      
+
 	      ratingList[i].className = ratingList[i].className.replaceStringArray(" ", "pct", "pct0");
     }
     
 		ambra.formUtil.textCues.reset(_ratingTitle, _ratingTitleCue);
 		ambra.formUtil.textCues.reset(_ratingComments, _ratingCommentCue);
-  	
+    ambra.formUtil.textCues.reset(_ratingCIStatement, _ratingStatementCue);
   },
   
   hover: {
@@ -135,7 +149,7 @@ ambra.rating = {
   		var sibling = ambra.domUtil.firstSibling(node);
   		sibling.style.display = "none"
   	},
-  	
+
   	off: function(node) {
   		var sibling = ambra.domUtil.firstSibling(node);
   		sibling.style.display = "block";
@@ -145,7 +159,7 @@ ambra.rating = {
   setRatingCategory: function(node, categoryId, rateNum) {
   	_ratingsForm[categoryId].value = rateNum;
   	var sibling = ambra.domUtil.firstSibling(node.parentNode);
-  	var rateStyle = "pct" + (parseInt(rateNum) * 20);  
+  	var rateStyle = "pct" + (parseInt(rateNum) * 20);
   	sibling.className = sibling.className.replaceStringArray(" ", "pct", rateStyle);
 		this.buildCurrentRating(sibling, rateNum);
   }
@@ -176,8 +190,25 @@ function getRatingsForUser() {
   });
 }
 
-function updateRating() {
+/**
+ * clears out any error messages and then calls sendupdateRating
+ * @param targetObj
+ */
+function updateRating(targetObj) {
 	ambra.formUtil.disableFormFields(_ratingsForm);
+  var submitMsg = dojo.byId('submitRatingMsg');
+
+  if(submitMsg.style.display != 'none') {
+    var ani = dojo.fx.wipeOut({ node:submitMsg, duration: 500 });
+    dojo.connect(ani, "onEnd", function () { sendupdateRating(); });
+    ani.play();
+  } else {
+    sendupdateRating();
+  }
+}
+
+function sendupdateRating() {
+  ambra.formUtil.disableFormFields(_ratingsForm);
   var submitMsg = dojo.byId('submitRatingMsg');
   ambra.domUtil.removeChildren(submitMsg);
   var articleUri = _ratingsForm.articleURI.value;
@@ -200,6 +231,7 @@ function updateRating() {
        }
        var err = document.createTextNode(errorMsg);
        submitMsg.appendChild(err);
+       dojo.fx.wipeIn({ node:submitMsg, duration: 500 }).play();
        ambra.formUtil.enableFormFields(_ratingsForm);
        _ldc.hide();
      }
@@ -220,6 +252,7 @@ function updateRating() {
          }
        }
 	     submitMsg.appendChild(fieldErrors);
+       dojo.fx.wipeIn({ node:submitMsg, duration: 500 }).play();
        ambra.formUtil.enableFormFields(_ratingsForm);
        _ldc.hide();
      }

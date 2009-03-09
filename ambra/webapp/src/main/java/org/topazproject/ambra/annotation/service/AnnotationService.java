@@ -110,6 +110,7 @@ public class AnnotationService extends BaseAnnotationService {
    * @param olderAnnotation olderAnnotation that the new one will supersede
    * @param title title of this annotation
    * @param body body of this annotation
+   * @param ciStatement competing interest statement of this annotation
    * @param isPublic to set up public permissions
    *
    * @param user logged in user
@@ -120,7 +121,7 @@ public class AnnotationService extends BaseAnnotationService {
   private String createAnnotation(Class<? extends ArticleAnnotation> annotationClass,
                                   final String mimeType, final String target,
                                   final String context, final String olderAnnotation,
-                                  final String title, final String body,
+                                  final String title, final String body, final String ciStatement,
                                   boolean isPublic, AmbraUser user)
                      throws Exception {
 
@@ -136,6 +137,8 @@ public class AnnotationService extends BaseAnnotationService {
 
     String userId = user.getUserId();
     AnnotationBlob blob = new AnnotationBlob(contentType);
+    blob.setCIStatement(ciStatement);
+
     final ArticleAnnotation annotation = annotationClass.newInstance();
 
     annotation.setMediator(getApplicationId());
@@ -617,6 +620,7 @@ public class AnnotationService extends BaseAnnotationService {
    * @param title title
    * @param mimeType mimeType
    * @param body body
+   * @parem ciStatement competing interesting statement
    * @param isPublic isPublic
    * @param user logged in user
    * @throws Exception on an error
@@ -625,17 +629,17 @@ public class AnnotationService extends BaseAnnotationService {
   @Transactional(rollbackFor = { Throwable.class })
   public String createComment(final String target, final String context,
                               final String olderAnnotation, final String title,
-                              final String mimeType, final String body,
+                              final String mimeType, final String body, final String ciStatement,
                               final boolean isPublic, AmbraUser user) throws Exception {
 
     if (log.isDebugEnabled()) {
       log.debug("creating Comment for target: " + target + "; context: " + context +
                 "; supercedes: " + olderAnnotation + "; title: " + title + "; mimeType: " +
-                mimeType + "; body: " + body + "; isPublic: " + isPublic);
+                mimeType + "; body: " + body + "; ciStatment: " + ciStatement + "; isPublic: " + isPublic);
     }
 
     String annotationId = createAnnotation(Comment.class, mimeType, target, context,
-                                           olderAnnotation, title, body, true, user);
+                                           olderAnnotation, title, body, ciStatement, true, user);
 
     if (log.isDebugEnabled()) {
       log.debug("Comment created with ID: " + annotationId + " for user: " + user +
@@ -694,7 +698,8 @@ public class AnnotationService extends BaseAnnotationService {
   public String createFlag(final String target, final String reasonCode,
                            final String body, final String mimeType, AmbraUser user) throws Exception {
     final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
-    return createComment(target, null, null, null, mimeType, flagBody, true, user);
+    //TODO: Is assigning null to the competing interest statement OK here?
+    return createComment(target, null, null, null, mimeType, flagBody, null, true, user);
   }
 
   private class Invalidator extends AbstractObjectListener {
