@@ -246,9 +246,9 @@
         <typeCode>plos_medicine_dabate</typeCode>
       </articleType>
       <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Viewpoint</typeUri>
-        <typeHeading>Viewpoint</typeHeading>
-        <typeCode>viewpoint</typeCode>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Viewpoints</typeUri>
+        <typeHeading>Viewpoints</typeHeading>
+        <typeCode>viewpoints</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Expert%20Commentary</typeUri>
