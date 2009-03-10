@@ -4408,6 +4408,7 @@
                    | ref/nlm-citation[@citation-type='commun']">
   <xsl:apply-templates select="person-group" mode="book"/>
   <xsl:apply-templates select="collab"/>
+  <xsl:apply-templates select="year | month | time-stamp | season | access-date" mode="book"/>
   <xsl:choose>
     <xsl:when test="publisher-loc | publisher-name">
       <xsl:apply-templates select="source"
@@ -4425,14 +4426,10 @@
                            mode="none"/>
       <xsl:apply-templates select="publisher-name"
                            mode="none"/>
-      <xsl:apply-templates select="year | month | time-stamp | season | access-date"
-                           mode="book"/>
       <xsl:apply-templates select="article-title|gov"
                            mode="none"/>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:apply-templates select="article-title|gov"
-                           mode="book"/>
       <xsl:apply-templates select="source"
                            mode="book"/>
       <xsl:apply-templates select="edition"/>
@@ -4440,8 +4437,7 @@
                            mode="none"/>
       <xsl:apply-templates select="publisher-name"
                            mode="none"/>
-      <xsl:apply-templates select="year | month | time-stamp | season | access-date"
-                           mode="book"/>
+      <xsl:apply-templates select="article-title|gov" mode="book"/>
     </xsl:otherwise>
   </xsl:choose>
   <xsl:apply-templates select="fpage | lpage"
