@@ -27,6 +27,7 @@ import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.MinorCorrection;
 import org.topazproject.ambra.models.Retraction;
 import org.topazproject.ambra.models.Comment;
+import org.topazproject.ambra.models.AnnotationBlob;
 
 /**
  *  View level wrapper for Annotations. It provides
@@ -115,7 +116,13 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
   * @return CIStatement as String.
   */
   public String getCIStatement() {
-    return escapeText(annotea.getBody().getCIStatement());
+    AnnotationBlob b = annotea.getBody();
+
+    if(b != null) {
+      return escapeText(b.getCIStatement());
+    } else {
+      return null;
+    }
   }
 
   /**

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.topazproject.ambra.models.Reply;
+import org.topazproject.ambra.models.ReplyBlob;
 
 /**
  * Ambra wrapper around the Reply from topaz service. It provides
@@ -89,6 +90,12 @@ public class WebReply extends BaseAnnotation<Reply> {
   * @return CIStatement as String.
   */
   public String getCIStatement() {
-    return escapeText(annotea.getBody().getCIStatement());
+    ReplyBlob r = annotea.getBody();
+
+    if(r != null) {
+      return escapeText(r.getCIStatement());
+    } else {
+      return null;
+    }
   }
 }
