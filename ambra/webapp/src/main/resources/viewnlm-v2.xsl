@@ -4132,11 +4132,14 @@
             <xsl:value-of select="concat($pubAppContext,'/article/findArticle.action?author=',
                                          $author, '&amp;title=', $artTitle)"/>
           </xsl:variable>
-          <xsl:element name="a">
-            <xsl:attribute name="class">find</xsl:attribute>
-            <xsl:attribute name="href"><xsl:value-of select="$findURL"/></xsl:attribute>
-            Find this article online
-          </xsl:element>
+
+          <xsl:if test="not(nlm-citation//ext-link | citation//ext-link)">
+            <xsl:element name="a">
+              <xsl:attribute name="class">find</xsl:attribute>
+              <xsl:attribute name="href"><xsl:value-of select="$findURL"/></xsl:attribute>
+              Find this article online
+            </xsl:element>
+          </xsl:if>
         </xsl:if>
       </li>
     </xsl:for-each>
