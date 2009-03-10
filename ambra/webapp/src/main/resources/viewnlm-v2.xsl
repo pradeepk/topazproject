@@ -1464,12 +1464,12 @@
 
 <xsl:template name="author-contrib">
   <xsl:if test="../front/article-meta/author-notes/fn[@fn-type='con']">
-    <p>
+    <div class="contributions">
       <h3>Author Contributions</h3>
-      <div class="contributions">
+      <p>
         <xsl:apply-templates select="../front/article-meta/author-notes/fn[@fn-type='con']"/>
-      </div>
-    </p>
+      </p>
+    </div>
   </xsl:if>
 </xsl:template>
 
