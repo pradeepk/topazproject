@@ -45,11 +45,11 @@ import org.topazproject.otm.impl.SessionFactoryImpl;
  * instances.  In the interest of usability, it was decided to have this default impl actually
  * generate a session upon first request and then clean it up after the {@link
  * org.topazproject.otm.Transaction} associated with that session is committed/rolled-back.  In
- * order for ensuring that happens, the sessions generated here are unusable until after {@link
+ * order to ensure that happens, the sessions generated here are unusable until after {@link
  * Session#beginTransaction()} has been called. If <tt>close()</tt> is called on a session managed
- * by this class, it will be automatically unbound. p/> Additionally, the static {@link #bind} and
+ * by this class, it will be automatically unbound. Additionally, the static {@link #bind} and
  * {@link #unbind} methods are provided to allow application code to explicitly control opening
- * and closing of these sessions.  This, with some from of interception, is the preferred
+ * and closing of these sessions. This, with some form of interception, is the preferred
  * approach.  It also allows easy framework integration and one possible approach for implementing
  * long-sessions.
  *
@@ -72,7 +72,7 @@ public class ThreadLocalSessionContext implements CurrentSessionContext {
    */
   protected final SessionFactory factory;
 
-/**
+  /**
    * Creates a new ThreadLocalSessionContext object.
    *
    * @param factory the session factory
@@ -81,9 +81,6 @@ public class ThreadLocalSessionContext implements CurrentSessionContext {
     this.factory = factory;
   }
 
-  /*
-   * inherited javadoc
-   */
   public final Session currentSession() throws OtmException {
     Session current = existingSession(factory);
 
