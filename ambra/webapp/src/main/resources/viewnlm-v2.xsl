@@ -2002,35 +2002,19 @@
   <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
   </xsl:element>
   <p>
-  <strong>
-   <xsl:element name="a">
-     <xsl:variable name="objURI"><xsl:value-of select="@xlink:href"/></xsl:variable>
-     <xsl:attribute name="href">
-      <xsl:value-of select="concat($pubAppContext,'/article/fetchSingleRepresentation.action?uri=',
-                                   $objURI)"/>
-    </xsl:attribute>
-    <xsl:apply-templates select="label"/>
-  </xsl:element>
-  <xsl:apply-templates select="caption/title"/>
-  </strong>
-
-  <!-- to move file info from last para onto same line as link & title 
-       (if file info should be plain text, move this outside </strong>)-->
-  <xsl:text> </xsl:text>
-  <xsl:value-of select="caption/p[last()]"/>
-
-  <!-- in conjunction with above, to display file info on same line as label/title & 
-       suppress from normal position -->
-  <xsl:for-each select="caption/p">
-    <xsl:choose>
-      <xsl:when test="position() = last()">
-      </xsl:when>
-      <xsl:otherwise>
-        <p><xsl:apply-templates/></p>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:for-each>
+    <strong xPathLocation="noSelect">
+     <xsl:element name="a">
+       <xsl:variable name="objURI"><xsl:value-of select="@xlink:href"/></xsl:variable>
+       <xsl:attribute name="href">
+        <xsl:value-of select="concat($pubAppContext,'/article/fetchSingleRepresentation.action?uri=',
+                                     $objURI)"/>
+      </xsl:attribute>
+      <xsl:apply-templates select="label"/>
+    </xsl:element>
+    <xsl:apply-templates select="caption/title"/>
+    </strong>
   </p>
+  <xsl:apply-templates select="caption/p"/>
 </xsl:template>
 
 
