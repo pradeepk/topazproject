@@ -245,7 +245,8 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    * @param annotationTypeClasses The type of annotation to grab.
    */
   private void setAnnotations(Set<Class<? extends ArticleAnnotation>> annotationTypeClasses) {
-    WebAnnotation[] annotations = annotationConverter.convert(annotationService.listAnnotations(articleURI, annotationTypeClasses), true, false);
+    WebAnnotation[] annotations = annotationConverter.convert(
+        annotationService.listAnnotations(articleURI, annotationTypeClasses), true, false);
 
     commentary = new Commentary[annotations.length];
     Commentary com;
