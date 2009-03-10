@@ -1160,7 +1160,7 @@
     <!-- added additional test for automatic deceased footnote. -->
     <xsl:if test="contrib-group/contrib/@deceased='yes' 
                   and not(author-notes/fn[@fn-type='deceased'])">
-      <p><a name="deceased"></a><sup>&#x2021;</sup> Deceased.</p>
+      <p><a name="deceased"></a><sup>&#x2020;</sup> Deceased.</p>
     </xsl:if>
     <xsl:for-each select="author-notes/fn[@fn-type='other']">
       <p>
@@ -3001,7 +3001,7 @@
        deceased fn. -->
   <xsl:if test="../@deceased='yes' and not(../xref/sup='‡') and not(../ref/sup='&amp;dagger;') 
                 and not(../ref/sup='&amp;Dagger;')">
-    <a href="#deceased"><sup>&#x2021;</sup></a>
+    <sup><a href="#deceased">&#x2020;</a></sup>
   </xsl:if>
   <xsl:apply-templates select="../xref[@ref-type='corresp']" mode="contrib"/>  
   <xsl:apply-templates select="../xref[@ref-type='author-notes']" mode="contrib"/>  
