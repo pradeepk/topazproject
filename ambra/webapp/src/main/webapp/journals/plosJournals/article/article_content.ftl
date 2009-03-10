@@ -26,9 +26,9 @@
   <h1 xpathLocation="noSelect">${articleInfoX.title}</h1>
   <#assign tab="article" />
   <#include "article_tabs.ftl">
- 	<div id="retractionHtmlId" class="retractionHtmlId" style="display:none;" xpathLocation="noSelect">
- 	  <p class="retractionHtmlId"><strong> Retraction:</strong> This article has been <em>retracted</em> due to the following:
- 	    <span id="retractionlist" class="retractionHtmlId"></span>
+    <div id="retractionHtmlId" class="retractionHtmlId" style="display:none;" xpathLocation="noSelect">
+      <p class="retractionHtmlId"><strong> Retraction:</strong>
+        <span id="retractionlist" class="retractionHtmlId"></span>
     </p>
   </div>
   <div id="fch" class="fch" style="display:none;" xpathLocation="noSelect">

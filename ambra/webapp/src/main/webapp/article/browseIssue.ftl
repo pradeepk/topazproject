@@ -110,7 +110,7 @@
             </#if>
             <#if articleInfo.retractions?? && (articleInfo.retractions?size > 0)>
             <div class="retractionHtmlId">
-            <p class="retractionHtmlId"><strong> Retraction:</strong> This article has been <em>retracted</em> due to the following:</p>
+            <p class="retractionHtmlId"><strong> Retraction:</strong></p>
             <ol class="retractionHtmlId">
             <#list articleInfo.retractions as retraction>
               <@s.url namespace="/annotation" action="listThread" id="retractionUrl" inReplyTo="${retraction.id}" root="${retraction.id}"/>
