@@ -1129,8 +1129,8 @@
       <p>
         <strong><xsl:value-of select="../..//back/glossary/title"/>: </strong>
         <xsl:for-each select="../../back/glossary/def-list/def-item">
-          <xsl:apply-templates select="term" mode="glossary"/>, 
-          <xsl:apply-templates select="def" mode="glossary"/>
+          <xsl:apply-templates select="term"/>,
+          <xsl:apply-templates select="def"/>
           <xsl:if test="position() != last()">; </xsl:if>
         </xsl:for-each>
       </p>
@@ -1171,9 +1171,10 @@
   <!-- that's it for article-meta; return to previous context -->
   </xsl:for-each>
 
-  <!-- The following hack for legacy articles allows these other footnotes to
+  <!-- The following hack for legacy articles allows fn-type="other" and <fn> with no fn-type to
        be output at the bottom of the citation section. -->
-  <xsl:for-each select="//back/fn-group/fn[@fn-type='other']/node()">
+  <xsl:for-each select="//back/fn-group/fn[@fn-type='other']/node() |
+                        //back/fn-group/fn[not(@fn-type)]/node()">
     <p><xsl:apply-templates/></p>
   </xsl:for-each>  
   
@@ -1247,26 +1248,26 @@
 
 <!-- Added the following template rules to correctly copy and map 
      different markup within glossary definitions -->
-<xsl:template match="def-item//p" mode="glossary">
-	<xsl:apply-templates mode="glossary"/>
+<xsl:template match="def-item//p">
+	<xsl:apply-templates/>
 </xsl:template>
 
-<xsl:template match="def-item//named-content" mode="glossary">
+<xsl:template match="def-item//named-content">
   <span class="{@content-type}">
-    <xsl:apply-templates mode="glossary"/>
+    <xsl:apply-templates/>
   </span>
 </xsl:template>
 
 <xsl:template 
-  match="def-item//sup | def-item//sub | def-item//em | def-item//strong" mode="glossary">
+  match="def-item//sup | def-item//sub | def-item//em | def-item//strong">
   <xsl:element name="{local-name()}">
-    <xsl:apply-templates mode="glossary"/>
+    <xsl:apply-templates/>
   </xsl:element>
 </xsl:template>
 
 <!-- Output def-lists in the body of the text 
      (note: different than def-list in the glossary as above) -->
-<xsl:template match="def-list">
+<xsl:template match="body//def-list">
   <dl>
     <xsl:for-each select="def-item">
       <dt><xsl:apply-templates select="term"/></dt>
