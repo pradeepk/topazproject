@@ -331,6 +331,7 @@ public class DocumentManagementService {
    */
   public void generateIngestedData(File file, Article article)
     throws IOException {
+    FileUtils.deleteQuietly(new File(ingestedDocumentDirectory, file.getName()));
     FileUtils.moveFileToDirectory(file, new File(ingestedDocumentDirectory), true);
     if (log.isInfoEnabled()) {
       log.info("Relocated: " + file + ":" + article.getId());
