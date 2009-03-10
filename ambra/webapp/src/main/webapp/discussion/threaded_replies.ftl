@@ -40,7 +40,11 @@
 					${reply.commentWithUrlLinking}
 				</blockquote>
 				<blockquote class="cis">
-					${reply.CIStatement}
+        <#if baseAnnotation.CIStatement??>
+          <b>Competing interests declared:</b> ${baseAnnotation.CIStatement}
+        <#else>
+          <b>No competing interests declared.</b>
+        </#if>
 				</blockquote>
 				<!-- end : response body text -->
 				<!-- begin : toolbar options -->
@@ -99,7 +103,11 @@
 				<#if citation??><div class="citation"><strong>Citation: </strong><#assign isCorrection=true/><#if baseAnnotation.type?index_of("Retraction") gte 0><#assign isRetraction=true/><#else><#assign isRetraction=false/></#if><#assign doi=baseAnnotation.id?replace("info:doi/","") /><#include "/article/citation.ftl"/></#if>
 			</blockquote>
       <blockquote class="cis">
-        ${baseAnnotation.CIStatement}
+        <#if baseAnnotation.CIStatement??>
+          <b>Competing interests declared:</b> ${baseAnnotation.CIStatement}
+        <#else>
+          <b>No competing interests declared.</b>
+        </#if>
       </blockquote>
 			<!-- end : response body text -->
 			<!-- begin : toolbar options -->
