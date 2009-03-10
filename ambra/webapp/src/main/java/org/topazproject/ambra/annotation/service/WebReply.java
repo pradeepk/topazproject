@@ -83,4 +83,12 @@ public class WebReply extends BaseAnnotation<Reply> {
   public WebReply[] getReplies() {
     return replies.toArray(new WebReply[replies.size()]);
   }
+
+ /**
+  * Return Escaped text of the CIStatement.
+  * @return CIStatement as String.
+  */
+  public String getCIStatement() {
+    return escapeText(annotea.getBody().getCIStatement());
+  }
 }
