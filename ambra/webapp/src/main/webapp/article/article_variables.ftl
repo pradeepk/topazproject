@@ -17,14 +17,22 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+
 <#--
   The digg URL has to be different as digg appears to be picking up the redirect
   from our internal DOI resolver and messing up the formating.
  -->
-<#assign shortDOI = "${articleInfoX.id?replace('info:doi/','')}" />
-<#assign docURL = "http://dx.plos.org/" + shortDOI />
-<#assign jDocURL = freemarker_config.getJournalUrl(journalContext) + "/article/" +
-  articleInfoX.id?url />
+<#if articleInfoX??>
+  <#assign shortDOI = "${articleInfoX.id?replace('info:doi/','')}" />
+  <#assign docURL = "http://dx.plos.org/" + shortDOI />
+  <#assign jDocURL = freemarker_config.getJournalUrl(journalContext) + "/article/" + articleInfoX.id?url />
+  <#assign docTitle = articleInfoX.title />
+<#else>
+  <#assign shortDOI = "" />
+  <#assign docURL = "" />
+  <#assign jDocURL = "" />
+  <#assign docTitle = "" />
+</#if>
 
 <#assign publisher=""/>
 <#if Request[freemarker_config.journalContextAttributeKey]?exists>

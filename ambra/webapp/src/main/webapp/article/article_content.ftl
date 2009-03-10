@@ -25,7 +25,7 @@
   <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate"
     page="${thisPageURL?url}"/>
   <#include "article_blurb.ftl">
-  <h1 xpathLocation="noSelect">${articleInfoX.title}</h1>
+  <h1 xpathLocation="noSelect">${docTitle}</h1>
   <#assign tab="article" />
   <#include "article_tabs.ftl">
     <div id="retractionHtmlId" class="retractionHtmlId" style="display:none;" xpathLocation="noSelect">

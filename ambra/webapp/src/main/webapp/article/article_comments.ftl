@@ -42,7 +42,7 @@
    </#if>
       <a id="top" name="top" toc="top" title="Top"></a>
       <#include "article_blurb.ftl">
-      <h1>${articleInfoX.title}</h1>
+      <h1>${docTitle}</h1>
       <#assign tab="comments" />
       <#include "article_tabs.ftl">
       <div class="rss"><a href="#">Comments RSS</a></div>

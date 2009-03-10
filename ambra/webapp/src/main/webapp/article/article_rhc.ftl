@@ -79,7 +79,7 @@
           <a href="http://www.stumbleupon.com/submit?url=${jDocURL}" target="_new"> <img border=0 src="http://cdn.stumble-upon.com/images/16x16_su_solid.gif" alt="StumbleUpon" title="Add to StumbleUpon"></a>
           <#-- for more info, see http://www.stumbleupon.com/buttons.php -->
           <#-- Facebook -->
-          <script>function fbs_click() {u='${docURL}';t='${articleInfoX.title?url}';window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t),'sharer','toolbar=0,status=0,width=626,height=436');return false;}</script><a href="http://www.facebook.com/share.php?u=${docURL?url}" onclick="return fbs_click()"><img src="http://static.ak.fbcdn.net/images/share/facebook_share_icon.gif" alt="Facebook" title="Add to Facebook" /></a>       <!-- for mor info, see http://www.facebook.com/share_partners.php -->
+          <script>function fbs_click() {u='${docURL}';t='${docTitle?url}';window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t),'sharer','toolbar=0,status=0,width=626,height=436');return false;}</script><a href="http://www.facebook.com/share.php?u=${docURL?url}" onclick="return fbs_click()"><img src="http://static.ak.fbcdn.net/images/share/facebook_share_icon.gif" alt="Facebook" title="Add to Facebook" /></a>       <!-- for mor info, see http://www.facebook.com/share_partners.php -->
           <#-- Connotea -->
           <script type="text/javascript">
             function bookmark_in_connotea(u) {
@@ -92,7 +92,7 @@
           <a style='cursor: pointer;' onclick='javascript:bookmark_in_connotea("${docURL}");'><img src='${freemarker_config.getContext()}/images/icon_connotea_16x16.gif' alt="Connotea" title="Add to Connotea"/></a>
           <#-- See: http://www.connotea.org/wiki/AddToConnoteaButton -->
           <#-- Citeulike -->
-          <a href="http://www.citeulike.org/posturl?url=${docURL?url}&title=${articleInfoX.title?url}" target="_new"><img src='${freemarker_config.getContext()}/images/icon_citeulike_16x16.gif' alt="CiteULike" title="Add to CiteULike" /></a>
+          <a href="http://www.citeulike.org/posturl?url=${docURL?url}&title=${docTitle?url}" target="_new"><img src='${freemarker_config.getContext()}/images/icon_citeulike_16x16.gif' alt="CiteULike" title="Add to CiteULike" /></a>
           <#-- For more info see http://www.citeulike.org/faq/all.adp -->
           <#-- Digg
             TODO:Eventually we should be passing the abstract as the bodytext to digg.  We could also switch up and
@@ -101,7 +101,7 @@
           <script type="text/javascript">
           digg_url = '${jDocURL}';
           digg_skin = 'icon';
-          digg_title = '${articleInfoX.title?replace("'","\\'")}';
+          digg_title = '${docTitle?replace("'","\\'")}';
           digg_bodytext = '';
           digg_topic = '';
           digg_media = 'news';

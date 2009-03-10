@@ -30,7 +30,7 @@
     <div id="researchArticle" class="content related">
       <a id="top" name="top" toc="top" title="Top"></a>
       <#include "article_blurb.ftl">
-      <h1>${articleInfoX.title}</h1>
+      <h1>${docTitle}</h1>
       <#assign tab="related" />
       <#include "article_tabs.ftl">
 

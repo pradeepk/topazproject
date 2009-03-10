@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<#include "article_variables.ftl">
+<#include "/article/article_variables.ftl">
 <div id="content" class="article" style="visibility:visible;">
 <#include "/article/article_rhc.ftl">
 <form name="articleInfo" id="articleInfo" method="" action="">
@@ -28,7 +28,7 @@
 <input type="hidden" name="annotationId" value="${annotationId}" />
 <input type="hidden" name="isResearchArticle" value="${isResearchArticle?string}" />
 </form>
-<div id="articleContainer"><#include "article_content.ftl"></div>
+<div id="articleContainer"><#include "/journals/plosJournals/article/article_content.ftl"></div>
 <div style="visibility:hidden">
 <#include "/widget/annotation_add.ftl">
 <#include "/widget/contextAction.ftl">
