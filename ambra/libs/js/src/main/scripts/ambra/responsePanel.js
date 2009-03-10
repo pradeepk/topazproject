@@ -92,9 +92,13 @@ ambra.responsePanel = {
     this.targetForm.reasonCode[0].checked = true;
     this.targetForm.comment.value = "";
     this.targetForm.responseArea.value = targetObj.responseCue;
-    this.targetForm.competingInterest[0].checked = false;
-    this.targetForm.competingInterest[1].checked = true;
-    this.targetForm.ciStatementArea.value = "";
+
+    //This method gets used on more then one form.  Sometime CI will not be there
+    if(this.targetForm.competingInterest) {
+      this.targetForm.competingInterest[0].checked = false;
+      this.targetForm.competingInterest[1].checked = true;
+      this.targetForm.ciStatementArea.value = "";
+    }
     
     var submitMsg = targetObj.error;
     ambra.domUtil.removeChildren(submitMsg);

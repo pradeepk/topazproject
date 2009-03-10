@@ -27,7 +27,7 @@
 			<input type="hidden" name="urlParam" value="" />
 			<input type="hidden" name="comment" value="" />
 			
-			<div id="flagSubmitMsg" class="error"></div>
+			<div id="flagSubmitMsg" class="error" style="display:none;"></div>
 			
 			<fieldset>
 				<legend>Identify Reason for Flagging</legend>
