@@ -100,6 +100,40 @@
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_article.js</file>
+            <file>/javascript/init_ratings.js</file>
+          </javascript>
+        </page>
+        <page>
+          <name>/article/article_related.ftl</name>
+          <css>
+            <file>dojo.css</file>
+            <file>/css/star_rating.css</file>
+            <file>/css/rating.css</file>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+          </css>         
+          <javascript>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
+            <file>/javascript/init_global.js</file>
+            <file>/javascript/init_related.js</file>
+            <file>/javascript/init_ratings.js</file>
+          </javascript>
+        </page>
+        <page>
+          <name>/article/article_comments.ftl</name>
+          <css>
+            <file>dojo.css</file>
+            <file>/css/star_rating.css</file>
+            <file>/css/rating.css</file>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+          </css>
+          <javascript>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
+            <file>/javascript/init_global.js</file>
+            <file>/javascript/init_ratings.js</file>
           </javascript>
         </page>
         <page>
@@ -226,11 +260,13 @@
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
             <file>/css/static.css</file>
+            <file>/javascript/calendar/calendar.css</file>
           </css>
           <javascript>
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
-            <file>/javascript/advsearch.js</file>
+            <file>/javascript/calendar/calendar-setup.js</file>
+            <file>/javascript/calendar/calendar-en.js</file>            <file>/javascript/advsearch.js</file>
             <file>/javascript/init_global.js</file>
           </javascript>
         </page>
