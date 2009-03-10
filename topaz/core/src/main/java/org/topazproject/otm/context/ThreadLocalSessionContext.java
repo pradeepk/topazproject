@@ -63,7 +63,8 @@ public class ThreadLocalSessionContext implements CurrentSessionContext {
    * ThreadLocal variable is a java.util.Map to account for the possibility for multiple
    * SessionFactorys being used during execution of the given thread.
    */
-  private static final ThreadLocal context = new ThreadLocal();
+  private static final ThreadLocal<Map<SessionFactory, Session>> context =
+                                              new ThreadLocal<Map<SessionFactory, Session>>();
   private static Constructor proxyConstructor = createProxyConstructor();
 
   /**
@@ -157,12 +158,12 @@ public class ThreadLocalSessionContext implements CurrentSessionContext {
   }
 
   private static Session existingSession(SessionFactory factory) {
-    Map sessionMap = sessionMap();
+    Map<SessionFactory, Session> sessionMap = sessionMap();
 
     if (sessionMap == null) {
       return null;
     } else {
-      return (Session) sessionMap.get(factory);
+      return sessionMap.get(factory);
     }
   }
 
@@ -171,15 +172,15 @@ public class ThreadLocalSessionContext implements CurrentSessionContext {
    *
    * @return the map
    */
-  protected static Map sessionMap() {
-    return (Map) context.get();
+  protected static Map<SessionFactory, Session> sessionMap() {
+    return context.get();
   }
 
   private static void doBind(Session session, SessionFactory factory) {
-    Map sessionMap = sessionMap();
+    Map<SessionFactory, Session> sessionMap = sessionMap();
 
     if (sessionMap == null) {
-      sessionMap = new HashMap();
+      sessionMap = new HashMap<SessionFactory, Session>();
       context.set(sessionMap);
     }
 
@@ -187,11 +188,11 @@ public class ThreadLocalSessionContext implements CurrentSessionContext {
   }
 
   private static Session doUnbind(SessionFactory factory, boolean releaseMapIfEmpty) {
-    Map     sessionMap = sessionMap();
-    Session session    = null;
+    Map<SessionFactory, Session> sessionMap = sessionMap();
+    Session                      session    = null;
 
     if (sessionMap != null) {
-      session = (Session) sessionMap.remove(factory);
+      session = sessionMap.remove(factory);
 
       if (releaseMapIfEmpty && sessionMap.isEmpty()) {
         context.set(null);
