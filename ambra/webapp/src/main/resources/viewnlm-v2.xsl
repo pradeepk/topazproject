@@ -1455,7 +1455,7 @@
     <xsl:for-each select="//abstract[@abstract-type='patient']">
       <div class="patient">
         <a id="patient" name="patient" toc="patient" title="Patient Summary"/>
-        <h3><xsl:value-of select="title"/></h3>
+        <h3><xsl:value-of select="title"/><xsl:call-template name="topAnchor"/></h3>
         <xsl:apply-templates select="*[not(self::title)]"/>
       </div>
     </xsl:for-each>
@@ -3366,7 +3366,7 @@
   <div xpathLocation="noSelect" >
     <xsl:call-template name="make-id"/>
     <xsl:if test="not(title)">
-      <a id="ack" name="ack" toc="ack" title="Acknowledgments"><h3 xpathLocation="noSelect">Acknowledgments</h3></a>
+      <a id="ack" name="ack" toc="ack" title="Acknowledgments"></a><h3 xpathLocation="noSelect">Acknowledgments<xsl:call-template name="topAnchor"/></h3>
       <xsl:call-template name="nl-1"/>
     </xsl:if>
     <xsl:apply-templates/>
@@ -3435,7 +3435,7 @@
 </xsl:template>
 
 <xsl:template match="notes/sec/title">
- <h3><xsl:value-of select="."/></h3>
+ <h3><xsl:value-of select="."/><xsl:call-template name="topAnchor"/></h3>
 </xsl:template>
 
 <xsl:template match="note">
@@ -3693,7 +3693,7 @@
                      | back/notes/title">
   <xsl:call-template name="nl-1"/>
   <h2 xpathLocation="noSelect">
-    <xsl:apply-templates/>
+    <xsl:apply-templates/><xsl:call-template name="topAnchor"/>
   </h2>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
@@ -3704,7 +3704,7 @@
   <h3>
     <xsl:call-template name="makeXpathLocation" >
     </xsl:call-template>
-    <xsl:apply-templates/>
+    <xsl:apply-templates/><xsl:call-template name="topAnchor"/>
   </h3>
 </xsl:template>
 
@@ -3790,7 +3790,7 @@
   </a>
   <h3>
     <xsl:call-template name="makeXpathLocation"/>
-    <xsl:apply-templates/>
+    <xsl:apply-templates/><xsl:call-template name="topAnchor"/>
   </h3>
 </xsl:template>
 
@@ -3854,7 +3854,7 @@
         <xsl:attribute name="toc"><xsl:value-of select="$abs_id"/></xsl:attribute>
         <xsl:attribute name="title">Abstract</xsl:attribute>
       </xsl:element>
-      <h2><xsl:text>Abstract</xsl:text></h2>
+      <h2><xsl:text>Abstract</xsl:text><xsl:call-template name="topAnchor"/></h2>
     </xsl:when>
 
     <!-- trans-abstract with no title -->
@@ -3865,7 +3865,7 @@
         <xsl:attribute name="toc"><xsl:value-of select="$abs_id"/></xsl:attribute>
         <xsl:attribute name="title">Abstract, Translated</xsl:attribute>
       </xsl:element>
-      <h2><xsl:text>Abstract, Translated</xsl:text></h2>
+      <h2><xsl:text>Abstract, Translated</xsl:text><xsl:call-template name="topAnchor"/></h2>
     </xsl:when>
 
     <!-- there is no logical otherwise -->
@@ -5526,4 +5526,10 @@
   <xsl:call-template name="createAnnotationSpan"/>
 </xsl:template>
 
+<xsl:template name="topAnchor">
+  <xsl:if test="string-length(normalize-space(.)) > 0">
+    &#160;<a href="#top">Top</a>
+  </xsl:if>
+</xsl:template>
+  
 </xsl:stylesheet>
