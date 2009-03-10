@@ -384,7 +384,7 @@
                            person-group private-char pub-date publisher ref
                            ref-list response sec speech statement sub-article
                            subj-group supplementary-material table table-wrap
-                           table-wrap-foot table-wrap-group tbody tfoot thead
+                           table-wrap-foot table-wrap-group tbody term tfoot thead
                            title-group tr trans-abstract verse-group
                            "/>
 
