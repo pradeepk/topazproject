@@ -262,9 +262,9 @@ ambra.displayComment = {
     var ciStatementFrag = document.createDocumentFragment();
 
     if (jsonObj.annotation.CIStatement) {
-      ciStatementFrag = this.ciStatementMsg + jsonObj.annotation.CIStatement;
+      ciStatementFrag = "<div class=\"cis\">" + this.ciStatementMsg + jsonObj.annotation.CIStatement + "</div>";
     } else {
-      ciStatementFrag = this.noCIStatementMsg;
+      ciStatementFrag = "<div class=\"cis\">" + this.noCIStatementMsg + "</div>";
     }
 
     return ciStatementFrag;
@@ -387,7 +387,7 @@ ambra.displayComment = {
       contentDiv.className += ' ' + annotationConfig.styleRetraction;
     }
 
-    contentDiv.innerHTML = this.buildDisplayBody(jsonObj);
+    contentDiv.innerHTML = this.buildDisplayBody(jsonObj) + this.buildDisplayCIStatement(jsonObj);
     
     var cDetailDiv = document.createElement('div');
     cDetailDiv.className = 'detail';
@@ -405,7 +405,6 @@ ambra.displayComment = {
     
     cDetailDiv.appendChild(commentLink);
     cDetailDiv.appendChild(responseLink);*/
-    cDetailDiv.appendChild(this.buildDisplayCIStatement(jsonObj));
     cDetailDiv.appendChild(this.buildDisplayViewLink(jsonObj));
     contentDiv.appendChild(cDetailDiv);
 

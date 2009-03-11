@@ -38,13 +38,13 @@
 				<!-- begin : response body text -->
 				<blockquote>
 					${reply.commentWithUrlLinking}
-				</blockquote>
-				<blockquote class="cis">
-        <#if reply.CIStatement??>
-          <b>Competing interests declared:</b> ${reply.CIStatement}
-        <#else>
-          <b>No competing interests declared.</b>
-        </#if>
+          <div class="cis">
+          <#if reply.CIStatement??>
+            <b>Competing interests declared:</b> ${reply.CIStatement}
+          <#else>
+            <b>No competing interests declared.</b>
+          </#if>
+          </div>
 				</blockquote>
 				<!-- end : response body text -->
 				<!-- begin : toolbar options -->
@@ -101,14 +101,14 @@
 			<blockquote>
 				${baseAnnotation.commentWithUrlLinking}
 				<#if citation??><div class="citation"><strong>Citation: </strong><#assign isCorrection=true/><#if baseAnnotation.type?index_of("Retraction") gte 0><#assign isRetraction=true/><#else><#assign isRetraction=false/></#if><#assign doi=baseAnnotation.id?replace("info:doi/","") /><#include "/article/citation.ftl"/></#if>
+        <div class="cis">
+          <#if baseAnnotation.CIStatement??>
+            <b>Competing interests declared:</b> ${baseAnnotation.CIStatement}
+          <#else>
+            <b>No competing interests declared.</b>
+          </#if>
+        </div>
 			</blockquote>
-      <blockquote class="cis">
-        <#if baseAnnotation.CIStatement??>
-          <b>Competing interests declared:</b> ${baseAnnotation.CIStatement}
-        <#else>
-          <b>No competing interests declared.</b>
-        </#if>
-      </blockquote>
 			<!-- end : response body text -->
 			<!-- begin : toolbar options -->
 			<div class="toolbar">
