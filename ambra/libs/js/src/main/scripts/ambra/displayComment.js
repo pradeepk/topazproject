@@ -43,6 +43,10 @@ ambra.displayComment = {
   sectionCIStatement: "",
   
   sectionLink: "",
+
+  ciStatementMsg: "",
+
+  noCIStatementMsg: "",
   
   retrieveMsg: "",
   
@@ -52,7 +56,9 @@ ambra.displayComment = {
     this.sectionComment = dojo.byId(commentConfig.sectionComment);
     this.sectionCIStatement = dojo.byId(commentConfig.sectionCIStatement);
     this.sectionLink = dojo.byId(commentConfig.sectionLink);
-    this.retrieveMsg = dojo.byId(commentConfig.retrieveMsg);    
+    this.retrieveMsg = dojo.byId(commentConfig.retrieveMsg);
+    this.ciStatementMsg = commentConfig.ciStatementMsg;
+    this.noCIStatementMsg = commentConfig.noCIStatementMsg;
   },
   
   isMultiple: function(attr) {
@@ -84,7 +90,15 @@ ambra.displayComment = {
   setSectionCIStatement: function(configObj) {
     this.sectionCIStatement = dojo.byId(configObj.sectionCIStatement);
   },
-  
+
+  setCiStatementMsg: function(configObj) {
+    this.ciStatementMsg = dojo.byId(configObj.ciStatementMsg);
+  },
+
+  setNoCIStatementMsg: function(configObj) {
+    this.noCIStatementMsg = dojo.byId(configObj.noCIStatementMsg);
+  },
+
   setSectionLink: function(configObj) {
     this.sectionLink = dojo.byId(configObj.sectionLink);
   },
@@ -246,7 +260,12 @@ ambra.displayComment = {
   buildDisplayCIStatement: function (jsonObj) {
     // Insert formatted comment
     var ciStatementFrag = document.createDocumentFragment();
-    ciStatementFrag = jsonObj.annotation.CIStatement;
+
+    if (jsonObj.annotation.CIStatement) {
+      ciStatementFrag = this.ciStatementMsg + jsonObj.annotation.CIStatement;
+    } else {
+      ciStatementFrag = this.noCIStatementMsg;
+    }
 
     return ciStatementFrag;
   },

@@ -30,7 +30,7 @@ var annotationConfig = {
   trigger: "addAnnotation",
   lastAncestor: "researchArticle",
   xpointerMarker: "xpt",
-  // NOTE: 'note-pending' class is used to identify js-based annotation 
+  // NOTE: 'note-pending' class is used to identify js-based annotation
   //  related document markup prior to persisting the annotation
   annotationMarker: "note note-pending",
   pendingAnnotationMarker: 'note-pending',
@@ -55,13 +55,13 @@ var formalCorrectionConfig = {
   styleFormalCorrectionHeader: 'fch', // css class name for the formal correction header node
   fchId: 'fch', // the formal correction header node dom id
   fcListId: 'fclist', // the formal correction header sub-node referencing the ordered list
-  annid: 'annid' // dom node attribute name to use to store annotation ids 
+  annid: 'annid' // dom node attribute name to use to store annotation ids
 };
 var retractionConfig = {
     //  styleRetractionHeader: 'retractionCssStyle', // css class name for the retraction header node
     //  The name "retractionHtmlId" is a bad choice.  The only reason it is being used is as an extension of a bad
     //  decision (i.e., naming formalCorrectionConfig.styleFormalCorrectionHeader and formalCorrectionConfig.fchId
-    //  the same value: "fch") made when Formal Corrections were implemented.  
+    //  the same value: "fch") made when Formal Corrections were implemented.
   styleRetractionHeader: 'retractionHtmlId', // css class name for the retraction header node
   retractionHtmlId: 'retractionHtmlId', // the retraction header node dom id
   retractionListId: 'retractionlist', // the retraction header sub-node referencing the ordered list
@@ -74,23 +74,27 @@ var _annotationForm;
 var commentConfig = {
   cmtContainer: "cmtContainer",
   sectionTitle: "viewCmtTitle",
-  sectionDetail: "viewCmtDetail",  
+  sectionDetail: "viewCmtDetail",
   sectionComment: "viewComment",
   sectionCIStatement: "viewCIStatement",
+  ciStatementMsg: "<b>Competing interests declared:</b> ",
+  noCIStatementMsg: "<b>No competing interests declared:</b> ",
   sectionLink: "viewLink",
-  retrieveMsg: "retrieveMsg",  
+  retrieveMsg: "retrieveMsg",
   tipDownDiv: "cTip",
   tipUpDiv: "cTipu"
-};  
+};
 var multiCommentConfig = {
   sectionTitle: "viewCmtTitle",
-  sectionDetail: "viewCmtDetail",  
+  sectionDetail: "viewCmtDetail",
   sectionComment: "viewComment",
   sectionCIStatement: "viewCIStatement",
+  ciStatementMsg: "<b>Competing interests declared:</b> ",
+  noCIStatementMsg: "<b>No competing interests declared:</b> ",
   retrieveMsg: "retrieveMsg",
   tipDownDiv: "mTip",
   tipUpDiv: "mTipu"
-};  
+};
 var _commentDlg;
 var _commentMultiDlg;
 
@@ -103,7 +107,7 @@ var elLocation;
 function toggleAnnotation(obj, userType) {
   _ldc.show();
   var bugs = document.getElementsByTagAndClassName('a', 'bug');
-  
+
   for (var i=0; i<bugs.length; i++) {
     var classList = new Array();
     classList = bugs[i].className.split(' ');
@@ -112,9 +116,9 @@ function toggleAnnotation(obj, userType) {
         bugs[i].style.display = (bugs[i].style.display == "none") ? "inline" : "none";
     }
   }
-  
+
   toggleExpand(obj, null, "Show notes", "Hide notes");
-  
+
   _ldc.hide();
 }
 
@@ -180,9 +184,9 @@ function startValidateNewComment() {
   var submitMsg = dojo.byId('submitMsg');
   ambra.domUtil.removeChildren(submitMsg);
   ambra.formUtil.disableFormFields(_annotationForm);
-  
+
   _annotationForm.noteType.value = _annotationForm.cNoteType.value;
-  
+
   dojo.xhrPost({
      url: _namespace + "/annotation/secure/createAnnotationSubmit.action",
      handleAs:'json-comment-filtered',
@@ -206,7 +210,7 @@ function startValidateNewComment() {
        }
        else if (jsonObj.numFieldErrors > 0) {
          var fieldErrors = document.createDocumentFragment();
-         
+
          for (var item in jsonObj.fieldErrors) {
            var errorString = "";
            for (var ilist in jsonObj.fieldErrors[item]) {
@@ -215,7 +219,7 @@ function startValidateNewComment() {
                errorString += err;
                var error = document.createTextNode(errorString.trim());
                var brTag = document.createElement('br');
-  
+
                fieldErrors.appendChild(error);
                fieldErrors.appendChild(brTag);
              }
@@ -236,7 +240,7 @@ function startValidateNewComment() {
          document.articleInfo.annotationId.value = jsonObj.annotationId;
          // re-fetch article body
          getArticle();
-         markDirty(true); // set dirty flag (this ensures a later re-visit of this page will pull fresh article data from the server rather than relying on the browser cache) 
+         markDirty(true); // set dirty flag (this ensures a later re-visit of this page will pull fresh article data from the server rather than relying on the browser cache)
        }
      }//load
   });
@@ -255,14 +259,14 @@ function shouldRefresh() { return (dojo.cookie(dirtyToken) == 'a'); }
 
 /**
  * Marks or un-marks the article as "dirty" via a temporary browser cookie.
- * @param dirty true/false  
+ * @param dirty true/false
  */
 function markDirty(dirty) { dojo.cookie(dirtyToken,dirty?'a':'b'); }
 
 /**
  * getArticle
- * 
- * Re-fetches the article from the server 
+ *
+ * Re-fetches the article from the server
  * refreshing the article content area(s) of the page.
  */
 function getArticle() {
@@ -270,11 +274,11 @@ function getArticle() {
   dojo.xhrGet( {
     url: _namespace + "/article/fetchBody.action?articleURI=" + _annotationForm.target.value,
     handleAs:'text',
-    
+
     error: function(response, ioArgs) {
       handleXhrError(response);
     },
-    
+
     load: function(response, ioArgs) {
       // refresh article HTML content
       dojo.byId(annotationConfig.articleContainer).innerHTML = response;
@@ -282,25 +286,25 @@ function getArticle() {
       ambra.displayComment.processBugCount();
       ambra.corrections.apply();
       ambra.navigation.buildTOC(dojo.byId('sectionNavTopBox'), dojo.byId('sectionNavTop'));
-      
+
       document.articleInfo.annotationId.value = ''; // reset
       _ldc.hide();
-      
+
       //Rebind the text selection event
       ambra.displayAnnotationContext.init("researchArticle");
     }
   });
 }
 
-/** 
+/**
  * createAnnotationOnMouseDown()
- * 
- * Method triggered on onmousedown or onclick event of a tag.  When this method is 
+ *
+ * Method triggered on onmousedown or onclick event of a tag.  When this method is
  * triggered, it initiates an annotation creation using the currently-selected text.
  */
 function createAnnotationOnMouseDown() {
   // reset form
-  ambra.formUtil.textCues.reset(_annotationForm.cTitle, _titleCue); 
+  ambra.formUtil.textCues.reset(_annotationForm.cTitle, _titleCue);
   ambra.formUtil.textCues.reset(_annotationForm.cArea, _commentCue);
   ambra.formUtil.textCues.reset(_annotationForm.ciStatementArea, _statementCue);
 
@@ -321,15 +325,15 @@ function createAnnotationOnMouseDown() {
   // annotation (note) dialog related
   // --------------------------------
   _annotationForm = document.createAnnotation;
-  
+
   dojo.connect(_annotationForm.cNoteType, "change", function () {
     dojo.byId('cdls').style.visibility = _annotationForm.cNoteType.value == 'correction' ? 'visible' : 'hidden';
   });
-  
-  dojo.connect(_annotationForm.cTitle, "focus", function () { 
-    ambra.formUtil.textCues.off(_annotationForm.cTitle, _titleCue); 
+
+  dojo.connect(_annotationForm.cTitle, "focus", function () {
+    ambra.formUtil.textCues.off(_annotationForm.cTitle, _titleCue);
   });
-  
+
   dojo.connect(_annotationForm.cTitle, "change", function () {
     var fldTitle = _annotationForm.commentTitle;
     if(_annotationForm.cTitle.value != "" && _annotationForm.cTitle.value != _titleCue) {
@@ -340,7 +344,7 @@ function createAnnotationOnMouseDown() {
     }
   });
 
-  dojo.connect(_annotationForm.cTitle, "blur", function () { 
+  dojo.connect(_annotationForm.cTitle, "blur", function () {
     var fldTitle = _annotationForm.commentTitle;
     if(_annotationForm.cTitle.value != "" && _annotationForm.cTitle.value != _titleCue) {
       fldTitle.value = _annotationForm.cTitle.value;
@@ -348,9 +352,9 @@ function createAnnotationOnMouseDown() {
     else {
       fldTitle.value = "";
     }
-    ambra.formUtil.textCues.on(_annotationForm.cTitle, _titleCue); 
+    ambra.formUtil.textCues.on(_annotationForm.cTitle, _titleCue);
   });
-  
+
   dojo.connect(_annotationForm.cArea, "focus", function () {
     ambra.formUtil.textCues.off(_annotationForm.cArea, _commentCue);
   });
@@ -364,7 +368,7 @@ function createAnnotationOnMouseDown() {
       fldTitle.value = "";
     }
   });
-  
+
   dojo.connect(_annotationForm.cArea, "blur", function () {
     var fldTitle = _annotationForm.comment;
     if(_annotationForm.cArea.value != "" && _annotationForm.cArea.value != _commentCue) {
@@ -373,7 +377,7 @@ function createAnnotationOnMouseDown() {
     else {
       fldTitle.value = "";
     }
-    ambra.formUtil.textCues.on(_annotationForm.cArea, _commentCue); 
+    ambra.formUtil.textCues.on(_annotationForm.cArea, _commentCue);
     //ambra.formUtil.checkFieldStrLength(_annotationForm.cArea, 500);
   });
 
@@ -421,7 +425,7 @@ function createAnnotationOnMouseDown() {
 dojo.addOnLoad(function() {
   // int loading "throbber"
   _ldc = dijit.byId("LoadingCycle");
-  
+
   dojo.connect(dojo.byId("btn_post"), "click", function(e) {
     validateNewComment();
     e.preventDefault();
@@ -450,7 +454,7 @@ dojo.addOnLoad(function() {
   });
 
   ambra.formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate');
-  
+
   _annotationDlg = dijit.byId("AnnotationDialog");
   //var dlgCancel = dojo.byId('btn_cancel');
   //_annotationDlg.setCloseControl(dlgCancel);
@@ -465,13 +469,13 @@ dojo.addOnLoad(function() {
   //_commentDlg.setCloseControl(commentDlgClose);
   _commentDlg.setTipDown(dojo.byId(commentConfig.tipDownDiv));
   _commentDlg.setTipUp(dojo.byId(commentConfig.tipUpDiv));
-  
+
   dojo.connect(commentDlgClose, 'click', function(e) {
     _commentDlg.hide();
     ambra.displayComment.mouseoutComment(ambra.displayComment.target);
     return false;
   });
-  
+
   // -------------------------
   // multi-comment dialog related
   // -------------------------
@@ -480,25 +484,25 @@ dojo.addOnLoad(function() {
   //_commentMultiDlg.setCloseControl(popupCloseMulti);
   _commentMultiDlg.setTipDown(dojo.byId(multiCommentConfig.tipDownDiv));
   _commentMultiDlg.setTipUp(dojo.byId(multiCommentConfig.tipUpDiv));
-  
+
   dojo.connect(popupCloseMulti, 'click', function(e) {
     _commentMultiDlg.hide();
     ambra.displayComment.mouseoutComment(ambra.displayComment.target);
     return false;
   });
-  
+
   // init routines
   ambra.rating.init();
   ambra.displayComment.init();
   ambra.displayComment.processBugCount();
   ambra.corrections.apply();
   ambra.displayAnnotationContext.init("researchArticle");
-  
+
   // jump to annotation?
   jumpToAnnotation(document.articleInfo.annotationId.value);
 
-  // re-fetch article if "dirty" for firefox only as their page cache is not updated via xhr based dom alterations. 
+  // re-fetch article if "dirty" for firefox only as their page cache is not updated via xhr based dom alterations.
   if(dojo.isFF && shouldRefresh()) getArticle();
-  
+
   markDirty(false);	// unset dirty flag
 });
