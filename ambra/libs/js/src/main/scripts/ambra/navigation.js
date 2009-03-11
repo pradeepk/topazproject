@@ -71,8 +71,6 @@ ambra.navigation = {
 }
 
 dojo.addOnLoad(function() {
-  ambra.navigation.buildTOC(dojo.byId('sectionNavTopBox'), dojo.byId('sectionNavTop'));
-
   if (dojo.isIE) {
     var navContainer = dojo.byId("nav");
 

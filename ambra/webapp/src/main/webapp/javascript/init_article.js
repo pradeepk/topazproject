@@ -497,6 +497,7 @@ dojo.addOnLoad(function() {
   ambra.displayComment.processBugCount();
   ambra.corrections.apply();
   ambra.displayAnnotationContext.init("researchArticle");
+  ambra.navigation.buildTOC(dojo.byId('sectionNavTopBox'), dojo.byId('sectionNavTop'));
 
   // jump to annotation?
   jumpToAnnotation(document.articleInfo.annotationId.value);
