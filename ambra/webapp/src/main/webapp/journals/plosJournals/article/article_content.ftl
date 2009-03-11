@@ -17,6 +17,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+
+<#if articleInfoX??>
+  <#assign docTitle = articleInfoX.title />
+<#else>
+  <#assign docTitle = "" />
+</#if>
+
 <@s.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
 <div id="researchArticle" class="content">
   <a id="top" name="top" toc="top" title="Top"></a>
