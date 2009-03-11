@@ -2,7 +2,7 @@
  * $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,8 +25,18 @@
  **/
 dojo.provide("ambra.navigation");
 dojo.require("ambra.general");
+
 ambra.navigation = {
- buildTOC: function(tocBox, tocParentNode) {
+
+  /**
+   * Build the table of contents box
+   * @param tocBox the DIV tag that will hold the table of contents,
+   *        it is assumed this box is not visible, and the display
+   *        will be set to inline after the table of contents is created
+   * @param tocParentNode the node inside of the tocBOX to append the table of
+   *        contents unordered list to
+   */
+  buildTOC: function(tocBox, tocParentNode) {
     var ul = dojo.byId('tocUl');
 
     //presume we already have the list built
@@ -40,10 +50,13 @@ ambra.navigation = {
         for (var i=0; i<tocEl.length; i++) {
         var li = document.createElement('li');
         var anchor = document.createElement('a');
+
         anchor.href = "#" + tocEl[i].getAttributeNode('toc').nodeValue;
+
         if (i == tocEl.length -1) {
           anchor.className = 'last';
         }
+
         var tocText = document.createTextNode(tocEl[i].getAttributeNode('title').nodeValue);
           anchor.appendChild(tocText);
           li.appendChild(anchor);
@@ -59,15 +72,22 @@ ambra.navigation = {
 
 dojo.addOnLoad(function() {
   ambra.navigation.buildTOC(dojo.byId('sectionNavTopBox'), dojo.byId('sectionNavTop'));
-  if(dojo.isIE) {
+
+  if (dojo.isIE) {
     var navContainer = dojo.byId("nav");
-    if(!navContainer) return;
+
+    if (!navContainer) {
+      return;
+    }
+
     for (var i=0; i<navContainer.childNodes.length; i++) {
       if (navContainer.childNodes[i].nodeName == "LI") {
         var navLi = navContainer.childNodes[i];
+
         navLi.onmouseover = function() {
          this.className = this.className.concat(" over");
         }
+
         navLi.onmouseout = function() {
           this.className = this.className.replace(/\sover/, "");
           this.className = this.className.replace(/over/, "");
