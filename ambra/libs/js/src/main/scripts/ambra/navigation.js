@@ -26,34 +26,39 @@
 dojo.provide("ambra.navigation");
 dojo.require("ambra.general");
 ambra.navigation = {
- buildTOC: function(tocParentNode){
-   var ul = dojo.byId('tocUl');
-   if(ul) return; // presume we already have the list built
-   var tocEl = document.getElementsByTagAndAttributeName(null, 'toc');
-   if(!tocParentNode || !tocEl) return;
-   
-   var ul = document.createElement('ul');
-   ul.setAttribute('id','tocUl');
-   
-   for (var i=0; i<tocEl.length; i++) {
-     var li = document.createElement('li');
-     var anchor = document.createElement('a');
-     anchor.href = "#" + tocEl[i].getAttributeNode('toc').nodeValue;
-     if (i == tocEl.length -1) {
-       anchor.className = 'last';
-     }
-     var tocText = document.createTextNode(tocEl[i].getAttributeNode('title').nodeValue);
-     anchor.appendChild(tocText);
-     li.appendChild(anchor);
-     
-     ul.appendChild(li);
-   }
-   
-   tocParentNode.appendChild(ul);
- }
+ buildTOC: function(tocBox, tocParentNode) {
+    var ul = dojo.byId('tocUl');
+
+    //presume we already have the list built
+    if(!ul) {
+      var tocEl = document.getElementsByTagAndAttributeName(null, 'toc');
+
+      if (tocEl.length > 0) {
+        var ul = document.createElement('ul');
+        ul.setAttribute('id','tocUl');
+
+        for (var i=0; i<tocEl.length; i++) {
+        var li = document.createElement('li');
+        var anchor = document.createElement('a');
+        anchor.href = "#" + tocEl[i].getAttributeNode('toc').nodeValue;
+        if (i == tocEl.length -1) {
+          anchor.className = 'last';
+        }
+        var tocText = document.createTextNode(tocEl[i].getAttributeNode('title').nodeValue);
+          anchor.appendChild(tocText);
+          li.appendChild(anchor);
+          ul.appendChild(li);
+        }
+
+        tocParentNode.appendChild(ul);
+        tocBox.style.display='inline';
+      }
+    }
+  }
 }
+
 dojo.addOnLoad(function() {
-  ambra.navigation.buildTOC(dojo.byId('sectionNavTop'));
+  ambra.navigation.buildTOC(dojo.byId('sectionNavTopBox'), dojo.byId('sectionNavTop'));
   if(dojo.isIE) {
     var navContainer = dojo.byId("nav");
     if(!navContainer) return;

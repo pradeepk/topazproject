@@ -77,7 +77,7 @@ var commentConfig = {
   sectionDetail: "viewCmtDetail",  
   sectionComment: "viewComment",
   sectionCIStatement: "viewCIStatement",
-  sectionLink: "viewLink", 
+  sectionLink: "viewLink",
   retrieveMsg: "retrieveMsg",  
   tipDownDiv: "cTip",
   tipUpDiv: "cTipu"
@@ -87,7 +87,7 @@ var multiCommentConfig = {
   sectionDetail: "viewCmtDetail",  
   sectionComment: "viewComment",
   sectionCIStatement: "viewCIStatement",
-  retrieveMsg: "retrieveMsg",  
+  retrieveMsg: "retrieveMsg",
   tipDownDiv: "mTip",
   tipUpDiv: "mTipu"
 };  
@@ -281,7 +281,7 @@ function getArticle() {
       // re-apply article "decorations"
       ambra.displayComment.processBugCount();
       ambra.corrections.apply();
-      ambra.navigation.buildTOC(dojo.byId('sectionNavTop'));
+      ambra.navigation.buildTOC(dojo.byId('sectionNavTopBox'), dojo.byId('sectionNavTop'));
       
       document.articleInfo.annotationId.value = ''; // reset
       _ldc.hide();
