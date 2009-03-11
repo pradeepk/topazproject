@@ -117,6 +117,7 @@ ambra.rating = {
       _ratingsForm.ciStatementArea.value = jsonObj.ciStatement;
       _ratingsForm.competingInterest[0].checked = false;
       _ratingsForm.competingInterest[1].checked = true;
+      _ratingsForm.ciStatementArea.disabled = false;
     } else {
       _ratingsForm.ciStatement.value = '';
       _ratingsForm.ciStatementArea.value = '';
