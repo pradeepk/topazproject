@@ -5527,9 +5527,7 @@
 </xsl:template>
 
 <xsl:template name="topAnchor">
-  <xsl:if test="string-length(normalize-space(.)) > 0">
-    &#160;<a href="#top">Top</a>
-  </xsl:if>
+  <xsl:if test="string-length(normalize-space(.)) > 0">&#160;<a href="#top">Top</a></xsl:if>
 </xsl:template>
   
 </xsl:stylesheet>
