@@ -40,8 +40,8 @@
 					${reply.commentWithUrlLinking}
 				</blockquote>
 				<blockquote class="cis">
-        <#if baseAnnotation.CIStatement??>
-          <b>Competing interests declared:</b> ${baseAnnotation.CIStatement}
+        <#if reply.CIStatement??>
+          <b>Competing interests declared:</b> ${reply.CIStatement}
         <#else>
           <b>No competing interests declared.</b>
         </#if>
