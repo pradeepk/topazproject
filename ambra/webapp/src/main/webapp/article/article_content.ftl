@@ -43,7 +43,7 @@
         <li class="annotation icon">To <strong>add a note</strong>, highlight some text. <a href="#" onclick="toggleAnnotation(this, 'public'); return false;" title="Click to turn notes on/off">Hide notes</a></li>
         <li class="discuss icon">
           <#if Session[freemarker_config.userAttributeKey]?exists>
-            <a href="${createDiscussionURL}" class="discuss icon">Make a general comment</a>
+            <a href="${createDiscussionURL}">Make a general comment</a>
           <#else>
             <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}">Make a general comment</a>
           </#if>
