@@ -26,7 +26,7 @@
 
 <@s.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
 <div id="researchArticle" class="content">
-  <a id="top" name="top" toc="top" title="Top"></a>
+  <a id="top" name="top"></a>
   <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
   <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
   <#include "article_blurb.ftl">
@@ -53,9 +53,11 @@
             <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}">Make a general comment</a>
           </#if>
         </li>
-        </ul>
-      <p><strong>Jump to</strong></p>
-      <div id="sectionNavTop" class="tools"></div>
+      </ul>
+      <div id="sectionNavTopBox" style="display:none;">
+        <p><strong>Jump to</strong></p>
+        <div id="sectionNavTop" class="tools"></div>
+      </div>
     </div>
   </div>
   <@s.property value="transformedArticle" escape="false"/>
