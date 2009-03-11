@@ -39,15 +39,6 @@
     </div>
   </div>
 
-  <#if articleIssues?? && articleIssues?size gt 0>
-    <div id="published" xpathLocation="noSelect" class="rhcBox_type2">
-      <p><strong>Published in the</strong>
-      <#list articleIssues as oneIssue>
-        <@s.a href="${freemarker_config.getJournalUrl(oneIssue[1])}${freemarker_config.context}/article/browseIssue.action?issue=${oneIssue[4]?url}" title="Browse Open Access Issue">${oneIssue[5]} ${oneIssue[3]} Issue of ${freemarker_config.getDisplayName(oneIssue[1])}</@s.a>
-      </#list>
-    </div>
-  </#if>
-
   <div id="impact" class="rhcBox_type2">
     <div id="ratingRhc1">
       <#include "/article/article_rhc_rating.ftl">
@@ -56,6 +47,15 @@
 
   <div id="related" class="rhcBox_type2">
     <h6>Related Content</h6>
+  <#if articleIssues?? && articleIssues?size gt 0>
+    <div id="published" xpathLocation="noSelect" class="rhcBox_type2">
+      <p><strong>Included in</strong>
+      <br/>
+      <#list articleIssues as oneIssue>
+        <@s.a href="${freemarker_config.getJournalUrl(oneIssue[1])}${freemarker_config.context}/article/browseIssue.action?issue=${oneIssue[4]?url}" title="Browse Open Access Issue">${oneIssue[5]}</@s.a>
+      </#list>
+    </div>
+  </#if>
   <#if articleInfoX?? && articleInfoX.relatedArticles?size gt 0>
     <dl class="related">
       <dt>Related <em>${freemarker_config.orgName}</em> Articles</dt>
@@ -82,7 +82,7 @@
           <a href="http://www.stumbleupon.com/submit?url=${jDocURL}" target="_new"> <img border=0 src="http://cdn.stumble-upon.com/images/16x16_su_solid.gif" alt="StumbleUpon" title="Add to StumbleUpon"></a>
           <#-- for more info, see http://www.stumbleupon.com/buttons.php -->
           <#-- Facebook -->
-          <script>function fbs_click() {u='${docURL}';t='${docTitle?url}';window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t),'sharer','toolbar=0,status=0,width=626,height=436');return false;}</script><a href="http://www.facebook.com/share.php?u=${docURL?url}" onclick="return fbs_click()"><img src="http://static.ak.fbcdn.net/images/share/facebook_share_icon.gif" alt="Facebook" title="Add to Facebook" /></a>       <!-- for mor info, see http://www.facebook.com/share_partners.php -->
+          <script>function fbs_click() {u='${docURL}';t='${articleInfoX.title?url}';window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t),'sharer','toolbar=0,status=0,width=626,height=436');return false;}</script><a href="http://www.facebook.com/share.php?u=${docURL?url}" onclick="return fbs_click()"><img src="http://static.ak.fbcdn.net/images/share/facebook_share_icon.gif" alt="Facebook" title="Add to Facebook" /></a>       <!-- for mor info, see http://www.facebook.com/share_partners.php -->
           <#-- Connotea -->
           <script type="text/javascript">
             function bookmark_in_connotea(u) {
@@ -95,7 +95,7 @@
           <a style='cursor: pointer;' onclick='javascript:bookmark_in_connotea("${docURL}");'><img src='${freemarker_config.getContext()}/images/icon_connotea_16x16.gif' alt="Connotea" title="Add to Connotea"/></a>
           <#-- See: http://www.connotea.org/wiki/AddToConnoteaButton -->
           <#-- Citeulike -->
-          <a href="http://www.citeulike.org/posturl?url=${docURL?url}&title=${docTitle?url}" target="_new"><img src='${freemarker_config.getContext()}/images/icon_citeulike_16x16.gif' alt="CiteULike" title="Add to CiteULike" /></a>
+          <a href="http://www.citeulike.org/posturl?url=${docURL?url}&title=${articleInfoX.title?url}" target="_new"><img src='${freemarker_config.getContext()}/images/icon_citeulike_16x16.gif' alt="CiteULike" title="Add to CiteULike" /></a>
           <#-- For more info see http://www.citeulike.org/faq/all.adp -->
           <#-- Digg
             TODO:Eventually we should be passing the abstract as the bodytext to digg.  We could also switch up and
@@ -104,7 +104,7 @@
           <script type="text/javascript">
           digg_url = '${jDocURL}';
           digg_skin = 'icon';
-          digg_title = '${docTitle?replace("'","\\'")}';
+          digg_title = '${articleInfoX.title?replace("'","\\'")}';
           digg_bodytext = '';
           digg_topic = '';
           digg_media = 'news';

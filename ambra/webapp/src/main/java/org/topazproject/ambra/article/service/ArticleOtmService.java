@@ -608,6 +608,75 @@ public class ArticleOtmService {
   }
 
   /**
+   * Get a List of all of the Journal/Volume/Issue combinations that contain the
+   * <code>articleURI</code> which was passed in.
+   * Each primary List element contains a secondary List of six Strings which are, in order:
+   * <ul>
+   *   <li><strong>Element 0: </strong> Journal URI</li>
+   *   <li><strong>Element 1: </strong> Journal key</li>
+   *   <li><strong>Element 2: </strong> Volume URI</li>
+   *   <li><strong>Element 3: </strong> Volume name</li>
+   *   <li><strong>Element 4: </strong> Issue URI</li>
+   *   <li><strong>Element 5: </strong> Issue name</li>
+   * </ul>
+   * A Journal might have multiple Volumes, any of which might have multiple Issues
+   * that contain the <code>articleURI</code>.   The primary List will always contain
+   * one element for each Issue that contains the <code>articleURI</code>.
+   *
+   * @param articleURI Article URI that is contained in the Journal/Volume/Issue combinations
+   *   which will be returned
+   * @return All of the Journal/Volume/Issue combinations which contain the articleURI passed in
+   */
+  @Transactional(readOnly = true)
+  public List<List<String>> getArticleIssues(URI articleURI)
+  {
+    List<List<String>> issues = new ArrayList<List<String>>();
+
+
+//    if (log.isDebugEnabled())
+      log.info("  ***  retrieving Journals, Volumes, and Issues for: " + articleURI);
+
+    Results results = session.createQuery(
+        "select j.id, j.key," +
+        "   v.id, v.displayName," +
+        "   i.id, i.displayName, i.dublinCore.created dateCreated " +
+        " from Journal j, Volume v, Issue i" +
+        " where j.volumes = v.id" +
+        "   and v.issueList = i.id " +
+        "   and i.simpleCollection = :articleURI" +
+        " order by dateCreated desc;")
+        .setParameter("articleURI", articleURI).execute();
+
+    while (results.next()) {
+      List<String> secondaryList = new ArrayList<String>();
+      secondaryList.add(results.getURI(0).toString());  //  Journal URI
+      secondaryList.add(results.getString(1));  //  Journal key
+      secondaryList.add(results.getURI(2).toString());  //  Volume URI
+      secondaryList.add(results.getString(3));  //  Volume name
+      secondaryList.add(results.getURI(4).toString());  //  Issue URI
+      secondaryList.add(results.getString(5));  //  Issue name
+      issues.add(secondaryList);
+    }
+    try {
+      results.close();
+    } catch (Exception e) {
+      log.warn("Exception while trying to close query results.", e);
+    }
+
+
+//    if (log.isDebugEnabled()) {
+      for (List<String> secondaryList:issues) {
+        log.info("  *****  ");
+        for (String eachElement:secondaryList) {
+          log.info("  ***  : " + eachElement);
+        }
+      }
+//    }
+
+    return issues;
+  }
+
+  /**
    * Get track backs for a given trackbackId
    *
    * @param trackbackId

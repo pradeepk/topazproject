@@ -19,7 +19,7 @@
 -->
 <#include "/article/article_variables.ftl">
 <div id="content" class="article" style="visibility:visible;">
-<#include "/article/article_rhc.ftl">
+<#include "article_rhc.ftl">
 <form name="articleInfo" id="articleInfo" method="" action="">
 <input type="hidden" name="isAuthor" value="true" />
 <input type="hidden" name="authorIdList" value="" />

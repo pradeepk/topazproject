@@ -51,6 +51,7 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -96,6 +97,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
   private Article articleInfo;
   private ArticleType articleType;
   private Commentary[] commentary;
+  private List<List<String>> articleIssues;
 
   private ReplyService replyService;
   private AnnotationConverter annotationConverter;
@@ -208,6 +210,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
     journalList  = journalService.getJournalsForObject(URI.create(articleURI));
     isResearchArticle = articleOtmService.isResearchArticle(articleURI);
     hasRated = ratingsService.hasRated(articleURI, getCurrentUser());
+    articleIssues = articleOtmService.getArticleIssues(URI.create(articleURI));
 
     ArticleAnnotation anns[] = annotationService.listAnnotations(articleURI, null);
 
@@ -409,6 +412,15 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    */
   public Set<Journal> getJournalList() {
     return journalList;
+  }
+
+  /**
+   * @return Returns the names and URIs of all of the Journals, Volumes, and Issues
+   *   to which this Article has been attached.  This includes "collections", but does not
+   *   include the 
+   */
+  public List<List<String>> getArticleIssues() {
+    return articleIssues;
   }
 
   /**

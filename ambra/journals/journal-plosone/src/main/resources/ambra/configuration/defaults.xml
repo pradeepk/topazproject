@@ -101,6 +101,11 @@
             <file>/css/static.css</file>
           </css>
         </page>
+
+        <page>
+          <name>/article/article_rhc.ftl</name>
+        </page>
+
       </journal>
     </freemarker>
   </ambra>
