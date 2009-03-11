@@ -24,10 +24,10 @@
 <@s.url namespace="/article" includeParams="none" id="correctionsURL" action="fetchArticleCorrections" articleURI="${articleInfo.id}"/>
 <@s.url namespace="/article" includeParams="none" id="commentsURL" action="fetchArticleComments" articleURI="${articleInfo.id}"/>
 
-<#assign corrections=false/>
+<#assign nonComments=false/>
 <#list commentary as comment>
-  <#if (comment.annotation.isCorrection() == true)>
-    <#assign corrections=true />
+  <#if (comment.annotation.isComment() == false)>
+    <#assign nonComments=true />
   </#if>
 </#list>
 
@@ -35,7 +35,7 @@
   <#include "article_rhc.ftl">
 
   <div id="articleContainer">
-   <#if corrections == true>
+   <#if nonComments == true>
     <div id="researchArticle" class="content corrections">
    <#else>
     <div id="researchArticle" class="content comments">
@@ -50,11 +50,15 @@
         <p>There are currently no notes or comments yet on this article. You can <a href="${startDiscussionUrl}" title="Click to make a new comment on this article" class="discuss icon">add a comment</a> or return to the original article to add a note.</p>
       <#else>
         <ul>
-        <#if corrections == true>
+        <#if nonComments == true>
           <li><a href="${commentsURL}" title="View all Comments" class="discuss icon">View all Comments</a></li>
         <#else>
-          <#if ((numFormalCorrections + numMinorCorrections) > 0)>
-          <li><a href="${correctionsURL}" title="View all corrections" class="corrections icon">View all corrections</a></li>
+          <#if (numRetractions > 0)>
+            <li><a href="${correctionsURL}" title="View Retraction" class="corrections icon">View Retraction</a></li>
+          <#else>
+            <#if ((numFormalCorrections + numMinorCorrections) > 0)>
+            <li><a href="${correctionsURL}" title="View all corrections" class="corrections icon">View all corrections</a></li>
+            </#if>
           </#if>
         </#if>
           <li><a href="${startDiscussionUrl}" title="Click to make a new comment on this article" class="discuss icon">Make a new comment on this article</a></li>
