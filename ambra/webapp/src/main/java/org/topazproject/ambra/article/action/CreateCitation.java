@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.models.Citation;
+import org.topazproject.ambra.models.DublinCore;
 
 /**
  * Action to create a citation.  Does not care what the output format is.
@@ -46,6 +47,7 @@ public class CreateCitation extends BaseActionSupport {
   private ArticleOtmService articleOtmService;     // OTM service Spring injected.
 
   private String articleURI;
+  private String title;
   private Citation citation;
 
   /**
@@ -54,10 +56,13 @@ public class CreateCitation extends BaseActionSupport {
   @Override
   @Transactional(readOnly = true)
   public String execute () throws Exception {
-    citation = articleOtmService.getArticle(URI.create(articleURI))
-                                .getDublinCore()
-                                .getBibliographicCitation();
+    DublinCore articleDB = articleOtmService.getArticle(URI.create(articleURI)).getDublinCore();
+
+    citation = articleDB.getBibliographicCitation();
+    title = articleDB.getTitle();
+
     citation.getAuthors();
+    
     return SUCCESS;
   }
 
@@ -88,5 +93,12 @@ public class CreateCitation extends BaseActionSupport {
    */
   public Citation getCitation() {
     return citation;
+  }
+
+  /**
+   * @return Returns the article title
+   */
+  public String getTitle() {
+    return title;
   }
 }
