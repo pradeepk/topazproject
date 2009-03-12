@@ -155,6 +155,7 @@
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Unsolved%20Mystery</typeUri>
         <typeHeading>Unsolved Mystery</typeHeading>
+        <typeCode>unsolved_mystery</typeCode>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Neglected%20Diseases</typeUri>
