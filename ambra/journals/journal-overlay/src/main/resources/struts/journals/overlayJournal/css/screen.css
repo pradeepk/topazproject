@@ -338,8 +338,9 @@ div.horizontalTabs:after  { content:"."; display: block; height:0; clear:left; v
 /*div#articleContainer div#researchArticle*/ ul#tabsContainer  { float:left; clear:none; margin:0!important; padding:0 0 0 10px!important; /* "!important" required for IE7 */ line-height:normal; background:transparent url("../images/tab_bg.gif") repeat-x bottom; width:640px; }
 ul#tabsContainer ul { margin:0; padding:10px 10px 0; }
 ul#tabsContainer li		{ cursor:pointer; float:left; background:url("../images/tab_left.gif") no-repeat 0% 0%; margin:0 2px; padding:0 0 0 8px; list-style:none; font-size:.9em; font-weight:bold; color:#666; }
-ul#tabsContainer li a { display:block; float:left; background:url("../images/tab_right.gif") no-repeat 100% 0%;  padding:8px 16px 8px 8px!important; /* "!important" required for IE7 */ color:#666; text-decoration:none; }
-ul#tabsContainer li a:hover { color:#f60 }
+ul#tabsContainer li a { display:block; float:left; background:url("../images/tab_right.gif") no-repeat 100% 0%;  padding:8px 16px 8px 8px!important; /* "!important" required for IE7 */ text-decoration:none; }
+ul#tabsContainer li a,
+ul#tabsContainer li a:hover { color:#666; }
 ul#tabsContainer li.active { background-position:0% -40px; }
 ul#tabsContainer li.active a { background-position:100% -40px; padding-bottom: 9px!important; }
 
@@ -359,8 +360,8 @@ div.pageerror p		{ margin-left: 8px; }
 div.content h2	{ /* article sub-title */ margin: 10px 0; font-style: italic; font-size: 1.5em; background: none; padding: 0;}
 div.static h2,
 div.content h3	{ /* article main body heading */ font-size: 1.6em; margin: 20px 0 0 0; border-bottom: 1px solid #ccc; padding-bottom: 3px;}
-div.content h2 a,
-div.content h3 a { font-family: Verdana,Arial,Helvetica,sans-serif; font-size:0.6em; }
+div#researchArticle h2 a,
+div#researchArticle h3 a { font-family: Verdana,Arial,Helvetica,sans-serif; font-size:0.6em; } /* back to top links in article headers */
 
 div.static h3,
 div.content h4	{ /* article second level heading */ font-size: 1.3em; margin: 20px 0 1.25em; color: #333; font-family: Georgia, "Times New Roman", Times, serif; font-weight: bold; border-bottom:0; }

@@ -340,8 +340,9 @@ div.horizontalTabs:after  { content:"."; display: block; height:0; clear:left; v
 /*div#articleContainer div#researchArticle*/ ul#tabsContainer  { float:left; clear:none; margin:0!important; padding:0 0 0 10px!important; /* "!important" required for IE7 */ line-height:normal; background:transparent url("../images/tab_bg.gif") repeat-x bottom; width:640px; }
 ul#tabsContainer ul { margin:0; padding:10px 10px 0; }
 ul#tabsContainer li		{ cursor:pointer; float:left; background:url("../images/tab_left.gif") no-repeat 0% 0%; margin:0 2px; padding:0 0 0 8px; list-style:none; font-size:.9em; font-weight:bold; color:#666; }
-ul#tabsContainer li a { display:block; float:left; background:url("../images/tab_right.gif") no-repeat 100% 0%;  padding:8px 16px 8px 8px!important; /* "!important" required for IE7 */ color:#666; text-decoration:none; }
-ul#tabsContainer li a:hover { color:#f60 }
+ul#tabsContainer li a { display:block; float:left; background:url("../images/tab_right.gif") no-repeat 100% 0%;  padding:8px 16px 8px 8px!important; /* "!important" required for IE7 */ text-decoration:none; }
+ul#tabsContainer li a,
+ul#tabsContainer li a:hover { color:#666; }
 ul#tabsContainer li.active { background-position:0% -40px; }
 ul#tabsContainer li.active a { background-position:100% -40px; padding-bottom: 9px!important; }
 
@@ -361,8 +362,8 @@ div.pageerror p		{ margin-left: 8px; }
 div.content h2	{ /* article sub-title */ margin: 10px 0; font-style: italic; font-size: 1.5em; background: none; padding: 0;}
 div.static h2,
 div.content h3	{ /* article main body heading */ font-size: 1.6em; margin: 20px 0 0 0; border-bottom: 1px solid #ccc; padding-bottom: 3px;}
-div.content h2 a,
-div.content h3 a { font-family: Verdana,Arial,Helvetica,sans-serif; font-size:0.6em; }
+div#researchArticle h2 a,
+div#researchArticle h3 a { font-family: Verdana,Arial,Helvetica,sans-serif; font-size:0.6em; } /* back to top links in article headers */
 
 div.static h3,
 div.content h4	{ /* article second level heading */ font-size: 1.3em; margin: 20px 0 1.25em; color: #333; font-family: Georgia, "Times New Roman", Times, serif; font-weight: bold; border-bottom:0; }
@@ -705,17 +706,60 @@ named-content[content-type="genus-species"] { font-style:italic; } /* italicizes
 #browseNav ol a:visited 	{ display: block; border-right: 1px solid #999; width: 32px; margin: 4px 0; text-align: center;}
 
 /*--- Browse by TOC and Journal Archive ---*/
-p#issueNav { margin:0; padding:0; position:relative; font-size:0.9em; }
+/* Right hand column on TOC */
+div.toc #rhc ul li a,
+div.toc #rhc ul li a:visited	{ display: block; font-size:0.9em; padding: 0 5px; text-decoration: none; color: #333; }
+div.toc #rhc ul li a,
+div.toc #rhc ul li a:visited 	{ background-color: transparent; background-position: 5% 50%; background-repeat: no-repeat; padding:1px 0 2px 0; padding-left:30px; border-bottom: 1px solid #ccc; margin: 0 3px; }
+div.toc #rhc ul li a:hover		{ background-color: #ddd; color: #000;}
+div.toc #rhc ul li a.last		{ border-bottom-width: 0; }
+div.toc #rhc ol li a.commentary { background-image: none; display:block; margin-top:5px; padding: 2px 0 2px 0; font-weight: bold; }
+div.toc #rhc ol li a.corrections { display:inline; background-position:left 0%; }
+/* Valid use of child selector to hide these from IE6 which doubles bottom margin. Results in no bottom margin display for IE6 */ 
+div.toc div#rhc > div#sideNav > div#postcomment > div.commentview > ol > li > a.corrections,
+div.toc div#rhc > div#sideNav > div#postcommentfloat > div.commentview > ol > li > a.corrections/*for Safari*/ { display:block; margin-bottom:5px; background-position:left 0.2em; }
+div.toc div#rhc div#sectionNavTop { position:static; width:240px; margin-top:8px; }
+div.toc div#rhc div#sectionNavTop ul li a,
+div.toc div#rhc div#sectionNavTop ul li a:visited { border-bottom:0; border-top:1px solid #ccc; }
+div.toc div#rhc div#sectionNavTop ul li a.first { border-top:0!important; }
+
+/* for floating nav in TOC rhc */
+#postcomment, #postcommentfloat { width: 240px; top: 0; position: relative; }
+#postcommentfloat { position: fixed; display: none; }
+.fixed { position: fixed !important; }
+
+#sectionNav ul li a,
+#sectionNavTop ul li a,
+#sectionNavTopFloat ul li a, /* sectionNavTopFloat style is for Safari only*/
+#sectionNav ul li a:visited,
+#sectionNavTop ul li a:visited,
+#sectionNavTopFloat ul li a:visited { padding-right:5px; background: transparent url(../images/sectionnav_li_bg.gif) no-repeat 5% .7em; border-color: #999;}
+#sectionNav { width: 240px; top: 20px; background-color: #FFF; position: fixed; display: none; }
+
+/* rhc rounded containers : top */
+div.toc div.links,
+div.toc div.tools				{ background-position: bottom; background-repeat: no-repeat; padding: 0 0 8px 0; margin: 0 0 6px 0; }
+div.toc div.links				{ background-image: url(../images/sidenav_bg.gif); position: relative;}
+div.toc div.tools				{ background-image: url(../images/tools_bg.gif);}
+/* rhc rounded containers : bottom */
+div.toc div.links ul,
+div.toc div.tools ul			{ background-repeat: no-repeat; background-position: top; padding: 8px 0 0 0; margin: 0; list-style-type: none; }
+div.toc div.links ul			{ background-image: url(../images/sidenav_bg.gif);}
+div.toc div.tools ul			{ background-image: url(../images/tools_bg.gif); padding-bottom: 2px;}
+div.toc div.links li
+div.toc div.tools li			{ list-style-type: none; margin: 0; padding: 0; }	
+
+p#issueNav { margin:2px 0 0 0; padding:0; position:relative; }
 p#issueNav a:link,
 p#issueNav a:visited { text-decoration:none; }
 p#issueNav a:hover { text-decoration:underline; }
-div.toc div#rhc { margin-top:-9px; padding-top:0; }
-div.toc div#rhc div#floatMarker { line-height:0; margin:0; padding:0; display:none; } /* see floatingMenu.js */
+div.toc div#rhc { margin-top:-9px; padding-top:0; line-height:1.8em }
+div.toc div#rhc div#floatMarker { line-height:0; margin:0; padding:0; display:hidden; } /* see floatingMenu.js */
 div.toc h1,
 div.archive h1  { width:99%; margin-bottom: 20px; padding-top: 10px; border-top: 6px solid #f60; }
 div#issueImage { margin:30px 0 15px 0; }
 div#issueImage h4 { display:inline; font-size:0.9em; font-style:italic; font-family:Verdana, Arial, Helvetica, sans-serif; margin:0; padding:0; }
-div#issueImage p  { margin:0 0 10px 0; font-size:.9em; line-height:1.5em; display:inline; padding:0 .5em 0 0; }
+div#issueImage p  { margin:0 0 10px 0; font-size:.9em; display:inline; padding:0 0.5em 0 0; }
 div#issueImage span#title { font-weight:bold; font-style:italic; }
 div#issueImage span#creator { font-weight:bold; }
 div#issueImage p#credit,
