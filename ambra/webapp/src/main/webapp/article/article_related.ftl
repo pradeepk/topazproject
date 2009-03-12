@@ -43,18 +43,18 @@
         </#list>
       </ul>
 
-      <h3>Related Articles on the web <img id="relatedArticlesSpinner" src="../../images/loading.gif" height="20" width="20" class="loading" /></h3>
+      <h3>Related Articles on the web <img id="relatedArticlesSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
       <div id="pubMedRelatedErr" style="display:none;"></div>
       <ul>
         <li><a href="http://scholar.google.com/scholar?hl=en&lr=&q=related:${docURL?url}&btnG=Search">Google Scholar</a></li>
         <li id="pubMedRelatedLI" style="display:none;"><a id="pubMedRelatedURL">Pubmed</a></li>
       </ul>
 
-      <h3>Cited in <img id="relatedCitesSpinner" src="../../images/loading.gif" height="20" width="20" class="loading" /></h3>
+      <h3>Cited in <img id="relatedCitesSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
       <div id="relatedCites"></div>
       <div>Search for citations on <a href="http://scholar.google.com/scholar?hl=en&lr=&cites=${docURL?url}">Google Scholar</a>.</div>
 
-      <h2>Related Blog Posts <a href="#" class="info">info</a> <img id="relatedBlogSpinner" src="../../images/loading.gif" height="20" width="20" class="loading" /></h2>
+      <h2>Related Blog Posts <a href="#" class="info">info</a> <img id="relatedBlogSpinner" src="../../images/loading_small.gif" class="loading" /></h2>
       <div id="relatedBlogPosts"></div>
 
       Search for related blog posts on <a href="http://blogsearch.google.com/blogsearch?hl=en&ie=UTF-8&q=${shortDOI?url}&btnG=Search+Blogs">Google Blogs</a>
