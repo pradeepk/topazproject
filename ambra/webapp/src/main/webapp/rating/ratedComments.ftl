@@ -113,6 +113,13 @@
               <#if articleRatingSummary.commentValue?exists>
                 <p>${articleRatingSummary.commentValue}</p>
               </#if>
+              <div class="cis">
+                <#if articleRatingSummary.CIStatement??>
+                  <b>Competing interests declared:</b> ${articleRatingSummary.CIStatement}
+                <#else>
+                  <b>No competing interests declared.</b>
+                </#if>
+                </div>
             </blockquote>
           </div>
           <!-- end : response body text -->

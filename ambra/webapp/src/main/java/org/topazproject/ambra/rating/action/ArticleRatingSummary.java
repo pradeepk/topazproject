@@ -45,6 +45,7 @@ public class ArticleRatingSummary {
   private int    singleRating;
   private String commentTitle;
   private String commentValue;
+  private String ciStatement;
 
   public ArticleRatingSummary(String articleURI, String articleTitle) {
     this.articleURI = articleURI;
@@ -62,6 +63,7 @@ public class ArticleRatingSummary {
     // escape any markup
     this.commentTitle = TextUtils.escapeHtml(rating.getBody().getCommentTitle());
     this.commentValue = TextUtils.escapeHtml(rating.getBody().getCommentValue());
+    this.ciStatement = TextUtils.escapeHtml(rating.getBody().getCIStatement());
 
     this.creatorURI = rating.getCreator();
   }
@@ -177,5 +179,22 @@ public class ArticleRatingSummary {
 
   public String getCommentValue() {
     return commentValue;
+  }
+
+  /**
+   * Set the CI statment
+   * @param value the CI Statement value
+   */
+  public void setCIStatement(String value) {
+    // protect against markup
+    this.ciStatement = TextUtils.escapeHtml(value);
+  }
+
+  /**
+  * Return the CIStatement.
+  * @return CIStatement as String.
+  */
+  public String getCIStatement() {
+    return this.ciStatement;
   }
 }
