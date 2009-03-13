@@ -20,7 +20,6 @@ package org.topazproject.ambra.article.action;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -35,8 +34,6 @@ import org.topazproject.ambra.article.service.BrowseService;
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.model.IssueInfo;
 import org.topazproject.ambra.model.VolumeInfo;
-import org.topazproject.ambra.model.article.ArticleInfo;
-import org.topazproject.ambra.model.article.ArticleType;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.util.ArticleXMLUtils;
 
@@ -55,7 +52,7 @@ public class BrowseIssueAction extends BaseActionSupport{
   private BrowseService browseService;
   private IssueInfo issueInfo;
   private String issueDescription;
-  private ArrayList<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
+  private List<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
 
   private ArticleXMLUtils articleXmlUtils;
 
@@ -127,64 +124,7 @@ public class BrowseIssueAction extends BaseActionSupport{
       log.error("The currentIssue description was null. Issue DOI='"+issueInfo.getId()+"'");
       issueDescription = "No description found for this issue";
     }
-
-    /* 
-     * Clear out the articleGroups and rebuild the list with one TOCArticleGroup for each
-     * ArticleType to be displayed in the order defined by ArticleType.getOrderedListForDisplay()
-     */
-    articleGroups = new ArrayList<TOCArticleGroup>();
-    for (ArticleType at : ArticleType.getOrderedListForDisplay()) {
-      TOCArticleGroup newArticleGroup = new TOCArticleGroup(at);
-      articleGroups.add(newArticleGroup);
-    }
-
-    List<ArticleInfo> articlesInIssue = browseService.getArticleInfosForIssue(issueInfo.getId());
-    /*
-     * For every article that is of the same ArticleType as a TOCArticleGroup, add it to that group.
-     * Articles can appear in multiple TOCArticleGroups.
-     */
-    for (ArticleInfo ai : articlesInIssue) {
-      boolean articleAddedToAtLeastOneGroup = false;
-      for (TOCArticleGroup ag : articleGroups) {
-        for (ArticleType articleType : ai.getArticleTypes()) {
-          if (ag.getArticleType().equals(articleType)) {
-            ag.addArticle(ai);
-            articleAddedToAtLeastOneGroup = true;
-            break;
-          }
-        }
-      }
-
-      if (log.isErrorEnabled() && !articleAddedToAtLeastOneGroup) {
-        StringBuilder buf = new StringBuilder("| ");
-        Iterator<ArticleType> it = ai.getArticleTypes().iterator();
-        while (it.hasNext()) {
-          ArticleType at = it.next();
-          buf.append(at.getUri());
-          if (it.hasNext()) { buf.append(" | "); }
-        }
-        buf.append(" |");
-        log.error("Failed to add article '"+ ai.getId()
-                + "' to an article group. Check configured articles types "
-                + "against the article types found for this Article: " + buf);
-      }
-    }
-
-    /*
-     * Remove all empty TOCArticleGroups (avoid ConcurrentModificationException by
-     * building a new ArrayList of non-empty article groups).
-     */
-    int i = 1;
-    ArrayList<TOCArticleGroup> newArticleGroups = new ArrayList<TOCArticleGroup>();
-    for (TOCArticleGroup grp : articleGroups) {
-      if (grp.articles.size() != 0) {
-        newArticleGroups.add(grp);
-        grp.setId("tocGrp_"+i);
-        grp.sortArticles();
-        i++;
-      }
-    }
-    articleGroups = newArticleGroups;
+    articleGroups = browseService.getArticleGrpList(URI.create(issue));
 
     return SUCCESS;
   }
@@ -205,7 +145,7 @@ public class BrowseIssueAction extends BaseActionSupport{
    *
    * @return ordered list of TOCArticleGroup(s)
    */
-  public ArrayList<TOCArticleGroup> getArticleGroups() {
+  public List<TOCArticleGroup> getArticleGroups() {
     return articleGroups;
   }
 

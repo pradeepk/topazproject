@@ -99,6 +99,11 @@
     <property name="otmSession" ref="otmSession"/>
    </bean>
 
+   <bean id="adminService" class="org.topazproject.ambra.admin.service.AdminService">
+    <property name="journalService" ref="journalService"/>
+    <property name="otmSession" ref="otmSession"/>
+   </bean>
+
    <bean id="crossRefPosterService" class="org.topazproject.ambra.admin.service.CrossRefPosterService">
     <!-- following is the URL for the CrossRef service. The three parameters which should be set are
         * area=  test or live. Decides if the cross ref is actually 'posted'. area=test for testing, area=live for deployment
@@ -161,7 +166,11 @@
 
   <bean id="profanityCheckingService" class="org.topazproject.ambra.util.ProfanityCheckingService"/>
 
-  <bean id="browseService" class="org.topazproject.ambra.article.service.BrowseService"/>
+  <bean id="browseService" class="org.topazproject.ambra.article.service.BrowseService">
+    <property name="journalService" ref="journalService"/>
+    <property name="browseCache" ref="browseCache"/>
+    <property name="otmSession" ref="otmSession"/>
+  </bean>
 
   <bean id="smallBlobService" class="org.topazproject.ambra.article.service.SmallBlobService"/>
   

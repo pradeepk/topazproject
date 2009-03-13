@@ -46,6 +46,7 @@ import org.topazproject.ambra.model.IssueInfo;
 import org.topazproject.ambra.model.VolumeInfo;
 import org.topazproject.ambra.model.article.ArticleInfo;
 import org.topazproject.ambra.model.article.Years;
+import org.topazproject.ambra.model.article.ArticleType;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Issue;
 import org.topazproject.ambra.models.Journal;
@@ -53,7 +54,7 @@ import org.topazproject.ambra.models.Volume;
 import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Retraction;
-import org.topazproject.ambra.models.Category;
+import org.topazproject.ambra.article.action.TOCArticleGroup;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Session;
@@ -331,7 +332,7 @@ public class BrowseService {
     IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssueURI,
                                         nextIssueURI, imageArticle, description,
                                         parentVolume == null ? null : parentVolume.getId());
-    issueInfo.setArticleUriList(issue.getSimpleCollection());
+    issueInfo.setArticleUriList(issue.getArticleList());
     return issueInfo;
   }
 
@@ -783,5 +784,87 @@ public class BrowseService {
     }
 
 
+  }
+
+  /**
+   *
+   */
+  public String articleGrpListToCSV( List<TOCArticleGroup> articleGroups) {
+    String articleList = new String();
+    for (TOCArticleGroup ag : articleGroups) {
+      Iterator i = ag.articles.listIterator();
+
+      while(i.hasNext()) {
+        ArticleInfo ai = (ArticleInfo)i.next();
+
+        articleList = articleList + ai.id.toString();
+        if (i.hasNext())
+          articleList = articleList + ",";
+      }
+    }
+    return articleList;
+  }
+
+  /**
+   *
+   */
+  public List<TOCArticleGroup> getArticleGrpList(URI issueURI) {
+    Issue issue = session.get(Issue.class, issueURI.toString());
+
+    // If the issue does not exist then return an empty list
+    if (issue == null)
+      return new ArrayList<TOCArticleGroup>();
+
+    return getArticleGrpList(issue);
+  }
+
+  /**
+   *
+   */
+  public List<TOCArticleGroup> getArticleGrpList(Issue issue) {
+    List<TOCArticleGroup> groupList = new ArrayList<TOCArticleGroup>();
+
+    for (ArticleType at : ArticleType.getOrderedListForDisplay()) {
+      TOCArticleGroup newArticleGroup = new TOCArticleGroup(at);
+      groupList.add(newArticleGroup);
+    }
+
+    return pruneArticleGrps(issue,groupList);
+  }
+
+  /**
+   *
+   */
+  public List<TOCArticleGroup> pruneArticleGrps(Issue issue, List<TOCArticleGroup> articleGroups) {
+    List<ArticleInfo> articlesInIssue = getArticleInfosForIssue(issue.getId());
+    /*
+     * For every article that is of the same ArticleType as a TOCArticleGroup, add it to that group.
+     * Articles can appear in multiple TOCArticleGroups.
+     */
+    for (ArticleInfo ai : articlesInIssue)
+      for (TOCArticleGroup ag : articleGroups)
+        for (ArticleType articleType : ai.getArticleTypes())
+          if (ag.getArticleType().equals(articleType)) {
+            ag.addArticle(ai);
+            break;
+          }
+
+    Iterator iter = articleGroups.listIterator();
+    Integer i = 0;
+
+    while(iter.hasNext()) {
+      TOCArticleGroup ag = (TOCArticleGroup) iter.next();
+      // remove the group if it has no articles
+      if (ag.articles.size() == 0) {
+        iter.remove();
+        continue;
+      }
+      // If we respect order then don't sort.
+      if (!issue.getRespectOrder()) {
+        ag.setId("tocGrp_"+ (i++));
+        ag.sortArticles();
+      }
+    }
+    return articleGroups;
   }
 }

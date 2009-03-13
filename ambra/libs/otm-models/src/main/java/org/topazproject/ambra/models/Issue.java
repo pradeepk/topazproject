@@ -19,9 +19,12 @@
 package org.topazproject.ambra.models;
 
 import java.net.URI;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.CollectionType;
 
 /**
  * Marker class to mark an Aggregation as a "Issue".
@@ -30,10 +33,32 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(types = {"plos:Issue"}, graph = "ri")
 public class Issue extends Aggregation {
-  private static final long serialVersionUID = -4532961080689709771L;
+  private static final long serialVersionUID = -4532961080689709777L;
 
-  private String displayName;
-  private URI    image;
+  private String    displayName;
+  private List<URI> articleList = new ArrayList<URI>();
+  private boolean   respectOrder = false;
+  private URI       image;
+
+  /**
+   *
+   * @param article article URI
+   */
+  public void addArticle(URI article) {
+    List<URI> uriList = getArticleList();
+    uriList.add(article);
+  }
+
+  /**
+   *
+   * @param article article URI
+   */
+  public void removeArticle(URI article) {
+    List<URI> uriList = getArticleList();
+
+    if (uriList.contains(article))
+      uriList.remove(article);
+  }
 
   /**
    * Get the image for this Issue.
@@ -53,7 +78,6 @@ public class Issue extends Aggregation {
   public void setImage(URI image) {
     this.image = image;
   }
-
 
   /**
    * Get the display name for this Issue.
@@ -77,6 +101,45 @@ public class Issue extends Aggregation {
   }
 
   /**
+   *
+   * @param articleList   list of URIs
+   */
+  @Predicate(uri = "plos:orderedArticles", collectionType = CollectionType.RDFSEQ)
+  public void setArticleList(List<URI> articleList) {
+    this.articleList = articleList;
+  }
+
+  /**
+   *
+   * @return  a list of article URIs
+   */
+  public List<URI> getArticleList() {
+    if (articleList.isEmpty() && !super.getSimpleCollection().isEmpty())
+      articleList = super.getSimpleCollection();
+
+    return articleList;
+  }
+
+  /**
+   * Set respectOrder.
+   *
+   * @param respectOrder the value to set.
+   */
+  @Predicate(uri = "plos:respectOrder")
+  public void setRespectOrder(boolean respectOrder) {
+    this.respectOrder = respectOrder;
+  }
+
+  /**
+   * Get respectOrder.
+   *
+   * @return respectOrder as boolean.
+   */
+  public boolean getRespectOrder() {
+    return respectOrder;
+  }
+
+  /**
    * String representation for debugging.
    * 
    * @return String representation for debugging.
@@ -86,6 +149,7 @@ public class Issue extends Aggregation {
     return "Issue: [" +
            "displayName: " + getDisplayName() +
            ", image: " + getImage() +
+           ", repsectOrder: " + getRespectOrder() +
            ", " + super.toString() +
            "]";
   }

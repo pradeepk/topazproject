@@ -20,8 +20,6 @@
 package org.topazproject.ambra.admin.action;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -30,86 +28,65 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.topazproject.ambra.journal.JournalService;
-import org.topazproject.ambra.models.Journal;
-import org.topazproject.otm.criterion.DetachedCriteria;
+import org.topazproject.ambra.admin.service.AdminService;
+import org.topazproject.ambra.admin.service.AdminService.JournalInfo;
+import org.topazproject.ambra.models.Volume;
 
 /**
- * Allow Admin to Manage virtual Journals.
+ * Volumes are associated with some journals and hubs. A volume is an aggregation of
+ * of issues. Issue are aggregations of articles.
+ *
  */
 @SuppressWarnings("serial")
 public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
-  /**
-   * JournalInfo - Value object holding Journal properties that require referencing in the view.
-   * @author jkirton
-   */
-  public static final class JournalInfo {
-    private String key, eissn;
-    private String smartCollectionRulesDescriptor;
-    private String image, currentIssue;
-    private String volumes;
-    private List<String> simpleCollection;
+  // Past in as parameters
+  private String   command;
+  private String   journalToModify;
+  private URI      imageURI;
+  private URI      curIssueURI;
+  private URI      volumeURI;
+  private String[] volsToDelete;
+  private String   displayName;
 
-    public String getKey() {
-      return key;
-    }
-    public void setKey(String key) {
-      this.key = key;
-    }
-    public String geteIssn() {
-      return eissn;
-    }
-    public void seteIssn(String eissn) {
-      this.eissn = eissn;
-    }
-    public String getSmartCollectionRulesDescriptor() {
-      return smartCollectionRulesDescriptor;
-    }
-    public void setSmartCollectionRulesDescriptor(String smartCollectionRulesDescriptor) {
-      this.smartCollectionRulesDescriptor = smartCollectionRulesDescriptor;
-    }
-    public String getImage() {
-      return image;
-    }
-    public void setImage(String image) {
-      this.image = image;
-    }
-    public String getCurrentIssue() {
-      return currentIssue;
-    }
-    public void setCurrentIssue(String currentIssue) {
-      this.currentIssue = currentIssue;
-    }
-    public String getVolumes() {
-      return volumes;
-    }
-    public void setVolumes(String volumes) {
-      this.volumes = volumes;
-    }
-    public List<String> getSimpleCollection() {
-      return simpleCollection;
-    }
-    public void setSimpleCollection(List<String> simpleCollection) {
-      this.simpleCollection = simpleCollection;
-    }
+  //Used by template
+  private String       volumesCSV;
+  private List<Volume> volumes;
+  private JournalInfo  journalInfo;
 
-    @Override
-    public String toString() {
-      return key;
-    }
-  }
-
-  private JournalInfo journalInfo;
-  private String journalToModify;
-  private URI image;
-  private URI currentIssue;
-  private String volumes;
-  private String articlesToAdd;
-  private String[] articlesToDelete;
-  private JournalService journalService;
+  // Necessary services
+  private AdminService adminService;
 
   private static final Log log = LogFactory.getLog(ManageVirtualJournalsAction.class);
+
+ /**
+  * Enumeration used to dispatch commands within the action.
+  */
+  public enum MVJ_COMMANDS {
+    UPDATE_IMAGE,
+    UPDATE_ISSUE,
+    CREATE_VOLUME,
+    REMOVE_VOLUMES,
+    INVALID;
+
+    /**
+     * Convert a string specifying a command to its
+     * enumerated equivalent.
+     *
+     * @param command  string value to convert.
+     * @return        enumerated equivalent
+     */
+    public static MVJ_COMMANDS toCommand(String command) {
+      MVJ_COMMANDS a;
+      try {
+        a = valueOf(command);
+      } catch (Exception e) {
+        // It's ok just return invalid.
+        a = INVALID;
+      }
+      return a;
+    }
+  }
 
   /**
    * Manage Journals.  Display Journals and processes all add/deletes.
@@ -117,147 +94,106 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   @Override
   @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws Exception  {
-    if (log.isDebugEnabled()) {
-      log.debug("journalToModify: " + journalToModify + ", articlesToAdd: " + articlesToAdd
-        + ", articlesToDelete: " + articlesToDelete);
+
+    switch( MVJ_COMMANDS.toCommand(command)) {
+      case UPDATE_IMAGE: {
+        try {
+          if (imageURI != null) {
+            // TODO:: Check to see if it actually exit
+            adminService.setJrnlImageURI(imageURI);
+            addActionMessage("Image(URI) set to: " + imageURI);
+          } else {
+            addActionMessage("Invalid Journal Image (URI)");
+          }
+        } catch (Exception e) {
+          addActionMessage("Current Issue not updated due to the following error.");
+          addActionMessage(e.getMessage());
+        }
+        break;
+      }
+      case UPDATE_ISSUE: {
+        try {
+          if (curIssueURI != null) {
+            // TODO:: Check to see if it actually exit
+            adminService.setJrnlIssueURI(curIssueURI);
+            addActionMessage("Current Issue (URI) set to: " + curIssueURI);
+          } else {
+            addActionMessage("Invalid Current Issue (URI) ");
+          }
+        } catch (Exception e) {
+          addActionMessage("Current Issue not updated due to the following error.");
+          addActionMessage(e.getMessage());
+        }
+        break;
+      }
+
+      case CREATE_VOLUME: {
+        try {
+        if (volumeURI != null) {
+          // Create and add to journal
+          Volume v = adminService.createVolume(volumeURI, imageURI, displayName, "" );
+
+          if (v != null) {
+            addActionMessage("Created Volume: " + v.getId());
+          } else {
+            addActionMessage("Duplicate Volume URI: " + volumeURI);
+          }
+        } else {
+          //Somebody failed to be valid report it.
+          if (volumeURI == null) {
+            addActionMessage("Invalid Volume URI" );
+          }
+        }
+        } catch (Exception e) {
+          addActionMessage("Volume not created due to the following error.");
+          addActionMessage(e.getMessage());
+        }
+        break;
+      }
+      case REMOVE_VOLUMES: {
+        try {
+          if (volsToDelete.length > 0) {
+              // volsToDelete was supplied by the system so they should be correct
+              addActionMessage("Remvoing the Following Volume URIs:");
+              for(String vol : volsToDelete) {
+                adminService.deleteVolume(URI.create(vol));
+                addActionMessage("Volume: " + vol );
+              }
+          }
+        } catch (Exception e){
+          addActionMessage("Volume remove failed due to the following error.");
+          addActionMessage(e.getMessage());
+        }
+        break;
+       }
+
+       case INVALID:
+         break;
     }
 
-    // process any pending modifications, adds, deletes
-    if (journalToModify != null && (image != null ||
-                                    currentIssue != null ||
-                                    (articlesToAdd != null && articlesToAdd.length() != 0) ||
-                                    articlesToDelete != null)) {
-      // get the Journal
-      Journal journal = journalService.getCurrentJournal();
-      if (journal == null) {
-        final String errorMessage = "Error getting journal to modify: " + journalToModify;
-        addActionMessage(errorMessage);
-        log.error(errorMessage);
-        return null;
-      }
-
-      // current Journal Volumes/Articles
-      List<URI> volumeDois = journal.getVolumes();
-      List<URI> articles = journal.getSimpleCollection();
-
-      // process modifications
-      if (image != null) {
-        if (image.toString().length() == 0) {
-          image = null;
-        }
-        journal.setImage(image);
-        addActionMessage("Image set to: " + image);
-      }
-
-      if (currentIssue != null) {
-        if (currentIssue.toString().length() == 0) {
-          currentIssue = null;
-        }
-        journal.setCurrentIssue(currentIssue);
-        addActionMessage("Current Issue set to: " + currentIssue);
-      }
-
-      // process Volumes
-      volumeDois.clear();
-      if (volumes != null && volumes.length() != 0) {
-        for (final String volume : volumes.split("[,\\s]+")) {
-          URI volumeDoi = getURI(volume);
-          if (volumeDoi != null) {
-            volumeDois.add(volumeDoi);
-          }
-        }
-      }
-      journal.setVolumes(volumeDois);
-
-      // process adds
-      if (articlesToAdd != null && articlesToAdd.length() != 0) {
-        for (final String articleToAdd : articlesToAdd.split("[,\\s]+")) {
-          URI art = getURI(articleToAdd);
-          if (art != null) {
-            articles.add(art);
-            addActionMessage("Added: " + articleToAdd);
-          }
-        }
-      }
-
-      // process deletes
-      if (articlesToDelete != null) {
-        for (final String articleToDelete : articlesToDelete) {
-          URI art = getURI(articleToDelete);
-          if (art != null) {
-            articles.remove(art);
-            addActionMessage("Deleted: " + articleToDelete);
-          }
-        }
-      }
-
-      // new Journal Articles
-      journal.setSimpleCollection(articles);
-
-    }
-
-    // [re-]create the journal info value object
-    createJournalInfo(journalService.getCurrentJournal());
-
-    // default action is just to display the template
+    // Re-populate the fields the template has access to.
+    volumesCSV = adminService.getVolumesCSV();
+    volumes = adminService.getVolumes();
+    journalInfo = adminService.createJournalInfo();
     return SUCCESS;
   }
 
-  private void createJournalInfo(Journal journal) {
-    assert journal != null;
-
-    journalInfo = new JournalInfo();
-
-    journalInfo.setKey(journal.getKey());
-    journalInfo.seteIssn(journal.geteIssn());
-    journalInfo.setCurrentIssue(journal.getCurrentIssue() == null ?
-        null : journal.getCurrentIssue().toString());
-    journalInfo.setImage(journal.getImage() == null ? null : journal.getImage().toString());
-
-    List<URI> jscs = journal.getSimpleCollection();
-    if(jscs != null) {
-      List<String> slist = new ArrayList<String>(jscs.size());
-      for(URI uri : jscs) {
-        slist.add(uri.toString());
-      }
-      journalInfo.setSimpleCollection(slist);
-    }
-
-    final List<DetachedCriteria> dclist = journal.getSmartCollectionRules();
-    if(dclist != null && dclist.size() > 0) {
-      StringBuilder sb = new StringBuilder();
-      for(DetachedCriteria dc : journal.getSmartCollectionRules()) {
-        sb.append(", ");
-        sb.append(dc.toString());
-      }
-      journalInfo.setSmartCollectionRulesDescriptor(sb.substring(2));
-    }
-
-    final List<URI> volumes = journal.getVolumes();
-    if(volumes != null && volumes.size() > 0) {
-      StringBuilder sb = new StringBuilder();
-      for(URI v : volumes) {
-        sb.append(", ");
-        sb.append(v.toString());
-      }
-      journalInfo.setVolumes(sb.substring(2));
-    }
-
-    if (log.isDebugEnabled()) log.debug("Journal info assembled");
+  /**
+   * Gets a list of Volume objects associated with the journal.
+   *
+   * @return list of Volume objects associated with the journals.
+   */
+  public List<Volume> getVolumes() {
+    return volumes;
   }
 
-  private URI getURI(String uriStr) {
-    try {
-      URI uri = new URI(uriStr);
-      if (uri.isAbsolute())
-        return uri;
-
-      addActionMessage("Not an absolute URI: '" + uriStr + "'");
-    } catch (URISyntaxException use) {
-      addActionMessage("Not a valid URI (" + use.getMessage() + "): '" + uriStr + "'");
-    }
-
-    return null;
+  /**
+   * Gets a CSV list of Volume objects associated with the journal.
+   *
+   * @return list of Volume objects associated with the journals.
+   */
+  public String getVolumesCSV() {
+    return volumesCSV;
   }
 
   /**
@@ -266,7 +202,6 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    * @return Current virtual Journal value object.
    */
   public JournalInfo getJournal() {
-
     return journalInfo;
   }
 
@@ -276,7 +211,20 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    * @param journalToModify Journal to modify.
    */
   public void setJournalToModify(String journalToModify) {
-    this.journalToModify = journalToModify;
+    this.journalToModify = journalToModify.trim();
+  }
+
+  /**
+   * Set volume URI.
+   *
+   * @param vol the volume URI.
+   */
+  public void setVolumeURI(String vol) {
+    try {
+      this.volumeURI =  URI.create(vol.trim());
+    } catch (Exception e) {
+      this.volumeURI = null;
+    }
   }
 
   /**
@@ -284,71 +232,71 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    *
    * @return current issue.
    */
-  public String getCurrentIssue() {
-    return currentIssue.toString();
+  public String getCurIssue() {
+    return curIssueURI.toString();
   }
 
   /**
    * Set current issue.
    *
-   * @param currentIssue the current issue for this journal.
+   * @param currentIssueURI the current issue for this journal.
    */
-  public void setCurrentIssue(String currentIssue) {
-    this.currentIssue = URI.create(currentIssue);
+  public void setCurrentIssueURI(String currentIssueURI) {
+    try {
+      this.curIssueURI = URI.create(currentIssueURI.trim());
+    } catch (Exception e) {
+      this.curIssueURI = null;
+    }
   }
 
-  /**
-   * Set Volumes.
+   /**
+   * Set display name for a voulume.
    *
-   * @param volumes a comma separated list of volumes.
+   * @param dsplyName the display of the volume.
    */
-  public void setVolumes(String volumes) {
-    this.volumes = volumes;
-  }
-
-  /**
-   * Get image.
-   *
-   * @return image.
-   */
-  public String getImage() {
-    return image.toString();
+  public void setDisplayName(String dsplyName) {
+    this.displayName = dsplyName.trim();
   }
 
   /**
    * Set image.
    *
-   * @param image the image for this journal.
+   * @param imageURI the image for this journal.
    */
-  public void setImage(String image) {
-    this.image = URI.create(image);
+  public void setImageURI(String imageURI) {
+    try {
+      this.imageURI = URI.create(imageURI.trim());
+    } catch (Exception e) {
+      this.imageURI = null;
+    }
   }
 
   /**
-   * Set Articles to delete.
+   * Set volumes to delete.
    *
-   * @param articlesToDelete Array of articles to delete.
+   * @param vols .
    */
-  public void setArticlesToDelete(String[] articlesToDelete) {
-    this.articlesToDelete = articlesToDelete;
+  public void setVolsToDelete(String[] vols) {
+    this.volsToDelete = vols;
   }
 
   /**
-   * Set Articles to add.
+   * Sets the command to execute.
    *
-   * @param articlesToAdd a comma separated list of articles to add.
-   */
-  public void setArticlesToAdd(String articlesToAdd) {
-    this.articlesToAdd = articlesToAdd;
-  }
-
-  /**
-   * Sets the JournalService.
-   *
-   * @param journalService The JournalService to set.
+   * @param  command the command to execute for this action.
    */
   @Required
-  public void setJournalService(JournalService journalService) {
-    this.journalService = journalService;
+  public void setCommand(String command) {
+    this.command = command;                                                                 
+  }
+
+  /**
+   * Sets the AdminService.
+   *
+   * @param  adminService The adminService to set.
+   */
+  @Required
+  public void setAdminService(AdminService adminService) {
+    this.adminService = adminService;
   }
 }

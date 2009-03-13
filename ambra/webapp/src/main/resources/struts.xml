@@ -928,10 +928,24 @@
       </result>
     </action>
 
-    <action name="manageVolumesIssues" class="org.topazproject.ambra.admin.action.ManageVolumesIssuesAction">
-      <result name="success">/admin/manageVolumesIssues.ftl</result>
+    <action name="issueManagement" class="org.topazproject.ambra.admin.action.IssueManagementAction">
+      <result name="success">/admin/issueManagement.ftl</result>
       <result name="input" type="ambraFreemarker">
-        <param name="templateFile">/admin/manageVolumesIssues.ftl</param>
+        <param name="templateFile">/admin/issueManagement.ftl</param>
+      </result>
+    </action>
+
+    <action name="volumeManagement" class="org.topazproject.ambra.admin.action.VolumeManagementAction">
+      <result name="success">/admin/volumeManagement.ftl</result>
+      <result name="input" type="ambraFreemarker">
+        <param name="templateFile">/admin/volumeManagement.ftl</param>
+      </result>
+    </action>
+
+    <action name="crossPubManagement" class="org.topazproject.ambra.admin.action.CrossPubManagementAction">
+      <result name="success">/admin/crossPubManagement.ftl</result>
+      <result name="input" type="ambraFreemarker">
+        <param name="templateFile">/admin/crossPubManagement.ftl</param>
       </result>
     </action>
 

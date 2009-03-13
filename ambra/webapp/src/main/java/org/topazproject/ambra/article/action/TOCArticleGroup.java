@@ -32,7 +32,7 @@ import org.topazproject.ambra.model.article.ArticleType;
  */
 public class TOCArticleGroup {
   ArticleType type;
-  ArrayList<ArticleInfo> articles = new ArrayList<ArticleInfo>();
+  public ArrayList<ArticleInfo> articles = new ArrayList<ArticleInfo>();
   private String id = null;
   private String heading = null;
 
@@ -62,7 +62,7 @@ public class TOCArticleGroup {
    * An id for the group to be used in html. May be set by the action for each ArticleGroup
    * and should be unique within that group. 
    * 
-   * @param i
+   * @param i   id
    */
   public void setId(String i) {
     this.id = i;

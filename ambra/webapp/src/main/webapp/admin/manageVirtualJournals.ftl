@@ -19,77 +19,121 @@
 -->
 <html>
   <head>
-    <title>Ambra: Administration: Manage Virtual Journals</title>
+    <title>Manage Virtual Journals</title>
   </head>
   <body>
-    <h1 style="text-align: center">Ambra: Administration: Manage Virtual Journals</h1>
-
-    <@s.url id="adminTop" namespace="/admin" action="adminTop"/>
+    <h1 style="text-align: center">Manage Virtual Journals</h1>
+    <!-- Volume management menu -->
     <p style="text-align: right">
-      <@s.a href="${adminTop}">Admin Top</@s.a></p>
+      <@s.url namespace="/admin" action="crossPubManagement"
+          journalKey="${journal.key}" journalEIssn="${journal.eIssn}" id="crossPubManagement"/>
+        |&nbsp; <@s.a href="${crossPubManagement}">Cross Publish Articles</@s.a> &nbsp;|
+    </p>
     <hr/>
+    <!-- Track our location -->
+    <@s.url namespace="/admin" action="adminTop" id="adminTop" />
+    <@s.url namespace="/admin" action="manageVirtualJournals"  id="manageVirtualJournalsURL"/>
+
+    <p style="text-align: left">
+      /&nbsp; <@s.a href="${adminTop}">Admin Top</@s.a> &nbsp;
+      /&nbsp; <@s.a href="%{manageVirtualJournalsURL}">Manage Virtual Journals</@s.a>
+    </p>
 
     <#include "templates/messages.ftl">
 
     <h2>${journal.key} (${journal.eIssn!""})</h2>
 
-    <@s.url id="manageVolumesIssues" namespace="/admin" action="manageVolumesIssues"
-      journalKey="${journal.key}" journalEIssn="${journal.eIssn}"/>
-    <@s.a href="${manageVolumesIssues}">Manage Volumes and Issues</@s.a><br />
-    <br />
-    <!-- TODO: display rules in a meaningful way  -->
-    Smart Collection Rules: ${journal.smartCollectionRulesDescriptor!""}<br />
-    <br />
-    <@s.form id="manageVirtualJournals_${journal.key}"
-      name="manageVirtualJournals_${journal.key}" action="manageVirtualJournals" method="post"
-      namespace="/admin">
-      <@s.hidden name="journalToModify" label="Journal to Modify" required="true"
-        value="${journal.key}"/>
-      <table border="1" cellpadding="2" cellspacing="0">
-        <tr>
+    <!-- Update Current Issue -->
+    <@s.form method="post" namespace="/admin" action="manageVirtualJournals"
+        name="manageVirtualJournals_${journal.key}" id="manageVirtualJournals_${journal.key}" >
+    <@s.hidden name="command" value="UPDATE_ISSUE"/>
+    <@s.hidden name="journalToModify" value="${journal.key}"/>
+    
+    <fieldset>
+    <legend>Set Current Issue</legend>
+    <table border="0" cellpadding="10" cellspacing="0">
+      <tr>
+        <th align="center">Issue (URI)</th>
           <td>
-            <#if journal.image?exists>
-              <@s.url id="journalImage" action="fetchObject" namespace="/article"
-                uri="${journal.image}.g001" representation="PNG_S" includeParams="none"/>
-              <#assign altText="Journal Image" />
-            <#else>
-              <@s.url id="journalImage" value="" />
-              <#assign altText="Journal Image null" />
-            </#if>
-            <img src="${journalImage}" alt="${altText}" height="120" width="120"/>
-          </td>
-          <td>
-            <@s.textfield name="journalImage" value="${journal.image!''}"
-              label="Image (URI)" size="42" />
+            <@s.textfield name="currentIssueURI" value="${journal.currentIssue!''}" size="50"/>
           </td>
         </tr>
-        <tr>
-          <td colspan="2">
-            <@s.textfield name="currentIssue" value="${journal.currentIssue!''}"
-              label="Current Issue (DOI)" size="42" />
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <@s.textfield name="volumes" label="Volumes" size="96" value="${journal.volumes!''}"/>
-          </td>
-        </tr>
-        <tr><th colspan="2">Articles</th></tr>
-        <tr>
-          <td colspan="2"><@s.textfield name="articlesToAdd" label="Add" size="100"/></td>
-        </tr>
-        <#list journal.simpleCollection as articleUri>
-          <@s.url id="fetchArticle" namespace="/article" action="fetchArticle" articleURI="${articleUri}"/>
-          <tr>
-            <td>
-              <@s.checkbox label="Delete" name="articlesToDelete" fieldValue="${articleUri}"/>
-            </td>
-            <td><@s.a href="${fetchArticle}">${articleUri}</@s.a></td>
-          </tr>
-        </#list>
-      </table>
-      <br />
-      <@s.submit value="Modify ${journal.key}"/>
+      <tr>
+    </table>
+    <@s.submit value="Update"/>
     </@s.form>
+    </fieldset>
+
+    <p>
+
+    <!-- create a Volume -->
+    <fieldset>
+     <legend>Create Volume</legend>
+      <@s.form method="post" namespace="/admin"  action="manageVirtualJournals"
+          name="createVolume" id="create_volume" >
+      <@s.hidden name="command" value="CREATE_VOLUME"/>
+      <@s.hidden name="journalToModify" value="${journal.key}"/>
+
+      <table border="0" cellpadding="10" cellspacing="0">
+        <tr>
+          <th align="center">Volume (URI)</th>
+            <td><@s.textfield name="volumeURI" size="50" required="true"/></td>
+          </tr>
+          <tr>
+            <th align="center">Display Name</th>
+            <td><@s.textfield name="displayName" size="50" required="true"/></td>
+          </tr>
+          <tr>
+            <th align="center">Image Article (URI)</th>
+            <td><@s.textfield name="imageURI" size="50"/></td>
+          </tr>
+        </table>
+        <@s.submit align="right" value="Create"/>
+      </@s.form>
+    </fieldset>
+    <p>
+
+    <!-- list Existing Volumes -->
+    <fieldset>
+      <legend>Existing Volumes</legend>
+
+      <#-- Check to see if there are Volumes Associated with this Journal -->
+      <#if (volumes?size > 0)>
+        <@s.form method="post" namespace="/admin" action="manageVirtualJournals"
+            name="removeVolumes" id="removeVolumes" >
+        <@s.hidden name="command" value="REMOVE_VOLUMES"/>
+
+        <table border="1" cellpadding="10" cellspacing="0">
+          <tr>
+            <th>Delete</th>
+            <th>Display Name</th>
+            <th>URI</th>
+            <th>Update</th>
+          </tr>
+          <#list volumes as v>
+          <tr>
+            <td align="center">
+              <@s.checkbox name="volsToDelete" fieldValue="${v.id}"/>
+            </td>
+            <td>
+              ${v.displayName!''}
+            </td>
+            <td>
+              ${v.id}
+            </td>
+            <td>
+              <@s.url namespace="/admin" action="volumeManagement" volumeURI="${v.id}"
+                 id="volumeMangement" />
+              <@s.a href="${volumeMangement}">Update</@s.a>
+            </td>
+           </tr>
+         </#list>
+        </table>
+        <@s.submit value="Delete Selected Volumes"/>
+        </@s.form>
+      <#else>
+        <strong>There are no volumes currently associated with ${journal.key}.</strong>
+      </#if>
+    </fieldset>
   </body>
 </html>
