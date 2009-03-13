@@ -41,7 +41,7 @@ public class FileUtilsTest {
   @DataProvider(name = "mimeTypes")
   public String[][] createMimeTypes() {
     return new String[][]{
-        {"image/tiff", "tiff"},
+        {"image/tiff", "tif"},
         {"text/html", "html"},
         {"text/xml", "xml"},
         {"application/postscript", "ps"},
