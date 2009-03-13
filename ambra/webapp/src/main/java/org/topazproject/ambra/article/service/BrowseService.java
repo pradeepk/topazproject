@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Comparator;
+import java.util.SortedSet;
+import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +53,7 @@ import org.topazproject.ambra.models.Volume;
 import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Retraction;
+import org.topazproject.ambra.models.Category;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Session;
@@ -67,20 +72,10 @@ import com.sun.xacml.PDP;
 public class BrowseService {
   private static final Log log = LogFactory.getLog(BrowseService.class);
 
-  private static final String CAT_INFO_LOCK       = "CatLock-";
-  private static final String CAT_INFO_KEY        = "CatInfo-";
   private static final String ARTBYCAT_LIST_KEY   = "ArtByCat-";
-
-  private static final String DATE_LIST_LOCK      = "DateLock-";
   private static final String DATE_LIST_KEY       = "DateList-";
-
-  private static final String ARTBYDATE_LIST_LOCK = "ArtByDateLock-";
   private static final String ARTBYDATE_LIST_KEY  = "ArtByDate-";
-
-  private static final String ARTICLE_LOCK        = "ArticleLock-";
   private static final String ARTICLE_KEY         = "Article-";
-
-  private static final String ISSUE_LOCK          = "IssueLock-";
   private static final String ISSUE_KEY           = "Issue-";
 
   private static final int getSecsTillMidnight() {
@@ -115,11 +110,35 @@ public class BrowseService {
   private       Invalidator    invalidator;
 
   /**
-   * Constructor
-   *
+   * @param journalService The journal-service to use.
    */
-  public BrowseService() {
+  @Required
+  public void setJournalService(JournalService journalService) {
+    this.journalService = journalService;
   }
+
+  /**
+   * @param browseCache The browse-cache to use.
+   */
+  @SuppressWarnings("synthetic-access")
+  @Required
+  public void setBrowseCache(Cache browseCache) {
+    this.browseCache = browseCache;
+    // We are order dependent on what the journal service does. So register the listener there.
+    if (invalidator == null)
+      browseCache.getCacheManager().registerListener(invalidator = new Invalidator());
+  }
+
+  /**
+   * Set the OTM session. Called by spring's bean wiring.
+   *
+   * @param session The otm session to set.
+   */
+  @Required
+  public void setOtmSession(Session session) {
+    this.session = session;
+  }
+
 
   @Required
   public void setArticlesPdp(PDP pdp) {
@@ -134,21 +153,16 @@ public class BrowseService {
    */
   @Transactional(readOnly = true)
   public Years getArticleDates() {
-    return getArticleDates(true, journalService.getCurrentJournalName());
-  }
+    String cacheKey  = DATE_LIST_KEY + journalService.getCurrentJournalName();
 
-  private Years getArticleDates(boolean load, String jnlName) {
-    String key  = DATE_LIST_KEY + jnlName;
-    Object lock = (DATE_LIST_LOCK + jnlName).intern();
-
-    return browseCache.get(key, -1,
-                  !load ? null : new Cache.SynchronizedLookup<Years, RuntimeException> (lock) {
-        @SuppressWarnings("synthetic-access")
-        @Override
-        public Years lookup() throws RuntimeException {
-          return loadArticleDates();
-        }
-      });
+    return browseCache.get(cacheKey, -1,
+        new Cache.SynchronizedLookup<Years, RuntimeException>(cacheKey.intern()) {
+          @SuppressWarnings("synthetic-access")
+          @Override
+          public Years lookup() throws RuntimeException {
+            return loadArticleDates();
+          }
+        });
   }
 
   /**
@@ -163,19 +177,17 @@ public class BrowseService {
    * @param numArt   (output) the total number of articles in the given category
    * @return the articles.
    */
-  @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public List<ArticleInfo> getArticlesByCategory(final String catName, int pageNum, int pageSize,
                                                  int[] numArt) {
-    List<URI> uris = ((SortedMap<String, List<URI>>)
-                        getCatInfo(ARTBYCAT_LIST_KEY, true)).get(catName);
+    List<URI> articleIds = getArticlesIdsByCategory().get(catName);
 
-    if (uris == null) {
+    if (articleIds == null) {
       numArt[0] = 0;
       return null;
     }
-    numArt[0] = uris.size();
-    return loadArticles(uris, pageNum, pageSize);
+    numArt[0] = articleIds.size();
+    return loadArticles(articleIds, pageNum, pageSize);
   }
 
   /**
@@ -205,20 +217,18 @@ public class BrowseService {
   public List<ArticleInfo> getArticlesByDate(final Calendar startDate, final Calendar endDate,
                                              final List<URI> articleTypes, int pageNum,
                                              int pageSize, int[] numArt) {
-    String jnlName = journalService.getCurrentJournalName();
-    String mod     = jnlName + "-" + startDate.getTimeInMillis() + "-" + endDate.getTimeInMillis();
-    String key     = ARTBYDATE_LIST_KEY + mod;
-    Object lock    = (ARTBYDATE_LIST_LOCK + mod).intern();
-    int    ttl     = getSecsTillMidnight();
+    String jnlName  = journalService.getCurrentJournalName();
+    String mod      = jnlName + "-" + startDate.getTimeInMillis() + "-" + endDate.getTimeInMillis();
+    String cacheKey = ARTBYDATE_LIST_KEY + mod;
+    int    ttl      = getSecsTillMidnight();
 
-    List<URI> uris = browseCache.get(key, ttl,
-                              new Cache.SynchronizedLookup<List<URI>, RuntimeException>(lock) {
-        @Override
-        @SuppressWarnings("synthetic-access")
-        public List<URI> lookup() throws RuntimeException {
-          return loadArticlesByDate(startDate, endDate, articleTypes);
-        }
-      });
+    List<URI> uris = browseCache.get(cacheKey, ttl,
+        new Cache.SynchronizedLookup<List<URI>, RuntimeException>(cacheKey.intern()) {
+          @Override
+          public List<URI> lookup() throws RuntimeException {
+            return loadArticlesByDate(startDate, endDate, articleTypes);
+          }
+        });
 
     if (uris == null) {
       numArt[0] = 0;
@@ -241,10 +251,9 @@ public class BrowseService {
    *
    * @return the category infos.
    */
-  @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
-  public SortedMap<String, Integer> getCategoryInfos() {
-    return (SortedMap<String, Integer>) getCatInfo(CAT_INFO_KEY, true);
+  public SortedMap<String, List<URI>> getArticlesByCategory() {
+    return getArticlesIdsByCategory();
   }
 
   /**
@@ -255,13 +264,15 @@ public class BrowseService {
    */
   @Transactional(readOnly = true)
   public IssueInfo getIssueInfo(final URI doi) {
-    // This flush is so that our own query cache reflects change.
+
+    // This flush is so that our own query cache reflects change (why is this ?).
     // TODO : implement query caching in OTM and let it manage this cached query
     if (session.getFlushMode().implies(FlushMode.always))
       session.flush();
-    return browseCache.get(ISSUE_KEY + doi, -1,
-        new Cache.SynchronizedLookup<IssueInfo, RuntimeException>((ISSUE_LOCK + doi).intern()) {
-          @SuppressWarnings("synthetic-access")
+
+    String cacheKey = ISSUE_KEY + doi;
+    return browseCache.get(cacheKey, -1,
+        new Cache.SynchronizedLookup<IssueInfo, RuntimeException>(cacheKey.intern()) {
           @Override
           public IssueInfo lookup() throws RuntimeException {
             return getIssueInfo2(doi);
@@ -437,102 +448,71 @@ public class BrowseService {
     return volumeInfos;
   }
 
-  private Object getCatInfo(String key, boolean load) {
-    return getCatInfo(key, load, journalService.getCurrentJournalName());
-  }
-
-  private Object getCatInfo(String key, boolean load, final String jnlName) {
-    final String jnlkey = key + jnlName;
-    return browseCache.get(jnlkey, -1, !load ? null :
-        new Cache.SynchronizedLookup<Object, RuntimeException>((CAT_INFO_LOCK + jnlName).intern()) {
-          @SuppressWarnings("synthetic-access")
+  private SortedMap<String, List<URI>> getArticlesIdsByCategory() {
+    final String currentJournal = journalService.getCurrentJournalName();
+    final String cacheKey = ARTBYCAT_LIST_KEY + currentJournal;
+    return browseCache.get(cacheKey, -1,
+        new Cache.SynchronizedLookup<SortedMap<String, List<URI>>,
+            RuntimeException>(cacheKey.intern()) {
           @Override
-          public Object lookup() throws RuntimeException {
-             loadCategoryInfos(jnlName);
-             Cache.Item item = browseCache.get(jnlkey);
-             return (item == null) ? null : item.getValue();
+          public SortedMap<String, List<URI>> lookup() throws RuntimeException {
+
+            return convertToArticleIdMap(fetchArticlesByCategory());
           }
-      });
+        });
   }
 
   /**
-   * Notify this service that articles have been changed.
-   *
-   * @param uris the list of id's of changed articles
+   * Convert list map of Article objects to sorted map of article ID's
+   * @param articlesByCategory Map of Article object lists by category
+   * @return Map of Article ID lists by category
    */
-  private void notifyArticlesChanged(String[] uris) {
-
-    for (Object key : browseCache.getKeys()) {
-      if ((key instanceof String) &&
-             (((String)key).startsWith(ARTBYDATE_LIST_KEY) ||
-              ((String)key).startsWith(DATE_LIST_KEY) ||
-              ((String)key).startsWith(ARTBYCAT_LIST_KEY) ||
-              ((String)key).startsWith(CAT_INFO_KEY)))
-         browseCache.remove(key);
-    }
-    // update article cache
-    for (String uri : uris) {
-      browseCache.remove(ARTICLE_KEY + uri);
-    }
-  }
-
-  /**
-   * Notify this service that a journal definition has been modified. Should only be called when the
-   * rules determining articles belonging to this journal have been changed.
-   *
-   * @param jnlName the key of the journal that was modified
-   */
-  private void notifyJournalModified(final String jnlName) {
-    browseCache.remove(CAT_INFO_KEY + jnlName);
-    browseCache.remove(ARTBYCAT_LIST_KEY + jnlName);
-
-    browseCache.remove(DATE_LIST_KEY + jnlName);
-
-    for (Object key : browseCache.getKeys()) {
-      if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
-        browseCache.remove(key);
+  private SortedMap<String, List<URI>> convertToArticleIdMap(Map<String, SortedSet<Article>> articlesByCategory) {
+    SortedMap<String, List<URI>> mapOfArticleIds = new TreeMap<String, List<URI>>();
+    for (Map.Entry<String, SortedSet<Article>> entry : articlesByCategory.entrySet()) {
+      if (entry.getValue().size() > 0) {
+        List<URI> uris = new ArrayList<URI>();
+        for (Article article : entry.getValue()) {
+          uris.add(article.getId());
+        }
+        mapOfArticleIds.put(entry.getKey(), uris);
       }
     }
+    return mapOfArticleIds;
   }
 
   /**
-   * Load all (cat, art.id) from the db and stick the stuff in the cache.
-   *
-   * Loading (cat, art-id) from the db and doing the counting ourselves is faster than loading (cat,
-   * count(art-id)) (at least 10 times as fast with 50'000 articles in 10'000 categories).
+   * Return unsorted map of Article objects sorted by date and article id.
+   * @return Article objects by category
    */
-  private void loadCategoryInfos(String jnlName) {
-    // get all article-ids in all categories
-    Results r = session.createQuery(
-              "select cat, a.id articleId, a.dublinCore.date date from Article a " +
-              "where cat := a.categories.mainCategory order by date desc, articleId;").execute();
+  private Map<String, SortedSet<Article>> fetchArticlesByCategory() {
+    Results results = session.createQuery(
+        "select a.categories.mainCategory, a date from Article a;")
+        .execute();
 
-    SortedMap<String, List<URI>> artByCat = new TreeMap<String, List<URI>>();
-    r.beforeFirst();
-    while (r.next()) {
-      String cat = r.getString(0);
-      List<URI> ids = artByCat.get(cat);
-      if (ids == null) {
-        artByCat.put(cat, ids = new ArrayList<URI>());
+    Map<String, SortedSet<Article>> articlesByCategory = new HashMap<String, SortedSet<Article>>();
+    while (results.next()) {
+
+      String category = results.getString(0);
+      Article article = (Article) results.get(1);
+
+      SortedSet<Article> articles = articlesByCategory.get(category);
+      if (articles == null) {
+        // Sort articles by date, id
+        articles = new TreeSet<Article>(new Comparator<Article>() {
+          public int compare(Article article, Article article1) {
+            int compareDates = article.getDublinCore().getDate().compareTo(article1.getDublinCore().getDate());
+            if (compareDates == 0)
+              return article.getId().compareTo(article1.getId());
+            else
+              return compareDates;
+          }
+        });
+        articlesByCategory.put(category, articles);
       }
-      URI id = r.getURI(1);
-      if (!ids.contains(id))
-       ids.add(id);
+      articles.add(article);
     }
-
-    updateCategoryCaches(artByCat, jnlName);
-  }
-
-  private void updateCategoryCaches(SortedMap<String, List<URI>> artByCat, String jnlName) {
-    // calculate number of articles in each category
-    SortedMap<String, Integer> catSizes = new TreeMap<String, Integer>();
-    for (Map.Entry<String, List<URI>> e : artByCat.entrySet()) {
-      catSizes.put(e.getKey(), e.getValue().size());
-    }
-
-    // save in cache
-    browseCache.put(ARTBYCAT_LIST_KEY + jnlName, artByCat);
-    browseCache.put(CAT_INFO_KEY + jnlName, catSizes);
+    return articlesByCategory;
   }
 
   private ArticleInfo loadArticleInfo(final URI id) {
@@ -599,7 +579,8 @@ public class BrowseService {
       queryString.append(" and ( ");
       Iterator articleTypesIterator = articleTypes.iterator();
       while (articleTypesIterator.hasNext()) {
-        queryString.append(" a.articleType = :acceptableType" + counter++);
+        queryString.append(" a.articleType = :acceptableType");
+        queryString.append(Integer.toString(counter++));
         articleTypesIterator.next();  //  Just to iterate.  Do not need these values yet.
         if (articleTypesIterator.hasNext()) {
           queryString.append(" or ");
@@ -614,9 +595,8 @@ public class BrowseService {
     query.setParameter("ed", endDate);
     counter = 1;
     if (articleTypes != null && articleTypes.size() > 0) {
-      Iterator articleTypesIterator = articleTypes.iterator();
-      while (articleTypesIterator.hasNext()) {
-        query.setParameter("acceptableType" + counter++, articleTypesIterator.next());
+      for (URI articleType : articleTypes) {
+        query.setParameter("acceptableType" + counter++, articleType);
       }
     }
 
@@ -660,108 +640,148 @@ public class BrowseService {
       return null;
     }
 
-    return
-      browseCache.get(ARTICLE_KEY + id, -1,
-           new Cache.SynchronizedLookup<ArticleInfo,
-               RuntimeException>((ARTICLE_LOCK + id).intern()) {
-        @SuppressWarnings("synthetic-access")
-        @Override
-        public ArticleInfo lookup() throws RuntimeException {
-          return loadArticleInfo(id);
-        }
-      });
-  }
-
-  /**
-   * @param journalService The journal-service to use.
-   */
-  @Required
-  public void setJournalService(JournalService journalService) {
-    this.journalService = journalService;
-  }
-
-  /**
-   * @param browseCache The browse-cache to use.
-   */
-  @SuppressWarnings("synthetic-access")
-  @Required
-  public void setBrowseCache(Cache browseCache) {
-    this.browseCache = browseCache;
-    // We are order dependent on what the journal service does. So register the listener there.
-    if (invalidator == null)
-      browseCache.getCacheManager().registerListener(invalidator = new Invalidator());
-  }
-
-  /**
-   * Set the OTM session. Called by spring's bean wiring.
-   *
-   * @param session The otm session to set.
-   */
-  @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
-  }
-
-  /**
-   * Clear the issue with the given doi from the browseCache.
-   *
-   * @param issueDoi DOI of the issue
-   */
-  public void clearIssueInfoCache(URI issueDoi) {
-    browseCache.remove(BrowseService.ISSUE_KEY + issueDoi);
+    String cacheKey = ARTICLE_KEY + id;
+    return browseCache.get(cacheKey, -1,
+        new Cache.SynchronizedLookup<ArticleInfo, RuntimeException>(cacheKey.intern()) {
+          @Override
+          public ArticleInfo lookup() throws RuntimeException {
+            return loadArticleInfo(id);
+          }
+        });
   }
 
   private class Invalidator extends AbstractObjectListener {
-    @SuppressWarnings("synthetic-access")
+
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
-        Updates updates) {
-      if (o instanceof Article) {
+                              Updates updates) {
+
+      if (o instanceof Article && ((Article) o).getState() == Article.STATE_ACTIVE) {
+
         if (log.isDebugEnabled())
           log.debug("Updating browsecache for the article that was updated.");
-        notifyArticlesChanged(new String[]{id});
+        notifyArticleChanged(((Article) o).getId());
+
       } else if (o instanceof Journal) {
-        String key = ((Journal)o).getKey();
+
+        String journalKey = ((Journal) o).getKey();
         if ((updates == null) || updates.isChanged("smartCollectionRules") ||
             updates.isChanged("simpleCollection")) {
           if (log.isDebugEnabled())
             log.debug("Updating browsecache for the journal that was modified.");
-          notifyJournalModified(key);
+          notifyJournalModified(journalKey);
         }
+
       } else if (o instanceof Volume) {
+
         if ((updates != null) && updates.isChanged("issueList")) {
           if (log.isDebugEnabled())
             log.debug("Updating issue-infos for the Volume that was modified.");
-          for (URI issue : ((Volume)o).getIssueList())
-            clearIssueInfoCache(issue);
+          for (URI issue : ((Volume) o).getIssueList())
+            notifyIssueChanged(issue);
           for (String v : updates.getOldValue("issueList"))
-            clearIssueInfoCache(URI.create(v));
+            notifyIssueChanged(URI.create(v));
         }
+
       } else if (o instanceof Issue) {
+
         if (log.isDebugEnabled())
           log.debug("Updating issue-info for the Issue that was modified.");
-        clearIssueInfoCache(((Issue)o).getId());
+        notifyIssueChanged(((Issue) o).getId());
+
       } else if (o instanceof FormalCorrection || o instanceof Retraction) {
-        notifyArticlesChanged(new String[] {((ArticleAnnotation)o).getAnnotates().toString()});
+
+        notifyAnnotationChanged(((ArticleAnnotation) o).getAnnotates());
+
+      }
+
+    }
+
+    public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
+
+      if (o instanceof Article && ((Article) o).getState() == Article.STATE_ACTIVE) {
+
+        if (log.isDebugEnabled())
+          log.debug("Updating browsecache for the article that was deleted.");
+        notifyArticleChanged(((Article) o).getId());
+
+      } else if (o instanceof Journal) {
+
+        if (log.isDebugEnabled())
+          log.debug("Updating browsecache for the journal that was deleted.");
+        notifyJournalModified(((Journal) o).getKey());
+
+      } else if (o instanceof Issue) {
+
+        if (log.isDebugEnabled())
+          log.debug("Updating issue-info for the issue that was deleted.");
+        notifyIssueChanged(((Issue) o).getId());
+
+      } else if (o instanceof FormalCorrection || o instanceof Retraction) {
+
+        notifyAnnotationChanged(((ArticleAnnotation) o).getAnnotates());
+
+      }
+
+    }
+
+    /**
+     * Notify this service that articles have been changed.
+     *
+     * @param articleId ID of the article that changed
+     */
+    private void notifyArticleChanged(URI articleId) {
+
+      browseCache.remove(ARTICLE_KEY + articleId);
+
+      for (Journal journal : journalService.getJournalsForObject(articleId)) {
+        String journalKey = journal.getKey();
+        browseCache.remove(ARTBYCAT_LIST_KEY + journalKey);
+        browseCache.remove(DATE_LIST_KEY + journalKey);
+        for (Object key : browseCache.getKeys()) {
+          if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + journalKey)) {
+            browseCache.remove(key);
+          }
+        }
       }
     }
 
-    @SuppressWarnings("synthetic-access")
-    public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
-      if (o instanceof Article) {
-        if (log.isDebugEnabled())
-          log.debug("Updating browsecache for the article that was deleted.");
-        notifyArticlesChanged(new String[]{id});
-      } else if (o instanceof Journal) {
-        if (log.isDebugEnabled())
-          log.debug("Updating browsecache for the journal that was deleted.");
-        notifyJournalModified(((Journal)o).getKey());
-      } else if (o instanceof Issue) {
-          if (log.isDebugEnabled())
-            log.debug("Updating issue-info for the issue that was deleted.");
-          clearIssueInfoCache(((Issue)o).getId());
-      } else if (o instanceof FormalCorrection || o instanceof Retraction) {
-        notifyArticlesChanged(new String[] {((ArticleAnnotation)o).getAnnotates().toString()});
+    /**
+     * Notify this service that articles have been changed.
+     *
+     * @param articleId ID of the article that changed
+     */
+    private void notifyAnnotationChanged(URI articleId) {
+
+      browseCache.remove(ARTICLE_KEY + articleId);
+
+    }
+
+    /**
+     * Notify this service that a journal definition has been modified. Should only be called when the
+     * rules determining articles belonging to this journal have been changed.
+     *
+     * @param jnlName the key of the journal that was modified
+     */
+    private void notifyJournalModified(final String jnlName) {
+      browseCache.remove(ARTBYCAT_LIST_KEY + jnlName);
+      browseCache.remove(DATE_LIST_KEY + jnlName);
+
+      for (Object key : browseCache.getKeys()) {
+        if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
+          browseCache.remove(key);
+        }
       }
     }
+
+    /**
+     * Clear the issue with the given doi from the browseCache.
+     *
+     * @param issueDoi DOI of the issue
+     */
+    public void notifyIssueChanged(URI issueDoi) {
+      browseCache.remove(ISSUE_KEY + issueDoi);
+    }
+
+
   }
 }

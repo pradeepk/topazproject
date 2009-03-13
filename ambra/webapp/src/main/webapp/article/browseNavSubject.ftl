@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,11 +34,11 @@
       <#assign infoText = "">
       <#list categoryInfos?keys as subjectName>
       <#if catName == subjectName>
-        <li class="current">${subjectName} (${categoryInfos[subjectName]})</li>
+        <li class="current">${subjectName} (${categoryInfos[subjectName]?size})</li>
         <#assign infoText = "in <strong>" + subjectName+ "</strong>">
       <#else>
         <@s.url id="browseURL" action="browse" namespace="/article" field="${field}" catName="${subjectName}" includeParams="none"/>
-        <li><@s.a href="%{browseURL}">${subjectName} (${categoryInfos[subjectName]})</@s.a></li>
+        <li><@s.a href="%{browseURL}">${subjectName} (${categoryInfos[subjectName]?size})</@s.a></li>
       </#if>
 
       </#list>

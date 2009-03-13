@@ -46,7 +46,7 @@ public class HomePageAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(HomePageAction.class);
 
   private BrowseService browseService;
-  private SortedMap<String, Integer> categoryInfos;
+  private SortedMap<String, List<URI>> categoryInfos;
 
   private List<ArticleInfo> recentArticles;
   private int numDaysInPast;
@@ -184,7 +184,7 @@ public class HomePageAction extends BaseActionSupport {
   @Override
   @Transactional(readOnly = true)
   public String execute() {
-    categoryInfos = browseService.getCategoryInfos();
+    categoryInfos = browseService.getArticlesByCategory();
 
     initRecentArticles();
 
@@ -192,10 +192,10 @@ public class HomePageAction extends BaseActionSupport {
   }
 
   /**
-   * @return Returns the category infos (currently just number of articles per category) for all
-   *         categories
+   * @return Returns article id's per category. Articles are sorted by publication date and id.
+   * Categories are sorted by name.
    */
-  public SortedMap<String, Integer> getCategoryInfos() {
+  public SortedMap<String, List<URI>> getCategoryInfos() {
     return categoryInfos;
   }
 

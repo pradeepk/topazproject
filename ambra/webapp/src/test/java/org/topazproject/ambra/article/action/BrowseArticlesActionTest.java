@@ -1,7 +1,7 @@
 /* $HeadURL$
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +49,7 @@ public class BrowseArticlesActionTest {
     action.setCatName("category");
     action.setField("category");
     expect(browseService
-        .getCategoryInfos())
+        .getArticlesByCategory())
         .andReturn(null);
     ArrayList<ArticleInfo> articleInfos = new ArrayList<ArticleInfo>();
     ArticleInfo articleInfo = new ArticleInfo();

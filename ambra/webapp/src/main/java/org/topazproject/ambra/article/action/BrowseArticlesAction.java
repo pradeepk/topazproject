@@ -21,6 +21,7 @@ package org.topazproject.ambra.article.action;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -65,7 +66,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private int    day      = UNSET;
 
   private BrowseService                   browseService;
-  private SortedMap<String, Integer>      categoryInfos;
+  private SortedMap<String, List<URI>>    categoryInfos;
   private Years             articleDates;
   private List<ArticleInfo> articleList;
   private int                             totalArticles;
@@ -82,7 +83,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
   }
 
   private String browseCategory () {
-    categoryInfos = browseService.getCategoryInfos();
+    categoryInfos = browseService.getArticlesByCategory();
 
     // if the catName is unspecified, use the first catName in the categoryInfos list
     if ((catName == null) && (categoryInfos != null) && (categoryInfos.size()>0)) {
@@ -280,10 +281,9 @@ public class BrowseArticlesAction extends BaseActionSupport {
   }
 
   /**
-   * @return Returns the category infos (currently just number of articles per category) for all
-   *         categories
+   * @return Returns article id's per category.
    */
-  public SortedMap<String, Integer> getCategoryInfos() {
+  public SortedMap<String, List<URI>> getCategoryInfos() {
     return categoryInfos;
   }
 

@@ -161,7 +161,7 @@
 <#list categoryInfos?keys as category>
 <#if (category_index + 1) lte colSize>
 <#assign categoryId = category?replace("\\s|\'","","r")>
-                <li><input id="limitToCategory_${categoryId}" name="limitToCategory" value="${category}" type="checkbox" <@chkdlist tstr=category strlist=(limitToCategory![])/>/>&nbsp;<label for="limitToCategory_${categoryId}">${category} (${categoryInfos[category]})</label></li>
+                <li><input id="limitToCategory_${categoryId}" name="limitToCategory" value="${category}" type="checkbox" <@chkdlist tstr=category strlist=(limitToCategory![])/>/>&nbsp;<label for="limitToCategory_${categoryId}">${category} (${categoryInfos[category]?size})</label></li>
 </#if>
 </#list>
               </ul>
@@ -169,7 +169,7 @@
 <#list categoryInfos?keys as category>
 <#if (category_index + 1) gt colSize>
 <#assign categoryId = category?replace("\\s|\'","","r")>
-                <li><input id="limitToCategory_${categoryId}" name="limitToCategory" value="${category}" type="checkbox" <@chkdlist tstr=category strlist=(limitToCategory![])/>/>&nbsp;<label for="limitToCategory_${categoryId}">${category} (${categoryInfos[category]})</label></li>
+                <li><input id="limitToCategory_${categoryId}" name="limitToCategory" value="${category}" type="checkbox" <@chkdlist tstr=category strlist=(limitToCategory![])/>/>&nbsp;<label for="limitToCategory_${categoryId}">${category} (${categoryInfos[category]?size})</label></li>
 </#if>
 </#list>
               </ul>

@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -121,7 +121,7 @@
                           includeParams="none"/>
                   <li>
                     <a id="widget${categoryId}" href="${browseURL}">${category}
-                    (${categoryInfos[category]})</a>&nbsp;
+                    (${categoryInfos[category]?size})</a>&nbsp;
                     <a
              href="${freemarker_config.context}/article/feed?category=${category?replace(' ','+')}">
                      <img src="${freemarker_config.context}/images/feed-icon-inline.gif"
@@ -136,7 +136,7 @@
                     <#assign categoryId = category?replace("\\s|\'","","r")>
                     <@s.url id="browseURL" action="browse" namespace="/article" catName="${category}" includeParams="none"/>
                     <li>
-                      <a id="widget${categoryId}" href="${browseURL}">${category} (${categoryInfos[category]})</a>&nbsp;
+                      <a id="widget${categoryId}" href="${browseURL}">${category} (${categoryInfos[category]?size})</a>&nbsp;
                       <a href="${freemarker_config.context}/article/feed?category=${category?replace(' ','+')}"><img src="${freemarker_config.context}/images/feed-icon-inline.gif" /></a>
                     </li>
 		  </#if>
