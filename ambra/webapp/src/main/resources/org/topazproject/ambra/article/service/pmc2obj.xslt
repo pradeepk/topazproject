@@ -640,7 +640,8 @@
       else if ($e = 'xls') then 'application/vnd.ms-excel'
       else if ($e = 'ppt') then 'application/vnd.ms-powerpoint'
       else if ($e = 'ppt') then 'application/vnd.ms-powerpoint'
-      else if ($e = 'ps' or $e = 'eps') then 'application/postscript'
+      else if ($e = 'ps') then 'application/postscript'
+      else if ($e = 'eps') then 'application/eps'
       else if ($e = 'mpg' or $e = 'mpeg') then 'video/mpeg'
       else if ($e = 'mp4' or $e = 'mpg4') then 'video/mp4'
       else if ($e = 'mov' or $e = 'qt') then 'video/quicktime'
@@ -659,6 +660,7 @@
       else if ($e = 'wma') then 'audio/x-ms-wma'
       else if ($e = 'gz' or $e = 'gzip') then 'application/x-gzip'
       else if ($e = 'bz2' or $e = 'bzip') then 'application/x-bzip'
+      else if ($e = 'docx') then 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
       else 'application/octet-stream'
       "/>
   </xsl:function>

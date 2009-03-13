@@ -11,10 +11,11 @@ text/plain				txt text TXT TEXT java c c++ pl cc h
 image/gif				gif GIF
 image/ief				ief
 image/jpeg				jpeg jpg jpe JPG
-image/tiff				tiff tif
+image/tiff				tif tiff
 image/x-xwindowdump			xwd
-application/postscript	ps ai eps
-application/rtf				rtf
+application/eps eps
+application/postscript	ps ai
+text/rtf				rtf
 application/x-tex			tex
 application/x-texinfo			texinfo texi
 application/x-troff			t tr roff
@@ -149,10 +150,6 @@ x-conference/x-cooltalk			ice
 
 # TEXT-RELATED
 
-# PostScript
-application/postscript	ps ai eps 
-# Microsoft Rich Text Format
-application/rtf				rtf
 # Adobe Acrobat PDF
 application/pdf				pdf
 # Maker Interchange Format (FrameMaker)
@@ -266,22 +263,24 @@ x-script/x-wfxclient			wfx
 
 # GENERAL APPLICATIONS
 
+# Carbon Copy - remote control/access (Microcom)
+application/ccv				ccv
 # Undefined binary data (often executable progs)
 # application/octet-stream		exe com
-# Pointcast news data (Pointcast)
-application/x-pcn			pcn
 # Excel spreadsheet (Microsoft)
 application/vnd.ms-excel		xls
 # PowerPoint (Microsoft)
 application/vnd.ms-powerpoint		ppt
 # Microsoft Project (Microsoft)
 application/vnd.ms-project		mpp
+# OpenDoc (Microsoft)
+application/vnd.openxmlformats-officedocument.wordprocessingml.document docx
 # SourceView document (Dataware Electronics)
 application/vnd.svd			svd
+# Pointcast news data (Pointcast)
+application/x-pcn			pcn
 # Net Install - software install (20/20 Software)
 application/x-net-install		ins
-# Carbon Copy - remote control/access (Microcom)
-application/ccv				ccv
 # Spreadsheets (Visual Components)
 workbook/formulaone			vts
 
