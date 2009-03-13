@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.net.URI;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -62,7 +64,7 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   private Collection<SearchHit> searchResults;
   private int                   totalNoOfResults;
   // empty map for non-null safety
-  private Map<String, Integer>  categoryInfos = new HashMap<String, Integer>();
+  private Map<String, List<URI>> categoryInfos = new HashMap<String, List<URI>>();
 
   // Flag telling this action whether or not the search should be executed.
   private String   noSearchFlag;
@@ -101,14 +103,14 @@ public class SearchAction extends BaseSessionAwareActionSupport {
       return executeSearch(query);
     }
 
-    categoryInfos = browseService.getCategoryInfos();
+    categoryInfos = browseService.getArticlesByCategory();
     return INPUT;
   }
 
   private String executeSearch(final String queryString) {
     if (StringUtils.isBlank(queryString)) {
       addActionError("Please enter a query string.");
-      categoryInfos = browseService.getCategoryInfos();
+      categoryInfos = browseService.getArticlesByCategory();
       return INPUT;
     }
 
@@ -473,12 +475,8 @@ public class SearchAction extends BaseSessionAwareActionSupport {
     this.subjectCatOpt = subjectCatOpt;
   }
 
-  public Map<String, Integer> getCategoryInfos() {
+  public Map<String, List<URI>> getCategoryInfos() {
     return categoryInfos;
-  }
-
-  public void setCategoryInfos(Map<String, Integer> categoryInfos) {
-    this.categoryInfos = categoryInfos;
   }
 
   public String[] getCreator() {
