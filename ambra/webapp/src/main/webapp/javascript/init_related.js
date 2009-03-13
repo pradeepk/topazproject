@@ -93,7 +93,7 @@ function setCites(response, args)
             //url = null;
           break;
         case "PubMed":
-            url = "http://www.ncbi.nlm.nih.gov/pubmed/?paramName="; //+ doi (the article DOI)
+            url = "http://www.ncbi.nlm.nih.gov/sites/entrez?db=pubmed&cmd=link&LinkName=pubmed_pmc_refs&from_uid=" + response.article.pub_med;
           break;
         case "Scopus":
             url = "http://www.scopus.com/scopus/home.url?paramName=";
@@ -156,14 +156,14 @@ function setRelatedBlogs(response, args)
       */
       switch(response.article.sources[a].source) {
         case "Bloglines":
-            url = "http://www.crossref.org/?paramName=" + doi;
+            url = "http://www.bloglines.com/search?q=" + escape(response.article.title) + "&ql=en&s=f&pop=l&news=m";
             //url = "http://www.crossref.org/?paramName=" + response.article.sources[a].source.someID;
           break;
         case "Nature":
             url = "http://www.nature.com/?paramName=";
           break;
         case "Postgenomic":
-            url = "http://www.postgenomic.com/?paramName=";
+            url = "http://postgenomic.com/paper.php?doi=" + doi.replace("info%3Adoi/","");
           break;
       }
 
