@@ -52,9 +52,9 @@
 					<ul>
 						<li>
 						<#if Session[freemarker_config.userAttributeKey]?exists>
-							<a href="${loginURL}" onclick="ambra.responsePanel.show(this, _dcf, 'toolbar', '${reply.id}', null, null, 1); return false;" class="flag tooltip" title="Request Review">Request review</a>
+							<a href="${loginURL}" onclick="ambra.responsePanel.show(this, _dcf, 'toolbar', '${reply.id}', null, null, 1); return false;" class="flag tooltip" title="Report a Concern">Report a Concern</a>
 						<#else>							
-							<a href="${loginURL}" class="flag tooltip" title="Request review">Request review</a>						
+							<a href="${loginURL}" class="flag tooltip" title="Report a Concern">Report a Concern</a>						
 						</#if>
 						</li>
 						<li>
@@ -115,9 +115,9 @@
 				<ul>
 					<li>
 					<#if Session[freemarker_config.userAttributeKey]?exists>
-						<a href="${loginURL}" onclick="ambra.responsePanel.show(this, _dcf, 'toolbar', '${baseAnnotation.id}', null, null, 0); return false;" class="flag tooltip" title="Request review">Request review</a>
+						<a href="${loginURL}" onclick="ambra.responsePanel.show(this, _dcf, 'toolbar', '${baseAnnotation.id}', null, null, 0); return false;" class="flag tooltip" title="Report a Concern">Report a Concern</a>
 					<#else>
-						<a href="${loginURL}" class="flag tooltip" title="Request review">Request review</a>					
+						<a href="${loginURL}" class="flag tooltip" title="Report a Concern">Report a Concern</a>					
 					</#if>
 					</li>
 					<li>
