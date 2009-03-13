@@ -277,10 +277,11 @@ ambra.corrections = {
    */
   _toRetractionHtmlElement: function(retractionRaw) {
     var div = document.createElement('div');
-    div.innerHTML = retractionRaw.escapedComment + ' (';
+    div.innerHTML = '<span>' + retractionRaw.title + '</span><br/>'
+        + retractionRaw.escapedComment + ' (';
     var a = document.createElement('a');
-    a.setAttribute('href', _namespace + "/annotation/listThread.action?inReplyTo=" + retractionRaw.id
-        + "&root=" + retractionRaw.id);
+    a.setAttribute('href', _namespace + "/annotation/listThread.action?inReplyTo="
+        + retractionRaw.id + "&root=" + retractionRaw.id);
     a.innerHTML = 'comment on this retraction';
     div.appendChild(a);
     div.appendChild(document.createTextNode(')'));

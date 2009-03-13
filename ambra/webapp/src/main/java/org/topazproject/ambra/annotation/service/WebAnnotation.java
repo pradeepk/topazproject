@@ -91,6 +91,14 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
     return escapeText(title);
   }
 
+  /**
+   * Escaped text of title, without any modifications.
+   * @return title as String, without any modifications.
+   */
+   public String getTitle() {
+     return escapeText(annotea.getTitle());
+   }
+
   public boolean isFormalCorrection() {
     return annotea instanceof FormalCorrection;
   }
