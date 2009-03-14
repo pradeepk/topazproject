@@ -24,6 +24,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+import org.custommonkey.xmlunit.Diff;
+import org.xml.sax.SAXException;
 
 import java.net.URL;
 import java.io.IOException;
@@ -58,12 +61,14 @@ public class HttpResourceServerTest {
   }
 
   @Test
-  public void testServerResourceXml() throws IOException {
+  public void testServerResourceXml() throws IOException, SAXException {
     MockHttpServletResponse responseMock = new MockHttpServletResponse();
     MockHttpServletRequest requestMock = new MockHttpServletRequest();
     HttpResourceServer server = new HttpResourceServer();
     server.serveResource(requestMock, responseMock, new HttpResourceServer.URLResource(xmlUrl));
-    assertEquals(responseMock.getContentAsString(), EXPECTED_XML, "Wrong content served");
+    Diff diff = new Diff(responseMock.getContentAsString(), EXPECTED_XML);
+    assertTrue(diff.identical(), "Expected content " + EXPECTED_XML +
+        " but received " + responseMock.getContentAsString());
     assertEquals(responseMock.getContentType(), "application/xml", "Wrong content type");
     assertEquals(responseMock.getContentLength(), EXPECTED_XML.getBytes().length,
         "Wrong content length");
