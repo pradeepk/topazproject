@@ -28,10 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.Comparator;
-import java.util.SortedSet;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -458,25 +457,21 @@ public class BrowseService {
           @Override
           public SortedMap<String, List<URI>> lookup() throws RuntimeException {
 
-            return convertToArticleIdMap(fetchArticlesByCategory());
+            return convertToSortedArticleIdMap(fetchArticlesByCategory());
           }
         });
   }
 
   /**
-   * Convert list map of Article objects to sorted map of article ID's
-   * @param articlesByCategory Map of Article object lists by category
-   * @return Map of Article ID lists by category
+   * Convert list map of Article id's to sorted map of article ID lists
+   * @param articlesByCategory Map of URI sets by category
+   * @return Sorted map of Article ID lists by category
    */
-  private SortedMap<String, List<URI>> convertToArticleIdMap(Map<String, SortedSet<Article>> articlesByCategory) {
+  private SortedMap<String, List<URI>> convertToSortedArticleIdMap(Map<String, Set<URI>> articlesByCategory) {
     SortedMap<String, List<URI>> mapOfArticleIds = new TreeMap<String, List<URI>>();
-    for (Map.Entry<String, SortedSet<Article>> entry : articlesByCategory.entrySet()) {
+    for (Map.Entry<String, Set<URI>> entry : articlesByCategory.entrySet()) {
       if (entry.getValue().size() > 0) {
-        List<URI> uris = new ArrayList<URI>();
-        for (Article article : entry.getValue()) {
-          uris.add(article.getId());
-        }
-        mapOfArticleIds.put(entry.getKey(), uris);
+        mapOfArticleIds.put(entry.getKey(), new ArrayList<URI>(entry.getValue()));
       }
     }
     return mapOfArticleIds;
@@ -486,32 +481,25 @@ public class BrowseService {
    * Return unsorted map of Article objects sorted by date and article id.
    * @return Article objects by category
    */
-  private Map<String, SortedSet<Article>> fetchArticlesByCategory() {
+  private Map<String, Set<URI>> fetchArticlesByCategory() {
     Results results = session.createQuery(
-        "select a.categories.mainCategory, a date from Article a;")
+        "select a.categories.mainCategory cat, a.id articleId, a.dublinCore.date date " +
+        "from Article a " +
+        "order by date desc, articleId;")
         .execute();
 
-    Map<String, SortedSet<Article>> articlesByCategory = new HashMap<String, SortedSet<Article>>();
+    Map<String, Set<URI>> articlesByCategory = new HashMap<String, Set<URI>>();
     while (results.next()) {
 
       String category = results.getString(0);
-      Article article = (Article) results.get(1);
+      URI articleId = results.getURI(1);
 
-      SortedSet<Article> articles = articlesByCategory.get(category);
-      if (articles == null) {
-        // Sort articles by date, id
-        articles = new TreeSet<Article>(new Comparator<Article>() {
-          public int compare(Article article, Article article1) {
-            int compareDates = article.getDublinCore().getDate().compareTo(article1.getDublinCore().getDate());
-            if (compareDates == 0)
-              return article.getId().compareTo(article1.getId());
-            else
-              return compareDates;
-          }
-        });
-        articlesByCategory.put(category, articles);
+      Set<URI> articleIds = articlesByCategory.get(category);
+      if (articleIds == null) {
+        articleIds = new LinkedHashSet<URI>();
+        articlesByCategory.put(category, articleIds);
       }
-      articles.add(article);
+      articleIds.add(articleId);
     }
     return articlesByCategory;
   }
