@@ -180,7 +180,7 @@ public class BrowseService {
   @Transactional(readOnly = true)
   public List<ArticleInfo> getArticlesByCategory(final String catName, int pageNum, int pageSize,
                                                  int[] numArt) {
-    List<URI> articleIds = getArticlesIdsByCategory().get(catName);
+    List<URI> articleIds = getArticlesByCategory().get(catName);
 
     if (articleIds == null) {
       numArt[0] = 0;
@@ -253,7 +253,17 @@ public class BrowseService {
    */
   @Transactional(readOnly = true)
   public SortedMap<String, List<URI>> getArticlesByCategory() {
-    return getArticlesIdsByCategory();
+    final String currentJournal = journalService.getCurrentJournalName();
+    final String cacheKey = ARTBYCAT_LIST_KEY + currentJournal;
+    return browseCache.get(cacheKey, -1,
+        new Cache.SynchronizedLookup<SortedMap<String, List<URI>>,
+            RuntimeException>(cacheKey.intern()) {
+          @Override
+          public SortedMap<String, List<URI>> lookup() throws RuntimeException {
+
+            return convertToSortedArticleIdMap(fetchArticlesByCategory());
+          }
+        });
   }
 
   /**
@@ -446,20 +456,6 @@ public class BrowseService {
     }
 
     return volumeInfos;
-  }
-
-  private SortedMap<String, List<URI>> getArticlesIdsByCategory() {
-    final String currentJournal = journalService.getCurrentJournalName();
-    final String cacheKey = ARTBYCAT_LIST_KEY + currentJournal;
-    return browseCache.get(cacheKey, -1,
-        new Cache.SynchronizedLookup<SortedMap<String, List<URI>>,
-            RuntimeException>(cacheKey.intern()) {
-          @Override
-          public SortedMap<String, List<URI>> lookup() throws RuntimeException {
-
-            return convertToSortedArticleIdMap(fetchArticlesByCategory());
-          }
-        });
   }
 
   /**
@@ -778,7 +774,7 @@ public class BrowseService {
    *
    */
   public String articleGrpListToCSV( List<TOCArticleGroup> articleGroups) {
-    String articleList = new String();
+    String articleList = "";
     for (TOCArticleGroup ag : articleGroups) {
       Iterator i = ag.articles.listIterator();
 
