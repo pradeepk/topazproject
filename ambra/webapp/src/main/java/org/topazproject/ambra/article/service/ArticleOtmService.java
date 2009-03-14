@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,8 +26,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.Iterator;
 
 import javax.activation.DataSource;
 
@@ -49,7 +47,6 @@ import org.topazproject.ambra.models.RatingSummary;
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.UserAccount;
 import org.topazproject.ambra.models.Trackback;
-import org.topazproject.ambra.models.Category;
 import org.topazproject.ambra.model.article.ArticleType;
 import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.otm.Session;
@@ -679,7 +676,7 @@ public class ArticleOtmService {
   /**
    * Get track backs for a given trackbackId
    *
-   * @param trackbackId
+   * @param trackbackId Trackback ID
    * @return List<Trackback> List of track backs
    */
   @Transactional(readOnly = true)
