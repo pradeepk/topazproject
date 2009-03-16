@@ -115,7 +115,7 @@ public class ArticleXMLUtilsTest {
     String result = secondaryObjectService.getTranformedDocument(source);
 
     Diff diff = new Diff(expected, result);
-    assertTrue(diff.identical(), "Expected " + expected + " but received " + result);
+    assertTrue(diff.identical(), diff.toString());
   }
 
 
@@ -145,7 +145,7 @@ public class ArticleXMLUtilsTest {
 
     Diff diff = new Diff(htmlDocumentBuilder.parse(expected), htmlDocumentBuilder.parse(result));
 
-    assertTrue(diff.identical(), "Expected " + expected + " but received " + result);
+    assertTrue(diff.identical(), diff.toString());
     reset(articleServiceMock);
   }
 
