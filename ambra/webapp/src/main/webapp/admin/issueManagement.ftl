@@ -99,7 +99,7 @@
       <table border="0" cellpadding="10" cellspacing="0">
         <tr>
           <th align="center">Article (URIs)</th>
-            <td><@s.textfield name="articleCSVURIs" size="50" /></td>
+            <td><@s.textfield name="articleURI" size="50" /></td>
           </tr>
         <tr>
           <td colspan="2">
