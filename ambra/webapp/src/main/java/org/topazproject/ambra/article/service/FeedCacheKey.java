@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.net.URI;
 import org.topazproject.ambra.article.service.ArticleFeedService.FEED_TYPES;
 
 /**
@@ -61,6 +62,7 @@ public class FeedCacheKey implements Serializable, Comparable {
   private String title;
   private String selfLink;
   private int maxResults;
+  private URI issueURI;
   private String type = FEED_TYPES.Article.toString();
 
   final SimpleDateFormat dateFrmt = new SimpleDateFormat("yyyy-MM-dd");
@@ -385,6 +387,18 @@ public class FeedCacheKey implements Serializable, Comparable {
 
   public void setMaxResults(int max) {
     this.maxResults = max;
+  }
+
+  public void setIssueURI(String issueURI) {
+    try {
+      this.issueURI = URI.create(issueURI.trim());
+    } catch (Exception e) {
+      this.issueURI = null;
+    }
+  }
+
+  public URI getIssueURI() {
+    return issueURI;
   }
 }
 

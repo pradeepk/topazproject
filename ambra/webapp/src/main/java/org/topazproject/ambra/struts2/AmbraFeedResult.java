@@ -199,7 +199,9 @@ public class AmbraFeedResult extends Feed implements Result {
         annotations = articleFeedService.getAnnotations(articleIds);
         break;
       case Article :
+      case Issue :
         articles = articleFeedService.getArticles(articleIds);
+        break;
     }
 
     String xmlBase = (cacheKey.getRelativeLinks() ? "" : JOURNAL_URI);
@@ -237,7 +239,9 @@ public class AmbraFeedResult extends Feed implements Result {
         entries = buildAnnotationFeed(xmlBase);
         break;
       case Article :
+      case Issue :
         entries = buildArticleFeed(cacheKey, xmlBase);
+        break;
     }
 
     setEntries(entries);

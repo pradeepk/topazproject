@@ -97,6 +97,7 @@
     <property name="journalService" ref="journalService"/>
     <property name="feedCache" ref="feedCache"/>
     <property name="otmSession" ref="otmSession"/>
+    <property name="browseService" ref="browseService"/>
    </bean>
 
    <bean id="adminService" class="org.topazproject.ambra.admin.service.AdminService">

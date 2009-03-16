@@ -49,6 +49,8 @@ import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.model.article.ArticleInfo;
+import org.topazproject.ambra.article.action.TOCArticleGroup;
 
 import org.topazproject.otm.Session;
 import org.topazproject.otm.ClassMetadata;
@@ -65,6 +67,7 @@ public class ArticleFeedService {
 
   private AnnotationService  annotationService;   // Annotation service Spring injected.
   private ArticleOtmService  articleOtmService;   // Article Otm service Spring injected
+  private BrowseService      browseService;       // Browse Article Servcie Spring Injected
   private JournalService     journalService;      // Journal service Spring injected.
   private Cache              feedCache;           // Feed Cache Spring injected
   private Invalidator        invalidator;         // Cache invalidator
@@ -77,18 +80,30 @@ public class ArticleFeedService {
    * feed types.
    */
   public enum FEED_TYPES {
-    Article                { public String rdfType() { return null;                       } },
-    Annotation             { public String rdfType() { return ArticleAnnotation.RDF_TYPE; } },
-    CommentAnnot           { public String rdfType() { return Comment.RDF_TYPE;           } },
-    FormalCorrectionAnnot  { public String rdfType() { return FormalCorrection.RDF_TYPE;  } },
-    MinorCorrectionAnnot   { public String rdfType() { return MinorCorrection.RDF_TYPE;   } },
-    RatingAnnot            { public String rdfType() { return Rating.RDF_TYPE;            } },
-    RatingSummaryAnnot     { public String rdfType() { return RatingSummary.RDF_TYPE;     } },
-    ReplyAnnot             { public String rdfType() { return Reply.RDF_TYPE;             } },
+    Article                { public String rdfType() { return null;                       }
+                             public Class  isClass() { return Article.class;              } },
+    Annotation             { public String rdfType() { return ArticleAnnotation.RDF_TYPE; }
+                             public Class  isClass() { return ArticleAnnotation.class;    } },
+    CommentAnnot           { public String rdfType() { return Comment.RDF_TYPE;           }
+                             public Class  isClass() { return Comment.class;              } },
+    FormalCorrectionAnnot  { public String rdfType() { return FormalCorrection.RDF_TYPE;  }
+                             public Class  isClass() { return FormalCorrection.class;     } },
+    MinorCorrectionAnnot   { public String rdfType() { return MinorCorrection.RDF_TYPE;   }
+                             public Class  isClass() { return MinorCorrection.class;      } },
+    RatingAnnot            { public String rdfType() { return Rating.RDF_TYPE;            }
+                             public Class  isClass() { return Rating.class;               } },
+    RatingSummaryAnnot     { public String rdfType() { return RatingSummary.RDF_TYPE;     }
+                             public Class  isClass() { return RatingSummary.class;        } },
+    ReplyAnnot             { public String rdfType() { return Reply.RDF_TYPE;             }
+                             public Class  isClass() { return Reply.class;                } },
+    Issue                  { public String rdfType() { return null;                       }
+                             public Class  isClass() { return null;                       } },
     // Invalid must remain last.
-    Invalid                { public String rdfType() { return null;                       } };
+    Invalid                { public String rdfType() { return null;                       }
+                             public Class  isClass() { return null;                       } };
 
     public abstract String rdfType();
+    public abstract Class  isClass();
   }
 
   /**
@@ -125,6 +140,26 @@ public class ArticleFeedService {
       };
     // Get articel ID's from the feed cache or add it
     return feedCache.get(cacheKey, -1, lookUp);
+  }
+
+  /**
+   *
+   * @param cacheKey is both the feedAction data model and cache key.
+   * @return List&lt;String&gt; if article Ids.
+   * @throws ApplicationException ApplicationException
+   */
+  public List<String> getIssueArticleIds(final FeedCacheKey cacheKey) throws ApplicationException {
+    List<String> articleList  = new ArrayList<String>();
+    List<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
+
+    if (cacheKey.getIssueURI() != null)
+      articleGroups = browseService.getArticleGrpList(cacheKey.getIssueURI());
+
+    for(TOCArticleGroup ag : articleGroups)
+      for(ArticleInfo article : ag.articles)
+        articleList.add( article.id.toString());
+
+    return articleList;
   }
 
   /**
@@ -302,6 +337,15 @@ public class ArticleFeedService {
   @Required
   public void setAnnotationService(AnnotationService annotationService) {
     this.annotationService = annotationService;
+  }
+
+  /**
+   * @param browseService   Browse Service
+   */
+  @SuppressWarnings("synthetic-access")
+  @Required
+  public void setBrowseService(BrowseService browseService) {
+    this.browseService = browseService;
   }
 
   /**

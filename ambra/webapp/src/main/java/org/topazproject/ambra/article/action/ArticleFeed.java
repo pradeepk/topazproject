@@ -87,9 +87,10 @@ import com.opensymphony.xwork2.ModelDriven;
  * title       String           No         none        Sets the title of the feed
  * selfLink    String           No         none        URL of feed that is to be put in the feed
  *                                                     data.
+ * IssueURI    String           Yes        none        Issue URI (Required for type=Issue only)
  * maxResults  Integer          No         30          The maximun number of result to return.
  * type        String           No         Article     Article,Annotation,FormalCorrectionAnnot
- *                                                     MinorCorrectionAnnot,CommentAnnot
+ *                                                     MinorCorrectionAnnot,CommentAnnot,Issue
  * </pre>
  *
  * @see       org.topazproject.ambra.article.service.FeedCacheKey
@@ -139,6 +140,9 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
         break;
       case Article :
         articleIds = articleFeedService.getArticleIds(cacheKey);
+        break;
+      case Issue :
+        articleIds = articleFeedService.getIssueArticleIds(cacheKey);
         break;
     }
 
