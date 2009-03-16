@@ -176,6 +176,10 @@
         <!-- Set to true to turn on crossref posting -->
         <sendToXref>false</sendToXref>
       </crossref>
+      
+      <alm>
+        <url>http://alm.plos.org</url>
+      </alm>
     </services>
 
     <articleTypeList>
