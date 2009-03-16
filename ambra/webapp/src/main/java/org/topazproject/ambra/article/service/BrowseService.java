@@ -766,25 +766,35 @@ public class BrowseService {
     public void notifyIssueChanged(URI issueDoi) {
       browseCache.remove(ISSUE_KEY + issueDoi);
     }
-
-
   }
 
   /**
+   * Given a list of Article Groups with correctly ordered articles
+   * create a CSV string of article URIs. The URIs will be in the
+   * order that they show up on the TOC.
    *
+   * @param  articleGroups the list of TOCArticleGroup to process.
+   * @return a string of a comma separated list of article URIs
    */
   public String articleGrpListToCSV( List<TOCArticleGroup> articleGroups) {
     String articleList = "";
-    for (TOCArticleGroup ag : articleGroups) {
-      Iterator i = ag.articles.listIterator();
+    Iterator i = articleGroups.listIterator();
 
-      while(i.hasNext()) {
-        ArticleInfo ai = (ArticleInfo)i.next();
+    // Group Loop
+    while(i.hasNext()) {
+      TOCArticleGroup ag = (TOCArticleGroup)i.next();
+      Iterator y = ag.articles.listIterator();
 
+      // Article Loop
+      while(y.hasNext()) {
+        ArticleInfo ai = (ArticleInfo)y.next();
         articleList = articleList + ai.id.toString();
-        if (i.hasNext())
+
+        if (y.hasNext())
           articleList = articleList + ",";
       }
+      if (i.hasNext())
+        articleList = articleList + ",";
     }
     return articleList;
   }
