@@ -21,8 +21,7 @@ dojo.require("dojo.fx");
 
 dojo.addOnLoad(function()
   {
-    //TODO: Move this server setting to a configuration file
-    var almService = new ambra.alm('alm-dev.plos.org');
+    var almService = new ambra.alm(almHost);
     var doi = escape(dojo.byId('doi').value);
 
     doi = doi.replace(new RegExp('/', 'g'),'%2F');

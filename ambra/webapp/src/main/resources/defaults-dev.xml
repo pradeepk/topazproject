@@ -354,6 +354,13 @@
       <monthly>biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds</monthly>
       <weekly>biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds, plosone</weekly>
     </userAlerts>
+
+    <services>
+      <!--The host to use for the Article Level Metrics server if implemented -->
+      <alm>
+        <url>alm.example.org</url>
+      </alm>
+    </services>
   </ambra>
 
   <!-- See the AmbraStruts2Filter dispatcher on how struts constants are configured -->

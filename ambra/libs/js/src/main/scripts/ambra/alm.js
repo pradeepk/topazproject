@@ -57,7 +57,7 @@ dojo.require("dojo.io.script");
       *  callback is the method that populates the chart of  "chartIndex"
       **/
     getData:function(request, callBack) {
-      var url = "http://" + this.host + "/" + request;
+      var url = this.host + "/" + request;
 
       console.log(url);
 

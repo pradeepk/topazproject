@@ -63,6 +63,7 @@ public class AmbraFreemarkerConfig {
   private String defaultJournalName;
   private String orgName;
   private String feedbackEmail;
+  private String almHost;
 
   /**
    * Constructor that loads the list of css and javascript files and page titles for pages which
@@ -84,6 +85,7 @@ public class AmbraFreemarkerConfig {
     registrationURL = myConfig.getString("ambra.services.registration.url.registration");
     changePasswordURL = myConfig.getString("ambra.services.registration.url.change-password");
     changeEmailURL = myConfig.getString("ambra.services.registration.url.change-email");
+    almHost = myConfig.getString("ambra.services.alm.url");
     defaultJournalName = myConfig.getString(DEFAULT_JOURNAL_NAME_CONFIG_KEY);
     journals = new HashMap<String, JournalConfig>();
     orgName = myConfig.getString("ambra.platform.name");
@@ -590,6 +592,14 @@ public class AmbraFreemarkerConfig {
 
   public String getContext() {
     return dirPrefix + subdirPrefix;
+  }
+
+  /**
+   * Get the article level metrics host
+   * @return the ALM host string 
+   */
+  public String getALMHost() {
+    return almHost;
   }
 
   /**
