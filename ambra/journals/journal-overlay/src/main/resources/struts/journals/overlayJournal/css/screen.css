@@ -82,6 +82,8 @@ textarea	{ font-family: Verdana, Arial, Helvetica, sans-serif; color: #555; font
 ----------------------------------------------------------
 */
 .noshow { display:block; height:0px; line-height:0em; } /* can be applied to elements that need to be present in the flow but not impact vertical spacing, e.g. in-page anchors */
+.clearer  { clear:both; line-height:0; }
+.noWrap { white-space:nowrap; }
 .clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
 .clearfix { zoom:1; } /*zoom allows self-clearing floats to work in IE*/
 
@@ -448,7 +450,8 @@ div#sideNav dl.related dd a:hover { text-decoration:underline; }
 #rhc { font-size:0.9em; line-height:1.5em; }
 #rhc h6 { font-size:1em; }
 #rhc h6 a.info { display:inline-block; background-repeat:no-repeat; background-position:0 .1em; text-indent:-9999px; width:14px; }
-#rhc p { margin:3px 5px 5px 5px; }
+#rhc p { margin:5px; }
+#rhc dl.related { margin:10px 5px; }
 #rhc div.rhcBox_type1 { margin-bottom:18px; padding-bottom:8px; background:#fcd3b8 url(../images/rhcBox_btm.gif) no-repeat bottom left; zoom:1; }
 #rhc div.rhcBox_type1 div.wrap { background:#fcd3b8 url(../images/rhcBox_top.gif) no-repeat top left; padding-top:8px; }
 #rhc div.rhcBox_type2 { margin-bottom:8px; border:1px solid #bababa; }
@@ -495,8 +498,8 @@ div.fch p.fch { margin:8px 8px 0; text-indent:20px; }
 div.fch ol { margin:0 8px 8px; }
 div.fch ol li { list-style-position:inside; font-weight:bold; }
 div.fch ol li p { margin:0; padding:0; display:inline; font-weight:normal; }
-div.fch ol li p a:link { font-weight:normal; color:#069; }
-div.fch ol li p a:visited { font-weight:normal; color:#004e9c; }
+div.fch ol li p a:link { font-weight:normal; }
+div.fch ol li p a:visited { font-weight:normal; }
 
 /* Retraction styles */
 div.retractionHtmlId p.retractionHtmlId strong { color:#ff0000; } 
@@ -509,8 +512,8 @@ div.retractionHtmlId p.retractionHtmlId { margin:8px 8px 0; text-indent:20px; }
 div.retractionHtmlId span.retractionHtmlId { margin:8px 8px 0; text-indent:0; } 
 div.retractionHtmlId span.retractionHtmlId div { margin-bottom:10px; font-weight:normal; } 
 div.retractionHtmlId span.retractionHtmlId div p { margin:0; padding:0; display:inline; font-weight:normal; } 
-div.retractionHtmlId span.retractionHtmlId div p a:link { font-weight:normal; color:#069; } 
-div.retractionHtmlId span.retractionHtmlId div p a:visited { font-weight:normal; color:#004e9c; } 
+div.retractionHtmlId span.retractionHtmlId div p a:link { font-weight:normal; } 
+div.retractionHtmlId span.retractionHtmlId div p a:visited { font-weight:normal; } 
 
 div#ratingRhc1 { margin-bottom:5px;}
 div#ratingRhc1 ol,
