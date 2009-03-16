@@ -1,7 +1,7 @@
 /* $$HeadURL::                                                                            $$
  * $$Id$$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,14 +30,22 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.ambra.admin.service.AdminService;
+import org.topazproject.ambra.admin.service.AdminService.JournalInfo;
 
 @SuppressWarnings("serial")
 public class PublishArchivesAction extends BaseAdminActionSupport {
   private static final Log log = LogFactory.getLog(PublishArchivesAction.class);
 
+  // Fields Used by template
   private String[] articlesToPublish;
   private String[] articlesInVirtualJournals;
   private String[] articlesToDelete;
+  private JournalInfo journalInfo;
+
+  // Necessary Services
+  private AdminService adminService;
 
   /**
    * Deletes and publishes checked articles from the admin console.  Note that delete has priority
@@ -56,6 +64,8 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
       return ERROR;
     }
 
+    // create a faux journal object for template
+    journalInfo = adminService.createJournalInfo();
     return base();
   }
 
@@ -127,5 +137,24 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
    */
   public void setArticlesToDelete(String[] articles) {
     articlesToDelete= articles;
+  }
+
+  /**
+   * Gets the JournalInfo value object for access in the view.
+   *
+   * @return Current virtual Journal value object.
+   */
+  public AdminService.JournalInfo getJournal() {
+    return journalInfo;
+  }
+
+  /**
+   * Sets the AdminService.
+   *
+   * @param  adminService The adminService to set.
+   */
+  @Required
+  public void setAdminService(AdminService adminService) {
+    this.adminService = adminService;
   }
 }

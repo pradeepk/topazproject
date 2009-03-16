@@ -37,6 +37,7 @@ import org.topazproject.ambra.models.AnnotationBlob;
 import org.topazproject.ambra.models.Comment;
 import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.ambra.admin.service.DocumentManagementService;
+import org.topazproject.ambra.admin.service.AdminService;
 import org.topazproject.ambra.admin.service.FlagManagementService;
 import org.topazproject.ambra.admin.service.FlaggedCommentRecord;
 import org.topazproject.otm.Session;
@@ -85,6 +86,7 @@ public class ProcessFlagsActionTest {
 
     DocumentManagementService documentManagementService = ctrl.createMock(DocumentManagementService.class);
     FlagManagementService flagManagementService = ctrl.createMock(FlagManagementService.class);
+    AdminService adminService = ctrl.createMock(AdminService.class);
 
     PDP pdp = ctrl.createMock(PDP.class);
     expect(pdp.evaluate((EvaluationCtx) anyObject()))
@@ -124,6 +126,7 @@ public class ProcessFlagsActionTest {
     expect(documentManagementService.getPublishableFiles()).andReturn(new ArrayList<String>());
     expect(documentManagementService.getUploadableFiles()).andReturn(new ArrayList<String>());
     expect(flagManagementService.getFlaggedComments()).andReturn(new ArrayList<FlaggedCommentRecord>());
+    expect(adminService.createJournalInfo()).andReturn(new AdminService.JournalInfo());
 
     AnnotationService annotationService = new AnnotationService();
     annotationService.setOtmSession(session);
@@ -132,6 +135,7 @@ public class ProcessFlagsActionTest {
     ProcessFlagsAction action = new ProcessFlagsAction();
     action.setAnnotationService(annotationService);
     action.setDocumentManagementService(documentManagementService);
+    action.setAdminService(adminService);
     action.setFlagManagementService(flagManagementService);
     action.setConvertToFormalCorrection(flags);
 

@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,11 +21,20 @@ package org.topazproject.ambra.admin.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.topazproject.ambra.admin.service.AdminService;
+import org.topazproject.ambra.admin.service.AdminService.JournalInfo;
+import org.springframework.beans.factory.annotation.Required;
 
 @SuppressWarnings("serial")
 public class DeleteArticleAction extends BaseAdminActionSupport {
   private static final Log log = LogFactory.getLog(DeleteArticleAction.class);
+
+  // Fields Used by template
   private String article;
+  private JournalInfo journalInfo;
+
+  // Necessary Services
+  private AdminService adminService;
 
   @Override
   public String execute() throws Exception {
@@ -49,5 +58,24 @@ public class DeleteArticleAction extends BaseAdminActionSupport {
 
   public void setArticle(String a) {
     article = a;
+  }
+
+  /**
+   * Gets the JournalInfo value object for access in the view.
+   *
+   * @return Current virtual Journal value object.
+   */
+  public JournalInfo getJournal() {
+    return journalInfo;
+  }
+
+  /**
+   * Sets the AdminService.
+   *
+   * @param  adminService The adminService to set.
+   */
+  @Required
+  public void setAdminService(AdminService adminService) {
+    this.adminService = adminService;
   }
 }

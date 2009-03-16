@@ -37,20 +37,28 @@ import org.topazproject.ambra.models.MinorCorrection;
 import org.topazproject.ambra.models.Retraction;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.rating.service.RatingsService;
+import org.topazproject.ambra.admin.service.AdminService;
+import org.topazproject.ambra.admin.service.AdminService.JournalInfo;
 
 @SuppressWarnings("serial")
 public class ProcessFlagsAction extends BaseAdminActionSupport {
 
   private static final Log log = LogFactory.getLog(ProcessFlagsAction.class);
+
+  // Fields Used by template
   private String[] commentsToUnflag;
   private String[] commentsToDelete;
   private String[] convertToFormalCorrection;
   private String[] convertToMinorCorrection;
   private String[] convertToRetraction;
   private String[] convertToNote;
+  private JournalInfo journalInfo;
+
+  // Necessary Services
+  private AdminService      adminService;
   private AnnotationService annotationService;
-  private RatingsService ratingsService;
-  private ReplyService replyService;
+  private RatingsService    ratingsService;
+  private ReplyService      replyService;
   protected AnnotationConverter converter;
 
   public void setAnnotationService(AnnotationService annotationService) {
@@ -222,6 +230,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       }
     }
 
+    // create a faux journal object for template
+    journalInfo = adminService.createJournalInfo();
     return base();
   }
 
@@ -344,4 +354,22 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
     this.converter = converter;
   }
 
+  /**
+   * Gets the JournalInfo value object for access in the view.
+   *
+   * @return Current virtual Journal value object.
+   */
+  public JournalInfo getJournal() {
+    return journalInfo;
+  }
+
+  /**
+   * Sets the AdminService.
+   *
+   * @param  adminService The adminService to set.
+   */
+  @Required
+  public void setAdminService(AdminService adminService) {
+    this.adminService = adminService;
+  }
 }

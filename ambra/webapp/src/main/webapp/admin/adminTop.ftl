@@ -63,7 +63,8 @@
     <hr/>
 
     <#include "templates/messages.ftl">
-
+    <h2>${journal.key} (${journal.eIssn!""})</h2>
+    
     <#if uploadableFiles?has_content>
       <fieldset>
         <legend><b>Ingestable Archives</b></legend>
@@ -93,7 +94,9 @@
             <tr>
               <th>Publish</th>
               <#list Request[freemarker_config.journalContextAttributeKey].virtualJournals as virtualJournal>
+                <#if journal.key != virtualJournal>
                 <th>${virtualJournal}</th>
+                </#if>
               </#list>
               <th>Delete</th>
               <th>&nbsp;</th>
@@ -105,7 +108,9 @@
                     onclick="SetAllCheckBoxes('publishArchives', 'articlesToPublish', true);"/>
                 </th>
                 <#list Request[freemarker_config.journalContextAttributeKey].virtualJournals as virtualJournal>
+                  <#if journal.key != virtualJournal>
                   <th>&nbsp;</th>
+                  </#if>
                 </#list>
                 <th>
                   <input type="button" value="Delete All"
@@ -119,7 +124,9 @@
                 <@s.url id="articleURL" includeParams="none" namespace="/article" action="fetchArticle" articleURI="${article}"/>
                 <td><@s.checkbox name="articlesToPublish" fieldValue="${article}"/></td>
                 <#list Request[freemarker_config.journalContextAttributeKey].virtualJournals as virtualJournal>
+                <#if journal.key != virtualJournal>
                   <td><@s.checkbox name="articlesInVirtualJournals" fieldValue="${article}::${virtualJournal}"/></td>
+                </#if>
                 </#list>
                 <td><@s.checkbox name="articlesToDelete" fieldValue="${article}"/></td>
                 <td><a target="_article" href="${articleURL}">${article}</a></td>
