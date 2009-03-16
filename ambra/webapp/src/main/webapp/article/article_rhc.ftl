@@ -49,7 +49,7 @@
     <div id="related" class="rhcBox_type2">
       <h6>Related Content</h6>
       <#if articleIssues?? && articleIssues?size gt 0>
-        <div id="published" xpathLocation="noSelect" class="rhcBox_type2">
+        <div id="published" xpathLocation="noSelect">
           <p><strong>Included in</strong>
           <br/>
           <#list articleIssues as oneIssue>
