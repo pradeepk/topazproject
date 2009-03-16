@@ -133,8 +133,7 @@ padding:0pt 0pt 0pt 8px;
 }
 
 /* overrides for dojo Tundra theme to get rounded tabs on the Journal Archive page */
-
-div.dijitTabLabels-top { position:static; background:transparent url(../images/tab_bg.gif) repeat-x scroll center bottom; padding:0pt 0pt 0pt 10px !important; }
+div.dijitTabContainerTop-tabs { position:static; background:transparent url(../images/tab_bg.gif) repeat-x scroll center bottom; padding:0pt 0pt 0pt 10px !important; }
 
 div.dijitTab,
 div.dijitTabChecked { border:0!important; background:transparent url(../images/tab_left.gif) no-repeat scroll 0% 0%!important; color:#666666; cursor:pointer; float:left; font-size:0.9em; font-weight:bold; margin:0pt 2px; padding-left:8px!important; }
@@ -144,7 +143,5 @@ div.dijitTabChecked { background-position:0% -40px!important; }
 div.dijitTabInnerDiv { border:0!important; background:transparent url(../images/tab_right.gif) no-repeat scroll 100% 0%; display:block; float:left; padding:8px 16px 8px 8px !important; } 
 
 div.dijitTabChecked div.dijitTabInnerDiv { border:0; background-position:100% -40px; padding-bottom:9px !important; }
-
-div.dijitTabPaneWrapper { position:static; border-color:#bababa; border-top:0 !important; }
 
 div.dijitContentPane { padding:12px 0pt 20px 12px; }
