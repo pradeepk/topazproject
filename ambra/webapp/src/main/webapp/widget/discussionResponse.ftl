@@ -43,7 +43,7 @@
             <label for="responseArea"><span class="none">Enter your response</span></label>
             <textarea id="responseArea" title="Enter your response..." class="response" name="responseArea" >Enter your response...</textarea>
           </td>
-          <td>&nbsp;</td>
+          <td class="gutter">&nbsp;</td>
           <td class="coi">
             <fieldset>
               <legend>Declare any competing interests.</legend>
