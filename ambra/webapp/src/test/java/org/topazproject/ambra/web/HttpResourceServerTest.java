@@ -56,7 +56,7 @@ public class HttpResourceServerTest {
     server.serveResource(requestMock, responseMock, new HttpResourceServer.URLResource(txtUrl));
     assertEquals(responseMock.getContentAsString(), EXPECTED_TEXT, "Wrong content served");
     assertEquals(responseMock.getContentType(), "text/plain", "Wrong content type");
-    assertEquals(responseMock.getContentLength(), EXPECTED_TEXT.getBytes().length,
+    assertEquals(responseMock.getContentLength(), EXPECTED_TEXT.length(),
         "Wrong content length");
   }
 
@@ -70,7 +70,7 @@ public class HttpResourceServerTest {
     assertTrue(diff.identical(), "Expected content " + EXPECTED_XML +
         " but received " + responseMock.getContentAsString());
     assertEquals(responseMock.getContentType(), "application/xml", "Wrong content type");
-    assertEquals(responseMock.getContentLength(), EXPECTED_XML.getBytes().length,
+    assertEquals(responseMock.getContentLength(), EXPECTED_XML.length(),
         "Wrong content length");
   }
 
@@ -83,7 +83,7 @@ public class HttpResourceServerTest {
     server.serveResource(requestMock, responseMock, new HttpResourceServer.URLResource(txtUrl));
     assertEquals(responseMock.getContentAsString(), "", "Content is not empty");
     assertEquals(responseMock.getContentType(), "text/plain", "Wrong content type");
-    assertEquals(responseMock.getContentLength(), EXPECTED_TEXT.getBytes().length,
+    assertEquals(responseMock.getContentLength(), EXPECTED_TEXT.length(),
         "Wrong content length");
   }
 
@@ -95,7 +95,7 @@ public class HttpResourceServerTest {
     server.serveResource(requestMock, responseMock, true, new HttpResourceServer.URLResource(txtUrl));
     assertEquals(responseMock.getContentAsString(), EXPECTED_TEXT, "Wrong content served");
     assertEquals(responseMock.getContentType(), "text/plain", "Wrong content type");
-    assertEquals(responseMock.getContentLength(), EXPECTED_TEXT.getBytes().length,
+    assertEquals(responseMock.getContentLength(), EXPECTED_TEXT.length(),
         "Wrong content length");
   }
 
@@ -107,7 +107,7 @@ public class HttpResourceServerTest {
     server.serveResource(requestMock, responseMock, false, new HttpResourceServer.URLResource(txtUrl));
     assertEquals(responseMock.getContentAsString(), "", "Content is not empty");
     assertEquals(responseMock.getContentType(), "text/plain", "Wrong content type");
-    assertEquals(responseMock.getContentLength(), EXPECTED_TEXT.getBytes().length,
+    assertEquals(responseMock.getContentLength(), EXPECTED_TEXT.length(),
         "Wrong content length");
   }
 }
