@@ -29,7 +29,7 @@
 <@s.url id="relatedArticleURL" namespace="/article" action="fetchRelatedArticle" articleURI="${articleURI}"/>
 
 <div id="rhc" xpathLocation="noDialog">
- 
+
   <div id="download" class="rhcBox_type1">
     <div class="wrap">
       <ul>
@@ -41,30 +41,30 @@
 
   <div id="impact" class="rhcBox_type2">
     <div id="ratingRhc1">
-      <#include "/article/article_rhc_rating.ftl">
+      <#include "article_rhc_rating.ftl">
     </div>
   </div>
 
   <div id="related" class="rhcBox_type2">
     <h6>Related Content</h6>
-  <#if articleIssues?? && articleIssues?size gt 0>
-    <div id="published" xpathLocation="noSelect" class="rhcBox_type2">
-      <p><strong>Included in</strong>
-      <br/>
-      <#list articleIssues as oneIssue>
-        <@s.a href="${freemarker_config.getJournalUrl(oneIssue[1])}${freemarker_config.context}/article/browseIssue.action?issue=${oneIssue[4]?url}" title="Browse Open Access Issue">${oneIssue[5]}</@s.a>
-      </#list>
-    </div>
-  </#if>
-  <#if articleInfoX?? && articleInfoX.relatedArticles?size gt 0>
-    <dl class="related">
-      <dt>Related <em>${freemarker_config.orgName}</em> Articles</dt>
-      <#list articleInfoX.relatedArticles as ra>
-      <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${ra.uri}" includeParams="none"/>
-      <dd><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${ra.title}</@s.a></dd>
-      </#list>
-    </dl>
-  </#if>
+    <#if articleIssues?? && articleIssues?size gt 0>
+      <div id="published" xpathLocation="noSelect" class="rhcBox_type2">
+        <p><strong>Included in</strong>
+        <br/>
+        <#list articleIssues as oneIssue>
+          <@s.a href="${freemarker_config.getJournalUrl(oneIssue[1])}${freemarker_config.context}/article/browseIssue.action?issue=${oneIssue[4]?url}" title="Browse Open Access Issue">${oneIssue[5]}</@s.a>
+        </#list>
+      </div>
+    </#if>
+    <#if articleInfoX?? && articleInfoX.relatedArticles?size gt 0>
+      <dl class="related">
+        <dt>Related <em>${freemarker_config.orgName}</em> Articles</dt>
+        <#list articleInfoX.relatedArticles as ra>
+        <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${ra.uri}" includeParams="none"/>
+        <dd><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${ra.title}</@s.a></dd>
+        </#list>
+      </dl>
+    </#if>
     <p><strong>Related subject categories</strong><br/>
     <#list mainCategories as cat>
       <a href="browse.action?catName=${cat?url}">${cat}</a><#if cat_has_next>, </#if>
