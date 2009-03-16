@@ -125,6 +125,8 @@ ambra.rating = {
       _ratingsForm.competingInterest[1].checked = false;
       _ratingsForm.ciStatementArea.disabled = true;
     }
+
+    _submitMsg.style.display = 'none';
   },
   
   resetDialog: function() {
@@ -139,7 +141,8 @@ ambra.rating = {
 
         ratingList[i].className = ratingList[i].className.replaceStringArray(" ", "pct", "pct0");
     }
-    
+
+    _submitMsg.style.display = 'none';
     ambra.formUtil.textCues.reset(_ratingTitle, _ratingTitleCue);
     ambra.formUtil.textCues.reset(_ratingComments, _ratingCommentCue);
     ambra.formUtil.textCues.reset(_ratingCIStatement, _ratingStatementCue);
@@ -210,8 +213,7 @@ function updateRating(targetObj) {
 
 function sendupdateRating() {
   ambra.formUtil.disableFormFields(_ratingsForm);
-  var submitMsg = dojo.byId('submitRatingMsg');
-  ambra.domUtil.removeChildren(submitMsg);
+  ambra.domUtil.removeChildren(_submitMsg);
   var articleUri = _ratingsForm.articleURI.value;
 
   _ldc.show();
@@ -231,8 +233,8 @@ function sendupdateRating() {
          errorMsg += jsonObj.actionErrors[i] + "\n";
        }
        var err = document.createTextNode(errorMsg);
-       submitMsg.appendChild(err);
-       dojo.fx.wipeIn({ node:submitMsg, duration: 500 }).play();
+       _submitMsg.appendChild(err);
+       dojo.fx.wipeIn({ node:_submitMsg, duration: 500 }).play();
        ambra.formUtil.enableFormFields(_ratingsForm);
        _ldc.hide();
      }
@@ -252,8 +254,8 @@ function sendupdateRating() {
            }
          }
        }
-       submitMsg.appendChild(fieldErrors);
-       dojo.fx.wipeIn({ node:submitMsg, duration: 500 }).play();
+       _submitMsg.appendChild(fieldErrors);
+       dojo.fx.wipeIn({ node:_submitMsg, duration: 500 }).play();
        ambra.formUtil.enableFormFields(_ratingsForm);
        _ldc.hide();
      }

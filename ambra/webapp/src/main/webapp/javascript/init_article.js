@@ -304,6 +304,13 @@ function getArticle() {
  */
 function createAnnotationOnMouseDown() {
   // reset form
+  //TODO: Move this to be more inline with how _annotationForm is defined
+  //This is fine for now, but in the future being this is a dijit widget, we may
+  //run into issues
+  var submitMsg = dojo.byId('submitMsg');
+
+  submitMsg.style.display = 'none';
+  
   ambra.formUtil.textCues.reset(_annotationForm.cTitle, _titleCue);
   ambra.formUtil.textCues.reset(_annotationForm.cArea, _commentCue);
   ambra.formUtil.textCues.reset(_annotationForm.ciStatementArea, _statementCue);

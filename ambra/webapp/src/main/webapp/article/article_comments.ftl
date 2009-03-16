@@ -96,4 +96,5 @@
 </div>
 <div style="visibility:hidden">
   <#include "/widget/ratingDialog.ftl">
+  <#include "/widget/loadingCycle.ftl">
 </div>

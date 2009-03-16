@@ -1,4 +1,6 @@
 // rating related globals
+var _ldc;
+
 var ratingConfig =  {
   insight:  "rateInsight",
   reliability: "ratingReliability",
@@ -8,6 +10,7 @@ var _ratingDlg;
 var _ratingsForm;
 var _ratingTitle;
 var _ratingComments;
+var _submitMsg;
 
 var _ratingTitleCue    = 'Enter your comment title...';
 var _ratingCommentCue   = 'Enter your comment...';
@@ -17,10 +20,13 @@ dojo.addOnLoad(function() {
   // ---------------------
   // rating dialog related
   // ---------------------
+  _ldc = dijit.byId("LoadingCycle");
+  
   _ratingsForm = document.ratingForm;
   _ratingTitle = _ratingsForm.cTitle;
   _ratingComments = _ratingsForm.cArea;
   _ratingCIStatement = _ratingsForm.ciStatementArea;
+  _submitMsg = dojo.byId('submitRatingMsg');
   _ratingDlg = dijit.byId("Rating");
   //_ratingDlg.setCloseControl(dojo.byId('btn_cancel_rating'));
 
