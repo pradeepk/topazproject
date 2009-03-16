@@ -21,21 +21,25 @@ dojo.require("dojo.fx");
 
 dojo.addOnLoad(function()
   {
-    var almService = new ambra.alm(almHost);
-    var doi = escape(dojo.byId('doi').value);
+    if(almHost != null && almHost != '' && almHost != 'alm.example.org') {
+      var almService = new ambra.alm(almHost);
+      var doi = escape(dojo.byId('doi').value);
 
-    doi = doi.replace(new RegExp('/', 'g'),'%2F');
+      doi = doi.replace(new RegExp('/', 'g'),'%2F');
 
-    almService.getRelatedBlogs(doi, setRelatedBlogs);
-    almService.getCites(doi, setCites);
-    almService.getIDs(doi, setIDs);
+      almService.getRelatedBlogs(doi, setRelatedBlogs);
+      almService.getCites(doi, setCites);
+      almService.getIDs(doi, setIDs);
+    } else {
+      alert('The related article metrics server is not defined.\nMake sure the ambra/services/alm/host node is defined your ambra.xml file.')
+    }
   }
 );
 
 function setIDs(response, args)
 {
   dojo.fadeOut({ node:'relatedArticlesSpinner', duration: 1000 }).play();
-  
+
   if (response == null)
   {
     setError('pubMedRelatedErr');
@@ -43,7 +47,7 @@ function setIDs(response, args)
   }
 
   var pubMedID = 0;
-  
+
   if (response.article.pub_med) {
     pubMedID = response.article.pub_med;
     dojo.byId('pubMedRelatedURL').href="http://www.ncbi.nlm.nih.gov/sites/entrez?Db=pubmed&DbFrom=pubmed&Cmd=Link&LinkName=pubmed_pubmed&LinkReadableName=Related%20Articles&IdsFromResult=" + pubMedID + "&ordinalpos=1&itool=EntrezSystem2.PEntrez.Pubmed.Pubmed_ResultsPanel.Pubmed_RVCitation";
@@ -70,37 +74,7 @@ function setCites(response, args)
 
     for(var a = 0; a < response.article.sources.length; a++)
     {
-      var url = "";
-
-      /**
-       * TODO: We really want to have the ALM server set these sources
-       * In the meantime we'll set them here.
-       *
-       * I figure we'll append a DOI to these urls with the right parameter name
-       * Or perhaps append an ID given to us from the ALM server?
-       *
-       * Nulling out any of the following values should stop the
-       * item from being displayed. 
-      */
-      switch (response.article.sources[a].source) {
-        case "CrossRef":
-            //Example of what it would like like to pass the doi to the website
-            url = "http://www.crossref.org/?paramName=" + doi; //+ response.article.sources[a].source.someID
-            //Example of what it would like if we got a response from the ALM server
-            //url = "http://www.crossref.org/?paramName=" + response.article.sources[a].source.someID;
-            //Example of null:
-            //url = null;
-          break;
-        case "PubMed":
-            url = "http://www.ncbi.nlm.nih.gov/sites/entrez?db=pubmed&cmd=link&LinkName=pubmed_pmc_refs&from_uid=" + response.article.pub_med;
-          break;
-        case "Scopus":
-            url = "http://www.scopus.com/scopus/home.url?paramName=";
-          break;
-        case "Citeulike":
-            url = "http://www.citeulike.org/?paramName=";
-          break;
-      }
+      var url = response.article.sources[a].public_url;
 
       //Only list links that HAVE DEFINED URLS
       if (url) {
@@ -108,7 +82,7 @@ function setCites(response, args)
         numCitesRendered++;
       }
     }
-    
+
     html = html + "</ul>"
   }
 
@@ -141,30 +115,7 @@ function setRelatedBlogs(response, args)
 
     for(var a = 0; a < response.article.sources.length; a++)
     {
-      var url = "";
-
-      /**
-       * TODO: We really want to have the ALM server set these sources
-       * In the meantime we'll set them here.
-       *
-       * I figure we'll append a DOI to these urls with the right parameter name
-       * Or perhaps append an ID given to us from the ALM server?
-       *
-       * Nulling out any of the following values should stop the
-       * item from being displayed.
-      */
-      switch(response.article.sources[a].source) {
-        case "Bloglines":
-            url = "http://www.bloglines.com/search?q=" + escape(response.article.title) + "&ql=en&s=f&pop=l&news=m";
-            //url = "http://www.crossref.org/?paramName=" + response.article.sources[a].source.someID;
-          break;
-        case "Nature":
-            url = "http://www.nature.com/?paramName=";
-          break;
-        case "Postgenomic":
-            url = "http://postgenomic.com/paper.php?doi=" + doi.replace("info%3Adoi/","");
-          break;
-      }
+      var url = response.article.sources[a].public_url;
 
       //Only list links that HAVE DEFINED URLS
       if (url) {
@@ -177,7 +128,7 @@ function setRelatedBlogs(response, args)
   } else
 
   if (numBlogsRendered == 0) {
-    html = "<ul><li>No related blog enrties found</li></ul>"; 
+    html = "<ul><li>No related blog enrties found</li></ul>";
   }
 
   dojo.byId('relatedBlogPosts').innerHTML = html;

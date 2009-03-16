@@ -25,6 +25,8 @@
   	var loggedIn = false;
 	</#if>
 
+  var almHost = "${freemarker_config.getALMHost()}";
+
   // Safari v3.1.1 "console.debug" issue (http://trac.dojotoolkit.org/ticket/6849) workaround
   if (/3[\.0-9]+ Safari/.test(navigator.appVersion)) {
     window.console = {

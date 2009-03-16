@@ -358,7 +358,7 @@
     <services>
       <!--The host to use for the Article Level Metrics server if implemented -->
       <alm>
-        <url>alm.example.org</url>
+        <url>http://alm.example.org</url>
       </alm>
     </services>
   </ambra>
