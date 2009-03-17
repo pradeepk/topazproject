@@ -71,8 +71,8 @@ ambra.advsearch = {
     // subject categories section...
     if(document.selection) {
       // IE
-      dojo.connect(dojo.byId(ambra.advsearch.Config.idSubjCatsAll), "onfocus", ambra.advsearch.onChangeSubjectCategories);
-      dojo.connect(dojo.byId(ambra.advsearch.Config.idSubjCatsSlct), "onfocus", ambra.advsearch.onChangeSubjectCategories);
+      dojo.connect(dojo.byId(ambra.advsearch.Config.idSubjCatsAll), "onclick", ambra.advsearch.onChangeSubjectCategories);
+      dojo.connect(dojo.byId(ambra.advsearch.Config.idSubjCatsSlct), "onclick", ambra.advsearch.onChangeSubjectCategories);
     } else {
       // gecko et al.
       dojo.connect(dojo.byId(ambra.advsearch.Config.idSubjCatsAll), "onchange", ambra.advsearch.onChangeSubjectCategories);
@@ -194,7 +194,6 @@ ambra.advsearch = {
 
   onChangeSubjectCategories: function(e) {
     ambra.advsearch.tglSubCategories();
-    dojo.stopEvent(e);
     return true;
   },
 
@@ -203,9 +202,7 @@ ambra.advsearch = {
     var rbSlct = dojo.byId(ambra.advsearch.Config.idSubjCatsSlct);
     var enable = rbSlct.checked;
     var fs = dojo.byId(ambra.advsearch.Config.idFsSubjectCatOpt);
-    if(enable) ambra.formUtil.enableFormFields(fs); else ambra.formUtil.disableFormFields(fs);
-    rbSlct.disabled = '';
-    rbAll.disabled = '';
+    if (enable) ambra.formUtil.enableFormFields(fs); else ambra.formUtil.disableFormFields(fs);
   },
 
   // get the 1-based ordinal number for the author name list element associated with

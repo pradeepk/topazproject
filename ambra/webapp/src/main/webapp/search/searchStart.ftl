@@ -151,9 +151,9 @@
         <legend><span>Subject Categories</span></legend>
         <ol>
           <li><label><input id="subjectCatOpt_all" type="radio" checked="checked" name="subjectCatOpt" value="all" <@chkd tstr="all" str=(subjectCatOpt!"")/> /> Search all subject catogories</label></li>
+          <li><label><input id="subjectCatOpt_slct" type="radio" name="subjectCatOpt" value="some" <@chkd tstr="some" str=(subjectCatOpt!"")/> /> Only search in the following subject categories:</label></li>
           <li class="options">
             <fieldset id="fsSubjectCatOpt">
-              <legend><label><input id="subjectCatOpt_slct" type="radio" name="subjectCatOpt" value="some" <@chkd tstr="some" str=(subjectCatOpt!"")/> /> Only search in the following subject categories:</label></legend>
               <p>(#) indicates the number of articles published in each subject category.</p>
 <#if categoryInfos?size gt 0>
 <#assign colSize = (categoryInfos?size / 2) + 0.5>
