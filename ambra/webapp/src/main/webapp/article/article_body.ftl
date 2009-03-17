@@ -29,7 +29,7 @@
 <input type="hidden" name="isResearchArticle" value="${isResearchArticle?string}" />
 </form>
 <div id="articleContainer"><#include "article_content.ftl"></div>
-<div style="visibility:hidden">
+<div style="display:none">
 <#include "/widget/annotation_add.ftl">
 <#include "/widget/contextAction.ftl">
 <#include "/widget/commentDialog.ftl">
