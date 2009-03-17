@@ -83,6 +83,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
   private String articleURI;
   private String transformedArticle;
   private String annotationId = "";
+  private String annotationSet = "";
 
   private int numDiscussions = 0;
   private int numMinorCorrections = 0;
@@ -142,6 +143,8 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
   public String fetchArticleComments() {
     try {
       setCommonData();
+
+      annotationSet = "comments";
       setAnnotations(annotationService.COMMENT_SET);
 
     } catch (NoSuchArticleIdException e) {
@@ -164,6 +167,8 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
   public String fetchArticleCorrections() {
     try {
       setCommonData();
+
+      annotationSet = "corrections";
       setAnnotations(annotationService.CORRECTION_SET);
 
     } catch (NoSuchArticleIdException e) {
@@ -356,6 +361,14 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    */
   public String getTransformedArticle() {
     return transformedArticle;
+  }
+
+  /**
+   * Get the type of annotations currently being listed
+   * @return the annotation set either "comments" or "corrections"
+   */
+  public String getAnnotationSet() {
+     return annotationSet;
   }
 
   /**
