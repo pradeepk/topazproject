@@ -61,6 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.models.UserAccount;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.model.article.ArticleType;
 
 /**
  * The <code>class AmbraFeedResult</code> creates and serializes the query results from the
@@ -405,6 +406,15 @@ public class AmbraFeedResult extends Feed implements Result {
         issue.setText(bc.getIssue());
         foreignMarkup.add(issue);
       }
+    }
+
+    //Add the article type to the extended feed element.
+    for(URI uri : article.getArticleType()) {
+      ArticleType ar = ArticleType.getArticleTypeForURI(uri, true);
+      Element articleType = new Element("article-type", FEED_EXTENDED_PREFIX(), FEED_EXTENDED_NS());
+
+      articleType.setText(ar.getHeading());
+      foreignMarkup.add(articleType);
     }
 
     Set<Category> categories = article.getCategories();
