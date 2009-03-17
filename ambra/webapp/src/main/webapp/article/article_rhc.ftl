@@ -39,24 +39,24 @@
     </div>
   </div>
 
+  <#if articleIssues?? && articleIssues?size gt 0>
+    <div id="published" xpathLocation="noSelect" class="rhcBox_type2">
+      <p><strong>Published in the</strong>
+      <#list articleIssues as oneIssue>
+        <@s.a href="${freemarker_config.getJournalUrl(oneIssue[1])}${freemarker_config.context}/article/browseIssue.action?issue=${oneIssue[4]?url}" title="Browse Open Access Issue">${oneIssue[5]} ${oneIssue[3]} Issue of ${freemarker_config.getDisplayName(oneIssue[1])}</@s.a>
+      </#list>
+    </div>
+  </#if>
+
   <div id="impact" class="rhcBox_type2">
     <div id="ratingRhc1">
       <#include "/article/article_rhc_rating.ftl">
     </div>
   </div>
 
-  <#if (articleInfoX?? && articleInfoX.relatedArticles?size gt 0) || (articleIssues?? && articleIssues?size gt 0)>
+  <#if articleInfoX?? && articleInfoX.relatedArticles?size gt 0>
     <div id="related" class="rhcBox_type2">
       <h6>Related Content</h6>
-      <#if articleIssues?? && articleIssues?size gt 0>
-        <div id="published" xpathLocation="noSelect">
-          <p><strong>Included in</strong>
-          <br/>
-          <#list articleIssues as oneIssue>
-            <@s.a href="${freemarker_config.getJournalUrl(oneIssue[1])}${freemarker_config.context}/article/browseIssue.action?issue=${oneIssue[4]?url}" title="Browse Open Access Issue">${oneIssue[5]}</@s.a>
-          </#list>
-        </div>
-      </#if>
       <#if articleInfoX?? && articleInfoX.relatedArticles?size gt 0>
         <dl class="related">
           <dt>Related <em>${freemarker_config.orgName}</em> Articles</dt>

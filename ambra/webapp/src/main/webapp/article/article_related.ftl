@@ -36,13 +36,6 @@
 
       <h2>Related Articles <a href="#" class="info">info</a></h2>
 
-      <h3>Related Subject Categories</h3>
-      <ul>
-        <#list mainCategories as cat>
-          <li><a href="browse.action?catName=${cat?url}">${cat}</a></li>
-        </#list>
-      </ul>
-
       <h3>Related Articles on the web <img id="relatedArticlesSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
       <div id="pubMedRelatedErr" style="display:none;"></div>
       <ul>
