@@ -151,9 +151,14 @@ public class ArticleFeedService {
   public List<String> getIssueArticleIds(final FeedCacheKey cacheKey) throws ApplicationException {
     List<String> articleList  = new ArrayList<String>();
     List<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
+    URI issurURI = cacheKey.getIssueURI();
 
-    if (cacheKey.getIssueURI() != null)
-      articleGroups = browseService.getArticleGrpList(cacheKey.getIssueURI());
+    if (issurURI == null) {
+      Journal curJrnl = journalService.getCurrentJournal();
+      issurURI = curJrnl.getCurrentIssue();
+    }
+
+    articleGroups = browseService.getArticleGrpList(issurURI);
 
     for(TOCArticleGroup ag : articleGroups)
       for(ArticleInfo article : ag.articles)
