@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@
 package org.topazproject.ambra.model.article;
 
 import java.util.Comparator;
+import java.io.Serializable;
 
 /**
  * Comparator class used to sort ArticleInfo objects based on article publication date. 
@@ -34,7 +35,7 @@ import java.util.Comparator;
  * @author Alex Worden
  *
  */
-public class ArticleInfoMostRecentDateComparator implements Comparator<ArticleInfo>{
+public class ArticleInfoMostRecentDateComparator implements Comparator<ArticleInfo>, Serializable {
   public int compare(ArticleInfo o1, ArticleInfo o2) {
     if (o1.getDate().after(o2.getDate())) {
       return -1;
