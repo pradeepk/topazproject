@@ -78,7 +78,7 @@ function setCites(response, args)
 
       //Only list links that HAVE DEFINED URLS
       if (url) {
-        html = html + "<li><a href=\"" + url + "\">" + response.article.sources[a].source + "(" + response.article.sources[a].count + ")</a></li>";
+        html = html + "<li><a href=\"" + url + "\">" + response.article.sources[a].source + " (" + response.article.sources[a].count + ")</a></li>";
         numCitesRendered++;
       }
     }
@@ -87,7 +87,7 @@ function setCites(response, args)
   }
 
   if (numCitesRendered == 0){
-    html = "<ul><li>No related cites found</li></ul>";
+    html = "<ul><li>No related citations found</li></ul>";
   }
 
   dojo.byId('relatedCites').innerHTML = html;
@@ -119,7 +119,7 @@ function setRelatedBlogs(response, args)
 
       //Only list links that HAVE DEFINED URLS
       if (url) {
-        html = html + "<li><a href=\"" + url + "\">" + response.article.sources[a].source + "(" + response.article.sources[a].count + ")</a></li>";
+        html = html + "<li><a href=\"" + url + "\">" + response.article.sources[a].source + " (" + response.article.sources[a].count + ")</a></li>";
         numBlogsRendered++;
       }
     }
@@ -128,7 +128,7 @@ function setRelatedBlogs(response, args)
   } else
 
   if (numBlogsRendered == 0) {
-    html = "<ul><li>No related blog enrties found</li></ul>";
+    html = "<ul><li>No related blog entries found</li></ul>";
   }
 
   dojo.byId('relatedBlogPosts').innerHTML = html;
