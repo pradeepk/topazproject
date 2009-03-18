@@ -144,7 +144,7 @@ public class FeedCacheKey implements Serializable, Comparable {
                 || key.getAuthor() != null && key.getAuthor().equals(this.author))
             &&
             (key.getIssueURI() == null && this.issueURI == null
-                || key.getIssueURI() != null && key.getIssueURI().equals(this.issueURI))
+                || key.getIssueURI() != null && key.getIssueURI().equals(this.getIssueURI()))
             &&
             (key.getMaxResults() == this.maxResults)
     );
