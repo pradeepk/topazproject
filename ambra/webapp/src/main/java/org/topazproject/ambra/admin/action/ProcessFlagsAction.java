@@ -304,7 +304,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         log.debug("Reply " + reply.getId() + " has " + replyFlags.length + " flags");
       }
       for (Flag flag: replyFlags) {
-        deleteFlag(reply.getId().toString(), flag.getId().toString());
+        deleteFlag(reply.getId().toString(), flag.getId());
       }
     }
 

@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                                     $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -367,22 +367,24 @@ public class Ingester {
   }
 
   private void writeBlobs(Map<Representation, Blob> map) throws OtmException {
-    for (Representation rep : map.keySet()) {
-      log.info("Copying from zip to Blob. rep = '" + rep.getName() + "', id = " + rep.getId());
+    for (Map.Entry<Representation, Blob> entry : map.entrySet()) {
+      log.info("Copying from zip to Blob. rep = '" + entry.getKey().getName() + "', id = "
+          + entry.getKey().getId());
       InputStream in = null;
       OutputStream out = null;
       try {
-        IOUtils.copy(in = map.get(rep).getInputStream(), out = rep.getBody().getOutputStream());
+        IOUtils.copy(in = entry.getValue().getInputStream(),
+            out = entry.getKey().getBody().getOutputStream());
       } catch (IOException e) {
-        throw new OtmException("Error copying from zip. rep = '" + rep.getName() + "', id = " +
-                               rep.getId(), e);
+        throw new OtmException("Error copying from zip. rep = '" + entry.getKey().getName()
+            + "', id = " + entry.getKey().getId(), e);
       } finally {
         for (Closeable c : new Closeable[] { in, out }) {
           try {
             if (c != null)
               c.close();
           } catch (IOException e) {
-            log.warn("Error while closing a blob copy stream for " + rep.getId(), e);
+            log.warn("Error while closing a blob copy stream for " + entry.getKey().getId(), e);
           }
         }
       }

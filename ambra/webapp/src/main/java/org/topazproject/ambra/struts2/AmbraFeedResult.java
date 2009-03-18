@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $ 
  * $Id::                                                      $
  *
- * Copyright (c) 2006-2007 by Topaz, Inc. http://topazproject.org
+ * Copyright (c) 2006-2009 by Topaz, Inc. http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -552,7 +552,7 @@ public class AmbraFeedResult extends Feed implements Result {
    */
   private String newAuthorsList(FeedCacheKey cacheKey, Article article, List<Person> authors) {
     Citation bc = article.getDublinCore().getBibliographicCitation();
-    String authorNames = "";
+    StringBuilder authorNames = new StringBuilder();
 
     if (bc != null) {
       List<UserProfile> authorProfiles = bc.getAuthors();
@@ -567,9 +567,9 @@ public class AmbraFeedResult extends Feed implements Result {
           authors.add(person);
 
           if (authorNames.length() > 0)
-            authorNames += ", ";
+            authorNames.append(", ");
 
-          authorNames += profile.getRealName();
+          authorNames.append(profile.getRealName());
         }
       } else if (authorProfiles.size() >= 1) {
         // Not extended therefore there will only be one author.
@@ -582,9 +582,9 @@ public class AmbraFeedResult extends Feed implements Result {
         for (UserProfile profile: authorProfiles) {
 
           if (authorNames.length() > 0)
-            authorNames += ", ";
+            authorNames.append(", ");
 
-          authorNames += profile.getRealName();
+          authorNames.append(profile.getRealName());
         }
         if (authorProfiles.size() > 1)
           person.setName(author + " et al.");
@@ -594,7 +594,7 @@ public class AmbraFeedResult extends Feed implements Result {
       log.warn("No bibliographic citation (is article '" + article.getId() + "' migrated?)");
     }
 
-    return authorNames;
+    return authorNames.toString();
   }
 
   /**

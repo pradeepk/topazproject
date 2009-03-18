@@ -359,7 +359,7 @@ public class AdminService {
    *                      by the journal does not exist.
    */
   public String getVolumesCSV() throws OtmException {
-    String volCSV = new String();
+    String volCSV = "";
     List<URI> volumes = getJrnlVolURIs();
 
     Iterator iter = volumes.listIterator();
@@ -391,7 +391,7 @@ public class AdminService {
   public Volume createVolume(URI volURI, String dsplyName, String issueList )
                   throws OtmException, URISyntaxException {
 
-    String displayName = (dsplyName == null) ? new String() : dsplyName;
+    String displayName = (dsplyName == null) ? "" : dsplyName;
 
     /* If there is no journal then don't
      * create an orphan volume : return null.
@@ -632,17 +632,17 @@ public class AdminService {
    *
    */
   public String getIssuesCSV(Volume volume) throws OtmException {
-    String issCSV = new String();
+    StringBuilder issCSV = new StringBuilder();
     List<Issue> issues = getIssues(volume);
     Iterator iter = issues.listIterator();
 
     while(iter.hasNext()) {
       Issue i = (Issue)iter.next();
-      issCSV  = issCSV  + i.getId();
+      issCSV.append(i.getId().toString());
       if (iter.hasNext())
-        issCSV  = issCSV  + ",";
+        issCSV.append(',');
     }
-    return issCSV;
+    return issCSV.toString();
   }
 
    /**

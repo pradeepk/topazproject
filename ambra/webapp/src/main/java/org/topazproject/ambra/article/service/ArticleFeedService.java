@@ -1,7 +1,7 @@
 /* $HeadURL$
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -152,7 +152,6 @@ public class ArticleFeedService {
   public List<String> getIssueArticleIds(final FeedCacheKey cacheKey) throws
       URISyntaxException, ApplicationException {
     List<String> articleList  = new ArrayList<String>();
-    List<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
     URI issurURI = (cacheKey.getIssueURI() != null) ? URI.create(cacheKey.getIssueURI()) : null;
 
     if (issurURI == null) {
@@ -160,7 +159,7 @@ public class ArticleFeedService {
       issurURI = curJrnl.getCurrentIssue();
     }
 
-    articleGroups = browseService.getArticleGrpList(issurURI);
+    List<TOCArticleGroup> articleGroups = browseService.getArticleGrpList(issurURI);
 
     for(TOCArticleGroup ag : articleGroups)
       for(ArticleInfo article : ag.articles)

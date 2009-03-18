@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -202,11 +202,11 @@ public class EhcacheProvider implements Cache {
     boolean                 removedAll = ctx.getRemovedAll(getName());
     Set                     keys       = removedAll ? new HashSet() : new HashSet(cache.getKeys());
 
-    for (Object key : local.keySet()) {
-      if (DELETED.equals(local.get(key)))
-        keys.remove(key);
+    for (Map.Entry<Object, CachedItem> entry : local.entrySet()) {
+      if (DELETED.equals(entry.getValue()))
+        keys.remove(entry.getKey());
       else
-        keys.add(key);
+        keys.add(entry.getKey());
     }
 
     return keys;

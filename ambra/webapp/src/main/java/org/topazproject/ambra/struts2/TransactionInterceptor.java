@@ -154,7 +154,7 @@ public class TransactionInterceptor extends AbstractInterceptor {
   /**
    * Return value from TransactionTemplate callback. Encapsulates possible Exception.
    */
-  private class CallbackResult {
+  private static class CallbackResult {
 
     private String result;
     private Exception exception;

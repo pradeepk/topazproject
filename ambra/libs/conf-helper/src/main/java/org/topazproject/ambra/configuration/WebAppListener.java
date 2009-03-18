@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -116,7 +116,7 @@ public class WebAppListener implements ServletContextListener {
     return new FactoryConfig(ConfigurationStore.DEFAULT_CONFIG_URL, "default");
   }
 
-  private class FactoryConfig {
+  private static class FactoryConfig {
     String name;
     String source;
 

@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -429,8 +429,8 @@ public class OtmInterceptor implements Interceptor {
           PropertyBinder       b = m.getBinder(sess);
           // cache predicate-map values
           Map<String, List<String>> pmap = (Map<String, List<String>>) b.getRawValue(instance, true);
-          for (String uri : pmap.keySet())
-            fvalues.put(uri, new ArrayList<String>(pmap.get(uri)));
+          for (Map.Entry<String, List<String>> entry : pmap.entrySet())
+            fvalues.put(entry.getKey(), new ArrayList<String>(entry.getValue()));
           break;
         }
       }

@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -104,14 +104,14 @@ public class AmbraFreemarkerConfig {
         log.trace("Default CSS: " + printArray(j.getDefaultCss()));
         log.trace("Default JavaScript: " + printArray(j.getDefaultCss()));
         Map<String, String[]> map = j.getCssFiles();
-        for (String name : map.keySet()) {
-          log.trace("PageName: " + name);
-          log.trace("CSS FILES: " + printArray(map.get(name)));
+        for (Entry<String, String[]> entry : map.entrySet()) {
+          log.trace("PageName: " + entry.getKey());
+          log.trace("CSS FILES: " + printArray(entry.getValue()));
         }
         map = j.getJavaScriptFiles();
-        for (String name : map.keySet()) {
-          log.trace("PageName: " + name);
-          log.trace("JS FILES: " + printArray(map.get(name)));
+        for (Entry<String, String[]> entry : map.entrySet()) {
+          log.trace("PageName: " + entry.getKey());
+          log.trace("JS FILES: " + printArray(entry.getValue()));
         }
 
         Map<String, String> m = j.getTitles();
@@ -772,7 +772,7 @@ public class AmbraFreemarkerConfig {
     return stringBuilder.toString();
   }
 
-  private class JournalConfig {
+  private static class JournalConfig {
     private Map<String, String[]> cssFiles;
     private Map<String, String[]> javaScriptFiles;
     private Map<String, String> titles;

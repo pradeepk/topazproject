@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -281,12 +281,12 @@ class JournalFilterService {
     Map<String, FilterDefinition> res = new HashMap<String, FilterDefinition>();
 
     int idx = 0;
-    for (String cls : fds.keySet()) {
-      ConjunctiveFilterDefinition and = new ConjunctiveFilterDefinition(pfx + idx++, cls);
-      for (FilterDefinition fd : fds.get(cls))
+    for (Map.Entry<String, Set<FilterDefinition>> entry : fds.entrySet()) {
+      ConjunctiveFilterDefinition and = new ConjunctiveFilterDefinition(pfx + idx++, entry.getKey());
+      for (FilterDefinition fd : entry.getValue())
         and.addFilterDefinition(fd);
 
-      res.put(cls, and);
+      res.put(entry.getKey(), and);
     }
 
     return res;
@@ -371,17 +371,17 @@ class JournalFilterService {
     Map<String, FilterDefinition> res = new HashMap<String, FilterDefinition>();
     int idx = 0;
 
-    for (String cls : l1.keySet()) {
-      FilterDefinition f1 = l1.get(cls);
-      FilterDefinition f2 = l2.remove(cls);
+    for (Map.Entry<String, FilterDefinition> entry : l1.entrySet()) {
+      FilterDefinition f1 = entry.getValue();
+      FilterDefinition f2 = l2.remove(entry.getKey());
       if (f2 == null) {
-        res.put(cls, f1);
+        res.put(entry.getKey(), f1);
       } else {
-        DisjunctiveFilterDefinition or = new DisjunctiveFilterDefinition(pfx + idx++, cls);
+        DisjunctiveFilterDefinition or = new DisjunctiveFilterDefinition(pfx + idx++, entry.getKey());
         or.addFilterDefinition(f1);
         or.addFilterDefinition(f2);
 
-        res.put(cls, or);
+        res.put(entry.getKey(), or);
       }
     }
 

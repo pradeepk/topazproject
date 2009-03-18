@@ -777,7 +777,7 @@ public class BrowseService {
    * @return a string of a comma separated list of article URIs
    */
   public String articleGrpListToCSV( List<TOCArticleGroup> articleGroups) {
-    String articleList = "";
+    StringBuilder articleList = new StringBuilder();
     Iterator i = articleGroups.listIterator();
 
     // Group Loop
@@ -788,15 +788,15 @@ public class BrowseService {
       // Article Loop
       while(y.hasNext()) {
         ArticleInfo ai = (ArticleInfo)y.next();
-        articleList = articleList + ai.id.toString();
+        articleList.append(ai.id.toString());
 
         if (y.hasNext())
-          articleList = articleList + ",";
+          articleList.append(',');
       }
       if (i.hasNext())
-        articleList = articleList + ",";
+        articleList.append(',');
     }
-    return articleList;
+    return articleList.toString();
   }
 
   /**

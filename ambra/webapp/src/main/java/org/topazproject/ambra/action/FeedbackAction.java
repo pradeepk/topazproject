@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,8 +85,8 @@ public class FeedbackAction extends UserActionSupport {
 
     final Map<String, String> attributes = getUserSessionAttributes();
     final List<String> values = new ArrayList<String>();
-    for (final String key : attributes.keySet()) {
-      values.add(key + " ---> " + attributes.get(key));
+    for (Map.Entry<String, String> entry : attributes.entrySet()) {
+      values.add(entry.getKey() + " ---> " + entry.getValue());
     }
 
     mapFields.put("userInfo", StringUtils.join(values.iterator(), "<br/>\n"));
