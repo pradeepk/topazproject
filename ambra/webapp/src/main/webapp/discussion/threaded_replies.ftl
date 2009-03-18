@@ -108,7 +108,6 @@
           </#if>
         </div>
         <#if citation??><div class="citation"><strong>Citation: </strong><#assign isCorrection=true/><#if baseAnnotation.type?index_of("Retraction") gte 0><#assign isRetraction=true/><#else><#assign isRetraction=false/></#if><#assign doi=baseAnnotation.id?replace("info:doi/","") /><#include "/article/citation.ftl"/></#if>
-        </div>
       </blockquote>
       <!-- end : response body text -->
       <!-- begin : toolbar options -->
