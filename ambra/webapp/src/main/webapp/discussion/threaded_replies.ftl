@@ -40,9 +40,9 @@
           ${reply.commentWithUrlLinking}
           <div class="cis">
           <#if reply.CIStatement??>
-            <b>Competing interests declared:</b> ${reply.CIStatement}
+            Competing interests declared: ${reply.CIStatement}
           <#else>
-            <b>No competing interests declared.</b>
+            No competing interests declared.
           </#if>
           </div>
         </blockquote>
@@ -100,13 +100,14 @@
       <!-- begin : response body text -->
       <blockquote>
         ${baseAnnotation.commentWithUrlLinking}
-        <#if citation??><div class="citation"><strong>Citation: </strong><#assign isCorrection=true/><#if baseAnnotation.type?index_of("Retraction") gte 0><#assign isRetraction=true/><#else><#assign isRetraction=false/></#if><#assign doi=baseAnnotation.id?replace("info:doi/","") /><#include "/article/citation.ftl"/></#if>
         <div class="cis">
-          <#if baseAnnotation.CIStatement??>
-            <b>Competing interests declared:</b> ${baseAnnotation.CIStatement}
+          <#if baseAnnotation.CIStatement?? && baseAnnotation.CIStatement != "">
+            Competing interests declared: ${baseAnnotation.CIStatement}
           <#else>
-            <b>No competing interests declared.</b>
+            No competing interests declared.
           </#if>
+        </div>
+        <#if citation??><div class="citation"><strong>Citation: </strong><#assign isCorrection=true/><#if baseAnnotation.type?index_of("Retraction") gte 0><#assign isRetraction=true/><#else><#assign isRetraction=false/></#if><#assign doi=baseAnnotation.id?replace("info:doi/","") /><#include "/article/citation.ftl"/></#if>
         </div>
       </blockquote>
       <!-- end : response body text -->

@@ -115,9 +115,9 @@
               </#if>
               <div class="cis">
                 <#if articleRatingSummary.CIStatement??>
-                  <b>Competing interests declared:</b> ${articleRatingSummary.CIStatement}
+                  Competing interests declared: ${articleRatingSummary.CIStatement}
                 <#else>
-                  <b>No competing interests declared.</b>
+                  No competing interests declared.
                 </#if>
                 </div>
             </blockquote>
