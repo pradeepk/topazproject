@@ -133,7 +133,7 @@ public class OtmInterceptor implements Interceptor {
   }
 
   private void attach(Session session, ClassMetadata cm, String id, Object instance,
-                      Collection<RdfMapper> fields, BlobMapper blob) {
+                      Collection<RdfMapper> fields, BlobMapper blob, boolean read) {
     if (cm.isView())
       return; // since we can't safely invalidate
 
@@ -150,15 +150,24 @@ public class OtmInterceptor implements Interceptor {
         blob          = cm.getBlobField();
       }
 
-      e.set(session, cm, instance, fields, blob);
-      objCache.put(id, e);
+      if (!read || !e.isEntityLoaded(cm)) {
+        e.set(session, cm, instance, fields, blob);
+        objCache.put(id, e);
+      }
     }
 
     if (isFiltered(session, cm)) {
-      String journal = getCurrentJournal();
+      String key = getCurrentJournal() + "-" + id;
+      Object val = (instance == null) ? null : id;
 
-      objCache.put(journal + "-" + id, (instance == null) ? null : id);
+      Cache.Item o = objCache.get(key);
+      if ((o == null) || !same(o.getValue(), val))
+        objCache.put(key, val);
     }
+  }
+
+  private static boolean same(Object o1, Object o2) {
+    return (o1 == null) ? (o2 == null) : o1.equals(o2);
   }
 
   /*
@@ -173,7 +182,7 @@ public class OtmInterceptor implements Interceptor {
      * Note: this will have to be also transactionally added - since the read
      * may have depended on prior writes that we are not aware of.
      */
-    attach(session, cm, id, instance, cm.getRdfMappers(), cm.getBlobField());
+    attach(session, cm, id, instance, cm.getRdfMappers(), cm.getBlobField(), true);
   }
 
   /*
@@ -186,7 +195,7 @@ public class OtmInterceptor implements Interceptor {
     Collection rdf  = (m instanceof RdfMapper)  ? Collections.singleton(m) : Collections.emptySet();
     BlobMapper blob = (m instanceof BlobMapper) ? (BlobMapper) m           : null;
 
-    attach(session, cm, id, instance, (Collection<RdfMapper>) rdf, blob);
+    attach(session, cm, id, instance, (Collection<RdfMapper>) rdf, blob, true);
   }
 
   /*
@@ -198,10 +207,10 @@ public class OtmInterceptor implements Interceptor {
       log.debug(cm.getName() + " with id <" + id + "> is updated.");
 
     if (updates == null)
-      attach(session, cm, id, instance, cm.getRdfMappers(), cm.getBlobField());
+      attach(session, cm, id, instance, cm.getRdfMappers(), cm.getBlobField(), false);
     else
       attach(session, cm, id, instance, updates.rdfMappers,
-             updates.blobChanged ? cm.getBlobField() : null);
+             updates.blobChanged ? cm.getBlobField() : null, false);
 
     /*
      * Note: if a smart-collection rule was updated as opposed to
@@ -361,7 +370,7 @@ public class OtmInterceptor implements Interceptor {
       return instance;
     }
 
-    private boolean isEntityLoaded(ClassMetadata cm) {
+    public boolean isEntityLoaded(ClassMetadata cm) {
       if (entities.contains(cm.getName()))
         return true;
       for (RdfMapper mapper : cm.getRdfMappers()) {
