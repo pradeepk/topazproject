@@ -46,6 +46,9 @@ import org.topazproject.otm.annotations.View;
         "from Article a, CitationInfo ci " +
         "where a.id = :id and dc := a.dublinCore and ci.id = dc.bibliographicCitation.id;")
 public class ArticleInfo implements Serializable {
+
+  private static final long serialVersionUID = 356L;
+
   public URI                     id;
   public Date                    date;
   private String                 title;
