@@ -83,10 +83,6 @@
             <th align="center">Display Name</th>
             <td><@s.textfield name="displayName" size="50" required="true"/></td>
           </tr>
-          <tr>
-            <th align="center">Image Article (URI)</th>
-            <td><@s.textfield name="imageURI" size="50"/></td>
-          </tr>
         </table>
         <@s.submit align="right" value="Create"/>
       </@s.form>

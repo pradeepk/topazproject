@@ -57,10 +57,6 @@
             </td>
           </tr>
           <tr>
-            <th align="center">Image Article (URI)</th>
-            <td><@s.textfield name="imageURI" value="${volume.image}" size="50" /></td>
-          </tr>
-          <tr>
             <th align="center">Issues (re-order only)</th>
             <td><@s.textfield name="issuesToOrder" value="${issuesCSV!''}" size="75" /></td>
           </tr>

@@ -376,7 +376,6 @@ public class AdminService {
    * of volumes it contains.
    *
    * @param volURI     the uri of the new volume.
-   * @param imgURI     the uri of the image associated with this volume.
    * @param dsplyName  the display name of the volume.
    * @param issueList  a SPARATOR delimted list of issue doi's associated with
    *                       this volume.
@@ -389,10 +388,9 @@ public class AdminService {
    * @throws URISyntaxException thrown when values in issueList cannot be converted
    *                            to a URI
    */
-  public Volume createVolume(URI volURI, URI imgURI, String dsplyName, String issueList )
+  public Volume createVolume(URI volURI, String dsplyName, String issueList )
                   throws OtmException, URISyntaxException {
 
-    URI uri = (imgURI == null) ? new URI("") : imgURI;
     String displayName = (dsplyName == null) ? new String() : dsplyName;
 
     /* If there is no journal then don't
@@ -413,7 +411,6 @@ public class AdminService {
     newDC.setCreated(new Date());
     newVol.setDublinCore(newDC);
     newVol.setDisplayName(displayName);
-    newVol.setImage(uri);
 
     /*
      * Issues come in as a SEPARATOR delimitted string
@@ -480,7 +477,6 @@ public class AdminService {
    * Update a Volume.
    *
    * @param volume    the volume to update.
-   * @param imgURI    a URI for the article/image associated with this volume.
    * @param dsplyName the display name for the volume.
    * @param issueList a SEPARATOR delimitted string of issue doi's.
    *
@@ -490,11 +486,10 @@ public class AdminService {
    *                      update the volume persistanct store.
    *
    */
-  public Volume updateVolume(Volume volume, URI imgURI, String dsplyName, String issueList)
+  public Volume updateVolume(Volume volume, String dsplyName, String issueList)
                   throws OtmException, URISyntaxException {
 
     volume.setDisplayName(dsplyName);
-    volume.setImage(imgURI);
 
     /*
      * Split the SEPARATOR delimited list of doi's
@@ -527,7 +522,7 @@ public class AdminService {
     Volume volume = session.get(Volume.class, volURI.toString());
     
     if (volume != null)
-      return updateVolume(volume, imgURI, dsplyName, issueList);
+      return updateVolume(volume, dsplyName, issueList);
 
     return null;
   }
@@ -710,9 +705,8 @@ public class AdminService {
       List<URI> articles = new ArrayList<URI>();
       for (final String articleToAdd : articleList.split(SEPARATORS)) {
         if (articleToAdd.length() > 0)
-          articles.add(URI.create(articleToAdd.trim()));
+          newIssue.addArticle(URI.create(articleToAdd.trim()));
       }
-      newIssue.setSimpleCollection(articles);
     }
     // Default respect order to false.
     newIssue.setRespectOrder(false);

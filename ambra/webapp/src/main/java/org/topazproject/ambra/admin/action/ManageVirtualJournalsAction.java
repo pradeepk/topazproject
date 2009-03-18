@@ -43,14 +43,12 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   // Past in as parameters
   private String   command;
   private String   journalToModify;
-  private URI      imageURI;
   private URI      curIssueURI;
   private URI      volumeURI;
   private String[] volsToDelete;
   private String   displayName;
 
   //Used by template
-  private String       volumesCSV;
   private List<Volume> volumes;
   private JournalInfo  journalInfo;
 
@@ -63,7 +61,6 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   * Enumeration used to dispatch commands within the action.
   */
   public enum MVJ_COMMANDS {
-    UPDATE_IMAGE,
     UPDATE_ISSUE,
     CREATE_VOLUME,
     REMOVE_VOLUMES,
@@ -96,21 +93,6 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   public String execute() throws Exception  {
 
     switch( MVJ_COMMANDS.toCommand(command)) {
-      case UPDATE_IMAGE: {
-        try {
-          if (imageURI != null) {
-            // TODO:: Check to see if it actually exit
-            adminService.setJrnlImageURI(imageURI);
-            addActionMessage("Image(URI) set to: " + imageURI);
-          } else {
-            addActionMessage("Invalid Journal Image (URI)");
-          }
-        } catch (Exception e) {
-          addActionMessage("Current Issue not updated due to the following error.");
-          addActionMessage(e.getMessage());
-        }
-        break;
-      }
       case UPDATE_ISSUE: {
         try {
           if (curIssueURI != null) {
@@ -126,24 +108,22 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
         }
         break;
       }
-
       case CREATE_VOLUME: {
         try {
-        if (volumeURI != null) {
-          // Create and add to journal
-          Volume v = adminService.createVolume(volumeURI, imageURI, displayName, "" );
-
-          if (v != null) {
-            addActionMessage("Created Volume: " + v.getId());
+          if (volumeURI != null) {
+            // Create and add to journal
+            Volume v = adminService.createVolume(volumeURI, displayName, "" );
+            if (v != null) {
+              addActionMessage("Created Volume: " + v.getId());
+            } else {
+              addActionMessage("Duplicate Volume URI: " + volumeURI);
+            }
           } else {
-            addActionMessage("Duplicate Volume URI: " + volumeURI);
+            //Somebody failed to be valid report it.
+            if (volumeURI == null) {
+              addActionMessage("Invalid Volume URI" );
+            }
           }
-        } else {
-          //Somebody failed to be valid report it.
-          if (volumeURI == null) {
-            addActionMessage("Invalid Volume URI" );
-          }
-        }
         } catch (Exception e) {
           addActionMessage("Volume not created due to the following error.");
           addActionMessage(e.getMessage());
@@ -166,13 +146,10 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
         }
         break;
        }
-
        case INVALID:
          break;
     }
 
-    // Re-populate the fields the template has access to.
-    volumesCSV = adminService.getVolumesCSV();
     volumes = adminService.getVolumes();
     journalInfo = adminService.createJournalInfo();
     return SUCCESS;
@@ -185,15 +162,6 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    */
   public List<Volume> getVolumes() {
     return volumes;
-  }
-
-  /**
-   * Gets a CSV list of Volume objects associated with the journal.
-   *
-   * @return list of Volume objects associated with the journals.
-   */
-  public String getVolumesCSV() {
-    return volumesCSV;
   }
 
   /**
@@ -256,19 +224,6 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    */
   public void setDisplayName(String dsplyName) {
     this.displayName = dsplyName.trim();
-  }
-
-  /**
-   * Set image.
-   *
-   * @param imageURI the image for this journal.
-   */
-  public void setImageURI(String imageURI) {
-    try {
-      this.imageURI = URI.create(imageURI.trim());
-    } catch (Exception e) {
-      this.imageURI = null;
-    }
   }
 
   /**

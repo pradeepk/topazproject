@@ -111,7 +111,7 @@ public class VolumeManagementAction extends BaseAdminActionSupport {
       case UPDATE_VOLUME: {
         try {
           Volume volume = adminService.getVolume(volumeURI);
-          adminService.updateVolume(volume, imageURI, displayName, issuesToOrder);
+          adminService.updateVolume(volume, displayName, issuesToOrder);
         } catch (Exception e) {
           addActionMessage("Volume was not updated due to the following error.");
           addActionMessage(e.getMessage());
