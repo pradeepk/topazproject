@@ -37,7 +37,7 @@ import java.io.IOException;
  */
 public class HttpResourceServerTest {
   private static final String EXPECTED_TEXT = "Hello World !";
-  private static final String EXPECTED_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+  private static final String EXPECTED_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<test>Hello World !</test>";
   private URL xmlUrl;
   private URL txtUrl;
@@ -66,11 +66,10 @@ public class HttpResourceServerTest {
     MockHttpServletRequest requestMock = new MockHttpServletRequest();
     HttpResourceServer server = new HttpResourceServer();
     server.serveResource(requestMock, responseMock, new HttpResourceServer.URLResource(xmlUrl));
-    Diff diff = new Diff(responseMock.getContentAsString(), EXPECTED_XML);
-    assertTrue(diff.identical(), "Expected content " + EXPECTED_XML +
-        " but received " + responseMock.getContentAsString());
+    Diff diff = new Diff(EXPECTED_XML, responseMock.getContentAsString());
+    assertTrue(diff.identical(), diff.toString());
     assertEquals(responseMock.getContentType(), "application/xml", "Wrong content type");
-    assertEquals(responseMock.getContentLength(), EXPECTED_XML.length(),
+    assertEquals(responseMock.getContentLength(), responseMock.getContentAsString().length(),
         "Wrong content length");
   }
 

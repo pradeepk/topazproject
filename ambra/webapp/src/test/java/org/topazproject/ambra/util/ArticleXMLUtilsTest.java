@@ -151,7 +151,7 @@ public class ArticleXMLUtilsTest {
 
   private String getFileAsString(String resultFilename) throws IOException {
     BufferedReader reader = new BufferedReader(
-        new InputStreamReader(getClass().getResourceAsStream(resultFilename)));
+        new InputStreamReader(getClass().getResourceAsStream(resultFilename), "UTF-8"));
     StringBuffer expected = new StringBuffer();
 
     String line = reader.readLine();
