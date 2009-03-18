@@ -1,7 +1,7 @@
 /* $$HeadURL:: $
  * $$Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -99,7 +99,7 @@ public class VolumeManagementAction extends BaseAdminActionSupport {
           if (i != null) {
             addActionMessage("Created Issue: " + i.getId());
           } else {
-            addActionMessage("Duplicate Issue URI, " + i.getId());
+            addActionMessage("Duplicate Issue URI, " + issueURI);
             return ERROR;
           }
         } catch (Exception e) {
