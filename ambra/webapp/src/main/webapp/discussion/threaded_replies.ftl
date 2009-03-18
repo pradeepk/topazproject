@@ -74,7 +74,7 @@
   </#macro>
 
   <#assign styleCorrections = "" />
-  <#if baseAnnotation.type?index_of("Correction") gte 0>
+  <#if (baseAnnotation.type?index_of("Correction") > 0 || baseAnnotation.type?index_of("Retraction") > 0 )>
     <#assign styleCorrections = " corrections" />
   </#if>
   <!-- begin : main content -->

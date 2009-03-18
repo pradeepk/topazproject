@@ -506,18 +506,13 @@ div.fch ol li p a:link { font-weight:normal; }
 div.fch ol li p a:visited { font-weight:normal; }
 
 /* Retraction styles */
-div.retractionHtmlId p.retractionHtmlId strong { color:#ff0000; } 
-div.retractionHtmlId p.retractionHtmlId em { font-weight:bold; font-style:normal; } 
 div.retractionHtmlId { margin-top:15px; padding:0; border: 1px solid #ff0000; background-color: #fff4f0; } 
 div.retractionHtmlId p.retractionHtmlId, 
 div.corrections td.title a, 
-div#discussionContainer div.corrections div.original div.hd h3 { background:url(../images/icon_correction.gif) left 0% no-repeat; } 
-div.retractionHtmlId p.retractionHtmlId { margin:8px 8px 0; text-indent:20px; } 
-div.retractionHtmlId span.retractionHtmlId { margin:8px 8px 0; text-indent:0; } 
-div.retractionHtmlId span.retractionHtmlId div { margin-bottom:10px; font-weight:normal; } 
-div.retractionHtmlId span.retractionHtmlId div p { margin:0; padding:0; display:inline; font-weight:normal; } 
-div.retractionHtmlId span.retractionHtmlId div p a:link { font-weight:normal; } 
-div.retractionHtmlId span.retractionHtmlId div p a:visited { font-weight:normal; } 
+div#discussionContainer div.corrections div.original div.hd h3 { background:url(../images/icon_correction.gif) left 0% no-repeat; }
+div.retractionHtmlId p.retractionHtmlId { margin-bottom:0; }
+div.retractionHtmlId div#retractionlist { margin:8px; }
+div.retractionHtmlId p.retractionHtmlId { text-indent:20px; font-weight:bold; color:#ff0000; }
 
 div#ratingRhc1 { margin-bottom:5px;}
 div#ratingRhc1 ol,

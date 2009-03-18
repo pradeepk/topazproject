@@ -277,7 +277,7 @@ ambra.corrections = {
    */
   _toRetractionHtmlElement: function(retractionRaw) {
     var div = document.createElement('div');
-    div.innerHTML = '<span>' + retractionRaw.title + '</span><br/>'
+    div.innerHTML = '<p class="retractionHtmlId">Retraction: ' + retractionRaw.title + '</p>'
         + retractionRaw.escapedComment + ' (';
     var a = document.createElement('a');
     a.setAttribute('href', _namespace + "/annotation/listThread.action?inReplyTo="
