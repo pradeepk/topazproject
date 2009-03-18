@@ -30,12 +30,12 @@
   <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
   <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
   <#include "article_blurb.ftl">
-  <h1 xpathLocation="noSelect">${docTitle}</h1>
+  <h1 xpathLocation="noSelect"><@articleFormat>${docTitle}</@articleFormat></h1>
   <#assign tab="article" />
   <#include "article_tabs.ftl">
     <div id="retractionHtmlId" class="retractionHtmlId" style="display:none;" xpathLocation="noSelect">
       <p class="retractionHtmlId"><strong> Retraction:</strong>
-        <span id="retractionlist" class="retractionHtmlId"></span>
+        <div id="retractionlist" class="retractionHtmlId"></div>
     </p>
   </div>
   <div id="fch" class="fch" style="display:none;" xpathLocation="noSelect">
