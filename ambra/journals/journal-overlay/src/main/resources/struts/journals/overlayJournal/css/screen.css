@@ -498,8 +498,8 @@ a.corrections,
 div#discussionContainer div.corrections div.original div.hd h3 { background:url(../images/icon_correction.gif) left 0% no-repeat; }
 div.fch p.fch { margin:8px 8px 0; text-indent:20px; }
 div.fch ol { margin:0 8px 8px; }
-div.fch ol li { list-style-position:inside; font-weight:bold; }
-div.fch ol li p { margin:0; padding:0; display:inline; font-weight:normal; }
+div.fch ol li { list-style-position:inside; font-weight:bold; color:#ff0000; }
+div.fch ol li p { margin:0; padding:0; display:inline; font-weight:normal; color:#303030; }
 div.fch ol li p a:link { font-weight:normal; }
 div.fch ol li p a:visited { font-weight:normal; }
 
