@@ -142,15 +142,20 @@ public class OtmInterceptor implements Interceptor {
       Object     val  = (item == null) ? null : item.getValue();
       Entry      e;
 
-      if (val instanceof Entry)
-        e = new Entry((Entry) val);
-      else {
+      if (val instanceof Entry) {
+        e = (Entry) val;
+        if (!read || !e.isEntityLoaded(cm))
+          e = new Entry(e);  // copy before mutation
+      } else {
         e             = new Entry();
         fields        = cm.getRdfMappers();
         blob          = cm.getBlobField();
       }
 
-      if (!read || !e.isEntityLoaded(cm)) {
+      if (val != e) {   // mutable?
+        if (log.isDebugEnabled())
+          log.debug(((val == null) ? "Inserting" : "Updating") + " cache entry <" + id + "> with data for " + cm);
+
         e.set(session, cm, instance, fields, blob);
         objCache.put(id, e);
       }
@@ -314,12 +319,13 @@ public class OtmInterceptor implements Interceptor {
    * An object cache-entry. The value map here is based on RdfDefinition name and therefore
    * it is dependent only on subject-id. Values are the serialized representations.
    */
-  private static class Entry implements Serializable {
+  private static class Entry implements TripleStore.Result, Serializable {
     private final Set<String>               types;
     private final Set<String>               entities;
     private final Map<String, List<String>> fvalues;
     private final Map<String, List<String>> rvalues;
     private byte[]                          blob;
+    private boolean                         immutable = false;
 
     public Entry() {
       blob     = null;
@@ -337,16 +343,16 @@ public class OtmInterceptor implements Interceptor {
       rvalues   = copy(other.rvalues);
     }
 
+    public Map<String, List<String>> getFValues() {
+      return Collections.unmodifiableMap(fvalues);
+    }
+
+    public Map<String, List<String>> getRValues() {
+      return Collections.unmodifiableMap(rvalues);
+    }
+
     public Object get(Session sess, ClassMetadata cm, String id, Object instance) {
-      final Map<String, List<String>> f = copy(fvalues);
-      final Map<String, List<String>> r = copy(rvalues);
-
-      TripleStore.Result result = new TripleStore.Result() {
-        public Map<String, List<String>> getFValues() { return f; }
-        public Map<String, List<String>> getRValues() { return r; }
-      };
-
-      cm = sess.getSessionFactory().getSubClassMetadata(cm, sess.getEntityMode(), types, result);
+      cm = sess.getSessionFactory().getSubClassMetadata(cm, sess.getEntityMode(), types, this);
 
       if (cm == null)
         return null;
@@ -354,7 +360,7 @@ public class OtmInterceptor implements Interceptor {
       if (!isEntityLoaded(cm))
         return null;
 
-      instance = cm.getEntityBinder(sess).loadInstance(instance, id, result, sess);
+      instance = cm.getEntityBinder(sess).loadInstance(instance, id, this, sess);
       if (cm.getBlobField() != null) {
         PropertyBinder binder = cm.getBlobField().getBinder(sess);
         Streamer streamer = binder.getStreamer();
@@ -386,6 +392,10 @@ public class OtmInterceptor implements Interceptor {
 
     public void set(Session sess, ClassMetadata cm, Object instance,
                     Collection<RdfMapper> fields, BlobMapper blobField) {
+
+      if (immutable)
+        throw new IllegalStateException("Attempting to update immutable cache entry");
+
       types.addAll(cm.getAllTypes());
 
       if (blobField != null) {
@@ -471,6 +481,7 @@ public class OtmInterceptor implements Interceptor {
       }
 
       entities.add(cm.getName());
+      immutable = true;
     }
 
     private static byte[] copy(byte[] src) {
@@ -489,8 +500,8 @@ public class OtmInterceptor implements Interceptor {
 
       Map<String, List<String>> dest = new HashMap<String, List<String>>(src.size());
 
-      for (String name : src.keySet())
-        dest.put(name, new ArrayList<String>(src.get(name)));
+      for (Map.Entry<String, List<String>> e : src.entrySet())
+        dest.put(e.getKey(), new ArrayList<String>(e.getValue()));
 
       return dest;
     }
