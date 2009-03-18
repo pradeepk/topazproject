@@ -1,7 +1,7 @@
 /* $$HeadURL::                                                                            $$
  * $$Id$$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +29,6 @@ import org.topazproject.ambra.admin.service.DocumentManagementService;
 import org.topazproject.ambra.admin.service.FlagManagementService;
 import org.topazproject.ambra.admin.service.FlaggedCommentRecord;
 
-@SuppressWarnings("serial")
 public class BaseAdminActionSupport  extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(BaseAdminActionSupport.class);
 

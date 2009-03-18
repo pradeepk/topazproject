@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.admin.service.DocumentManagementService;
 import org.topazproject.ambra.admin.service.AdminService;
@@ -36,7 +35,6 @@ import org.topazproject.ambra.models.Article;
 
 import org.topazproject.otm.Session;
 
-@SuppressWarnings("serial")
 public class IngestArchivesAction extends BaseAdminActionSupport {
   private static final Log log = LogFactory.getLog(IngestArchivesAction.class);
 
