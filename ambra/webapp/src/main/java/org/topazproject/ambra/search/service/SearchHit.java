@@ -18,8 +18,8 @@
  */
 package org.topazproject.ambra.search.service;
 
+import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -41,7 +41,7 @@ public class SearchHit implements Comparable<SearchHit> {
    * Create a search hit with the values set
    */
   public SearchHit(double hitScore, String uri, String title, String highlight,
-                   Set<String> creators, Date date) {
+                   Collection<String> creators, Date date) {
     this.hitScore  = hitScore;
     this.uri       = uri;
     this.title     = title;

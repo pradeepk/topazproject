@@ -174,7 +174,7 @@ public class Results {
     try {
       return new SearchHit(hit.getHitScore(), hit.getUri(), article.getDublinCore().getTitle(),
                            createHighlight("body", findTextRepresentation(article).getBodyAsText()),
-                           article.getDublinCore().getCreators(),
+                           article.getDublinCore().getBibliographicCitation().getAuthorsRealNames(),
                            article.getDublinCore().getDate());
     } catch (IOException ioe) {
       log.warn("Error creating highlight for article '" + hit.getUri() + "'", ioe);
