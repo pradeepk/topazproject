@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,6 +44,6 @@ public class BaseAction extends ActionSupport {
    * @param otherConstants The otherConstants to set.
    */
   public void setOtherConstants(OtherConstants otherConstants) {
-    otherConstants = otherConstants;
+    this.otherConstants = otherConstants;
   }
 }
