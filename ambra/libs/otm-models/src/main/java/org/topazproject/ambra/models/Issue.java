@@ -46,7 +46,14 @@ public class Issue extends Aggregation {
    */
   public void addArticle(URI article) {
     List<URI> uriList = getArticleList();
-    uriList.add(article);
+
+    //Only add if not there
+    if (!uriList.contains(article))
+      uriList.add(article);
+
+    //Shadow this addition in the simple collection
+    if (!super.getSimpleCollection().contains(article))
+      super.getSimpleCollection().add(article);
   }
 
   /**
@@ -58,6 +65,10 @@ public class Issue extends Aggregation {
 
     if (uriList.contains(article))
       uriList.remove(article);
+
+    //Shadow this removal in the simple collection
+    if (super.getSimpleCollection().contains(article))
+      super.getSimpleCollection().remove(article);
   }
 
   /**
@@ -115,9 +126,9 @@ public class Issue extends Aggregation {
    */
   public List<URI> getArticleList() {
     if (articleList.isEmpty() && !super.getSimpleCollection().isEmpty())
-      articleList = super.getSimpleCollection();
+      this.articleList = super.getSimpleCollection();
 
-    return articleList;
+    return this.articleList;
   }
 
   /**
