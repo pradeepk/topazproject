@@ -155,7 +155,7 @@ public class Results {
   private SearchHit resolveHit(SearchHit hit) {
     URI uri = URI.create(hit.getUri());
 
-    // verify that Aricle exists, is accessible by user, is in Journal, etc., be cache aware
+    // verify that Article exists, is accessible by user, is in Journal, etc., be cache aware
     Article article;
     try {
       article = articleService.getArticle(uri);
@@ -163,6 +163,10 @@ public class Results {
       // shouldn't actually happen due to filtering being applied on the query directly
       if (log.isDebugEnabled())
         log.debug("Search hit '" + uri + "' removed due to the article being filtered out", nsae);
+      return null;
+    } catch (SecurityException se) {
+      if (log.isDebugEnabled())
+        log.debug("Search hit '" + uri + "' removed due to the article being restricted", se);
       return null;
     }
 

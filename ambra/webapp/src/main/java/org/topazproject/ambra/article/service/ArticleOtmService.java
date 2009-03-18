@@ -373,7 +373,7 @@ public class ArticleOtmService {
    * @return Article with specified URI or null if not found.
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
-  @Transactional(readOnly = true)
+  @Transactional(readOnly = true, noRollbackFor = { SecurityException.class })
   public Article getArticle(final URI uri) throws NoSuchArticleIdException {
     // sanity check parms
     if (uri == null)
