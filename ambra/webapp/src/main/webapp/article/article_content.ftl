@@ -37,7 +37,7 @@
   <#include "article_tabs.ftl">
     <div id="retractionHtmlId" class="retractionHtmlId" style="display:none;" xpathLocation="noSelect">
       <p class="retractionHtmlId"><strong> Retraction:</strong>
-        <span id="retractionlist" class="retractionHtmlId"></span>
+        <div id="retractionlist"></div>
     </p>
   </div>   
   <div id="fch" class="fch" style="display:none;" xpathLocation="noSelect">
