@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.admin.service.DocumentManagementService;
 import org.topazproject.ambra.admin.service.AdminService;
@@ -62,6 +63,7 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
   }
 
   @Override
+  @Transactional(rollbackFor = { Throwable.class })
   public String execute() {
     if (filesToIngest != null) {
       DocumentManagementService dms = getDocumentManagementService();
