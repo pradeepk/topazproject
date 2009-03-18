@@ -22,7 +22,7 @@
     <div class="tipu" id="dTipu"></div>
     <div class="comment">
       <h5><span class="commentPublic">Rate This Article</span></h5>
-      <div class="instructions">Please follow our <a  href="${comment}">guidelines for commenting/rating</a> and review our <a href="#">competing interests policy</a>. Comments that do not conform to our guidelines will be promptly removed and the user account disabled. The following must be avoided:
+      <div class="instructions">Please follow our <a  href="${comment}">guidelines for commenting/rating</a> and review our <a href="/static/competing.action">competing interests policy</a>. Comments that do not conform to our guidelines will be promptly removed and the user account disabled. The following must be avoided:
         <ol>
           <li>Remarks that could be interpreted as allegations of misconduct</li>
           <li>Unsupported assertions or statements</li>
