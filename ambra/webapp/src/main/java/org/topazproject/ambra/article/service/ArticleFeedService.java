@@ -19,6 +19,7 @@
 package org.topazproject.ambra.article.service;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -148,10 +149,11 @@ public class ArticleFeedService {
    * @return List&lt;String&gt; if article Ids.
    * @throws ApplicationException ApplicationException
    */
-  public List<String> getIssueArticleIds(final FeedCacheKey cacheKey) throws ApplicationException {
+  public List<String> getIssueArticleIds(final FeedCacheKey cacheKey) throws
+      URISyntaxException, ApplicationException {
     List<String> articleList  = new ArrayList<String>();
     List<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
-    URI issurURI = cacheKey.getIssueURI();
+    URI issurURI = (cacheKey.getIssueURI() != null) ? URI.create(cacheKey.getIssueURI()) : null;
 
     if (issurURI == null) {
       Journal curJrnl = journalService.getCurrentJournal();

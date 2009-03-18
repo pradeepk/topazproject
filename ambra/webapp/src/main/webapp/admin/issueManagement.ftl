@@ -47,6 +47,7 @@
       <@s.form method="post" namespace="/admin" action="issueManagement"
           id="update_issue" name="updateIssue">
       <@s.hidden name="command" value="UPDATE_ISSUE"/>
+      <@s.hidden name="volumeURI" value="${volumeURI!''}"/>
       <table border="0" cellpadding="10" cellspacing="0">
         <tr>
           <th align="center">Issue (URI)</th>
@@ -61,7 +62,7 @@
           <tr>
             <th align="center">Image Article (URI)</th>
             <td>
-              <@s.textfield name="imgURI" value="${issue.image!''}" size="50" />
+              <@s.textfield name="imageURI" value="${issue.image!''}" size="50" />
             </td>
           </tr>
           <tr>

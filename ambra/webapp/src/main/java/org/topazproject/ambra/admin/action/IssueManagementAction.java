@@ -170,99 +170,107 @@ public class IssueManagementAction extends BaseAdminActionSupport {
    *
    */
   public Issue getIssue() {
-     return this.issue;
+    return this.issue;
   }
 
   /*
    *
    */
   public List<TOCArticleGroup> getArticleGrps() {
-     return this.articleGroups;
+    return this.articleGroups;
   }
 
   /**
    *
    */
   public String getDisplayName() {
-     return this.displayName;
+    return this.displayName;
   }
 
-    /**
+  /**
    *
    */
   public void setDisplayName(String name) {
-     this.displayName = name;
+    this.displayName = name;
   }
 
   /**
    *
    */
-  public URI getImageURI() {
-     return this.imageURI;
+  public String getImageURI() {
+    return (this.imageURI != null) ? imageURI.toString() : null;
   }
 
   /**
    *
    */
-  public void setImgURI(String uri) {
-     this.imageURI = URI.create(uri.trim());
+  public void setImageURI(String uri) {
+    try {
+      this.imageURI = URI.create(uri.trim());
+    } catch (Exception e) {
+      this.imageURI = null;
+    }
   }
 
   /**
    *
    */
-  public void setVolumeURI(String volumeURI) {
-    this.volumeURI = URI.create(volumeURI.trim());
+  public void setVolumeURI(String uri) {
+    try {
+      this.volumeURI = URI.create(uri.trim());
+    } catch (Exception e) {
+      this.volumeURI = null;
+    }
   }
 
   /**
    *
    */
-  public URI getVolumeURI() {
-     return this.volumeURI;
+  public String getVolumeURI() {
+    return (this.volumeURI != null) ? volumeURI.toString() : null;
   }
 
   /**
    *
    */
   public String getArticleOrderCSV() {
-     return this.articleOrderCSV;
+    return this.articleOrderCSV;
   }
 
   /**
    *
    */
   public void setArticleListCSV(String list) {
-     this.articleListCSV = list;
+    this.articleListCSV = list;
   }
 
   /**
    *
    */
   public void setRespectOrder(Boolean respectOrder) {
-     this.respectOrder = respectOrder;
+    this.respectOrder = respectOrder;
   }
 
   /**
    *
    */
   public void setIssueURI(String issueURI) {
-     this.issueURI = URI.create(issueURI.trim());
+    this.issueURI = URI.create(issueURI.trim());
   }
 
   /**
    *
    */
   public void setArticleURI(String articleCSVURIs) {
-     this.articleCSVURIs = articleCSVURIs.trim();
+    this.articleCSVURIs = articleCSVURIs.trim();
   }
 
   /**
    *
    */
   public void setArticlesToRemove(String[] articlesToRemove) {
-     for(String articleURI : articlesToRemove)
-       this.articlesToRemove.add(URI.create(articleURI.trim()));
+    for(String articleURI : articlesToRemove)
+      this.articlesToRemove.add(URI.create(articleURI.trim()));
   }
 
   /**

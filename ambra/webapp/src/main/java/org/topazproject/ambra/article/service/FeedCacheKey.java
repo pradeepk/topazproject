@@ -143,6 +143,9 @@ public class FeedCacheKey implements Serializable, Comparable {
             (key.getAuthor() == null && this.author == null
                 || key.getAuthor() != null && key.getAuthor().equals(this.author))
             &&
+            (key.getIssueURI() == null && this.issueURI == null
+                || key.getIssueURI() != null && key.getIssueURI().equals(this.issueURI))
+            &&
             (key.getMaxResults() == this.maxResults)
     );
   }
@@ -171,6 +174,9 @@ public class FeedCacheKey implements Serializable, Comparable {
 
     if (author != null)
       builder.append("; author=").append(author);
+
+    if (issueURI != null)
+      builder.append("; issueURIr=").append(issueURI);
 
     builder.append("; maxResults=").append(maxResults);
 
@@ -397,8 +403,8 @@ public class FeedCacheKey implements Serializable, Comparable {
     }
   }
 
-  public URI getIssueURI() {
-    return issueURI;
+  public String getIssueURI() {
+    return (issueURI != null) ? issueURI.toString() : null;
   }
 }
 
