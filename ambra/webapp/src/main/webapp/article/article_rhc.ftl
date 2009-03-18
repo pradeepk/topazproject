@@ -59,7 +59,7 @@
       <h6>Related Content</h6>
       <#if articleInfoX?? && articleInfoX.relatedArticles?size gt 0>
         <dl class="related">
-          <dt>Related <em>${freemarker_config.orgName}</em> Articles</dt>
+          <dt>Related ${freemarker_config.orgName} Articles</dt>
           <#list articleInfoX.relatedArticles as ra>
           <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${ra.uri}" includeParams="none"/>
           <dd><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${ra.title}</@s.a></dd>
