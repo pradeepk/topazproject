@@ -93,7 +93,7 @@
           <div class="article">
             <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
             <h3><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${articleInfo.title}</@s.a></h3>
-            <p class="authors"><#list articleInfo.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list>${articleInfo.corrections?size }</p>
+            <p class="authors"><#list articleInfo.authors as auth><#if auth_index gt 0>, </#if>${auth?trim}</#list></p>
 	    <@related articleInfo=articleInfo/>
             <#if articleInfo.corrections?? && (articleInfo.corrections?size > 0)>
             <div class="fch">
