@@ -63,7 +63,6 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
   }
 
   @Override
-  @Transactional(rollbackFor = { Throwable.class })
   public String execute() {
     if (filesToIngest != null) {
       DocumentManagementService dms = getDocumentManagementService();

@@ -1063,6 +1063,7 @@ public class AdminService {
    *
    * @return       faux Journal object JournalInfo.
    */
+  @Transactional(readOnly = true)
   public JournalInfo createJournalInfo() {
     JournalInfo jrnlInfo = new JournalInfo();
 
