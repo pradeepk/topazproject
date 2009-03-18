@@ -47,6 +47,9 @@
       <div id="relatedCites"></div>
       <div>Search for citations on <a href="http://scholar.google.com/scholar?hl=en&lr=&cites=${docURL?url}">Google Scholar</a>.</div>
 
+      <h3>Bookmarked in <img id="relatedBookmarksSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
+      <div id="relatedBookmarks"></div>
+
       <h2>Related Blog Posts <a href="#" class="info">info</a> <img id="relatedBlogSpinner" src="../../images/loading_small.gif" class="loading" /></h2>
       <div id="relatedBlogPosts"></div>
 

@@ -29,12 +29,51 @@ dojo.addOnLoad(function()
 
       almService.getRelatedBlogs(doi, setRelatedBlogs);
       almService.getCites(doi, setCites);
+      almService.getSocialBookMarks(doi, setBookmarks);
       almService.getIDs(doi, setIDs);
     } else {
       alert('The related article metrics server is not defined.\nMake sure the ambra/services/alm/host node is defined your ambra.xml file.')
     }
   }
 );
+
+function setBookmarks(response, args)
+{
+  dojo.fadeOut({ node:'relatedBookmarksSpinner', duration: 1000 }).play();
+
+  if (response == null)
+  {
+    setError('relatedBookmarks');
+    return;
+  }
+
+  var numRendered = 0;
+  var doi = escape(dojo.byId('doi').value);
+
+  if (response.article.sources.length > 0) {
+    var html = "<ul>";
+
+    for(var a = 0; a < response.article.sources.length; a++)
+    {
+      var url = response.article.sources[a].public_url;
+
+      //Only list links that HAVE DEFINED URLS
+      if (url) {
+        html = html + "<li><a href=\"" + url + "\">" + response.article.sources[a].source + " (" + response.article.sources[a].count + ")</a></li>";
+        numRendered++;
+      }
+    }
+
+    html = html + "</ul>"
+  }
+
+  if (numRendered == 0){
+    html = "<ul><li>No related bookmarks found</li></ul>";
+  }
+
+  dojo.byId('relatedBookmarks').innerHTML = html;
+  dojo.fx.wipeIn({ node:'relatedBookmarks', duration: 500 }).play();
+}
 
 function setIDs(response, args)
 {
@@ -78,6 +117,11 @@ function setCites(response, args)
 
       //Only list links that HAVE DEFINED URLS
       if (url) {
+        //TODO: Split this out so that we pull sourcename from ALM, not make it up here.
+        if(response.article.sources[a].source == "PubMed") {
+          response.article.sources[a].source = "PubMed Central";
+        }
+        
         html = html + "<li><a href=\"" + url + "\">" + response.article.sources[a].source + " (" + response.article.sources[a].count + ")</a></li>";
         numCitesRendered++;
       }

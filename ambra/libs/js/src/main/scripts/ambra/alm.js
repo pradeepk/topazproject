@@ -46,8 +46,13 @@ dojo.require("dojo.io.script");
       this.getData(request, callBack);
     },
 
+    getSocialBookMarks:function(doi, callBack) {
+      var request = "articles/" + doi + ".json?citations=1&source=Citeulike,Connotea";
+      this.getData(request, callBack);
+    },
+
     getCites:function(doi, callBack) {
-      var request = "articles/" + doi + ".json?citations=1&source=CrossRef,PubMed,Scopus,Citeulike";
+      var request = "articles/" + doi + ".json?citations=1&source=CrossRef,PubMed,Scopus";
       this.getData(request, callBack);
     },
 
