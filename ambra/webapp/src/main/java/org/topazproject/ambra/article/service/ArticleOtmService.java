@@ -383,11 +383,8 @@ public class ArticleOtmService {
     try {
       pep.checkAccess(ArticlePEP.READ_META_DATA, uri);
     } catch (SecurityException se) {
-      if (log.isDebugEnabled()) {
-        log.debug("Filtering URI "
-          + uri
-          + " due to PEP SecurityException", se);
-      }
+      if (log.isDebugEnabled())
+        log.debug("Filtering URI " + uri + " due to PEP SecurityException", se);
 
       // it's still a SecurityException
       throw se;
