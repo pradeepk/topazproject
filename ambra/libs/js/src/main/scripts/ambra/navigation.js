@@ -40,7 +40,7 @@ ambra.navigation = {
     var ul = dojo.byId('tocUl');
 
     //presume we already have the list built
-    if(!ul) {
+    if (!ul) {
       var tocEl = document.getElementsByTagAndAttributeName(null, 'toc');
 
       if (tocEl.length > 0) {
@@ -48,16 +48,16 @@ ambra.navigation = {
         ul.setAttribute('id','tocUl');
 
         for (var i=0; i<tocEl.length; i++) {
-        var li = document.createElement('li');
-        var anchor = document.createElement('a');
+          var li = document.createElement('li');
+          var anchor = document.createElement('a');
 
-        anchor.href = "#" + tocEl[i].getAttributeNode('toc').nodeValue;
+          anchor.href = "#" + tocEl[i].getAttributeNode('toc').nodeValue;
 
-        if (i == tocEl.length -1) {
-          anchor.className = 'last';
-        }
+          if (i == tocEl.length -1) {
+            anchor.className = 'last';
+          }
 
-        var tocText = document.createTextNode(tocEl[i].getAttributeNode('title').nodeValue);
+          var tocText = document.createTextNode(tocEl[i].getAttributeNode('title').nodeValue);
           anchor.appendChild(tocText);
           li.appendChild(anchor);
           ul.appendChild(li);
@@ -83,7 +83,7 @@ dojo.addOnLoad(function() {
         var navLi = navContainer.childNodes[i];
 
         navLi.onmouseover = function() {
-         this.className = this.className.concat(" over");
+          this.className = this.className.concat(" over");
         }
 
         navLi.onmouseout = function() {
