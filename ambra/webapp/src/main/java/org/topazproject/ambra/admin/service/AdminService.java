@@ -702,7 +702,6 @@ public class AdminService {
      * with the issue.
      */
     if (articleList != null && articleList.length() != 0) {
-      List<URI> articles = new ArrayList<URI>();
       for (final String articleToAdd : articleList.split(SEPARATORS)) {
         if (articleToAdd.length() > 0)
           newIssue.addArticle(URI.create(articleToAdd.trim()));

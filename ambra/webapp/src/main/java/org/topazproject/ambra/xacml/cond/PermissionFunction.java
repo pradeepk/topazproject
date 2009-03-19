@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,8 +31,6 @@ import org.apache.struts2.ServletActionContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import org.topazproject.ambra.permission.service.Permissions;
-import org.topazproject.ambra.permission.service.PermissionsService;
-import org.topazproject.otm.Session;
 
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.attr.BooleanAttribute;
@@ -114,14 +112,12 @@ public abstract class PermissionFunction implements Function {
     if ((inputs == null) || (inputs.size() < 4))
       throw new IllegalArgumentException("not enough arguments to " + identifier);
 
-    Iterator it = inputs.iterator();
-
-    for (int i = 0; it.hasNext(); i++) {
-      Evaluatable eval = (Evaluatable) it.next();
+    for (Object input : inputs) {
+      Evaluatable eval = (Evaluatable) input;
 
       if (eval.evaluatesToBag())
         throw new IllegalArgumentException("illegal argument type. bags are not supported for " +
-                                           identifier);
+            identifier);
     }
   }
 
@@ -143,8 +139,6 @@ public abstract class PermissionFunction implements Function {
 
     if (result.indeterminate())
       return result;
-
-    String conf = result.getAttributeValue().encode();
 
     // Second parameter is the resource
     result = ((Evaluatable) it.next()).evaluate(context);
