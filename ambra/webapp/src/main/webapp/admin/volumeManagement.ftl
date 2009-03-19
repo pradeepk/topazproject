@@ -125,7 +125,8 @@
             <input type="image" value="${altText}" src="${issueImage}" alt="${altText}" height=50/>
           </td>
           <td>
-             ${i.displayName}
+            <@s.url namespace="/article" action="browseIssue" issue="${i.id}" id="browseIssue"/>
+            <a href="${browseIssue}">${i.displayName}<a>
           </td>
           <td>
              ${i.id}
@@ -133,7 +134,7 @@
           <td>
             <@s.url namespace="/admin" action="issueManagement"
                 issueURI="${i.id}" volumeURI="${volume.id}" id="issueMangement"/>
-            <@s.a href="${issueMangement}">Update</@s.a>
+            <a href="${issueMangement}">Update<a>
           </td>
          </tr>
          </#list>

@@ -66,13 +66,12 @@
             </td>
           </tr>
           <tr>
-            <th align="center">Article URI List</th>
+            <th align="center">Article URI List
+                <br><kbd>(Manual ordering changes only)</kbd></br>
+            </th>
             <td>
                 <@s.textfield name="articleListCSV" value="${articleOrderCSV}" size="100"/>
             </td>
-          </tr>
-          <tr>
-            <td><kbd>(Manual ordering changes only)</kbd></td><td></td>
           </tr>
           <tr>
             <th align="center">Manual Order Enabled</th>
@@ -131,6 +130,8 @@
             <th>Title</th>
         </tr>
         <#list grp.articles as a>
+        <@s.url id="articleURL" includeParams="none" namespace="/article" action="fetchArticle"
+                 articleURI="${a.id}"/>
         <tr>
           <td align="center">
               <@s.checkbox name="articlesToRemove" fieldValue="${a.id}"/>
@@ -139,7 +140,7 @@
              ${a.id}
           </td>
           <td>
-             ${a.title}
+             <a target="_article" href="${articleURL}">${a.title}</a>
           </td>
          </tr>
          </#list>
