@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Required;
 import java.util.List;
 import java.util.ArrayList;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  *
@@ -110,6 +111,7 @@ public class IssueManagementAction extends BaseAdminActionSupport {
         } catch (Exception e) {
           addActionMessage("Article not added due to the following error.");
           addActionMessage(e.toString());
+          log.error("Add Article to Issue Failed.", e);
         }
         break;
       }
@@ -125,6 +127,7 @@ public class IssueManagementAction extends BaseAdminActionSupport {
         } catch (Exception e) {
           addActionMessage("Article not removed due to the following error.");
           addActionMessage(e.toString());
+          log.error("Remove Articels from Issue Failed.", e);
         }
         break;
       }
@@ -132,10 +135,19 @@ public class IssueManagementAction extends BaseAdminActionSupport {
       case UPDATE_ISSUE: {
         try {
           issue = adminService.getIssue(issueURI);
-          issue = adminService.updateIssue(issueURI,imageURI,displayName,articleListCSV,respectOrder);
+          List<URI> issueURIs = adminService.parseCSV(articleListCSV);
+          /*
+           * Make sure the only changes to the articleListCSV
+           * are ordering.
+           */
+          if (validateCSV(issue, issueURIs))
+            issue = adminService.updateIssue(issueURI,imageURI,displayName,
+                issueURIs,respectOrder);
+
         } catch (Exception e) {
           addActionMessage("Issue not updated due to the following error.");
           addActionMessage(e.toString());
+          log.error("Update Issue Failed.", e);
         }
         break;
       }
@@ -143,7 +155,6 @@ public class IssueManagementAction extends BaseAdminActionSupport {
       case INVALID:
         break;
     }
-
     // Repopulate template values
     issue = adminService.getIssue(issueURI);
     articleGroups = browseService.getArticleGrpList(issue);
@@ -153,6 +164,38 @@ public class IssueManagementAction extends BaseAdminActionSupport {
     return SUCCESS;
   }
 
+  /**
+   *
+   * @param issue
+   * @param issueURIs
+   * @return
+   * @throws URISyntaxException
+   */
+  public Boolean validateCSV(Issue issue, List<URI> issueURIs) throws URISyntaxException {
+    List<URI> curList = issue.getArticleList();
+
+    if (issueURIs.size() != curList.size()) {
+      addActionMessage("Issue not updated due to the following error.");
+      addActionMessage("There has been an addition or deletion in the Article URI List.");
+
+      return false;
+    }
+
+    for(URI uri : curList) {
+      if (!issueURIs.contains(uri)) {
+        addActionMessage("Issue not updated due to the following error.");
+        addActionMessage("One of the URI's in the Article URI List has changed.");
+
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * 
+   * @return
+   */
   public List<TOCArticleGroup> getArticleGroups() {
     return this.articleGroups; 
   }
@@ -206,9 +249,11 @@ public class IssueManagementAction extends BaseAdminActionSupport {
    */
   public void setImageURI(String uri) {
     try {
-      this.imageURI = URI.create(uri.trim());
+      this.imageURI = new URI(uri.trim());
     } catch (Exception e) {
       this.imageURI = null;
+      if (log.isDebugEnabled())
+        log.debug("setImage URI conversion failed. ");
     }
   }
 
@@ -217,9 +262,11 @@ public class IssueManagementAction extends BaseAdminActionSupport {
    */
   public void setVolumeURI(String uri) {
     try {
-      this.volumeURI = URI.create(uri.trim());
+      this.volumeURI = new URI(uri.trim());
     } catch (Exception e) {
       this.volumeURI = null;
+      if (log.isDebugEnabled())
+        log.debug("setVolume URI conversion failed. ");
     }
   }
 

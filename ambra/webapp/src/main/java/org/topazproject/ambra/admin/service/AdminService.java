@@ -726,7 +726,7 @@ public class AdminService {
    * @param issueURI     the issue to update.
    * @param imgURI       a URI for the article/image associated with this volume.
    * @param dsplyName    the display name for the volume.
-   * @param articleListCSV  a SEPARATOR delimitted string of article doi's.
+   * @param articleList  a SEPARATOR delimitted string of article doi's.
    * @param respectOrder respect the order manual ordering of articles within
    *                     articleTypes.
    *
@@ -737,7 +737,7 @@ public class AdminService {
    */
   @SuppressWarnings("unchecked")
   public Issue updateIssue(URI issueURI, URI imgURI, String dsplyName,
-      String articleListCSV, Boolean respectOrder) throws OtmException, URISyntaxException {
+    List<URI> articleList, Boolean respectOrder) throws OtmException, URISyntaxException {
 
     // the Issue to update
     Issue issue = session.get(Issue.class, issueURI.toString());
@@ -746,15 +746,13 @@ public class AdminService {
     if (issue == null)
       return null;
 
-    // assume updating the Issue
-    issue.setDisplayName(dsplyName);
-    issue.setImage(imgURI);
+    if (!dsplyName.equals(issue.getDisplayName()))
+      issue.setDisplayName(dsplyName);
 
-    // process Issues
-    List<URI> issueArticles = parseCSV(articleListCSV);
-
-    issue.setArticleList(issueArticles);
+    issue.setArticleList(articleList);
     issue.setRespectOrder(respectOrder);
+
+    issue.setImage(imgURI);
     updateStore(issue);
     flushStore();
     
