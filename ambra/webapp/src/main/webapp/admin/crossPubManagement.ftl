@@ -76,12 +76,14 @@
             <th>Article URI</th>
         </tr>
         <#list journal.simpleCollection as uri>
+        <@s.url id="articleURL" includeParams="none" namespace="/article" action="fetchArticle"
+            articleURI="${uri}"/>
         <tr>
           <td align="center">
               <@s.checkbox name="articlesToRemove" fieldValue="${uri}"/>
           </td>
           <td>
-             ${uri}
+             <a target="_article" href="${articleURL}">${uri}</a>
           </td>
          </tr>
          </#list>
