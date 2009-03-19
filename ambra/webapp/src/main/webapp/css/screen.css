@@ -436,6 +436,7 @@ div.content div#articleMenu div.wrap { background:#fcd3b8 url(../images/articleM
 div.content div#articleMenu p { margin-bottom:0; padding:0 8px 0 23px; }
 div.content div#articleMenu ul { margin:0; padding:0 8px 0 23px; position:static!important; } /* position:static fixes display issues in IE6 */
 div.content div#articleMenu ul li { background-image:none; padding:2px 0; line-height:1.4em; }
+div.content div#articleMenu ul li a { background-image:none; }
 div.content div#articleMenu ul li.annotation,
 div.content div#articleMenu ul li.discuss { background-position:0 2px; background-repeat:no-repeat; padding-left:18px; }
 div.content div#articleMenu ul li.annotation	{ background-image: url(../images/icon_annotation.gif); }
