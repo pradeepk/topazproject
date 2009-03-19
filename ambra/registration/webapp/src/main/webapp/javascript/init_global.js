@@ -17,32 +17,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var container;
-var topBanner;
 
-function globalInit() {
-  if (dojo.isIE) {
-    container = dojo.byId("container");
-    topBanner = dojo.byId("topBanner");
-    
-    if (container) {
-      ambra.domUtil.setContainerWidth(container, 675, 940);
-      
-      dojo.event.connect(window, "onresize", function() {
-          setTimeout("topaz.domUtil.setContainerWidth(container, 675, 940)", 100);
-        }
-      );
-    }
-    
-    if (topBanner) {
-      ambra.domUtil.setContainerWidth(topBanner, 942, 944);
-      
-      dojo.event.connect(window, "onresize", function() {
-          setTimeout("topaz.domUtil.setContainerWidth(topBanner, 942, 944)", 100);
-        }
-      );
-    }
-  }
-}
-
-dojo.addOnLoad(globalInit);
+/* This file does nothing, but can be used for global js functions as it's called by almost every page. */
