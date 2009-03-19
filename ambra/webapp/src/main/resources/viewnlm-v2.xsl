@@ -1455,7 +1455,7 @@
     <xsl:for-each select="//abstract[@abstract-type='patient']">
       <div class="patient">
         <a id="patient" name="patient" toc="patient" title="Patient Summary"/>
-        <h3><xsl:value-of select="title"/><xsl:call-template name="topAnchor"/></h3>
+        <h3 xpathLocation="noSelect"><xsl:value-of select="title"/><xsl:call-template name="topAnchor"/></h3>
         <xsl:apply-templates select="*[not(self::title)]"/>
       </div>
     </xsl:for-each>
@@ -1465,7 +1465,7 @@
 <xsl:template name="author-contrib">
   <xsl:if test="../front/article-meta/author-notes/fn[@fn-type='con']">
     <div class="contributions">
-      <h3>Author Contributions</h3>
+      <h3 xpathLocation="noSelect">Author Contributions</h3>
       <p>
         <xsl:apply-templates select="../front/article-meta/author-notes/fn[@fn-type='con']"/>
       </p>
@@ -3435,7 +3435,7 @@
 </xsl:template>
 
 <xsl:template match="notes/sec/title">
- <h3><xsl:value-of select="."/><xsl:call-template name="topAnchor"/></h3>
+ <h3 xpathLocation="noSelect"><xsl:value-of select="."/><xsl:call-template name="topAnchor"/></h3>
 </xsl:template>
 
 <xsl:template match="note">
@@ -3701,9 +3701,7 @@
 <xsl:template match="body/sec/title">
 
   <!-- article main main body heading -->
-  <h3>
-    <xsl:call-template name="makeXpathLocation" >
-    </xsl:call-template>
+  <h3 xpathLocation="noSelect">
     <xsl:apply-templates/><xsl:call-template name="topAnchor"/>
   </h3>
 </xsl:template>
@@ -3752,8 +3750,7 @@
   <xsl:call-template name="nl-1"/>
   <!-- Be careful not to output an abstract's title if it's blank -->
   <xsl:if test="string-length() &gt; 0">
-    <h3>
-      <xsl:call-template name="makeXpathLocation"/>
+    <h3 xpathLocation="noSelect">
       <xsl:apply-templates/>
     </h3>
   </xsl:if>
@@ -3765,8 +3762,7 @@
     <xsl:attribute name="id"><xsl:value-of select="replace(lower-case(.),' ','')"/></xsl:attribute>
     <xsl:attribute name="name"><xsl:value-of select="replace(lower-case(.),' ','')"/></xsl:attribute>
   </a>
-  <h3>
-    <xsl:call-template name="makeXpathLocation"/>
+  <h3 xpathLocation="noSelect">
     <xsl:apply-templates/>
   </h3>
 </xsl:template>
@@ -3788,8 +3784,7 @@
       </xsl:choose>
     </xsl:attribute>
   </a>
-  <h3>
-    <xsl:call-template name="makeXpathLocation"/>
+  <h3 xpathLocation="noSelect">
     <xsl:apply-templates/><xsl:call-template name="topAnchor"/>
   </h3>
 </xsl:template>
@@ -3814,9 +3809,7 @@
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="nl-1"/>
-      <h3>
-        <xsl:call-template name="makeXpathLocation" >
-        </xsl:call-template>
+      <h3 xpathLocation="noSelect">
         <xsl:apply-templates/>
       </h3>
       <xsl:call-template name="nl-1"/>
@@ -3854,7 +3847,7 @@
         <xsl:attribute name="toc"><xsl:value-of select="$abs_id"/></xsl:attribute>
         <xsl:attribute name="title">Abstract</xsl:attribute>
       </xsl:element>
-      <h2><xsl:text>Abstract</xsl:text><xsl:call-template name="topAnchor"/></h2>
+      <h2 xpathLocation="noSelect"><xsl:text>Abstract</xsl:text><xsl:call-template name="topAnchor"/></h2>
     </xsl:when>
 
     <!-- trans-abstract with no title -->
@@ -3865,7 +3858,7 @@
         <xsl:attribute name="toc"><xsl:value-of select="$abs_id"/></xsl:attribute>
         <xsl:attribute name="title">Abstract, Translated</xsl:attribute>
       </xsl:element>
-      <h2><xsl:text>Abstract, Translated</xsl:text><xsl:call-template name="topAnchor"/></h2>
+      <h2 xpathLocation="noSelect"><xsl:text>Abstract, Translated</xsl:text><xsl:call-template name="topAnchor"/></h2>
     </xsl:when>
 
     <!-- there is no logical otherwise -->
