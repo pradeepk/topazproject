@@ -38,7 +38,7 @@
       <h1 xpathLocation="noSelect"><@articleFormat>${docTitle}</@articleFormat></h1>
       <#assign tab="comments" />
       <#include "article_tabs.ftl">
-      <div class="rss"><a href="#">Comments RSS</a></div>
+      <!--<div class="rss"><a href="#">Comments RSS</a></div>-->
       <ul>
       <#if ((numDiscussions + numComments) > 0 && annotationSet != "comments")>
         <li><a href="${commentsURL}" title="View all Comments" class="discuss icon">View all Comments</a></li>
