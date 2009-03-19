@@ -6,3 +6,10 @@
 <#else>
   --!!ARTICLE TYPE CODE UNDEFINED!!--
 </#if></p></div>
+
+<#list journalList as jour> 
+  <#if jour.key != journalContext && articleInfo.eIssn == jour.eIssn> 
+    <div id="publisher"><p>Published in <em><a href=${freemarker_config.getJournalUrl(jour.key)}>${jour.dublinCore.title}</a></em></p></div> 
+    <#break/> 
+  </#if> 
+</#list>  
