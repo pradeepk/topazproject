@@ -35,10 +35,8 @@
   <h1 xpathLocation="noSelect"><@articleFormat>${docTitle}</@articleFormat></h1>
   <#assign tab="article" />
   <#include "article_tabs.ftl">
-    <div id="retractionHtmlId" class="retractionHtmlId" style="display:none;" xpathLocation="noSelect">
-      <p class="retractionHtmlId"><strong> Retraction:</strong>
-        <div id="retractionlist"></div>
-    </p>
+  <div id="retractionHtmlId" class="retractionHtmlId" style="display:none;" xpathLocation="noSelect">
+    <div id="retractionlist"></div>
   </div>   
   <div id="fch" class="fch" style="display:none;" xpathLocation="noSelect">
     <p class="fch"><strong> Formal Correction:</strong> This article has been <em>formally corrected</em> to address the following errors.</p>
