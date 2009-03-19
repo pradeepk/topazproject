@@ -117,11 +117,6 @@ function setCites(response, args)
 
       //Only list links that HAVE DEFINED URLS
       if (url) {
-        //TODO: Split this out so that we pull sourcename from ALM, not make it up here.
-        if(response.article.sources[a].source == "PubMed") {
-          response.article.sources[a].source = "PubMed Central";
-        }
-        
         html = html + "<li><a href=\"" + url + "\">" + response.article.sources[a].source + " (" + response.article.sources[a].count + ")</a></li>";
         numCitesRendered++;
       }
