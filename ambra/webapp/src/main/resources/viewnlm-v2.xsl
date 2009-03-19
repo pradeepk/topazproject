@@ -3366,7 +3366,7 @@
   <div xpathLocation="noSelect" >
     <xsl:call-template name="make-id"/>
     <xsl:if test="not(title)">
-      <a id="ack" name="ack" toc="ack" title="Acknowledgments"></a><h3 xpathLocation="noSelect">Acknowledgments<xsl:call-template name="topAnchor"/></h3>
+      <a id="ack" name="ack" toc="ack" title="Acknowledgments"/><h3 xpathLocation="noSelect">Acknowledgments<xsl:call-template name="topAnchor"/></h3>
       <xsl:call-template name="nl-1"/>
     </xsl:if>
     <xsl:apply-templates/>
@@ -4086,7 +4086,7 @@
 <div xpathLocation="noSelect">
   <xsl:choose>
     <xsl:when test="not(title)">
-      <a id="refs" name="refs" toc="refs" title="References"></a>
+      <a id="refs" name="refs" toc="refs" title="References"/>
       <h3 xpathLocation="noSelect">References</h3>
       <xsl:call-template name="nl-1"/>
     </xsl:when>
