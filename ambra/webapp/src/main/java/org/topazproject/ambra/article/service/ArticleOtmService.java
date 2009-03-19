@@ -626,10 +626,6 @@ public class ArticleOtmService {
   {
     List<List<String>> issues = new ArrayList<List<String>>();
 
-
-//    if (log.isDebugEnabled())
-      log.info("  ***  retrieving Journals, Volumes, and Issues for: " + articleURI);
-
     Results results = session.createQuery(
         "select j.id, j.key," +
         "   v.id, v.displayName," +
@@ -656,16 +652,6 @@ public class ArticleOtmService {
     } catch (Exception e) {
       log.warn("Exception while trying to close query results.", e);
     }
-
-
-//    if (log.isDebugEnabled()) {
-      for (List<String> secondaryList:issues) {
-        log.info("  *****  ");
-        for (String eachElement:secondaryList) {
-          log.info("  ***  : " + eachElement);
-        }
-      }
-//    }
 
     return issues;
   }
