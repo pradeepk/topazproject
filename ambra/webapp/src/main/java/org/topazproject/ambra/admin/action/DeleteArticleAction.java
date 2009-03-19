@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.topazproject.ambra.admin.service.AdminService;
 import org.topazproject.ambra.admin.service.AdminService.JournalInfo;
+import org.topazproject.otm.RdfUtil;
 import org.springframework.beans.factory.annotation.Required;
 
 @SuppressWarnings("serial")
@@ -38,7 +39,11 @@ public class DeleteArticleAction extends BaseAdminActionSupport {
 
   @Override
   public String execute() throws Exception {
+    if (article != null)
+      article = article.trim();
+
     try {
+      RdfUtil.validateUri(article, "Article Uri");
       getDocumentManagementService().delete(article);
       addActionMessage("Successfully deleted article: " + article);
 
@@ -53,6 +58,8 @@ public class DeleteArticleAction extends BaseAdminActionSupport {
       log.error("Failed to successfully delete article: " + article, e);
     }
 
+    // create a faux journal object for template
+    journalInfo = adminService.createJournalInfo();
     return base();
   }
 
