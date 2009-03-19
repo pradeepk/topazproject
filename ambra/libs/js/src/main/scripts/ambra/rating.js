@@ -130,7 +130,7 @@ ambra.rating = {
   },
   
   resetDialog: function() {
-    ambra.domUtil.removeChildren(dojo.byId('submitMsg'));
+    ambra.domUtil.removeChildren(dojo.byId('submitRatingMsg'));
     var ratingList = document.getElementsByTagAndClassName('li', 'current-rating');
     
     // build rating stars
