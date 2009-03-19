@@ -752,7 +752,11 @@ public class AdminService {
     issue.setArticleList(articleList);
     issue.setRespectOrder(respectOrder);
 
-    issue.setImage(imgURI);
+    if (imgURI.toString().equals(""))
+      issue.setImage(null);
+    else
+      issue.setImage(imgURI);
+    
     updateStore(issue);
     flushStore();
     
