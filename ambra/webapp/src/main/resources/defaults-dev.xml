@@ -273,6 +273,10 @@
         <typeCode>case_report</typeCode>
       </articleType>
       <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Pearls</typeUri>
+        <typeHeading>Pearls</typeHeading>
+      </articleType>
+      <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Review</typeUri>
         <typeHeading>Review</typeHeading>
         <typeCode>review</typeCode>
