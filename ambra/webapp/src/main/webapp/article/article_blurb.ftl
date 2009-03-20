@@ -1,3 +1,15 @@
+<#if !journalContext??>
+  <#--In the fetchBody action a more "bare bones" copy of the article is rendered and not all of the
+   templates are included.  We need some of these variables defined here.  This runs the variables
+   definition template if it's not defined. -->
+  <#include "article_variables.ftl">
+</#if>
+<#list journalList as jour>
+  <#if jour.key != journalContext && articleInfo.eIssn == jour.eIssn>
+    <div id="publisher"><p>Published in <em><a href=${freemarker_config.getJournalUrl(jour.key)}>${jour.dublinCore.title}</a></em></p></div>
+    <#break/>
+  </#if>
+</#list>
 <div id="contentHeader"><p>Open Access</p><p id="articleType">${articleType.heading}
 <#if articleType.code??>
   <#if articleType.code != "research_article">
@@ -6,10 +18,3 @@
 <#else>
   --!!ARTICLE TYPE CODE UNDEFINED!!--
 </#if></p></div>
-
-<#list journalList as jour> 
-  <#if jour.key != journalContext && articleInfo.eIssn == jour.eIssn> 
-    <div id="publisher"><p>Published in <em><a href=${freemarker_config.getJournalUrl(jour.key)}>${jour.dublinCore.title}</a></em></p></div> 
-    <#break/> 
-  </#if> 
-</#list>  
