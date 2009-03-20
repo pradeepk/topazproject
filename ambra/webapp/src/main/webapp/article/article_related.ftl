@@ -34,7 +34,7 @@
       <#assign tab="related" />
       <#include "article_tabs.ftl">
 
-      <h2>Related Articles <a href="#" class="info">info</a></h2>
+      <h2>Related Articles <a href="/static/help.action#relatedArticles" class="info">info</a></h2>
 
       <h3>Related Articles on the web <img id="relatedArticlesSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
       <div id="pubMedRelatedErr" style="display:none;"></div>
@@ -50,7 +50,7 @@
       <h3>Bookmarked in <img id="relatedBookmarksSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
       <div id="relatedBookmarks"></div>
 
-      <h2>Related Blog Posts <a href="#" class="info">info</a> <img id="relatedBlogSpinner" src="../../images/loading_small.gif" class="loading" /></h2>
+      <h2>Related Blog Posts <a href="/static/help.action#relatedBlogPosts" class="info">info</a> <img id="relatedBlogSpinner" src="../../images/loading_small.gif" class="loading" /></h2>
       <div id="relatedBlogPosts"></div>
 
       Search for related blog posts on <a href="http://blogsearch.google.com/blogsearch?hl=en&ie=UTF-8&q=${shortDOI?url}&btnG=Search+Blogs">Google Blogs</a>
