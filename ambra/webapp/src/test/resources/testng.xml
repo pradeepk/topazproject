@@ -31,6 +31,7 @@
       <class name="org.topazproject.ambra.util.DateParserTest"/>
       <class name="org.topazproject.ambra.util.FileUtilsTest"/>
       <class name="org.topazproject.ambra.util.ArticleXMLUtilsTest"/>
+      <class name="org.topazproject.ambra.util.XPointerUtilsTest"/>
     </classes>
   </test>
   <test name="Search Tests">
