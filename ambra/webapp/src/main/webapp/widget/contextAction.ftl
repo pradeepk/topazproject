@@ -17,6 +17,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+<#--
+  TODO: Moves events defined here into the ambra library and wire up the events onload
+-->
 <div dojoType="ambra.widget.ContextAction" id="ContextActionDialog" class="contextActionDialog">
   <div class="dialog context">
     <div class="tipu" id="caTipu"></div>
@@ -30,7 +33,9 @@
         <li>Inflammatory and insulting language</li>
       </ul>
       <form name="contextActionForm" id="contextActionForm" class="clearfix buttons" method="post" action="">
-        <input type="button" name="Continue" value="Continue" id="ContextActionDialogContinueButton" onmouseup="ambra.displayAnnotationContext.startComment(event);" title="Add a note to this text" class="primary"/></form>
+        <input type="button" name="Continue" value="Continue" id="ContextActionDialogContinueButton" onmouseup="ambra.displayAnnotationContext.startComment(event);" title="Add a note to this text" class="primary"/>
+        <input type="button" name="Cancel" value="Cancel" id="ContextActionDialogCancelButton" onclick="return false;" onmouseup="ambra.displayAnnotationContext.cancelContext(event);" title="Close this Window"/>
+      </form>
     </div>
     <div class="tip" id="caTip"></div>
   </div>
@@ -41,7 +46,7 @@
     <div class="contextActionContent">
       <h5><img src="../images/tooltip_addannotation.gif" /> Add a note to this text.</h5>
       You must be logged into to add a note to an article.
-      You may log in by <a onmousedown="ambra.displayAnnotationContext.disconnect(event);" href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}">clicking here</a>.
+      You may log in by <a onmousedown="ambra.displayAnnotationContext.disconnect(event);" href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}">clicking here</a> or <a href="#" onclick="return false;" onmouseup="ambra.displayAnnotationContext.cancelContext(event);">cancel this note</a>.
     </div>
     <div class="tip" id="canlTip"></div>
   </div>
@@ -51,7 +56,7 @@
     <div class="tipu" id="canBDTipu"></div>
     <div class="contextActionContent">
       <h5 class="annotation icon"><img src="../images/tooltip_addannotation.gif" /> Add a note to this text.</h5>
-      You cannot annotate this area of the document.
+      You cannot annotate this area of the document. <a href="#" onclick="return false;" onmouseup="ambra.displayAnnotationContext.cancelContext(event);">Close</a>
     </div>
     <div class="tip" id="canBDTip"></div>
   </div>
@@ -61,7 +66,8 @@
     <div class="tipu" id="canbrTipu"></div>
     <div class="contextActionContent">
       <h5><img src="../images/tooltip_addannotation.gif" /> Add a note to this text.</h5>
-      You cannot create an annotation that spans different sections of the document; please adjust your selection.
+      You cannot create an annotation that spans different sections of the document; please adjust your selection.<br/>
+      <a href="#" onclick="return false;" onmouseup="ambra.displayAnnotationContext.cancelContext(event);">Close</a>
     </div>
     <div class="tip" id="canbrTip"></div>
   </div>

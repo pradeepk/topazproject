@@ -85,6 +85,14 @@ ambra.displayAnnotationContext = {
     createAnnotationOnMouseDown();
   },
 
+  cancelContext:function(evt)
+  {
+    ambra.displayAnnotationContext.closeContext(evt);
+    evt.cancelBubble=true;
+
+    return false;
+  },
+
   /**
    * Close the context menu if it is open
    */
