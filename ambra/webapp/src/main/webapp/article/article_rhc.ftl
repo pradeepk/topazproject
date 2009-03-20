@@ -99,7 +99,7 @@
             start figuring out and sending a topic as well
             -->
           <script type="text/javascript">
-          digg_url = '${jDocURL}';
+          digg_url = '${docURL}';
           digg_skin = 'icon';
           digg_title = '${docTitle?replace("'","\\'")}';
           digg_bodytext = '';
