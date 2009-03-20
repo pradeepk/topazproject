@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -105,16 +106,25 @@ public class VolumeManagementAction extends BaseAdminActionSupport {
         } catch (Exception e) {
           addActionMessage("Issue not created due to the following error.");
           addActionMessage(e.getMessage());
+          log.error("Create ISsue Failed.", e);
         }
         break;
       }
       case UPDATE_VOLUME: {
         try {
           Volume volume = adminService.getVolume(volumeURI);
-          adminService.updateVolume(volume, displayName, issuesToOrder);
-        } catch (Exception e) {
-          addActionMessage("Volume was not updated due to the following error.");
-          addActionMessage(e.getMessage());
+          List<URI> issueURIs = adminService.parseCSV(issuesToOrder);
+          /*
+           * Make sure the only changes to the articleListCSV
+           * are ordering.
+           */
+          if (validateCSV(volume, issueURIs))
+            volume = adminService.updateVolume(volume, displayName, issueURIs);
+
+         } catch (Exception e) {
+           addActionMessage("Volume was not updated due to the following error.");
+           addActionMessage(e.getMessage());
+           log.error("Update Volume Failed.", e);
         }
         break;
       }
@@ -123,11 +133,12 @@ public class VolumeManagementAction extends BaseAdminActionSupport {
         try {
           for(String issurURI : issuesToDelete)
             adminService.deleteIssue(URI.create(issurURI));
-          break;
         } catch (Exception e) {
           addActionMessage("Issue not removed due to the following error.");
           addActionMessage(e.getMessage());
+          log.error("Remove Issue Failed.", e);
         }
+        break;
       }
 
       case INVALID:
@@ -140,6 +151,34 @@ public class VolumeManagementAction extends BaseAdminActionSupport {
     issues = adminService.getIssues(volumeURI);
     journalInfo = adminService.createJournalInfo();
     return SUCCESS;
+  }
+
+  /**
+   *
+   * @param volume
+   * @param issueURIs
+   * @return
+   * @throws java.net.URISyntaxException
+   */
+  public Boolean validateCSV(Volume volume, List<URI> issueURIs) throws URISyntaxException {
+    List<URI> curList = volume.getIssueList();
+
+    if (issueURIs.size() != curList.size()) {
+      addActionMessage("Issue not updated due to the following error.");
+      addActionMessage("There has been an addition or deletion in the Issue URI List.");
+
+      return false;
+    }
+
+    for(URI uri : curList) {
+      if (!issueURIs.contains(uri)) {
+        addActionMessage("Issue not updated due to the following error.");
+        addActionMessage("One of the URI's in the Issue URI List has changed.");
+
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -186,9 +225,11 @@ public class VolumeManagementAction extends BaseAdminActionSupport {
   @Required
   public void setVolumeURI(String theVolume) {
     try {
-      this.volumeURI = URI.create(theVolume.trim());
+      this.volumeURI = new URI(theVolume.trim());
     } catch (Exception e) {
       this.volumeURI = null;
+      if (log.isDebugEnabled())
+        log.debug("setVolume URI conversion failed.");
     }
   }
 
@@ -200,9 +241,11 @@ public class VolumeManagementAction extends BaseAdminActionSupport {
   @Required
   public void setIssueURI(String issueURI) {
     try {
-      this.issueURI = URI.create(issueURI.trim());
+      this.issueURI = new URI(issueURI.trim());
     } catch (Exception e) {
       this.issueURI = null;
+      if (log.isDebugEnabled())
+        log.debug("setIssue URI conversion failed. ");
     }
   }
      /**
@@ -221,9 +264,11 @@ public class VolumeManagementAction extends BaseAdminActionSupport {
    */
   public void setImageURI(String image) {
     try {
-      this.imageURI = URI.create(image.trim());
+      this.imageURI = new URI(image.trim());
     } catch (Exception e) {
       this.imageURI = null;
+      if (log.isDebugEnabled())
+        log.debug("setImage URI conversion failed. ");
     }
   }
 

@@ -486,18 +486,13 @@ public class AdminService {
    *                      update the volume persistanct store.
    *
    */
-  public Volume updateVolume(Volume volume, String dsplyName, String issueList)
+  public Volume updateVolume(Volume volume, String dsplyName, List<URI> issueList)
                   throws OtmException, URISyntaxException {
 
     volume.setDisplayName(dsplyName);
+    volume.setIssueList(issueList);
+    updateStore(volume);
 
-    /*
-     * Split the SEPARATOR delimited list of doi's
-     * and add them to an Array list. Then update the
-     * volume.
-     */
-    List<URI> volumeIssues = parseCSV(issueList);
-    volume.setIssueList(volumeIssues);
     return volume;
   }
 
@@ -506,7 +501,6 @@ public class AdminService {
    * using the URI.
    *
    * @param volURI    the volume to update.
-   * @param imgURI    a URI for the article/image associated with this volume.
    * @param dsplyName the display name for the volume.
    * @param issueList a SEPARATOR delimitted string of issue doi's.
    *
@@ -516,7 +510,7 @@ public class AdminService {
    *                      update the volume persistanct store.
    *
    */
-  public Volume updateVolume(URI volURI, URI imgURI, String dsplyName, String issueList)
+  public Volume updateVolume(URI volURI, String dsplyName, List<URI> issueList)
                   throws OtmException, URISyntaxException {
     // If the volume doesn't exist return null
     Volume volume = session.get(Volume.class, volURI.toString());
@@ -694,7 +688,11 @@ public class AdminService {
     newDublinCore.setCreated(new Date());
     newIssue.setDublinCore(newDublinCore);
     newIssue.setDisplayName(dsplyName);
-    newIssue.setImage(imgURI);
+   
+    if (imgURI.toString().equals(""))
+      newIssue.setImage(null);
+    else
+      newIssue.setImage(imgURI);
 
     /*
      * Articles are specified in a SEPARATOR delimited
