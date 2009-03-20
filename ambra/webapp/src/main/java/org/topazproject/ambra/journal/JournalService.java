@@ -105,10 +105,14 @@ public class JournalService {
   }
 
   /**
+   * This method makes services dependent on servlet context.
+   * Use getCurrentJournal() method in Action class instead.
+   *
    * Get the current journal.
    *
    * @return the current journal
    */
+  @Deprecated
   @Transactional(readOnly = true)
   public Journal getCurrentJournal() {
     return journalKeyService.getCurrentJournal(session);
@@ -135,10 +139,14 @@ public class JournalService {
   }
 
   /**
+   * This method makes services dependent on servlet context. 
+   * Use getCurrentJournal() method in Action class instead.
+   * .
    * Get the name of the current journal.
    *
    * @return the name of the current journal, or null if there is no current journal
    */
+  @Deprecated
   public String getCurrentJournalName() {
     return journalKeyService.getCurrentJournalKey();
   }
