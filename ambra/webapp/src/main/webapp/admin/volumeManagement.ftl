@@ -107,6 +107,7 @@
             <th>Image</th>
             <th>Display Name</th>
             <th>Issue URI</th>
+            <th>&nbsp;</th>
         </tr>
         <#list issues as i>
         <tr>
@@ -126,7 +127,7 @@
           </td>
           <td>
             <@s.url namespace="/article" action="browseIssue" issue="${i.id}" id="browseIssue"/>
-            <a href="${browseIssue}">${i.displayName}<a>
+            <@s.a href="${browseIssue}">${i.displayName}</@s.a>
           </td>
           <td>
              ${i.id}
@@ -134,7 +135,7 @@
           <td>
             <@s.url namespace="/admin" action="issueManagement"
                 issueURI="${i.id}" volumeURI="${volume.id}" id="issueMangement"/>
-            <a href="${issueMangement}">Update<a>
+            <@s.a href="${issueMangement}">Update</@s.a>
           </td>
          </tr>
          </#list>
