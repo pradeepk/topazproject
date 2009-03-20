@@ -33,10 +33,12 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
   private String creatorid;
   private String targetType;
   private boolean isGeneralComment;
+  private boolean broken;
 
   public FlaggedCommentRecord(String flagId, String target, String targetTitle, String flagComment,
                               String created, String creator, String creatorid, String root,
-                              String reasonCode, String targetType, boolean isGeneralComment) {
+                              String reasonCode, String targetType, boolean isGeneralComment,
+                              boolean broken) {
     this.target = target;
     this.targetTitle = targetTitle;
     this.root = root;
@@ -48,6 +50,7 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
     this.creatorid = creatorid;
     this.targetType = targetType;
     this.isGeneralComment = isGeneralComment;
+    this.broken = broken;
   }
 
   public String getTargetDisplayURL() {
@@ -172,6 +175,14 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
 
   public void setIsGeneralComment(boolean generalComment) {
     this.isGeneralComment = generalComment;
+  }
+
+  public boolean isBroken() {
+    return broken;
+  }
+
+  public void setBroken(boolean broken) {
+    this.broken = broken;
   }
 
   public int compareTo (FlaggedCommentRecord o) {

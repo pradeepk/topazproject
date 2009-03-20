@@ -99,11 +99,28 @@ public class FlagManagementService {
 
       boolean isGeneralComment = (a instanceof Annotation) && ((Annotation)a).getContext() == null;
 
+      String reasonCode;
+      String commentBody;
+      boolean isBroken = false;
+      try {
+        reasonCode = flag.getReasonCode();
+      } catch (ApplicationException e) {
+        isBroken = true;
+        reasonCode = "-missing-";
+        log.error("Error parsing reason code for flag " + flag.getId(), e);
+      }
+      
+      try {
+        commentBody = flag.getComment();
+      } catch (ApplicationException e) {
+        isBroken = true;
+        commentBody = "-missing-";
+        log.error("Error parsing comment for flag " + flag.getId(), e);
+      }
+
       FlaggedCommentRecord fcr = new FlaggedCommentRecord(flag.getId(), flag.getAnnotates(), title,
-                                                          flag.getComment(), flag.getCreated(),
-                                                          flag.getCreatorName(), flag.getCreator(),
-                                                          root, flag.getReasonCode(), wt,
-                                                          isGeneralComment);
+          commentBody, flag.getCreated(), flag.getCreatorName(), flag.getCreator(),
+          root, reasonCode, wt, isGeneralComment, isBroken);
       commentrecords.add(fcr);
     }
 

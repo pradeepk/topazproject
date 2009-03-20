@@ -168,37 +168,41 @@
               </#if>
               <tr>
                 <td>${flaggedComment.created}</td>
-                <td width="20%">${flaggedComment.flagComment}</td>
+                <td width="20%">${flaggedComment.flagComment!}</td>
                 <td><a href="../user/displayUser.action?userId=${flaggedComment.creatorid}"/>${flaggedComment.creator}</a></td>
                 <td width="20%"><a href="${flagURL}">${targetTitle}</a></td>
-                <td>${flaggedComment.reasonCode}</td>
+                <td>${flaggedComment.reasonCode!}</td>
                 <td>
-                  <@s.checkbox name="commentsToUnflag" label="Remove Flag" fieldValue="${flaggedComment.target}_${flaggedComment.flagId}_${flaggedComment.targetType}"/>
-                  <br/>
-                  <@s.checkbox name="commentsToDelete" label="${deleteLabel}" fieldValue="${flaggedComment.root}_${flaggedComment.target}_${flaggedComment.targetType}"/>
-                  <#if flaggedComment.isAnnotation && !flaggedComment.isGeneralComment >
+                  <#if flaggedComment.broken >
+                    <strong>There was a problem fetching this flag.</strong>
+                  <#else>
+                    <@s.checkbox name="commentsToUnflag" label="Remove Flag" fieldValue="${flaggedComment.target}_${flaggedComment.flagId}_${flaggedComment.targetType}"/>
                     <br/>
-                    Convert to:
-                    <br/>
-                    <#if !flaggedComment.isMinorCorrection() >
-                      <@s.checkbox name="convertToMinorCorrection" label="Minor Correction"
-                            fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                    <@s.checkbox name="commentsToDelete" label="${deleteLabel}" fieldValue="${flaggedComment.root}_${flaggedComment.target}_${flaggedComment.targetType}"/>
+                    <#if flaggedComment.isAnnotation && !flaggedComment.isGeneralComment >
                       <br/>
-                    </#if>
-                    <#if !flaggedComment.isFormalCorrection() >
-                      <@s.checkbox name="convertToFormalCorrection" label="Formal Correction"
-                            fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                      Convert to:
                       <br/>
-                    </#if>
-                    <#if !flaggedComment.isRetraction() >
-                      <@s.checkbox name="convertToRetraction" label="Retraction"
-                            fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
-                      <br/>
-                    </#if>
-                    <#if flaggedComment.isCorrection() >
-                      <@s.checkbox name="convertToNote" label="Note"
-                            fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
-                      <br/>
+                      <#if !flaggedComment.isMinorCorrection() >
+                        <@s.checkbox name="convertToMinorCorrection" label="Minor Correction"
+                              fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                        <br/>
+                      </#if>
+                      <#if !flaggedComment.isFormalCorrection() >
+                        <@s.checkbox name="convertToFormalCorrection" label="Formal Correction"
+                              fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                        <br/>
+                      </#if>
+                      <#if !flaggedComment.isRetraction() >
+                        <@s.checkbox name="convertToRetraction" label="Retraction"
+                              fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                        <br/>
+                      </#if>
+                      <#if flaggedComment.isCorrection() >
+                        <@s.checkbox name="convertToNote" label="Note"
+                              fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                        <br/>
+                      </#if>
                     </#if>
                   </#if>
                 </td>
