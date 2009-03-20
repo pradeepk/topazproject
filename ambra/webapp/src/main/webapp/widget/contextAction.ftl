@@ -26,7 +26,7 @@
     <div class="contextActionContent">
       <h5><img src="../images/tooltip_addannotation.gif" /> Add a note to this text.</h5>
       <@s.url id="competingInterestURL" action="competing" namespace="/static" includeParams="none"/>
-      Please follow our <a href="${comment}">guidelines for commenting/rating</a> and review our <@s.a href="%{competingInterestURL}">competing interests policy</@s.a>. Comments that do not conform to our guidelines will be promptly removed and the user account disabled. The following must be avoided:
+      Please follow our <a href="${rating}">guidelines for commenting/rating</a> and review our <@s.a href="%{competingInterestURL}">competing interests policy</@s.a>. Comments that do not conform to our guidelines will be promptly removed and the user account disabled. The following must be avoided:
       <ul>
         <li>Remarks that could be interpreted as allegations of misconduct</li>
         <li>Unsupported assertations or statements</li>
