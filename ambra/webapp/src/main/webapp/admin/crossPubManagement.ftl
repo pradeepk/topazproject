@@ -91,7 +91,7 @@
       <@s.submit value="Remove from Journal"/>
       </@s.form>
       <#else>
-        There are currently no cross published articles assocaited with this journal.
+        There are currently no cross published articles associated with this journal.
       </#if>
     </fieldset>
   </body>
