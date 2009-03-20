@@ -40,7 +40,7 @@
       <div id="pubMedRelatedErr" style="display:none;"></div>
       <ul>
         <li><a href="http://scholar.google.com/scholar?hl=en&lr=&q=related:${docURL?url}&btnG=Search">Google Scholar</a></li>
-        <li id="pubMedRelatedLI" style="display:none;"><a id="pubMedRelatedURL">Pubmed</a></li>
+        <li id="pubMedRelatedLI" style="display:none;"><a id="pubMedRelatedURL">PubMed Central</a></li>
       </ul>
 
       <h3>Cited in <img id="relatedCitesSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
