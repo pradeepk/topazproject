@@ -52,7 +52,7 @@
         <p><strong>Included in</strong>
         <br/>
         <#list articleIssues as oneIssue>
-          <@s.a href="${freemarker_config.getJournalUrl(oneIssue[1])}${freemarker_config.context}/article/browseIssue.action?issue=${oneIssue[4]?url}" title="Browse Open Access Issue">${oneIssue[5]}</@s.a>
+          <@s.a href="${freemarker_config.getJournalUrl(oneIssue[1])}${freemarker_config.context}/article/browseIssue.action?issue=${oneIssue[4]?url}" title="Browse Open-Access Issue">${oneIssue[5]}</@s.a>
         </#list>
       </div>
     </#if>
@@ -61,7 +61,7 @@
         <dt>Related <em>${freemarker_config.orgName}</em> Articles</dt>
         <#list articleInfoX.relatedArticles as ra>
         <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${ra.uri}" includeParams="none"/>
-        <dd><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${ra.title}</@s.a></dd>
+        <dd><@s.a href="%{fetchArticleURL}" title="Read Open-Access Article">${ra.title}</@s.a></dd>
         </#list>
       </dl>
     </#if>
