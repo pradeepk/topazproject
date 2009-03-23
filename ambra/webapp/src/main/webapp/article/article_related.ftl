@@ -36,11 +36,11 @@
 
       <h2>Related Articles <a href="/static/help.action#relatedArticles" class="info">info</a></h2>
 
-      <h3>Related Articles on the web <img id="relatedArticlesSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
+      <h3>Related Articles on the Web <img id="relatedArticlesSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
       <div id="pubMedRelatedErr" style="display:none;"></div>
       <ul>
         <li><a href="http://scholar.google.com/scholar?hl=en&lr=&q=related:${docURL?url}&btnG=Search">Google Scholar</a></li>
-        <li id="pubMedRelatedLI" style="display:none;"><a id="pubMedRelatedURL">PubMed Central</a></li>
+        <li id="pubMedRelatedLI" style="display:none;"><a id="pubMedRelatedURL">PubMed</a></li>
       </ul>
 
       <h3>Cited in <img id="relatedCitesSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
