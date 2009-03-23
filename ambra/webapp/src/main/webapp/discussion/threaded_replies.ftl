@@ -46,9 +46,9 @@
           <#if (cisStartDateMillis < reply.createdAsMillis)>
             <div class="cis">
             <#if reply.CIStatement??>
-              Competing interests declared: ${reply.CIStatement}
+              <strong>Competing interests declared:</strong> ${reply.CIStatement}
             <#else>
-              No competing interests declared.
+              <strong>No competing interests declared.</strong>
             </#if>
             </div>
           </#if>
@@ -115,9 +115,9 @@
         <#if (cisStartDateMillis < baseAnnotation.createdAsMillis)>
           <div class="cis">
             <#if baseAnnotation.CIStatement?? && baseAnnotation.CIStatement != "">
-              Competing interests declared: ${baseAnnotation.CIStatement}
+              <strong>Competing interests declared:</strong> ${baseAnnotation.CIStatement}
             <#else>
-              No competing interests declared.
+              <strong>No competing interests declared.</strong>
             </#if>
           </div>
         </#if>

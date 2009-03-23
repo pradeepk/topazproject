@@ -267,9 +267,9 @@ ambra.displayComment = {
       var ciStatementFrag = document.createDocumentFragment();
 
       if (jsonObj.annotation.CIStatement) {
-        ciStatementFrag = "<div class=\"cis\">" + this.ciStatementMsg + jsonObj.annotation.CIStatement + "</div>";
+        ciStatementFrag = "<div class=\"cis\"><strong>" + this.ciStatementMsg + "</strong>" + jsonObj.annotation.CIStatement + "</div>";
       } else {
-        ciStatementFrag = "<div class=\"cis\">" + this.noCIStatementMsg + "</div>";
+        ciStatementFrag = "<div class=\"cis\"><strong>" + this.noCIStatementMsg + "</strong></div>";
       }
 
       return ciStatementFrag;

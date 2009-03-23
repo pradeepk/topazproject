@@ -77,7 +77,8 @@ div#cmtContainer div#viewCIStatement div.cis,
 div.citation div.cis,  /* div.citation targets cis in formal corrections, just in case */
 blockquote div.cis { }
 div.citation div.cis { margin-top: 5px; padding-top:5px; }
-div#cmtContainer div#viewCIStatement div.cis { padding-top: 5px; font-size:0.9em; }
+div#cmtContainer div#viewCIStatement div.cis,
+div#multidetail div.cis { padding-top: 5px; font-size:0.9em; }
 blockquote div.cis { line-height:1.5em; padding:5px 0; }
 
 
