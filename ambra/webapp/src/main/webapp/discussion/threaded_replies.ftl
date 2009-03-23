@@ -45,7 +45,7 @@
           -->
           <#if (cisStartDateMillis < reply.createdAsMillis)>
             <div class="cis">
-            <#if reply.CIStatement??>
+            <#if reply.CIStatement?? && reply.CIStatement != "">
               <strong>Competing interests declared:</strong> ${reply.CIStatement}
             <#else>
               <strong>No competing interests declared.</strong>
