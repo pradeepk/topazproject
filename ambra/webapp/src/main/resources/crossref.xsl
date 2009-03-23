@@ -140,7 +140,9 @@
               <xsl:attribute name="sequence">additional</xsl:attribute>
             </xsl:otherwise>
           </xsl:choose>
-          <given_name><xsl:value-of select="name/given-names"/></given_name>
+          <xsl:if test="name/given-names">
+            <given_name><xsl:value-of select="name/given-names"/></given_name>
+          </xsl:if>
           <surname><xsl:value-of select="name/surname"/></surname>
           </person_name>
         </xsl:otherwise>
