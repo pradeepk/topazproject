@@ -69,7 +69,7 @@ public abstract class BaseAnnotation<T extends Annotea<? extends Blob>> {
    * @return the url linked and escaped comment.
    */
   public String getCommentWithUrlLinking() {
-    return TextUtils.hyperlinkEnclosedWithPTags(getComment());
+    return TextUtils.hyperlinkEnclosedWithPTags(getComment(),25);
   }
 
 
