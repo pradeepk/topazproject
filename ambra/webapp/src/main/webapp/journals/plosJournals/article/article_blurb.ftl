@@ -4,9 +4,6 @@
    definition template if it's not defined. -->
   <#include "article_variables.ftl">
 </#if>
-<#if (publisher?length > 0)>
-  <div id="publisher"><p>${publisher}</p></div>
-</#if>
 <div id="contentHeader"><p>Open Access</p><p id="articleType">${articleType.heading}
 <#if articleType.code??>
   <#if articleType.code != "research_article">
@@ -15,3 +12,6 @@
 <#else>
   --!!ARTICLE TYPE CODE UNDEFINED!!--
 </#if></p></div>
+<#if (publisher?length > 0)>
+  <div id="publisher"><p>${publisher}</p></div>
+</#if>
