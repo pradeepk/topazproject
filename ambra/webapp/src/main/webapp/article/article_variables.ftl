@@ -34,25 +34,24 @@
   <#assign docTitle = "" />
 </#if>
 
-<#assign publisher=""/>
 <#if Request[freemarker_config.journalContextAttributeKey]?exists>
   <#assign journalContext = Request[freemarker_config.journalContextAttributeKey].journal>
 <#else>
   <#assign journalContext = "">
 </#if>
+
+<#assign publisher = "">
 <#list journalList as jour>
-  <#if (articleInfo.eIssn = jour.eIssn) && (jour.key != journalContext) >
-    <#assign publisher = "<strong>Published in the</strong><br/><a href=\"" + freemarker_config.getJournalUrl(jour.key)
-                         + "\">"+ jour.dublinCore.title + "</a></em>" />
+  <#if jour.key != journalContext && articleInfo.eIssn == jour.eIssn>
+    <#assign publisher = "Published in <em><a href=\"" + freemarker_config.getJournalUrl(jour.key) + "\">" + jour.dublinCore.title + "</a></em>">
     <#break/>
   <#else>
     <#if jour.key != journalContext>
       <#assign jourAnchor = "<a href=\"" + freemarker_config.getJournalUrl(jour.key) + "\">"/>
-      <#if publisher?length gt 0>
+      <#if (publisher?length > 0)>
         <#assign publisher = publisher + ", " + jourAnchor + jour.dublinCore.title + "</a>" />
       <#else>
-        <#assign publisher = publisher + "<strong>Published in the</strong><br/>" + jourAnchor +
-          jour.dublinCore.title + "</a>" />
+        <#assign publisher = publisher + "Featured in " + jourAnchor + jour.dublinCore.title + "</a>" />
       </#if>
     </#if>
   </#if>
