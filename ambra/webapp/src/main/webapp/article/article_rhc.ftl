@@ -62,7 +62,7 @@
           <dt>Related ${freemarker_config.orgName} Articles</dt>
           <#list articleInfoX.relatedArticles as ra>
           <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${ra.uri}" includeParams="none"/>
-          <dd><@s.a href="%{fetchArticleURL}" title="Read Open-Access Article">${ra.title}</@s.a></dd>
+          <dd><@s.a href="%{fetchArticleURL}" title="Read Open-Access Article"><@articleFormat>${ra.title}</@articleFormat></@s.a></dd>
           </#list>
         </dl>
       </#if>
