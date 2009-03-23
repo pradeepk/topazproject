@@ -43,7 +43,7 @@
     <div id="published" xpathLocation="noSelect" class="rhcBox_type2">
       <p><strong>Published in the</strong>
       <#list articleIssues as oneIssue>
-        <@s.a href="${freemarker_config.getJournalUrl(oneIssue[1])}${freemarker_config.context}/article/browseIssue.action?issue=${oneIssue[4]?url}" title="Browse Open-Access Issue">${oneIssue[5]} ${oneIssue[3]} Issue of <i>${freemarker_config.getDisplayName(oneIssue[1])}</i></@s.a>
+        <@s.a href="${freemarker_config.getJournalUrl(oneIssue[1])}${freemarker_config.context}/article/browseIssue.action?issue=${oneIssue[4]?url}" title="Browse Open-Access Issue">${oneIssue[5]} ${oneIssue[3]} Issue of <em>${freemarker_config.getDisplayName(oneIssue[1])}</em></@s.a>
       </#list>
     </div>
   </#if>
