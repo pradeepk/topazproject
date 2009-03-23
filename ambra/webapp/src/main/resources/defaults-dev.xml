@@ -25,6 +25,13 @@
     <platform>
       <dummySsoEnabled>true</dummySsoEnabled>
       <defaultJournalName>AmbraJournal</defaultJournalName>
+      <!--
+        This is the competing interest start date
+        Any comments made before this date will not display
+        "I have no competing interest" text
+        This must be in the dd/mm/yyyy format
+      -->
+      <cisStartDate>3/20/2009</cisStartDate>
     </platform>
 
     <!-- 

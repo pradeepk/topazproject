@@ -68,6 +68,13 @@
         http://creativecommons.org/licenses/by-sa/3.0/
       </copyright>
       <webserverUrl>http://${ambra.network.hosts.default}:${ambra.network.ports.default}${ambra.platform.appContext}/</webserverUrl>
+      <!--
+        This is the competing interest start date
+        Any comments made before this date will not display
+        "I have no competing interest" text
+        This must be in the dd/mm/yyyy format
+      -->
+      <cisStartDate>3/20/2009</cisStartDate>
     </platform>
 
     <!-- virtual journal config -->
@@ -107,7 +114,7 @@
         logout: the logout page
         proxy-receptor: the URL for getting a proxy ticket using a PGT
         proxy-validate: the URL to validate/authenticate proxy and regular tickets
-      -->
+      -->      Time
       <cas>
         <url>
           <base>https://${ambra.network.hosts.cas}:${ambra.network.ports.cas-ssl}/cas</base>

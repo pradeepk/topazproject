@@ -111,18 +111,26 @@ ambra.rating = {
       _ratingsForm.cArea.value = jsonObj.comment;
     }
 
-    // add comments
-    if (jsonObj.ciStatement) {
-      _ratingsForm.ciStatement.value = jsonObj.ciStatement;
-      _ratingsForm.ciStatementArea.value = jsonObj.ciStatement;
-      _ratingsForm.competingInterest[0].checked = false;
-      _ratingsForm.competingInterest[1].checked = true;
-      _ratingsForm.ciStatementArea.disabled = false;
+    //If the rating was created before the competing interest statement
+    //System was implemented, don't assume the user said "No competing interest"
+    if(jsonObj.cisStartDateMillis < jsonObj.rateDateMillis) {
+      if (jsonObj.ciStatement) {
+        _ratingsForm.ciStatement.value = jsonObj.ciStatement;
+        _ratingsForm.ciStatementArea.value = jsonObj.ciStatement;
+        _ratingsForm.isCompetingInterest.value = "true";
+        _ratingsForm.competingInterest[0].checked = false;
+        _ratingsForm.competingInterest[1].checked = true; //Select the yes CIS radio button
+        _ratingsForm.ciStatementArea.disabled = false;
+      } else {
+        _ratingsForm.ciStatement.value = '';
+        _ratingsForm.ciStatementArea.value = '';
+        _ratingsForm.isCompetingInterest.value = "false";
+        _ratingsForm.competingInterest[0].checked = true; //Select the no CIS radio button
+        _ratingsForm.competingInterest[1].checked = false;
+        _ratingsForm.ciStatementArea.disabled = true;
+      }
     } else {
-      _ratingsForm.ciStatement.value = '';
-      _ratingsForm.ciStatementArea.value = '';
-      _ratingsForm.competingInterest[0].checked = true;
-      _ratingsForm.competingInterest[1].checked = false;
+      _ratingsForm.isCompetingInterest.value = "";
       _ratingsForm.ciStatementArea.disabled = true;
     }
 
@@ -141,6 +149,9 @@ ambra.rating = {
 
         ratingList[i].className = ratingList[i].className.replaceStringArray(" ", "pct", "pct0");
     }
+
+    _ratingsForm.isCompetingInterest.value = "false";
+    _ratingsForm.competingInterest[0].checked = true; //Select the no CIS radio button
 
     _submitMsg.style.display = 'none';
     ambra.formUtil.textCues.reset(_ratingTitle, _ratingTitleCue);

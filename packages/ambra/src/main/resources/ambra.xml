@@ -57,6 +57,13 @@
         This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License,
         http://creativecommons.org/licenses/by-sa/3.0/
       </copyright>
+      <!--
+        This is the competing interest start date
+        Any comments made before this date will not display
+        "I have no competing interest" text
+        This must be in the dd/mm/yyyy format
+      -->
+      <cisStartDate>3/20/2009</cisStartDate>
     </platform>
 
     <!-- 

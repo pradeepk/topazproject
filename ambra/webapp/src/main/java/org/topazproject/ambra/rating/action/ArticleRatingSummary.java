@@ -98,6 +98,10 @@ public class ArticleRatingSummary {
     return created;
   }
 
+  public long getCreatedMillis() {
+    return created.getTime();
+  }
+
   public void setCreatorURI(String creatorURI) {
     this.creatorURI = creatorURI;
   }

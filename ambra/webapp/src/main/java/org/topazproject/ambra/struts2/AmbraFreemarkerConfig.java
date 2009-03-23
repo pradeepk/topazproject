@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
 
 /**
  * Class to configure the FreeMarker templates with css and javascript files and the title of page.
@@ -64,6 +67,7 @@ public class AmbraFreemarkerConfig {
   private String orgName;
   private String feedbackEmail;
   private String almHost;
+  private Date cisStartDate;
 
   /**
    * Constructor that loads the list of css and javascript files and page titles for pages which
@@ -71,7 +75,7 @@ public class AmbraFreemarkerConfig {
    * of the configs in the config to assemble a union of pages defined.
    *
    */
-  public AmbraFreemarkerConfig() {
+  public AmbraFreemarkerConfig() throws Exception {
     Configuration myConfig = ConfigurationStore.getInstance().getConfiguration();
     if (log.isDebugEnabled()) {
       log.debug("Reading FreeMarker configuration");
@@ -90,6 +94,12 @@ public class AmbraFreemarkerConfig {
     journals = new HashMap<String, JournalConfig>();
     orgName = myConfig.getString("ambra.platform.name");
     feedbackEmail = myConfig.getString("ambra.platform.email.feedback");
+
+    try {
+      cisStartDate = DateFormat.getDateInstance(DateFormat.SHORT).parse(myConfig.getString("ambra.platform.cisStartDate"));
+    } catch (ParseException ex) {
+      throw (Exception) new Exception("Could not find or parse the cisStartDate node in the ambra platform configuration.  Make sure the ambra/platform/cisStartDate node exists.").initCause(ex);
+    }
 
     loadConfig(myConfig);
 
@@ -951,5 +961,21 @@ public class AmbraFreemarkerConfig {
    */
   public void setFeedbackEmail(String feedbackEmail) {
     this.feedbackEmail = feedbackEmail;
+  }
+
+  /**
+   * Get the CIS Starting date
+   * @return the CIS start date
+   */
+  public Date getCisStartDate() {
+    return this.cisStartDate;
+  }
+
+  /**
+   * Get the CIS Starting date in milliseconds
+   * @return the CIS start date in milliseconds
+   */
+  public long getCisStartDateMillis() {
+    return this.cisStartDate.getTime();
   }
 }

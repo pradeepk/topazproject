@@ -17,6 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+<#assign cisStartDateMillis = freemarker_config.cisStartDateMillis>
 <#if Session[freemarker_config.userAttributeKey]?exists>
   <#assign loginURL = "#">
 <#else>
@@ -38,13 +39,19 @@
         <!-- begin : response body text -->
         <blockquote>
           ${reply.commentWithUrlLinking}
-          <div class="cis">
-          <#if reply.CIStatement??>
-            Competing interests declared: ${reply.CIStatement}
-          <#else>
-            No competing interests declared.
+          <#--
+            If the reply was created before the competing interest statement
+            System was implemented, don't display anything
+          -->
+          <#if (cisStartDateMillis < reply.createdAsMillis)>
+            <div class="cis">
+            <#if reply.CIStatement??>
+              Competing interests declared: ${reply.CIStatement}
+            <#else>
+              No competing interests declared.
+            </#if>
+            </div>
           </#if>
-          </div>
         </blockquote>
         <!-- end : response body text -->
         <!-- begin : toolbar options -->
@@ -100,13 +107,20 @@
       <!-- begin : response body text -->
       <blockquote>
         ${baseAnnotation.commentWithUrlLinking}
-        <div class="cis">
-          <#if baseAnnotation.CIStatement?? && baseAnnotation.CIStatement != "">
-            Competing interests declared: ${baseAnnotation.CIStatement}
-          <#else>
-            No competing interests declared.
-          </#if>
-        </div>
+
+          <#--
+            If the reply was created before the competing interest statement
+            System was implemented, don't display anything
+          -->
+        <#if (cisStartDateMillis < baseAnnotation.createdAsMillis)>
+          <div class="cis">
+            <#if baseAnnotation.CIStatement?? && baseAnnotation.CIStatement != "">
+              Competing interests declared: ${baseAnnotation.CIStatement}
+            <#else>
+              No competing interests declared.
+            </#if>
+          </div>
+        </#if>
         <#if citation??><div class="citation"><strong>Citation: </strong><#assign isCorrection=true/><#if baseAnnotation.type?index_of("Retraction") gte 0><#assign isRetraction=true/><#else><#assign isRetraction=false/></#if><#assign doi=baseAnnotation.id?replace("info:doi/","") /><#include "/article/citation.ftl"/></#if>
       </blockquote>
       <!-- end : response body text -->

@@ -259,15 +259,23 @@ ambra.displayComment = {
    */
   buildDisplayCIStatement: function (jsonObj) {
     // Insert formatted comment
-    var ciStatementFrag = document.createDocumentFragment();
 
-    if (jsonObj.annotation.CIStatement) {
-      ciStatementFrag = "<div class=\"cis\">" + this.ciStatementMsg + jsonObj.annotation.CIStatement + "</div>";
+    //If the annotation was created before the competing interest statement
+    //System was implemented, don't assume the user said "No competing interest"
+    //Don't display anything
+    if (jsonObj.cisStartDateMillis < jsonObj.annotation.createdAsMillis) {
+      var ciStatementFrag = document.createDocumentFragment();
+
+      if (jsonObj.annotation.CIStatement) {
+        ciStatementFrag = "<div class=\"cis\">" + this.ciStatementMsg + jsonObj.annotation.CIStatement + "</div>";
+      } else {
+        ciStatementFrag = "<div class=\"cis\">" + this.noCIStatementMsg + "</div>";
+      }
+
+      return ciStatementFrag;
     } else {
-      ciStatementFrag = "<div class=\"cis\">" + this.noCIStatementMsg + "</div>";
+      return null;
     }
-
-    return ciStatementFrag;
   },
   
   /**
@@ -314,8 +322,12 @@ ambra.displayComment = {
     //alert("jsonObj.annotation.commentWithUrlLinking = " + jsonObj.annotation.commentWithUrlLinking);
 
     if (ambra.displayComment.sectionCIStatement.hasChildNodes) ambra.domUtil.removeChildren(ambra.displayComment.sectionCIStatement);
-    ambra.displayComment.sectionCIStatement.innerHTML = this.buildDisplayCIStatement(jsonObj);
-    
+
+    var cisFragment = this.buildDisplayCIStatement(jsonObj);
+    if (cisFragment != null) {
+      ambra.displayComment.sectionCIStatement.innerHTML = cisFragment;
+    }
+
     if (ambra.displayComment.sectionLink.hasChildNodes) ambra.domUtil.removeChildren(ambra.displayComment.sectionLink);
     this.sectionLink.appendChild(this.buildDisplayViewLink(jsonObj));
     
@@ -387,7 +399,13 @@ ambra.displayComment = {
       contentDiv.className += ' ' + annotationConfig.styleRetraction;
     }
 
-    contentDiv.innerHTML = this.buildDisplayBody(jsonObj) + this.buildDisplayCIStatement(jsonObj);
+    var cisFragment = this.buildDisplayCIStatement(jsonObj);
+
+    if (cisFragment != null) {
+      contentDiv.innerHTML = this.buildDisplayBody(jsonObj) + cisFragment;
+    } else {
+      contentDiv.innerHTML = this.buildDisplayBody(jsonObj);
+    }
     
     var cDetailDiv = document.createElement('div');
     cDetailDiv.className = 'detail';

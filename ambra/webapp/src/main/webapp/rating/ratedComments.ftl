@@ -17,6 +17,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+  <#assign cisStartDateMillis = freemarker_config.cisStartDateMillis>
+
   <div id="content">
     <h1>Ratings</h1>
       <div class="source">
@@ -113,13 +115,15 @@
               <#if articleRatingSummary.commentValue?exists>
                 <p>${articleRatingSummary.commentValue}</p>
               </#if>
-              <div class="cis">
-                <#if articleRatingSummary.CIStatement??>
-                  Competing interests declared: ${articleRatingSummary.CIStatement}
-                <#else>
-                  No competing interests declared.
+              <#if (cisStartDateMillis < articleRatingSummary.createdMillis)>
+                <div class="cis">
+                  <#if articleRatingSummary.CIStatement??>
+                    Competing interests declared: ${articleRatingSummary.CIStatement}
+                  <#else>
+                    No competing interests declared.
+                  </#if>
+                  </div>
                 </#if>
-                </div>
             </blockquote>
           </div>
           <!-- end : response body text -->

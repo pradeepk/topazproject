@@ -31,6 +31,9 @@ import org.topazproject.ambra.annotation.service.WebAnnotation;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+
 /**
  * Used to fetch an annotation given an id.
  *
@@ -81,6 +84,18 @@ public abstract class BaseGetAnnotationAction extends BaseActionSupport {
     return annotation.getCreatorName();
   }
 
+  /**
+   * Returns Milliseconds representation of the CIS start date
+   * @return Milliseconds representation of the CIS start date 
+   * @throws Exception on bad config data or config entry not found.
+   */
+  public long getCisStartDateMillis() throws Exception {
+    try {
+      return DateFormat.getDateInstance(DateFormat.SHORT).parse(this.configuration.getString("ambra.platform.cisStartDate")).getTime();
+    } catch (ParseException ex) {
+      throw (Exception) new Exception("Could not find or parse the cisStartDate node in the ambra platform configuration.  Make sure the ambra/platform/cisStartDate node exists.").initCause(ex);
+    }
+  }
 
   @Required
   public void setAnnotationService(final AnnotationService annotationService) {

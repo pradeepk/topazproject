@@ -36,7 +36,7 @@
           <input type="hidden" name="commentTitle" id="commentTitle" value="" />
           <input type="hidden" name="comment" id="commentArea" value="" />
           <input type="hidden" name="ciStatement" id="statementArea" value="" />
-          <input type="hidden" name="isCompetingInterest" id="isCompetingInterest" value="false" />
+          <input type="hidden" name="isCompetingInterest" id="isCompetingInterest" value="" />
           <fieldset>
             <legend>Compose Your Annotation</legend>
             <span id="submitRatingMsg" class="error" style="display:none;"></span>
@@ -96,7 +96,7 @@
                   <fieldset>
                     <legend>Declare any competing interests.</legend>
                     <ul>
-                      <li><label><input id="isCompetingInterestNo" type="radio" checked="checked" name="competingInterest" value="false"  /> No, I don't have any competing interests to declare.</label></li>
+                      <li><label><input id="isCompetingInterestNo" type="radio" name="competingInterest" value="false"  /> No, I don't have any competing interests to declare.</label></li>
                       <li><label><input id="isCompetingInterestYes" type="radio" name="competingInterest" value="true"  /> Yes, I have competing interests to declare (enter below):</label></li>
                     </ul>
                     <textarea name="ciStatementArea" id="ciStatementArea" disabled value="Enter your competing interests..." alt="Enter your competing interests...">Enter your competing interests...</textarea>

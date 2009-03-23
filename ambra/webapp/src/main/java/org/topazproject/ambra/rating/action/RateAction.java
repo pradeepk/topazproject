@@ -22,6 +22,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
+import java.text.DateFormat;
+import java.text.ParseException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,7 +65,8 @@ public class RateAction extends AbstractRatingAction {
   private boolean                  isResearchArticle;
   private String                   commentTitle;
   private String                   ciStatement;
-  private boolean                  isCompetingInterest = false;
+  private Date                     rateDate;
+  private String                   isCompetingInterest;
   private String                   comment;
   private Session                  session;
   private RatingsPEP               pep;
@@ -126,14 +129,19 @@ public class RateAction extends AbstractRatingAction {
       }
     }
 
-    if(this.isCompetingInterest) {
-      if (StringUtils.isEmpty(ciStatement)) {
-        addFieldError("statement", "You must say something in your competing interest statement");
-        return INPUT;
+    if (this.isCompetingInterest == null || this.isCompetingInterest.trim().length() == 0) {
+      addFieldError("statement", "You must specificy whether you have a competing interest or not");
+      return INPUT;
+    } else {
+      if (Boolean.parseBoolean(isCompetingInterest)) {
+        if (StringUtils.isEmpty(ciStatement)) {
+          addFieldError("statement", "You must say something in your competing interest statement");
+          return INPUT;
+        }
       }
-    }    
+    }
 
-    // reject profanity in content
+     // reject profanity in content
     final List<String> profaneWordsInCommentTitle = profanityCheckingService.validate(commentTitle);
     final List<String> profaneWordsInComment      = profanityCheckingService.validate(comment);
     final List<String> profaneWordsInCIStatement  = profanityCheckingService.validate(ciStatement);
@@ -265,7 +273,7 @@ public class RateAction extends AbstractRatingAction {
 
     //If the user decides that they no longer have competing interests
     //Let's delete the text.
-    if(isCompetingInterest) {
+    if(Boolean.parseBoolean(isCompetingInterest)) {
       articleRating.getBody().setCIStatement(ciStatement);
     } else {
       articleRating.getBody().setCIStatement("");
@@ -320,6 +328,7 @@ public class RateAction extends AbstractRatingAction {
     setCommentTitle(rating.getBody().getCommentTitle());
     setComment(rating.getBody().getCommentValue());
     setCiStatement(rating.getBody().getCIStatement());
+    setRateDate(rating.getCreated());
 
     return SUCCESS;
   }
@@ -417,8 +426,10 @@ public class RateAction extends AbstractRatingAction {
     this.insight = insight;
   }
 
-  /** @param isCompetingInterest does this annotation have competing interests? */
-  public void setIsCompetingInterest(final boolean isCompetingInterest) {
+  /**
+   * @param isCompetingInterest does this annotation have competing interests?
+   * */
+  public void setIsCompetingInterest(final String isCompetingInterest) {
     this.isCompetingInterest = isCompetingInterest;
   }
 
@@ -510,11 +521,52 @@ public class RateAction extends AbstractRatingAction {
   }
 
   /**
+   * Get the date the article was rated
+   * @return the date the article was rated
+   */
+  public Date getRateDate() {
+    return this.rateDate;
+  }
+
+  /**
+   * Get the date the article was rated in milliseconds
+   * @return the date the article was rated in milliseconds
+   */
+  public Long getRateDateMillis() {
+    if(this.rateDate != null) {
+      return this.rateDate.getTime();
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Sets the date of the article Rate
+   * @param rateDate the date the article is rated
+   */
+  public void setRateDate(Date rateDate) {
+    this.rateDate = rateDate;
+  }
+
+  /**
    * Set the profanityCheckingService.
    *
    * @param profanityCheckingService profanityCheckingService
    */
   public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {
     this.profanityCheckingService = profanityCheckingService;
+  }
+
+  /**
+   * Returns Milliseconds representation of the CIS start date
+   * @return Milliseconds representation of the CIS start date 
+   * @throws Exception on bad config data or config entry not found.
+   */
+  public long getCisStartDateMillis() throws Exception {
+    try {
+      return DateFormat.getDateInstance(DateFormat.SHORT).parse(this.configuration.getString("ambra.platform.cisStartDate")).getTime();
+    } catch (ParseException ex) {
+      throw (Exception) new Exception("Could not find or parse the cisStartDate node in the ambra platform configuration.  Make sure the ambra/platform/cisStartDate node exists.").initCause(ex);
+    }
   }
 }
