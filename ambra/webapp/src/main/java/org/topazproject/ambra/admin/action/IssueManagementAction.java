@@ -1,7 +1,7 @@
 /* $$HeadURL:: $
  * $$Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ import org.topazproject.ambra.article.service.BrowseService;
 import org.topazproject.ambra.article.action.TOCArticleGroup;
 import org.topazproject.ambra.admin.service.AdminService;
 import org.topazproject.ambra.admin.service.AdminService.JournalInfo;
+import org.topazproject.ambra.model.article.ArticleInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -54,6 +56,7 @@ public class IssueManagementAction extends BaseAdminActionSupport {
   private JournalInfo   journalInfo;
   private Issue         issue;
   private String        articleOrderCSV;
+  private List<URI>     orphans;
   private List<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
 
   // Necessary Services
@@ -141,8 +144,7 @@ public class IssueManagementAction extends BaseAdminActionSupport {
            * are ordering.
            */
           if (validateCSV(issue, issueURIs))
-            issue = adminService.updateIssue(issueURI,imageURI,displayName,
-                issueURIs,respectOrder);
+            issue = adminService.updateIssue(issueURI,imageURI,displayName,issueURIs,respectOrder);
 
         } catch (Exception e) {
           addActionMessage("Issue not updated due to the following error.");
@@ -159,9 +161,62 @@ public class IssueManagementAction extends BaseAdminActionSupport {
     issue = adminService.getIssue(issueURI);
     articleGroups = browseService.getArticleGrpList(issue);
     articleOrderCSV = browseService.articleGrpListToCSV(articleGroups);
+    orphans = getOrphannedArticles(issue, articleGroups);
+
+    /*
+     * Add the Orphans so that validateCSV doesn't prevent
+     * all updates.
+     */
+    String orphanCSV = convertURIsToCSV(orphans);
+    articleOrderCSV = (orphanCSV.length() > 0) ? articleOrderCSV +","+ orphanCSV : articleOrderCSV;
     journalInfo = adminService.createJournalInfo();
     
     return SUCCESS;
+  }
+
+  /**
+   *
+   * @param uriList
+   * @return
+   */
+  private String convertURIsToCSV(List<URI> uriList) {
+    StringBuilder csv = new StringBuilder();
+
+    for(URI uri : uriList) {
+      if (csv.length() > 0)
+        csv.append(',');
+      csv.append(uri.toString());
+    }
+
+    return csv.toString(); 
+  }
+  
+  /**
+   *
+   * @param issue
+   * @param articleGroups
+   * @return
+   */
+  private List<URI> getOrphannedArticles(Issue issue, List<TOCArticleGroup> articleGroups) {
+    List<URI> articleList = issue.getArticleList();
+    List<URI> orphans = new ArrayList<URI>();
+
+    for(URI articleURI : articleList) {
+      Boolean found = false;
+      for (TOCArticleGroup ag : articleGroups) {
+        List<ArticleInfo> infoList = ag.getArticles();
+        for(ArticleInfo info : infoList ) {
+          if (info.getId().equals(articleURI)) {
+            found = true;
+            break;
+          }
+        }
+      }
+      if (!found)
+        orphans.add(articleURI);
+    }
+
+    return orphans;
   }
 
   /**
@@ -190,6 +245,14 @@ public class IssueManagementAction extends BaseAdminActionSupport {
       }
     }
     return true;
+  }
+
+  /**
+   *
+   * @return
+   */
+  public List<URI> getOrphans() {
+    return this.orphans; 
   }
 
   /**
@@ -253,7 +316,8 @@ public class IssueManagementAction extends BaseAdminActionSupport {
     } catch (Exception e) {
       this.imageURI = null;
       if (log.isDebugEnabled())
-        log.debug("setImage URI conversion failed. ");
+        log.debug("setImage URI conversion failed."  +
+            "imageURI set to null to indicate this: " + uri.trim(), e);
     }
   }
 
@@ -266,7 +330,8 @@ public class IssueManagementAction extends BaseAdminActionSupport {
     } catch (Exception e) {
       this.volumeURI = null;
       if (log.isDebugEnabled())
-        log.debug("setVolume URI conversion failed. ");
+        log.debug("setVolume URI conversion failed." +
+            "volumeURI set to null to indicate this: " + uri.trim(), e);
     }
   }
 

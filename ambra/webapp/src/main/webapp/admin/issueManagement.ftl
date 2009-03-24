@@ -144,8 +144,33 @@
           </td>
          </tr>
          </#list>
-      </table>
-      </#list>
+       </table>
+       </#list>
+         <b>Ophanned Articles</b>
+         <table border="1" cellpadding="10" cellspacing="0">
+           <tr>
+             <td colspan="2">
+               <ul>
+               <li><kbd>Articles with types no longer in the configuration file.</kbd></li>
+               <li><kbd>Incorrect URIs not associated with an article.</kbd></li>
+               </ul>
+             </td>
+           </tr>
+           <tr>
+             <th>Delete</th>
+             <th>Article URI</th>
+           </tr>
+           <#list orphans as orphan>
+           <tr>
+             <td align="center">
+                <@s.checkbox name="articlesToRemove" fieldValue="${orphan}"/>
+             </td>
+             <td>
+               ${orphan}
+             </td>
+            </tr>
+           </#list>
+         </table>
       <@s.submit value="Remove Selected Articles"/>
       </@s.form>
     <#else>
