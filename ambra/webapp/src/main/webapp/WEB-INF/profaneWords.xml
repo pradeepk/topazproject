@@ -24,7 +24,6 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
   <util:list id="profaneWords">
-    <value>ass</value>
     <value>ass lick</value>
     <value>asses</value>
     <value>asshole</value>
@@ -89,7 +88,6 @@
     <value>dink</value>
     <value>dinks</value>
     <value>dipshit</value>
-    <value>dong</value>
     <value>douche bag</value>
     <value>dumbass</value>
     <value>fag</value>
@@ -154,7 +152,6 @@
     <value>jizm</value>
     <value>jizz</value>
     <value>kike</value>
-    <value>kock</value>
     <value>kondum</value>
     <value>kondums</value>
     <value>kraut</value>
