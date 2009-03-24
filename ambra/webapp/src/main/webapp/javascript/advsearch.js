@@ -57,16 +57,18 @@ ambra.advsearch = {
     ambra.advsearch.liAuthNmeOptions = dojo.query('.options', ambra.advsearch.olAuthNmes)[0];
     ambra.advsearch.liAuthNmesOpts = dojo.byId(ambra.advsearch.Config.idLiAuthNmesOpts);
 
-    // dates section...
-    var slct = dojo.byId(ambra.advsearch.Config.idPublishDate);
-    var showDates = (slct.options[slct.selectedIndex].value == 'range');
-    dojo.byId(ambra.advsearch.Config.idPubDateOptions).style.display = showDates ? '' : 'none';
-    dojo.connect(dojo.byId(ambra.advsearch.Config.idPublishDate), "onchange", ambra.advsearch.onChangePublishDate);
 
-    // date part comment cue event bindings...
-    dojo.connect(dojo.byId('startDateId'), "onfocus", ambra.advsearch.onFocusCommentCueInputHandler);
-    dojo.connect(dojo.byId('endDateId'), "onfocus", ambra.advsearch.onFocusCommentCueInputHandler);
+    //Manage date entry section, but only if is defined
+    if (dojo.byId(ambra.advsearch.Config.idPubDateOptions) != null) {
+      var slct = dojo.byId(ambra.advsearch.Config.idPublishDate);
+      var showDates = (slct.options[slct.selectedIndex].value == 'range');
+      dojo.byId(ambra.advsearch.Config.idPubDateOptions).style.display = showDates ? '' : 'none';
+      dojo.connect(dojo.byId(ambra.advsearch.Config.idPublishDate), "onchange", ambra.advsearch.onChangePublishDate);
 
+      // date part comment cue event bindings...
+      dojo.connect(dojo.byId('startDateId'), "onfocus", ambra.advsearch.onFocusCommentCueInputHandler);
+      dojo.connect(dojo.byId('endDateId'), "onfocus", ambra.advsearch.onFocusCommentCueInputHandler);
+    }
 
     // subject categories section...
     if(document.selection) {
@@ -87,17 +89,19 @@ ambra.advsearch = {
 
     ambra.advsearch.explodeAuthNames();
 
-    //  Prime the startDate and endDate pop-up calendars...
-    Calendar.setup({
-      inputField     :    "startDateId",    // id of the input field
-      ifFormat       :    "%Y-%m-%d",       // format of the input field
-      step           :    1                // show all years in drop-down boxes (instead of every other year as default)
-    });
-    Calendar.setup({
-      inputField     :    "endDateId",      // id of the input field
-      ifFormat       :    "%Y-%m-%d",       // format of the input field
-      step           :    1                // show all years in drop-down boxes (instead of every other year as default)
-    });
+    //Prime the startDate and endDate pop-up calendars only if they are defined 
+    if (dojo.byId(ambra.advsearch.Config.idPubDateOptions) != null) {
+      Calendar.setup({
+        inputField     :    "startDateId",    // id of the input field
+        ifFormat       :    "%Y-%m-%d",       // format of the input field
+        step           :    1                // show all years in drop-down boxes (instead of every other year as default)
+      });
+      Calendar.setup({
+        inputField     :    "endDateId",      // id of the input field
+        ifFormat       :    "%Y-%m-%d",       // format of the input field
+        step           :    1                // show all years in drop-down boxes (instead of every other year as default)
+      });
+    }
   },
 
   onSubmitHandler: function(e) {

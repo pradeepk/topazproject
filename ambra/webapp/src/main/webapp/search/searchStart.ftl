@@ -1,16 +1,16 @@
 <#--
   $HeadURL::                                                                            $
   $Id$
-  
+
   Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
-  
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@
 <#macro chkd tstr str><#if tstr == str>${checkedstr}</#if></#macro>
 <#macro chkdlist tstr strlist><#list strlist as str><#if tstr == str>${checkedstr}</#if></#list></#macro>
 <!-- begin : advanced search form -->
-<div id="content" class="search">  
+<div id="content" class="search">
   <!-- begin : right-hand column -->
   <div id="rhc">
     <!-- commenting out the Quick Article locator box until spec is better defined
@@ -47,7 +47,7 @@
           </li>
           <li class="btnWrap"><input type="submit" id="button-find" value="Go"/></li>
         </ol>
-      </form>              
+      </form>
     </div>-->
   </div>
   <!-- end : right-hand column -->
@@ -57,11 +57,11 @@
     <#assign currentJournalName = freemarker_config.getDisplayName(journalContext) />
     <p>Search the full text of all issues of <em>${currentJournalName}</em></p>
     <@s.url id="advSearchURL" includeParams="none" namespace="/search" action="advancedSearch" />
-    <form id="advSearchForm" name="advSearchForm" onsubmit="return true;" action="${advSearchURL}" 
+    <form id="advSearchForm" name="advSearchForm" onsubmit="return true;" action="${advSearchURL}"
           method="post" enctype="multipart/form-data" class="advSearch" title="Advanced Search">
       <fieldset id="author">
-        
-        
+
+
         <legend><span>Search by Author</span></legend>
         <ol id="as_ol_an">
           <li>
@@ -75,11 +75,11 @@
               <legend>Search for: </legend>
               <ol>
                 <#if ((authorNameOp!"") == "any") || ((authorNameOp!"") == "")>
-                  <#assign anyChecked = checkedstr> 
-                  <#assign allChecked = ""> 
+                  <#assign anyChecked = checkedstr>
+                  <#assign allChecked = "">
                 <#elseif (authorNameOp!"") == "all">
-                  <#assign anyChecked = ""> 
-                  <#assign allChecked = checkedstr> 
+                  <#assign anyChecked = "">
+                  <#assign allChecked = checkedstr>
                 </#if>
                 <li><label><input type="radio" name="authorNameOp" value="any" ${anyChecked} /> <em>Any</em> of these authors</label></li>
                 <li><label><input type="radio" name="authorNameOp" value="all" ${allChecked} /> <em>All</em> of these</label></li>
@@ -129,11 +129,15 @@
                 <option value="week" <@slctd tstr="week" str=(dateTypeSelect!"")/>>Past week</option>
                 <option value="month" <@slctd tstr="month" str=(dateTypeSelect!"")/>>Past month</option>
                 <option value="3months" <@slctd tstr="3months" str=(dateTypeSelect!"")/>>Past 3 months</option>
-                <option value="range" <@slctd tstr="range" str=(dateTypeSelect!"")/>>Specify a date range...</option>
+                <option value="6months" <@slctd tstr="6months" str=(dateTypeSelect!"")/>>Past 6 months</option>
+                <#--Commenting out due to bug with Mulgara search
+                option value="range" <@slctd tstr="range" str=(dateTypeSelect!"")/>>Specify a date range...</option-->
               </select>
             </span>
           </li>
-          <li id="pubDateOptions" class="options" style="display:none;">
+          <#--
+            Commenting out due to bug with Mulgara search
+            <li id="pubDateOptions" class="options" style="display:none;">
             <fieldset>
               <legend>Published between: </legend>
               <ol>
@@ -145,6 +149,7 @@
               </ol>
             </fieldset>
           </li>
+          -->
         </ol>
       </fieldset>
       <fieldset id="subjCats">
@@ -174,7 +179,7 @@
 </#list>
               </ul>
 <#else>
-There are no subjects in the system. 
+There are no subjects in the system.
 </#if>
             </fieldset>
           </li>
