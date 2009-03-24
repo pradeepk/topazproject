@@ -269,6 +269,9 @@ public class SearchAction extends BaseSessionAwareActionSupport {
         if ("3months".equals(dateTypeSelect)) {
           cal.add(Calendar.MONTH, -3);
         }
+        if ("6months".equals(dateTypeSelect)) {
+          cal.add(Calendar.MONTH, -6);
+        }
 
         synchronized(luceneDateFormat) {
           endDateStr = luceneDateFormat.format(new Date());
