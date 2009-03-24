@@ -95,10 +95,20 @@ public class AmbraFreemarkerConfig {
     orgName = myConfig.getString("ambra.platform.name");
     feedbackEmail = myConfig.getString("ambra.platform.email.feedback");
 
+    String date = myConfig.getString("ambra.platform.cisStartDate");
+
+    if(date == null) {
+      throw new Exception("Could not find the cisStartDate node in the " +
+          "ambra platform configuration.  Make sure the " +
+          "ambra/platform/cisStartDate node exists.");
+    }
+
     try {
-      cisStartDate = DateFormat.getDateInstance(DateFormat.SHORT).parse(myConfig.getString("ambra.platform.cisStartDate"));
+      cisStartDate = DateFormat.getDateInstance(DateFormat.SHORT).parse(date);
     } catch (ParseException ex) {
-      throw (Exception) new Exception("Could not find or parse the cisStartDate node in the ambra platform configuration.  Make sure the ambra/platform/cisStartDate node exists.").initCause(ex);
+      throw new Exception("Could not parse the cisStartDate value of \"" + date +
+          "\" in the ambra platform configuration.  Make sure the cisStartDate is in the " +
+          "following format: dd/mm/yyyy", ex);
     }
 
     loadConfig(myConfig);
@@ -443,7 +453,8 @@ public class AmbraFreemarkerConfig {
     return retVal != null ? retVal : DEFAULT_CSS_FILES;
   }
 
-  private String[] getCssForJournal(JournalConfig jc, String templateName, String defaultTemplateName) {
+  private String[] getCssForJournal(JournalConfig jc, String templateName,
+                                    String defaultTemplateName) {
     String[] retVal = jc.getCssFiles().get(templateName);
     if (retVal != null)
       return retVal;
