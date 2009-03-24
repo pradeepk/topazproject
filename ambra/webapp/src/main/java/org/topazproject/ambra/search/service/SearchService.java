@@ -373,8 +373,11 @@ public class SearchService {
    *   <li>we don't really want to ever subtract from all, so if we have only minus terms then
    *       we try to pull the minus up a level. E.g. 'a (-foo -bar)' can be turned into
    *       'a -(foo OR bar)'</li>
-   *   <li>for performance we want to group all clauses with the same field into a single clause
-   *       because each clause becomes a separate lucene query when turned in tql.</li>
+   *   <li>for performance we want to group all optional clauses with the same field into a single
+   *       clause because each clause becomes a separate lucene query when turned in tql. Note
+   *       that we can't group required clauses because if the field has a cardinality greater 1
+   *       and one terms matches in one value and a second term in another value then we'd get no
+   *       results because no single value has both terms.</li>
    * </ul>
    *
    * @param bq the boolean-query to simplify
@@ -413,7 +416,9 @@ public class SearchService {
     q.clauses().addAll(added);
     q.clauses().removeAll(removed);
 
-    // group clauses for same field together (note: LinkedHashMap is to make the tests stable)
+    /* group optional and prohibited clauses for same field together.
+     * (note: LinkedHashMap is to make the tests stable).
+     */
     Map<String, List<BooleanClause>> fieldMap = new LinkedHashMap<String, List<BooleanClause>>();
     for (BooleanClause c : (List<BooleanClause>) q.clauses())
       multiMapPut(fieldMap, getField(c.getQuery()), c);
@@ -421,10 +426,20 @@ public class SearchService {
     q.clauses().clear();
     for (String field : fieldMap.keySet()) {
       List<BooleanClause> clauses = fieldMap.get(field);
-      if (field == null || clauses.size() == 1)
+      if (field == null || clauses.size() == 1) {
         q.clauses().addAll(clauses);
-      else
-        q.add(new SameFieldQuery(field, clauses), Occur.SHOULD);
+      } else {
+        List<BooleanClause> shoulds = new ArrayList<BooleanClause>();
+        for (BooleanClause c : clauses) {
+          if (c.getOccur() == Occur.SHOULD)
+            shoulds.add(c);
+          else
+            q.add(c);
+        }
+
+        if (shoulds.size() > 0)
+          q.add(new SameFieldQuery(field, shoulds), Occur.SHOULD);
+      }
     }
   }
 
