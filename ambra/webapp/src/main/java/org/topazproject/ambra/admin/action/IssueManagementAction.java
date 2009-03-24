@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -143,7 +142,7 @@ public class IssueManagementAction extends BaseAdminActionSupport {
            * Make sure the only changes to the articleListCSV
            * are ordering.
            */
-          if (validateCSV(issue, issueURIs))
+          if (validateCSV(issueURIs, browseService.getArticleList(issue)))
             issue = adminService.updateIssue(issueURI,imageURI,displayName,issueURIs,respectOrder);
 
         } catch (Exception e) {
@@ -221,22 +220,21 @@ public class IssueManagementAction extends BaseAdminActionSupport {
 
   /**
    *
-   * @param issue
-   * @param issueURIs
+   * @param issueURIs List of issue URI's
+   * @param articleList List of article URI's
    * @return
    * @throws URISyntaxException
    */
-  public Boolean validateCSV(Issue issue, List<URI> issueURIs) throws URISyntaxException {
-    List<URI> curList = issue.getArticleList();
+  private Boolean validateCSV(List<URI> issueURIs, List<URI> articleList) throws URISyntaxException {
 
-    if (issueURIs.size() != curList.size()) {
+    if (issueURIs.size() != articleList.size()) {
       addActionMessage("Issue not updated due to the following error.");
       addActionMessage("There has been an addition or deletion in the Article URI List.");
 
       return false;
     }
 
-    for(URI uri : curList) {
+    for(URI uri : articleList) {
       if (!issueURIs.contains(uri)) {
         addActionMessage("Issue not updated due to the following error.");
         addActionMessage("One of the URI's in the Article URI List has changed.");

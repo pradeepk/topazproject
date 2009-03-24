@@ -341,7 +341,7 @@ public class BrowseService {
     IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssueURI,
                                         nextIssueURI, imageArticle, description,
                                         parentVolume == null ? null : parentVolume.getId());
-    issueInfo.setArticleUriList(issue.getArticleList());
+    issueInfo.setArticleUriList(getArticleList(issue));
     return issueInfo;
   }
 
@@ -861,4 +861,19 @@ public class BrowseService {
     }
     return articleGroups;
   }
+
+  /**
+   * Get ordered list of articles. Either from articleList or from
+   * simpleCollection if articleList is empty.
+   * @param issue
+   * @return List of article URI's
+   */
+  public List<URI> getArticleList(Issue issue) {
+    List<URI> articleList = issue.getArticleList();
+    if (articleList.isEmpty() && !issue.getSimpleCollection().isEmpty())
+      return new ArrayList<URI>(issue.getSimpleCollection());
+
+    return articleList;
+  }
+
 }
