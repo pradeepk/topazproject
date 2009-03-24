@@ -60,6 +60,10 @@ public class Results {
   private static final Log           log  = LogFactory.getLog(Results.class);
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
+  private static final String HIGHLIGHT_TAG_START = "<span class=\"highlight\">";
+  private static final String HIGHLIGHT_TAG_END = "</span>";
+
+
   private final ArticleOtmService articleService;
   private final Query             luceneQuery;
   private final List<SearchHit>   unresolvedHits;
@@ -192,12 +196,12 @@ public class Results {
 
   private String createHighlight(String fname, String fval) throws IOException {
     int snippetsMax    = CONF.getInt("ambra.services.search.snippetsMax",    3);
-    int fieldMaxLength = CONF.getInt("ambra.services.search.fieldMaxLength", 50);
+    int fieldMaxLength = CONF.getInt("ambra.services.search.fieldMaxLength", 100);
 
     // Try to build snippets
     if (snippetsMax > 0) {
       SimpleHTMLFormatter formatter =
-          new SimpleHTMLFormatter("<span class=\"highlight\">", "</span>");
+          new SimpleHTMLFormatter(HIGHLIGHT_TAG_START, HIGHLIGHT_TAG_END);
 
       QueryScorer scorer = new QueryScorer(luceneQuery, fname);
       Highlighter highlighter = new Highlighter(formatter, scorer);
@@ -208,7 +212,7 @@ public class Results {
       if (fragments != null && fragments.length > 0) {
         StringBuilder sb = new StringBuilder(snippetsMax * (fieldMaxLength + 25));
         for (int i = 0; i < fragments.length; i++) {
-          sb.append(stripTrailingEntity(fragments[i]));
+          sb.append(stripTrailingEntity(stripTags(fragments[i])));
           if (i < (fragments.length - 1))
             sb.append(" ... ");
         }
@@ -238,6 +242,73 @@ public class Results {
       if (pos - iamp > 7)
         src = src.substring(0, iamp) + src.substring(pos + 1);
     }
+  }
+
+  /**
+   * Remove all of the non-Highlight tags from a String, including whole tags
+   * and fragments of tags at the begining and end of the String.
+   * If a Highlight tag appears inside a non-Highlight tag (whole or fragmentary),
+   * then return a zero-length String
+   * (this happens when a query term is located inside one
+   * of the non-Highlight tags and that query term is marked-up with a Highlight tag).
+   * <p/>
+   * A "tag" is anything between the greater-than and less-than characters.
+   *
+   * @param src The String which will have its trags removed
+   * @return The input String without any non-Highlight tags
+   */
+  private static String stripTags(String src) {
+    // Remove Highlight tags inside other tags.  Highlight tags always appear in start/end pairs.
+    if (src.indexOf(HIGHLIGHT_TAG_START) > -1 && src.indexOf(HIGHLIGHT_TAG_END) > -1) {
+      // If the leading tag or fragment contains a Highlight tag, then discard entire "src" String
+      if (src.indexOf('>', src.indexOf(HIGHLIGHT_TAG_END) + HIGHLIGHT_TAG_END.length()) > -1
+          && ( src.indexOf('>', src.indexOf(HIGHLIGHT_TAG_END) + HIGHLIGHT_TAG_END.length())
+              < src.indexOf('<', src.indexOf(HIGHLIGHT_TAG_END) + HIGHLIGHT_TAG_END.length())
+          || src.indexOf('<', src.indexOf(HIGHLIGHT_TAG_END) + HIGHLIGHT_TAG_END.length()) < 0) ) {
+        return "";
+      }
+      // If the trailing tag or fragment contains a Highlight tag, then discard entire "src" String
+      String choppedSrc = src.substring(0, src.lastIndexOf(HIGHLIGHT_TAG_START));
+      if (choppedSrc.lastIndexOf('>') < choppedSrc.lastIndexOf('<') ) {
+        return "";
+      }
+    }
+
+    // Remove all leading and trailing tag fragments, if those fragments exist.
+    //  If the first > appears before the first < then remove the leading tag fragment.
+    if (src.indexOf('>') < src.indexOf('<') || (src.indexOf('>') > -1 && src.indexOf('<') < 0)) {
+      src = src.substring(src.indexOf('>') + 1, src.length());
+    }
+    //  If the last < appears after the last > then remove the trailing tag fragment.
+    if (src.lastIndexOf('>') < src.lastIndexOf('<') ) {
+      src = src.substring(0, src.lastIndexOf('<'));
+    }
+
+    if (src.indexOf('<') < 0 && src.indexOf('>') < 0) {
+      return src;
+    }
+    //  Remove the whole tags that are not Hightlight tags.
+    StringBuffer sb = new StringBuffer("");
+    while (src.indexOf('<') > -1 && src.indexOf('>') > -1) {
+      //  If there is a Highlight tag pair, then keep it, along with the text inside the tag pair.
+      if (src.indexOf('<') == src.indexOf(HIGHLIGHT_TAG_START)) {
+        if (src.indexOf('<') > 0) {
+          sb.append(src.substring(0, src.indexOf('<') - 1) + " ");
+          src = src.substring(src.indexOf('<'), src.length());
+        }
+        sb.append(src.substring(
+            0, src.indexOf(HIGHLIGHT_TAG_END) + HIGHLIGHT_TAG_END.length()) + " ");
+        src = src.substring(
+            src.indexOf(HIGHLIGHT_TAG_END) + HIGHLIGHT_TAG_END.length(), src.length());
+
+      } else {
+        if (src.indexOf('<') > 0) {
+          sb.append(src.substring(0, src.indexOf('<')) + " ");
+        }
+        src = src.substring(src.indexOf('>') + 1, src.length());
+      }
+    }
+    return sb.toString() + src;
   }
 
   private static final Analyzer getAnalyzer() {
