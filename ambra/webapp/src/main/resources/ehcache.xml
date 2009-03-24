@@ -115,7 +115,7 @@
             class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
             properties="peerDiscovery=automatic,
                         multicastGroupAddress=230.0.0.1,
-                        multicastGroupPort=4446"/>
+                        multicastGroupPort=6666"/>
 
 
     <!--
