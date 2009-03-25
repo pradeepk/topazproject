@@ -51,7 +51,7 @@ dojo.addOnLoad( function() {
   });
 
   dojo.connect(_dcr.btnCancel, "click", function(e) {
-    document.location = '../../article/' + escape(_dcr.baseId);
+    document.location = '../../article/' + escape(_dcr.baseId).replace(/\//g,"%2F");
   });  
 
   dojo.connect(responseTitle, "focus", function(e) {
