@@ -117,7 +117,7 @@
               </#if>
               <#if (cisStartDateMillis < articleRatingSummary.createdMillis)>
                 <div class="cis">
-                  <#if articleRatingSummary.CIStatement??>
+                  <#if (articleRatingSummary.CIStatement?? && articleRatingSummary.CIStatement !="")>
                     <strong>Competing interests declared:</strong> ${articleRatingSummary.CIStatement}
                   <#else>
                     <strong>No competing interests declared.</strong>
