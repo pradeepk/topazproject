@@ -551,6 +551,7 @@ span.equation          { width: 100%; margin: 20px 0; font-weight: bold; font-si
 span.equation span     { margin-top: -30px; display: block; margin-right: 10px; text-align: right;}
 span.equation span.note { margin-top: 5px;}
 span.equation span span.note { display:inline; margin: 0;}
+span.equation span span.note a.bug span { display: inline; margin-right: 2px; }
 span.equation img       { margin: 0 auto; display: block; padding-bottom: 10px;}
 
 /* ------ Related Page Styles ------- */
