@@ -101,7 +101,7 @@
           <script type="text/javascript">
           digg_url = '${docURL}';
           digg_skin = 'icon';
-          digg_title = '${docTitle?replace("'","\\'")}';
+          digg_title = '<@articleFormat>${docTitle?replace("'","\\'")}</@articleFormat>';
           digg_bodytext = '';
           digg_topic = '';
           digg_media = 'news';

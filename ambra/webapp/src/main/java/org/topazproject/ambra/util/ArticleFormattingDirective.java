@@ -1,7 +1,7 @@
 /* $HeadURL$
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,22 +77,22 @@ public class ArticleFormattingDirective implements TemplateDirectiveModel {
 
 
   private static final Pattern[] PATTERNS = {
-      Pattern.compile("(?:<|&lt;)italic(?:>|&gt;)(.*)(?:<|&lt;)/italic(?:>|&gt;)"),
+      Pattern.compile("(?:<|&lt;)italic(?:>|&gt;)(.*?)(?:<|&lt;)/italic(?:>|&gt;)"),
       Pattern.compile("<named-content(?:" +
           "(?:\\s+xmlns:xlink\\s*=\\s*\"http://www.w3.org/1999/xlink\"\\s*)|" +
           "(?:\\s+content-type\\s*=\\s*\"genus-species\"\\s*)|" +
           "(?:\\s+xlink:type\\s*=\\s*\"simple\"\\s*)" +
-          ")*>(.*)</named-content>"),
-      Pattern.compile("<bold>(.*)</bold>"),
-      Pattern.compile("<monospace>(.*)</monospace>"),
-      Pattern.compile("<overline>(.*)</overline>"),
-      Pattern.compile("<sc>(.*)</sc>"),
-      Pattern.compile("<strike>(.*)</strike>"),
-      Pattern.compile("<underline>(.*)</underline>"),
+          ")*>(.*?)</named-content>"),
+      Pattern.compile("<bold>(.*?)</bold>"),
+      Pattern.compile("<monospace>(.*?)</monospace>"),
+      Pattern.compile("<overline>(.*?)</overline>"),
+      Pattern.compile("<sc>(.*?)</sc>"),
+      Pattern.compile("<strike>(.*?)</strike>"),
+      Pattern.compile("<underline>(.*?)</underline>"),
       Pattern.compile("<email(?:" +
           "(?:\\s+xmlns:xlink\\s*=\\s*\"http://www.w3.org/1999/xlink\"\\s*)|" +
           "(?:\\s+xlink:type\\s*=\\s*\"simple\"\\s*)" +
-          ")*>(.*)</email>")
+          ")*>(.*?)</email>")
   };
 
   private static final String[] REPLACEMENTS = {
