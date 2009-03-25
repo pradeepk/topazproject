@@ -45,11 +45,16 @@ public class Issue extends Aggregation {
    * @param article article URI
    */
   public void addArticle(URI article) {
-    List<URI> uriList = getArticleList();
-
+    /*
+     * Since we are doing an on-the-fly data migration (unwisely)
+     * we need to update articleList if it has not been done yet.
+     */
+    if (articleList.isEmpty() && !super.getSimpleCollection().isEmpty())
+      articleList =  new ArrayList<URI>(super.getSimpleCollection());
+    
     //Only add if not there
-    if (!uriList.contains(article))
-      uriList.add(article);
+    if (!articleList.contains(article))
+      articleList.add(article);
 
     //Shadow this addition in the simple collection
     if (!super.getSimpleCollection().contains(article))
@@ -61,10 +66,15 @@ public class Issue extends Aggregation {
    * @param article article URI
    */
   public void removeArticle(URI article) {
-    List<URI> uriList = getArticleList();
+    /*
+     * Since we are doing an on-the-fly data migration (unwisely)
+     * we need to update articleList if it has not been done yet.
+     */
+    if (articleList.isEmpty() && !super.getSimpleCollection().isEmpty())
+      articleList =  new ArrayList<URI>(super.getSimpleCollection());
 
-    if (uriList.contains(article))
-      uriList.remove(article);
+    if (articleList.contains(article))
+      articleList.remove(article);
 
     //Shadow this removal in the simple collection
     if (super.getSimpleCollection().contains(article))
