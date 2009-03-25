@@ -129,27 +129,29 @@ ambra.advsearch = {
     var errs = [];
 
     // validate published date range (if applicable)
-    var slct = dojo.byId(ambra.advsearch.Config.idPublishDate);
-    if(slct.options[slct.selectedIndex].value == 'range') {
-      var startDate = dojo.byId('startDateId');
-      var endDate = dojo.byId('endDateId');
-
-      var startDateAsDate = new Date(startDate.value.replace(/-/g, "/"));
-      var endDateAsDate = new Date(endDate.value.replace(/-/g, "/"));
-
-      //  Make sure there is a Start date and an End date.
-      if (isNaN(startDateAsDate.getMilliseconds()) && isNaN(endDateAsDate.getMilliseconds())) {
-        errs.push("Please choose valid start and end dates.");
-      }
-      else if (isNaN(startDateAsDate.getMilliseconds())) {
-        errs.push("Please choose a valid start date.");
-      }
-      else if (isNaN(endDateAsDate.getMilliseconds())) {
-        errs.push("Please choose a valid end date.");
-      }
-      //  Make sure the Start date is before the End date.
-      else if (startDateAsDate.getTime() > endDateAsDate.getTime()) {
-        errs.push("The end date must occur after the start date.");
+    if (dojo.byId(ambra.advsearch.Config.idPubDateOptions) != null) {
+      var slct = dojo.byId(ambra.advsearch.Config.idPublishDate);
+      if(slct.options[slct.selectedIndex].value == 'range') {
+        var startDate = dojo.byId('startDateId');
+        var endDate = dojo.byId('endDateId');
+  
+        var startDateAsDate = new Date(startDate.value.replace(/-/g, "/"));
+        var endDateAsDate = new Date(endDate.value.replace(/-/g, "/"));
+  
+        //  Make sure there is a Start date and an End date.
+        if (isNaN(startDateAsDate.getMilliseconds()) && isNaN(endDateAsDate.getMilliseconds())) {
+          errs.push("Please choose valid start and end dates.");
+        }
+        else if (isNaN(startDateAsDate.getMilliseconds())) {
+          errs.push("Please choose a valid start date.");
+        }
+        else if (isNaN(endDateAsDate.getMilliseconds())) {
+          errs.push("Please choose a valid end date.");
+        }
+        //  Make sure the Start date is before the End date.
+        else if (startDateAsDate.getTime() > endDateAsDate.getTime()) {
+          errs.push("The end date must occur after the start date.");
+        }
       }
     }
 

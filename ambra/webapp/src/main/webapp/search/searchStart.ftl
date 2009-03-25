@@ -118,40 +118,6 @@
           </li>
         </ol>
       </fieldset>
-      <fieldset id="dates">
-        <legend><span>Dates</span></legend>
-        <ol>
-          <li>
-            <label for="dateSelect">Published in the: </label>
-            <span class="ie7fix"><!-- This wrapping span fixes wierd issue where IE7 ignores left margin on the select element when cursor enters browser canvas -->
-              <select name="dateTypeSelect" id="dateSelect">
-                <option value="" <@slctd tstr="" str=(dateTypeSelect!"")/>>Any date</option>
-                <option value="week" <@slctd tstr="week" str=(dateTypeSelect!"")/>>Past week</option>
-                <option value="month" <@slctd tstr="month" str=(dateTypeSelect!"")/>>Past month</option>
-                <option value="3months" <@slctd tstr="3months" str=(dateTypeSelect!"")/>>Past 3 months</option>
-                <option value="6months" <@slctd tstr="6months" str=(dateTypeSelect!"")/>>Past 6 months</option>
-                <#--Commenting out due to bug with Mulgara search
-                option value="range" <@slctd tstr="range" str=(dateTypeSelect!"")/>>Specify a date range...</option-->
-              </select>
-            </span>
-          </li>
-          <#--
-            Commenting out due to bug with Mulgara search
-            <li id="pubDateOptions" class="options" style="display:none;">
-            <fieldset>
-              <legend>Published between: </legend>
-              <ol>
-                <li>
-                  <span class="hide">(Year)</span><input type="text" name="startDate" size="10" maxlength="10" value="${startDate!"YYYY-MM-DD"}" id="startDateId"/>
-                  <label for="endDateId"> and </label>
-                  <span class="hide">(Year)</span><input type="text" name="endDate" size="10" maxlength="10" value="${endDate!"YYYY-MM-DD"}" id="endDateId"/>
-                </li>
-              </ol>
-            </fieldset>
-          </li>
-          -->
-        </ol>
-      </fieldset>
       <fieldset id="subjCats">
         <legend><span>Subject Categories</span></legend>
         <ol>
