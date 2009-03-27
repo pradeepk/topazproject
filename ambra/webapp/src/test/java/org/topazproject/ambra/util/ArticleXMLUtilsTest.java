@@ -74,7 +74,11 @@ public class ArticleXMLUtilsTest {
     xmlFactoryProperties.put("javax.xml.transform.Transformer",
         "net.sf.saxon.Controller");
 
+    XMLUnit.setIgnoreComments(true);
+    XMLUnit.setIgnoreWhitespace(true);
+    XMLUnit.setIgnoreAttributeOrder(true);
     XMLUnit.setTransformerFactory("net.sf.saxon.TransformerFactoryImpl");
+    XMLUnit.setXSLTVersion("2.0");
     Configuration configiration = new BaseConfiguration();
     configiration.setProperty("ambra.platform.appContext", "test-context");
     secondaryObjectService = new ArticleXMLUtils();
