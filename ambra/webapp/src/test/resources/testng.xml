@@ -16,6 +16,7 @@
   <test name="Annotation Tests">
     <classes>
       <class name="org.topazproject.ambra.annotation.service.AnnotationServiceTest"/>
+      <class name="org.topazproject.ambra.annotation.service.AnnotatorTest"/>
     </classes>
   </test>
   <test name="Web Tests">
