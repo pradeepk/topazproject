@@ -749,6 +749,28 @@ public class BasicOtmTest extends AbstractOtmTest {
           }
         }
       });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
+          assertNotNull(m);
+          m.setSeq(null);
+          m.getAlt().clear();
+          m.setBag(m.getAlt());
+        }
+      });
+    doInReadOnlySession(new Action() {
+        public void run(Session session) throws OtmException {
+          SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
+          assertNotNull(m);
+          assertEquals(10, m.getList().size());
+          assertEquals(0, m.getBag().size());
+          assertEquals(0, m.getSeq().size());
+          assertEquals(0, m.getAlt().size());
+          for (int i = 1; i < 11; i++) {
+            assertEquals("l" + i, m.getList().get(i - 1));
+          }
+        }
+    });
   }
 
   /**
