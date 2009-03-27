@@ -32,8 +32,10 @@ public class ArticleFormattingDirectiveTest {
   public String[][] createContent() {
     return new String[][]{
         {"foo<italic>bar</italic>",             "foo<i>bar</i>"},
+        {"foo<italic>bar</italic> and <italic>yar</italic>", "foo<i>bar</i> and <i>yar</i>"},
         {"foo&lt;italic&gt;bar&lt;/italic&gt;", "foo<i>bar</i>"},
         {"foo<bold>bar</bold>",                 "foo<b>bar</b>"},
+        {"foo<italic>bar</italic> and <bold>yar</bold>", "foo<i>bar</i> and <b>yar</b>"},
         {"foo<monospace>bar</monospace>",       "foo<span class=\"monospace\">bar</span>"},
         {"foo<overline>bar</overline>",         "foo<span class=\"overline\">bar</span>"},
         {"foo<sc>bar</sc>",                     "foo<small>bar</small>"},
