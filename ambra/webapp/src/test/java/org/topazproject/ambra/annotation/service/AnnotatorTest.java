@@ -41,6 +41,7 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.io.IOException;
+import java.util.TimeZone;
 
 /**
  * @author Dragisa Krsmanovic
@@ -107,6 +108,8 @@ public class AnnotatorTest {
     System.setProperty("javax.xml.transform.TransformerFactory","org.apache.xalan.processor.TransformerFactoryImpl");
     System.setProperty("javax.xml.parsers.DocumentBuilderFactory","org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
     System.setProperty("javax.xml.parsers.SAXParserFactory","org.apache.xerces.jaxp.SAXParserFactoryImpl");
+
+    TimeZone.setDefault(TimeZone.getTimeZone("GMT-8"));
 
     XMLUnit.setIgnoreAttributeOrder(true);
     XMLUnit.setIgnoreComments(true);
