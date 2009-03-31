@@ -22,6 +22,7 @@ package org.topazproject.ambra.annotation.service;
 
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
 import static org.testng.Assert.assertTrue;
 import org.w3c.dom.Document;
 import org.topazproject.ambra.models.ArticleAnnotation;
@@ -102,7 +103,7 @@ public class AnnotatorTest {
     assertTrue(diff.identical(), diff.toString());
   }
 
-  @BeforeClass
+  @BeforeTest
   public void setUp() {
 
     System.setProperty("javax.xml.transform.TransformerFactory","org.apache.xalan.processor.TransformerFactoryImpl");

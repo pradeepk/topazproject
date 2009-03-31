@@ -29,7 +29,7 @@ import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.Zip;
 import org.topazproject.otm.Blob;
 import org.testng.annotations.Test;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.easymock.classextension.IMocksControl;
@@ -49,12 +49,10 @@ import java.util.HashSet;
 public class DocumentManagementServiceTest {
 
 
-  @BeforeClass
+  @BeforeTest
   public void setUp() {
-    System.setProperty("javax.xml.transform.TransformerFactory",
-                       "net.sf.saxon.TransformerFactoryImpl");
-    System.setProperty("javax.xml.transform.Transformer",
-                       "net.sf.saxon.Controller");
+    System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
+    System.setProperty("javax.xml.transform.Transformer", "net.sf.saxon.Controller");
   }
 
   @Test
