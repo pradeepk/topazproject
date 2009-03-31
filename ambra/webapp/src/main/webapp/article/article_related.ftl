@@ -61,6 +61,26 @@
         <#assign trackbackLink = Request[freemarker_config.journalContextAttributeKey].baseHostUrl + trackbackURL>
         <a href="${trackbackLink}" title="Trackback URL">${trackbackLink}</a>
       </div>
+
+      <#list trackbackList as t>
+        <div class="trackback">
+          <#if t.title?exists && !(t.title = "")>
+            <#assign title = t.title>
+          <#else>
+            <#assign title = t.url>
+          </#if>
+          <p class="header">
+          <#if t.blog_name?exists>
+          <span class="blog">${t.blog_name}</span>
+          <#else>
+          An unknown source
+          </#if>
+           referenced this article in "<a href="${t.url}" title="${t.title?replace('"',"")!""}" class="post">${title}</a>" <span class="timestamp">on <strong>${t.created?string("dd MMM yyyy '</strong>at<strong>' HH:mm zzz")}</strong></span></p>
+          <#if t.excerpt?exists>
+          <p class="excerpt">"${t.excerpt}"</p>
+          </#if>
+        </div>
+      </#list>
     </div>
   </div>
   <div style="visibility:hidden">

@@ -63,6 +63,8 @@
     <property name="articleService" ref="articleOtmService"/>
   </bean>
 
+  <bean id="trackBackService" class="org.topazproject.ambra.article.service.TrackbackService" />
+
   <bean id="articleXmlUtils" class="org.topazproject.ambra.util.ArticleXMLUtils" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/viewnlm-v2.xsl"/>

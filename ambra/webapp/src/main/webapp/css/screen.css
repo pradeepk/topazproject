@@ -677,12 +677,12 @@ div.source span		{ color: #999; padding: 4px 0; font-size: 0.7em; font-weight:no
 
 /* ------ Trackback Styles ----*/
 #trackbackURL { margin:0; }
-div.trackback 	{ margin:25px 20px; }
+div.trackback { margin:10px 0px; }
 div.trackback p.header  { margin:0 0 .3em 0; padding:0; line-height:1.5em; }
 div.trackback p.header span.blog,
 div.trackback p.header a.post { font-weight:bold; }
 div.trackback p.header span.timestamp { white-space:nowrap; }
-div.trackback p.excerpt	{margin:0; line-height: 1.5em;}
+div.trackback p.excerpt  { margin:5px 0px 5px 10px; line-height: 1.5em;}
 
 /* ------ Browse Styles ----*/
 div.browse h1 		{ margin-bottom: 20px; margin-right: 140px;}

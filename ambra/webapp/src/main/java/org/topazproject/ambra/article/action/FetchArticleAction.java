@@ -26,6 +26,7 @@ import org.topazproject.ambra.article.service.BrowseService;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.article.service.FetchArticleService;
+import org.topazproject.ambra.article.service.TrackbackService;
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.models.Article;
@@ -34,6 +35,7 @@ import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.MinorCorrection;
 import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.Category;
+import org.topazproject.ambra.models.Trackback;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
@@ -99,6 +101,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
   private ArticleType articleType;
   private Commentary[] commentary;
   private List<List<String>> articleIssues;
+  private List<Trackback> trackbackList;
 
   private ReplyService replyService;
   private AnnotationConverter annotationConverter;
@@ -108,6 +111,7 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
   private JournalService journalService;
   private RatingsService ratingsService;
   private ArticleOtmService articleOtmService;
+  private TrackbackService trackbackService;
 
   private Set<Journal> journalList;
   private RatingsService.AverageRatings averageRatings;
@@ -191,6 +195,9 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
   public String fetchArticleRelated() {
     try {
       setCommonData();
+
+      trackbackList = trackbackService.getTrackbacks(articleURI, true);
+      
     } catch (NoSuchArticleIdException e) {
       messages.add("No article found for id: " + articleURI);
       log.info("Could not find article: " + articleURI, e);
@@ -293,6 +300,14 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
   @Required
   public void setFetchArticleService(final FetchArticleService fetchArticleService) {
     this.fetchArticleService = fetchArticleService;
+  }
+
+  /**
+   * @param trackBackservice The trackBackService to set.
+   */
+  @Required
+  public void setTrackBackService(TrackbackService trackBackservice) {
+    this.trackbackService = trackBackservice;
   }
 
   /**
@@ -512,6 +527,13 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    */
   public Commentary[] getCommentary() {
     return commentary;
+  }
+
+  /**
+   * @return Returns the trackbackList.
+   */
+  public List<Trackback> getTrackbackList() {
+    return trackbackList;
   }
 
   /**

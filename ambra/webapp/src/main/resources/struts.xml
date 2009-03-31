@@ -156,16 +156,6 @@
       </result>
     </action>
 
-    <action name="getTrackbacks" class="org.topazproject.ambra.action.TrackbackAction" method="getTrackbacks">
-      <result name="success">
-        <param name="location">/trackback/listTrackbacks.ftl</param>
-      </result>
-      <result name="error">
-        <param name="location">/trackback/error.ftl</param>
-        <param name="contentType">application/xml</param>
-      </result>
-    </action>
-
     <action name="pageNotFound" class="org.topazproject.ambra.action.PageNotFoundAction">
       <interceptor-ref name="strutsBaseStack"/>
       <result name="success" type="ambraFreemarker">
@@ -302,12 +292,6 @@
   <package name="article" extends="default" namespace="/article">
 
     <default-action-ref name="pageNotFound" />
-
-    <action name="listTrackbacks" class="org.topazproject.ambra.action.TrackbackAction" method="getTrackbacksForArticle">
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/article/trackbackList.ftl</param>
-      </result>
-    </action>
 
     <action name="emailArticle" class="org.topazproject.ambra.article.action.EmailArticleAction" method="executeRender">
       <result name="success" type="ambraFreemarker">
