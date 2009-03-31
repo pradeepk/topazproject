@@ -659,6 +659,7 @@ div.profile #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
 #search-results ul 		{ margin: 0 30px 0 0; padding: 0; list-style-type: none; line-height: 1.6em;}
 #search-results li		{ margin: 12px 8px; background: url(../images/sectionnav_li_bg.gif) no-repeat 0 4px; padding-left: 12px; }
 #search-results li span	{ display: block; }
+#search-results div.error { margin: 10px 0px 10px 0px; }
 #search-results span.article { font-weight: bold; font-size: 1.2em;}
 #search-results span.date { color: #666; font-weight: normal; font-size: .9em; }
 #search-results span.cite { font-style: italic;  color: #666; }

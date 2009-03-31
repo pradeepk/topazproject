@@ -56,6 +56,15 @@
     <h1>Advanced Search</h1>
     <#assign currentJournalName = freemarker_config.getDisplayName(journalContext) />
     <p>Search the full text of all issues of <em>${currentJournalName}</em></p>
+    <#if (fieldErrors?? && numFieldErrors > 0)>
+      <div class="error">
+        <#list fieldErrors?keys as key>
+          <#list fieldErrors[key] as errorMessage>
+            ${errorMessage}
+          </#list>
+        </#list>
+      </div>
+    </#if>
     <@s.url id="advSearchURL" includeParams="none" namespace="/search" action="advancedSearch" />
     <form id="advSearchForm" name="advSearchForm" onsubmit="return true;" action="${advSearchURL}"
           method="post" enctype="multipart/form-data" class="advSearch" title="Advanced Search">

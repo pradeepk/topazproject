@@ -57,7 +57,7 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   private SearchService searchService;
   private BrowseService browseService;
 
-  private String query;
+  private String query = "";
   private int    startPage = 0;
   private int    pageSize = 0;
 
@@ -70,12 +70,12 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   private String   noSearchFlag;
 
   private String[] creator = null;
-  private String   authorNameOp;
-  private String   textSearchAll;
-  private String   textSearchExactPhrase;
-  private String   textSearchAtLeastOne;
-  private String   textSearchWithout;
-  private String   textSearchOption;
+  private String   authorNameOp = "";
+  private String   textSearchAll = "";
+  private String   textSearchExactPhrase = "";
+  private String   textSearchAtLeastOne = "";
+  private String   textSearchWithout = "";
+  private String   textSearchOption = "";
   private String   dateTypeSelect;
   private String   startDate;
   private String   endDate;
@@ -89,7 +89,6 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   public String executeSimpleSearch() {
     // the simple search text field correlates to advanced search's "for all the words" field
     this.textSearchAll = query;
-
     return executeSearch(query);
   }
 
@@ -108,30 +107,34 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   }
 
   private String executeSearch(final String queryString) {
-    if (StringUtils.isBlank(queryString)) {
-      addActionError("Please enter a query string.");
+    if (pageSize == 0)
+      pageSize = configuration.getInt(SEARCH_PAGE_SIZE, 10);
+
+    if (StringUtils.isBlank(queryString) || queryString.equals("Search articles...")) {
+      
+      addFieldError("query","Please enter a search query.");
+      query = "";
+      textSearchAll = "";
+      
       categoryInfos = browseService.getArticlesByCategory();
       return INPUT;
+    } else {
+      try {
+        SearchResultPage results = searchService.find(queryString, startPage, pageSize,
+                                                      getCurrentUser());
+        totalNoOfResults = results.getTotalNoOfResults();
+        searchResults    = results.getHits();
+
+        int totPages = (totalNoOfResults + pageSize - 1) / pageSize;
+        startPage = Math.max(0, Math.min(startPage, totPages - 1));
+      } catch (Exception e) {
+        addActionError("Search failed ");
+        log.error("Search failed with error with query string: " + queryString, e);
+        return ERROR;
+      }
+
+      return SUCCESS;
     }
-
-    try {
-      if (pageSize == 0)
-        pageSize = configuration.getInt(SEARCH_PAGE_SIZE, 10);
-
-      SearchResultPage results = searchService.find(queryString, startPage, pageSize,
-                                                    getCurrentUser());
-      totalNoOfResults = results.getTotalNoOfResults();
-      searchResults    = results.getHits();
-
-      int totPages = (totalNoOfResults + pageSize - 1) / pageSize;
-      startPage = Math.max(0, Math.min(startPage, totPages - 1));
-    } catch (Exception e) {
-      addActionError("Search failed ");
-      log.error("Search failed with error with query string: " + queryString, e);
-      return ERROR;
-    }
-
-    return SUCCESS;
   }
 
   private String buildAdvancedQuery() {

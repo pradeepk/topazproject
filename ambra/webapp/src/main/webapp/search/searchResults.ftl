@@ -59,18 +59,27 @@
   <h1>Search Results</h1>
 
   <div id="search-results">
-<#--  <p>Debug: noOfResults: ${noOfResults}, totalNoOfResults: ${totalNoOfResults}, startPage: ${startPage}, pageSize: ${pageSize}, hasMore: ${hasMore}</p> -->
 
-    <#if totalNoOfResults == 0>
-      <p>There are no results for <strong>${query?html}</strong>.</p>
+    <#if (fieldErrors?? && numFieldErrors > 0)>
+      <div class="error">
+        <#list fieldErrors?keys as key>
+          <#list fieldErrors[key] as errorMessage>
+            ${errorMessage}
+          </#list>
+        </#list>
+      </div>
     <#else>
-      <#assign startIndex = startPage * pageSize>
-      <p>
-      Viewing results <strong>${startIndex + 1} - ${noOfResults}</strong>
-      of <strong>${totalNoOfResults}</strong> results, sorted by relevance,
-
-      for <strong>${query?html}</strong>.
-      </p>
+  <#--  <p>Debug: noOfResults: ${noOfResults}, totalNoOfResults: ${totalNoOfResults}, startPage: ${startPage}, pageSize: ${pageSize}, hasMore: ${hasMore}</p> -->
+      <#if totalNoOfResults == 0>
+        <p>There are no results for <strong>${query?html}</strong>.</p>
+      <#else>
+        <#assign startIndex = startPage * pageSize>
+        <p>
+        Viewing results <strong>${startIndex + 1} - ${noOfResults}</strong>
+        of <strong>${totalNoOfResults}</strong> results, sorted by relevance,
+        for <strong>${query?html}</strong>.
+        </p>
+      </#if>
     </#if>
     
     <@s.url id="searchHelpURL" includeParams="none" namespace="/static" action="searchHelp" />
