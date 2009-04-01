@@ -454,7 +454,8 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   }
 
   public void setDateTypeSelect(String dateTypeSelect) {
-    this.dateTypeSelect = dateTypeSelect;
+    // Turning off date setters to avoid Mulgara bug
+    //this.dateTypeSelect = dateTypeSelect;
   }
 
   public String getStartDate() {
@@ -462,7 +463,8 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   }
 
   public void setStartDate(String startDate) {
-    this.startDate = startDate;
+    // Turning off date setters to avoid Mulgara bug
+    //this.startDate = startDate;
   }
 
   public String getEndDate() {
@@ -470,7 +472,8 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   }
 
   public void setEndDate(String endDate) {
-    this.endDate = endDate;
+    // Turning off date setters to avoid Mulgara bug
+    // this.endDate = endDate;
   }
 
   public String getSubjectCatOpt() {
