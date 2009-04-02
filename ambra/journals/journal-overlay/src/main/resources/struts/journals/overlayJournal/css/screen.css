@@ -87,6 +87,10 @@ textarea	{ font-family: Verdana, Arial, Helvetica, sans-serif; color: #555; font
 .clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
 .clearfix { zoom:1; } /*zoom allows self-clearing floats to work in IE*/
 
+/* for inline image replacement technique, created by Eli Van Zoeren: http://elivz.com/blog/single/inline_image_replacement/ */
+.replaced { display:inline-block; display:-moz-inline-stack; background-repeat:no-repeat; background-position:0 0; vertical-align:text-top; zoom:1; }
+.replaced span { display:block; overflow:hidden; text-indent:-9999px; line-height:14px; cursor:pointer; }
+
 /* Global : Icons and Links
 ----------------------------------------------------------
 */
@@ -126,7 +130,7 @@ a.preferences 	{ background-image: url(../images/icon_user_preferences.gif); }
 a.rss			{ background-image: url(../images/icon_rss1.gif); }
 a.advanced		{ background-image: url(../images/icon_advanced.gif); }
 a.browse		{ background-image: url(../images/icon_browse.gif); }
-a.info { background:url(../images/button_info.png); }
+#info { background:url(../images/button_info.png) no-repeat; width:14px; } /*width set for use with inline image replacement technique*/
 
 /* Article Icons */
 a.yourfeedback	{ background-image: url(../images/icon_feedback.gif);} /* keep at top of all classes to avoid weird ie multiple class bug */
@@ -552,9 +556,11 @@ span.equation span span.note { display:inline; margin: 0;}
 span.equation img       { margin: 0 auto; display: block; padding-bottom: 10px;}
 
 /* ------ Related Page Styles ------- */
-div.related h2 { font-style:normal; }
-div.related h2 a.info { display:inline-block; background-repeat:no-repeat; background-position:0 .25em; text-indent:-9999px; width:14px; margin-top:15px; }
+div.related h2 { font-style:normal; margin-top:20px; }
+div.related h2 a#info { margin-top:4px; }
 div.related h3 { font-family:Verdana, Arial, Helvetica, sans-serif; font-size:1em; font-weight:bold; border:0; margin:1em 0 0 0; padding:0; }
+div.related h2 img.loading { vertical-align:text-bottom; margin-bottom:2px; }
+div.related h3 img.loading { margin-bottom:-3px; }
 div.related ul { margin:0; }
 div.related ul li { list-style-type:none; background-image:none; display:inline; padding-left:0; padding-right:0.5em; }
 
