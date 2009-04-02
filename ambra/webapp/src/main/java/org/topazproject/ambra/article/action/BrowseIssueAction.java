@@ -70,7 +70,7 @@ public class BrowseIssueAction extends BaseActionSupport{
     // was issued specified, or use Journal.currentIssue?
     if (issue == null || issue.length() == 0) {
       // JournalService, OTM usage wants to be in a Transaction
-      Journal currentJournal = journalService.getCurrentJournal();
+      Journal currentJournal = journalService.getJournal(getCurrentJournal());
 
       if (currentJournal != null) {
         URI currentIssueUri = currentJournal.getCurrentIssue();
