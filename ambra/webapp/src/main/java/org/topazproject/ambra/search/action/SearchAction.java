@@ -119,6 +119,17 @@ public class SearchAction extends BaseSessionAwareActionSupport {
       categoryInfos = browseService.getArticlesByCategory();
       return INPUT;
     } else {
+      //If user types in date into simple search
+      //Stop them here to avoid mulgara bug
+      if(queryString.toLowerCase().indexOf("date:") >= 0) {
+        addFieldError("query","Sorry, but you can not currently search on dates.");
+        query = "";
+        textSearchAll = "";
+
+        categoryInfos = browseService.getArticlesByCategory();
+        return INPUT;
+      }
+
       try {
         SearchResultPage results = searchService.find(queryString, startPage, pageSize,
                                                       getCurrentUser());
