@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.topazproject.ambra.model.UserProfileInfo;
-import org.topazproject.ambra.models.FormalCorrection;
-import org.topazproject.ambra.models.Retraction;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Projection;
 import org.topazproject.otm.annotations.View;
@@ -41,13 +39,13 @@ import org.topazproject.otm.annotations.View;
         "(select a.articleType from Article aa) at, " +
         "(select aa2.id rid, aa2.dublinCore.title rtitle from Article aa2 " +
         "   where aa2 = a.relatedArticles.article) relatedArticles, " +
-        "(select fc from FormalCorrection fc where fc.annotates = a.id) corrections, " +
-        "(select r from Retraction r where r.annotates = a.id) retractions " +
+        "(select fc.id from FormalCorrection fc where fc.annotates = a.id) corrections, " +
+        "(select r.id from Retraction r where r.annotates = a.id) retractions " +
         "from Article a, CitationInfo ci " +
         "where a.id = :id and dc := a.dublinCore and ci.id = dc.bibliographicCitation.id;")
 public class ArticleInfo implements Serializable {
 
-  private static final long serialVersionUID = 356L;
+  private static final long serialVersionUID = 357L;
 
   public URI                     id;
   public Date                    date;
@@ -55,8 +53,8 @@ public class ArticleInfo implements Serializable {
   public Set<RelatedArticleInfo> relatedArticles = new HashSet<RelatedArticleInfo>();
   public List<String>            authors = new ArrayList<String>();
   public Set<ArticleType>        articleTypes = new HashSet<ArticleType>();
-  public Set<FormalCorrection>   corrections = new HashSet<FormalCorrection>();
-  public Set<Retraction>         retractions = new HashSet<Retraction>();
+  public Set<URI>                corrections = new HashSet<URI>();
+  public Set<URI>                retractions = new HashSet<URI>();
   private transient String unformattedTitle;
 
   /**
@@ -174,21 +172,21 @@ public class ArticleInfo implements Serializable {
     this.relatedArticles = relatedArticles;
   }
 
-  public Set<FormalCorrection> getCorrections() {
+  public Set<URI> getCorrections() {
     return corrections;
   }
 
   @Projection("corrections")
-  public void setCorrections(Set<FormalCorrection> corrections) {
+  public void setCorrections(Set<URI> corrections) {
     this.corrections = corrections;
   }
 
-  public Set<Retraction> getRetractions() {
+  public Set<URI> getRetractions() {
     return retractions;
   }
 
   @Projection("retractions")
-  public void setRetractions(Set<Retraction> retractions) {
+  public void setRetractions(Set<URI> retractions) {
     this.retractions = retractions;
   }
 }

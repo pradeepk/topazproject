@@ -19,8 +19,9 @@
 package org.topazproject.ambra.article.action;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +36,8 @@ import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.model.IssueInfo;
 import org.topazproject.ambra.model.VolumeInfo;
 import org.topazproject.ambra.models.Journal;
+import org.topazproject.ambra.models.FormalCorrection;
+import org.topazproject.ambra.models.Retraction;
 import org.topazproject.ambra.util.ArticleXMLUtils;
 
 /**
@@ -52,7 +55,9 @@ public class BrowseIssueAction extends BaseActionSupport{
   private BrowseService browseService;
   private IssueInfo issueInfo;
   private String issueDescription;
-  private List<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
+  private List<TOCArticleGroup> articleGroups;
+  private MapContainer<URI, FormalCorrection> correctionMap;
+  private MapContainer<URI, Retraction> retractionMap;
 
   private ArticleXMLUtils articleXmlUtils;
 
@@ -126,7 +131,28 @@ public class BrowseIssueAction extends BaseActionSupport{
     }
     articleGroups = browseService.getArticleGrpList(URI.create(issue));
 
+    correctionMap = new MapContainer<URI, FormalCorrection>(
+        browseService.getCorrectionMap(articleGroups));
+    retractionMap = new MapContainer<URI, Retraction>(
+        browseService.getRetractionMap(articleGroups));
+
     return SUCCESS;
+  }
+
+  /**
+   * This class is used to work around limitation of Freemarker to wrap Map and only
+   * accept String as a key.
+   */
+  public static class MapContainer<T,Q> implements Serializable {
+    private Map<T,Q> map;
+
+    public MapContainer(Map<T,Q> map) {
+      this.map = map;
+    }
+
+    public Q getValue(T key) {
+      return map.get(key);
+    }
   }
 
   /**
@@ -197,5 +223,13 @@ public class BrowseIssueAction extends BaseActionSupport{
    */
   public VolumeInfo getVolumeInfo() {
     return volumeInfo;
+  }
+
+  public MapContainer<URI, FormalCorrection> getCorrectionMap() {
+    return correctionMap;
+  }
+
+  public MapContainer<URI, Retraction> getRetractionMap() {
+    return retractionMap;
   }
 }

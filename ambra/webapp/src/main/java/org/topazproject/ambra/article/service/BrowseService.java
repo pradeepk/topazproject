@@ -876,4 +876,63 @@ public class BrowseService {
     return articleList;
   }
 
+  /**
+   * ArticleInfo objects store lists of FormalCorrection id's because ArticleInfo is
+   * object that is not cached in the ObjectCache and it cannot hold referencews to OTM entities
+   * because it will cause it to fail serialization.
+   * We need to fetch FormalCorrection objects and put them in a Map so they can be displayed.
+   *
+   * @param articleGroups List of article groups
+   * @return Map of all FormalCorrection objects contained in articleGroups
+   */
+  public Map<URI, FormalCorrection> getCorrectionMap(List<TOCArticleGroup> articleGroups) {
+
+    Map<URI, FormalCorrection> correctionMap = new HashMap<URI, FormalCorrection>();
+
+    for (TOCArticleGroup articleGroup : articleGroups) {
+      for (ArticleInfo articleInfo : articleGroup.getArticles()) {
+        if (articleInfo.getCorrections() != null) {
+          for (URI correctionId : articleInfo.getCorrections()) {
+            correctionMap.put(
+                correctionId,
+                session.get(FormalCorrection.class, correctionId.toString())
+            );
+          }
+        }
+      }
+    }
+
+    return correctionMap;
+  }
+
+  /**
+   * ArticleInfo objects store lists of Retraction id's because ArticleInfo is
+   * object that is not cached in the ObjectCache and it cannot hold referencews to OTM entities
+   * because it will cause it to fail serialization.
+   * We need to fetch Retraction objects and put them in a Map so they can be displayed.
+   *
+   * @param articleGroups List of article groups
+   * @return Map of all Retraction objects contained in articleGroups
+   */
+  public Map<URI, Retraction> getRetractionMap(List<TOCArticleGroup> articleGroups) {
+
+    Map<URI, Retraction> retractionMap = new HashMap<URI, Retraction>();
+
+    for (TOCArticleGroup articleGroup : articleGroups) {
+      for (ArticleInfo articleInfo : articleGroup.getArticles()) {
+        if (articleInfo.getRetractions() != null) {
+          for (URI retractionId : articleInfo.getRetractions()) {
+            retractionMap.put(
+                retractionId,
+                session.get(Retraction.class, retractionId.toString())
+            );
+          }
+        }
+      }
+    }
+
+    return retractionMap;
+  }
+
+
 }
