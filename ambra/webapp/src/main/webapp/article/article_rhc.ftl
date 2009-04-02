@@ -71,7 +71,7 @@
   </#if>
 
   <div id="share" class="rhcBox_type2">
-    <h6>Share this Article <a href="/static/help.action#socialBookmarkLinks" class="info">info</a></h6>
+    <h6>Share this Article <a href="/static/help.action#socialBookmarkLinks" class="replaced" id="info" title="More information"><span>info</span></a></h6>
     <ul>
       <li class="bookmarklets">Bookmark:
 
