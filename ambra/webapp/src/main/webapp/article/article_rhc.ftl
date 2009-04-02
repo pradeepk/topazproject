@@ -95,13 +95,12 @@
           <a href="http://www.citeulike.org/posturl?url=${docURL?url}&title=${docTitle?url}" target="_new"><img src='${freemarker_config.getContext()}/images/icon_citeulike_16x16.gif' alt="CiteULike" title="Add to CiteULike" /></a>
           <#-- For more info see http://www.citeulike.org/faq/all.adp -->
           <#-- Digg
-            TODO:Eventually we should be passing the abstract as the bodytext to digg.  We could also switch up and
-            start figuring out and sending a topic as well
+            TODO:Eventually we should be passing the abstract as the bodytext to digg and sending a topic as well
             -->
           <script type="text/javascript">
           digg_url = '${docURL}';
           digg_skin = 'icon';
-          digg_title = '<@articleFormat>${docTitle?replace("'","\\'")}</@articleFormat>';
+          digg_title = '<@articleFormat><@simpleText>${docTitle?replace("'","\\'")}</@simpleText></@articleFormat>';
           digg_bodytext = '';
           digg_topic = '';
           digg_media = 'news';

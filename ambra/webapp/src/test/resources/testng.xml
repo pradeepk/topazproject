@@ -27,6 +27,7 @@
   <test name="Util Tests">
     <classes>
       <class name="org.topazproject.ambra.util.ArticleFormattingDirectiveTest"/>
+      <class name="org.topazproject.ambra.util.SimpleTextDirectiveTest"/>
       <class name="org.topazproject.ambra.util.ProfanityCheckingServiceTest"/>
       <class name="org.topazproject.ambra.util.TextUtilsTest"/>
       <class name="org.topazproject.ambra.util.DateParserTest"/>
