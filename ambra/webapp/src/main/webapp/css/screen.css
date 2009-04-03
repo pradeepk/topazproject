@@ -131,7 +131,7 @@ a.preferences 	{ background-image: url(../images/icon_user_preferences.gif); }
 a.rss			{ background-image: url(../images/icon_rss1.gif); }
 a.advanced		{ background-image: url(../images/icon_advanced.gif); }
 a.browse		{ background-image: url(../images/icon_browse.gif); }
-#info { background:url(../images/button_info.png) no-repeat; width:14px; } /*width set for use with inline image replacement technique*/
+a#info { background:url(../images/button_info.png) no-repeat; width:14px; } /*width set for use with inline image replacement technique*/
 
 /* Article Icons */
 a.yourfeedback	{ background-image: url(../images/icon_feedback.gif);} /* keep at top of all classes to avoid weird ie multiple class bug */
