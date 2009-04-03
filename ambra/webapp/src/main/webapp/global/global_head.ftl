@@ -29,7 +29,7 @@
 <link rel="shortcut icon" href="${freemarker_config.context}/images/favicon.ico" type="image/x-icon" />
 <@s.url id="homeURL" includeParams="none" includeContext="true" namespace="/" action="home"/>
 <link rel="home" title="home" href="${homeURL}" />
-<link rel="alternate" type="application/rss+xml"
+<link rel="alternate" type="application/atom+xml"
   title="${freemarker_config.getArticleTitlePrefix(journalContext)} ${rssName?html}"
   href="${Request[freemarker_config.journalContextAttributeKey].baseUrl}${rssPath}" />
 
