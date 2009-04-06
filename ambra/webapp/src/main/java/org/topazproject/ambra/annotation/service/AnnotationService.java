@@ -36,6 +36,7 @@ import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.annotation.FlagUtil;
 import org.topazproject.ambra.article.service.FetchArticleService;
@@ -599,6 +600,11 @@ public class AnnotationService extends BaseAnnotationService {
       return srcAnnotationId;
     }
 
+    // Trying to catch #1108
+    if (srcAnnotation.getBody() == null)
+      throw new ApplicationException("Trying to copy annotation " + srcAnnotationId +
+          " that has NULL body");
+
     ArticleAnnotation newAn = newAnnotationClassType.newInstance();
     synchronized (beanUtils) {
       beanUtils.copyProperties(newAn, srcAnnotation);
@@ -607,6 +613,11 @@ public class AnnotationService extends BaseAnnotationService {
     srcAnnotation.setBody(null);
     session.delete(srcAnnotation);
     session.flush();
+
+    // Trying to catch #1108
+    if (newAn.getBody() == null)
+      throw new ApplicationException("Trying to save annotation " + newAn.getId().toString()
+          + " with NULL body");
 
     return session.saveOrUpdate(newAn); // Should return value equal to srcAnnotationId
   }
