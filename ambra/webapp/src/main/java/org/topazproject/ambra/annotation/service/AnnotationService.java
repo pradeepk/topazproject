@@ -619,7 +619,14 @@ public class AnnotationService extends BaseAnnotationService {
       throw new ApplicationException("Trying to save annotation " + newAn.getId().toString()
           + " with NULL body");
 
-    return session.saveOrUpdate(newAn); // Should return value equal to srcAnnotationId
+    String newId = session.saveOrUpdate(newAn);
+
+    // Trying to catch #1108
+    ArticleAnnotation newAnnotation = session.get(ArticleAnnotation.class, newId);
+    if (newAnnotation.getBody() == null)
+      throw new ApplicationException("Annotation " + newId + " saved with NULL body");
+
+    return newId; // Should return value equal to srcAnnotationId
   }
 
   /**

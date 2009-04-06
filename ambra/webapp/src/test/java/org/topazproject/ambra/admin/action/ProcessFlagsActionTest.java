@@ -95,9 +95,10 @@ public class ProcessFlagsActionTest {
 
     FormalCorrection newFormalCorrection = new FormalCorrection();
     newFormalCorrection.setId(URI.create(annotationId));
+    newFormalCorrection.setBody(oldAnnotation.getBody());
     expect(session.get(ArticleAnnotation.class, annotationId))
         .andReturn(oldAnnotation).once()
-        .andReturn(newFormalCorrection).once();
+        .andReturn(newFormalCorrection).times(2);
     expect(session.delete(oldAnnotation)).andReturn(annotationId).once();
     session.flush();
     expectLastCall().once();
