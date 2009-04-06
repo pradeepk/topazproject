@@ -320,8 +320,10 @@ public class OtmInterceptor implements Interceptor {
    * it is dependent only on subject-id. Values are the serialized representations.
    */
   private static class Entry implements TripleStore.Result, Serializable {
+
+    private static final long serialVersionUID = 78921312L;
+
     private final Set<String>               types;
-    private final Set<String>               entities;
     private final Map<String, List<String>> fvalues;
     private final Map<String, List<String>> rvalues;
     private byte[]                          blob;
@@ -330,7 +332,6 @@ public class OtmInterceptor implements Interceptor {
     public Entry() {
       blob     = null;
       types    = new HashSet<String>();
-      entities = new HashSet<String>();
       fvalues   = new HashMap<String, List<String>>();
       rvalues   = new HashMap<String, List<String>>();
     }
@@ -338,7 +339,6 @@ public class OtmInterceptor implements Interceptor {
     public Entry(Entry other) {
       blob     = copy(other.blob);
       types    = new HashSet<String>(other.types);
-      entities = new HashSet<String>(other.entities);
       fvalues   = copy(other.fvalues);
       rvalues   = copy(other.rvalues);
     }
@@ -377,8 +377,6 @@ public class OtmInterceptor implements Interceptor {
     }
 
     public boolean isEntityLoaded(ClassMetadata cm) {
-      if (entities.contains(cm.getName()))
-        return true;
       for (RdfMapper mapper : cm.getRdfMappers()) {
         if (!mapper.isPredicateMap()) {
           Map<String, List<String>> values = mapper.hasInverseUri() ? rvalues : fvalues;
@@ -386,7 +384,6 @@ public class OtmInterceptor implements Interceptor {
             return false;
         }
       }
-      entities.add(cm.getName());
       return true;
     }
 
@@ -479,8 +476,6 @@ public class OtmInterceptor implements Interceptor {
         else
           vmap.put(m.getUri(), nv);
       }
-
-      entities.add(cm.getName());
       immutable = true;
     }
 
@@ -507,7 +502,7 @@ public class OtmInterceptor implements Interceptor {
     }
 
     public String toString() {
-      return "entities = " + entities + ", types = " + types + ", fvalues = " + fvalues
+      return "types = " + types + ", fvalues = " + fvalues
         + ", rvalues = " + rvalues + ", blob-size = " + ((blob == null) ? 0 : blob.length);
     }
   }
