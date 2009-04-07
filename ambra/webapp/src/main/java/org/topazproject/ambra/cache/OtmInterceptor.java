@@ -145,18 +145,17 @@ public class OtmInterceptor implements Interceptor {
       if (val instanceof Entry) {
         e = (Entry) val;
         if (!read || !e.isEntityLoaded(cm))
-          e = new Entry(e);  // copy before mutation
+          e = new Entry(e, session, cm, instance, fields, blob);
       } else {
-        e             = new Entry();
         fields        = cm.getRdfMappers();
         blob          = cm.getBlobField();
+        e             = new Entry(session, cm, instance, fields, blob);
       }
 
       if (val != e) {   // mutable?
         if (log.isDebugEnabled())
           log.debug(((val == null) ? "Inserting" : "Updating") + " cache entry <" + id + "> with data for " + cm);
 
-        e.set(session, cm, instance, fields, blob);
         objCache.put(id, e);
       }
     }
@@ -320,27 +319,31 @@ public class OtmInterceptor implements Interceptor {
    * it is dependent only on subject-id. Values are the serialized representations.
    */
   private static class Entry implements TripleStore.Result, Serializable {
-
-    private static final long serialVersionUID = 78921312L;
+    private static final long serialVersionUID = 1L;
 
     private final Set<String>               types;
     private final Map<String, List<String>> fvalues;
     private final Map<String, List<String>> rvalues;
     private byte[]                          blob;
-    private boolean                         immutable = false;
 
-    public Entry() {
+    public Entry(Session sess, ClassMetadata cm, Object instance,
+                    Collection<RdfMapper> fields, BlobMapper blobField) {
       blob     = null;
       types    = new HashSet<String>();
       fvalues   = new HashMap<String, List<String>>();
       rvalues   = new HashMap<String, List<String>>();
+
+      set(sess, cm, instance, fields, blobField);
     }
 
-    public Entry(Entry other) {
+    public Entry(Entry other, Session sess, ClassMetadata cm, Object instance,
+                    Collection<RdfMapper> fields, BlobMapper blobField) {
       blob     = copy(other.blob);
       types    = new HashSet<String>(other.types);
       fvalues   = copy(other.fvalues);
       rvalues   = copy(other.rvalues);
+
+      set(sess, cm, instance, fields, blobField);
     }
 
     public Map<String, List<String>> getFValues() {
@@ -387,11 +390,8 @@ public class OtmInterceptor implements Interceptor {
       return true;
     }
 
-    public void set(Session sess, ClassMetadata cm, Object instance,
+    private void set(Session sess, ClassMetadata cm, Object instance,
                     Collection<RdfMapper> fields, BlobMapper blobField) {
-
-      if (immutable)
-        throw new IllegalStateException("Attempting to update immutable cache entry");
 
       types.addAll(cm.getAllTypes());
 
@@ -476,7 +476,6 @@ public class OtmInterceptor implements Interceptor {
         else
           vmap.put(m.getUri(), nv);
       }
-      immutable = true;
     }
 
     private static byte[] copy(byte[] src) {
