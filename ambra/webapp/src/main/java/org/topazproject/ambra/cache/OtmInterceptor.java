@@ -56,6 +56,7 @@ import org.topazproject.otm.mapping.RdfMapper;
 public class OtmInterceptor implements Interceptor {
   private static final Log     log            = LogFactory.getLog(OtmInterceptor.class);
   private static final String  NO_JOURNAL     = "__NO_JOURNAL__";
+  private final ECMFactory     ecmf           = new ECMFactory();
   private final CacheManager   cacheManager;
   private final Cache          objCache;
   private final JournalService journalService;
@@ -129,7 +130,7 @@ public class OtmInterceptor implements Interceptor {
      * This assumption currently holds because filters are
      * not currently applied on 'writes' by OTM.
      */
-    return ((Entry) val.getValue()).get(session, cm, id, instance);
+    return ((Entry) val.getValue()).get(session, cm, id, instance, ecmf);
   }
 
   private void attach(Session session, ClassMetadata cm, String id, Object instance,
@@ -144,7 +145,7 @@ public class OtmInterceptor implements Interceptor {
 
       if (val instanceof Entry) {
         e = (Entry) val;
-        if (!read || !e.isEntityLoaded(cm))
+        if (!read || !e.isEntityLoaded(ecmf.get(cm)))
           e = new Entry(e, session, cm, instance, fields, blob);
       } else {
         fields        = cm.getRdfMappers();
@@ -315,6 +316,44 @@ public class OtmInterceptor implements Interceptor {
   }
 
   /**
+   * Enhanced/Extra class metadata that keeps the set of predicates by entity.
+   */
+  private static class ECM {
+    public final Set<String> fpreds;
+    public final Set<String> rpreds;
+
+    public ECM(ClassMetadata cm) {
+      fpreds = buildSet(cm, false);
+      rpreds = buildSet(cm, true);
+    }
+
+    private static Set<String> buildSet(ClassMetadata cm, boolean inverse) {
+      Set<String> preds = new HashSet<String>();
+
+      for (RdfMapper m : cm.getRdfMappers())
+        if (!m.isPredicateMap() && (m.hasInverseUri() == inverse))
+          preds.add(m.getUri());
+
+      return Collections.unmodifiableSet(preds);
+    }
+  }
+
+  /**
+   * A factory class that caches ECM entries.
+   */
+  private static class ECMFactory {
+    private final Map<String, ECM> map = new HashMap<String, ECM>();
+
+    public synchronized ECM get(ClassMetadata cm) {
+      ECM ecm = map.get(cm.getName());
+      if (ecm == null)
+        map.put(cm.getName(), ecm = new ECM(cm));
+
+      return ecm;
+    }
+  }
+
+  /**
    * An object cache-entry. The value map here is based on RdfDefinition name and therefore
    * it is dependent only on subject-id. Values are the serialized representations.
    */
@@ -354,13 +393,13 @@ public class OtmInterceptor implements Interceptor {
       return Collections.unmodifiableMap(rvalues);
     }
 
-    public Object get(Session sess, ClassMetadata cm, String id, Object instance) {
+    public Object get(Session sess, ClassMetadata cm, String id, Object instance, ECMFactory ecmf) {
       cm = sess.getSessionFactory().getSubClassMetadata(cm, sess.getEntityMode(), types, this);
 
       if (cm == null)
         return null;
 
-      if (!isEntityLoaded(cm))
+      if (!isEntityLoaded(ecmf.get(cm)))
         return null;
 
       instance = cm.getEntityBinder(sess).loadInstance(instance, id, this, sess);
@@ -379,15 +418,9 @@ public class OtmInterceptor implements Interceptor {
       return instance;
     }
 
-    public boolean isEntityLoaded(ClassMetadata cm) {
-      for (RdfMapper mapper : cm.getRdfMappers()) {
-        if (!mapper.isPredicateMap()) {
-          Map<String, List<String>> values = mapper.hasInverseUri() ? rvalues : fvalues;
-          if (!values.containsKey(mapper.getUri()))
-            return false;
-        }
-      }
-      return true;
+    public boolean isEntityLoaded(ECM ecm) {
+      return fvalues.keySet().containsAll(ecm.fpreds) &&
+             rvalues.keySet().containsAll(ecm.rpreds);
     }
 
     private void set(Session sess, ClassMetadata cm, Object instance,
