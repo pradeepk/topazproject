@@ -150,7 +150,7 @@ public class ArticleFormattingDirective implements TemplateDirectiveModel {
   }
 
   /**
-   * Static mathod that does conversion. Can be used in Java code.
+   * Static method that does conversion. Can be used in Java code.
    * @param str input string.
    * @return converted string.
    */
