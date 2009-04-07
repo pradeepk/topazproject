@@ -619,7 +619,12 @@ public class AnnotationService extends BaseAnnotationService {
       throw new ApplicationException("Trying to save annotation " + newAn.getId().toString()
           + " with NULL body");
 
+    if (session.get(ArticleAnnotation.class, srcAnnotationId) != null)
+      throw new ApplicationException("Delete didn't really delete " + srcAnnotationId 
+          + ". It could happen if this object is reachable via associations thru other objects.");
+
     String newId = session.saveOrUpdate(newAn);
+    session.flush();
 
     // Trying to catch #1108
     ArticleAnnotation newAnnotation = session.get(ArticleAnnotation.class, newId);
