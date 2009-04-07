@@ -98,10 +98,11 @@ public class ProcessFlagsActionTest {
     newFormalCorrection.setBody(oldAnnotation.getBody());
     expect(session.get(ArticleAnnotation.class, annotationId))
         .andReturn(oldAnnotation).once()
+        .andReturn(null).once()
         .andReturn(newFormalCorrection).times(2);
     expect(session.delete(oldAnnotation)).andReturn(annotationId).once();
     session.flush();
-    expectLastCall().once();
+    expectLastCall().times(2);
 
     Capture<FormalCorrection> newAnnotationCapture = new Capture<FormalCorrection>();
     expect(session.saveOrUpdate(capture(newAnnotationCapture))).andReturn(annotationId).once();
