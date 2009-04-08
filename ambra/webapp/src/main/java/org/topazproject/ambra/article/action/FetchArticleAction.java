@@ -42,6 +42,7 @@ import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.annotation.service.AnnotationConverter;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.annotation.Commentary;
+import org.topazproject.otm.RdfUtil;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -217,6 +218,9 @@ public class FetchArticleAction extends BaseSessionAwareActionSupport {
    * @throws NoSuchArticleIdException when the article can not be found
    */
   private void setCommonData() throws ApplicationException, NoSuchArticleIdException {
+
+    RdfUtil.validateUri(articleURI, "articleURI=<" + articleURI + ">");
+
     articleInfoX = browseService.getArticleInfo(URI.create(articleURI));
     averageRatings = ratingsService.getAverageRatings(articleURI);
     journalList  = journalService.getJournalsForObject(URI.create(articleURI));

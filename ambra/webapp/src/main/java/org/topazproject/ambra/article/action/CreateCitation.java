@@ -31,6 +31,7 @@ import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.models.Citation;
 import org.topazproject.ambra.models.DublinCore;
+import org.topazproject.otm.RdfUtil;
 
 /**
  * Action to create a citation.  Does not care what the output format is.
@@ -56,6 +57,9 @@ public class CreateCitation extends BaseActionSupport {
   @Override
   @Transactional(readOnly = true)
   public String execute () throws Exception {
+
+    RdfUtil.validateUri(articleURI, "articleUri=<" + articleURI + ">");
+
     DublinCore articleDB = articleOtmService.getArticle(URI.create(articleURI)).getDublinCore();
 
     citation = articleDB.getBibliographicCitation();

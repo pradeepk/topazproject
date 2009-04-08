@@ -36,6 +36,7 @@ import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.util.FileUtils;
 import org.topazproject.ambra.struts2.Span;
+import org.topazproject.otm.RdfUtil;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +74,8 @@ public class FetchObjectAction extends BaseActionSupport {
       addActionMessage("No representation specified");
       return ERROR;
     }
+
+    RdfUtil.validateUri(uri, "uri=<" + uri + ">");
 
     ObjectInfo objectInfo = articleOtmService.getObjectInfo(uri);
     if (null == objectInfo) {
