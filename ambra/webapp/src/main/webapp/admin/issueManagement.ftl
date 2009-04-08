@@ -146,7 +146,7 @@
          </#list>
        </table>
        </#list>
-         <b>Ophaned Articles</b>
+         <b>Orphaned Articles</b>
          <table border="1" cellpadding="10" cellspacing="0">
            <tr>
              <td colspan="2">
