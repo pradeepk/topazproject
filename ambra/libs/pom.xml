@@ -4,14 +4,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>ambra-libs</artifactId>
-  <version>0.9.2_rc2-SNAPSHOT</version>
+  <version>0.9.2</version>
   <packaging>pom</packaging>
   <name>Ambra Libs</name>
   
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra</artifactId>
-    <version>0.9.2_rc2-SNAPSHOT</version>
+    <version>0.9.2</version>
   </parent>
 
   <modules>

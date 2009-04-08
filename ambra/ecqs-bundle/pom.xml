@@ -4,13 +4,13 @@
   <groupId>org.topazproject</groupId>
   <artifactId>ecqs</artifactId>
   <packaging>jar</packaging>
-  <version>0.9.2_rc2-SNAPSHOT</version>
+  <version>0.9.2</version>
   <name>ESUP CAS Quick Start</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra</artifactId>
-    <version>0.9.2_rc2-SNAPSHOT</version>
+    <version>0.9.2</version>
   </parent>
 
   <dependencies>
