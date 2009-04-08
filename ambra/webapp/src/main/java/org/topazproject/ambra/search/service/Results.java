@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                                     $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -221,7 +221,7 @@ public class Results {
     }
 
     if (fieldMaxLength > 0 && fval.length() > fieldMaxLength)
-      return stripTrailingEntity(fval.substring(0, fieldMaxLength)) + " ... ";
+      return stripTrailingEntity(stripTags(fval.substring(0, fieldMaxLength))) + " ... ";
     else
       return fval;
   }
