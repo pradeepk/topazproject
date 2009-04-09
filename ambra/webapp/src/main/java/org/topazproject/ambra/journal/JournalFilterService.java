@@ -173,12 +173,8 @@ class JournalFilterService {
 
     journalFilters.put(j.getKey(), defs);
 
-    /*
-     * Note: We are using rawPut instead of the transactional put since 'load' is
-     * considered a 'populate' operation. ie. it is not a result of a write
-     */
     log.warn("Updating filter-cache for journal '" + j.getKey() + "' with " + defs);
-    filterCache.rawPut(keyPrefix + j.getKey(), new Cache.Item(defs));
+    filterCache.put(keyPrefix + j.getKey(), new Cache.Item(defs));
 
     return defs;
   }

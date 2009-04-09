@@ -157,7 +157,7 @@ public class OtmInterceptor implements Interceptor {
         if (log.isDebugEnabled())
           log.debug(((val == null) ? "Inserting" : "Updating") + " cache entry <" + id + "> with data for " + cm);
 
-        objCache.put(id, e);
+        objCache.put(id, new Cache.Item(e));
       }
     }
 
@@ -167,7 +167,7 @@ public class OtmInterceptor implements Interceptor {
 
       Cache.Item o = objCache.get(key);
       if ((o == null) || !same(o.getValue(), val))
-        objCache.put(key, val);
+        objCache.put(key, new Cache.Item(val));
     }
   }
 

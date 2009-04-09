@@ -25,7 +25,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 /**
- * Transactional cache abstraction. Currently only supports a READ_COMMITTED isolation level.
+ * Transactional cache abstraction that ensures updates to the cache are roll-back safe and
+ * provides a READ_COMMITTED isolation level. For write transactions, this means all updates
+ * are delayed until the transaction commit is completed. For read transactions, there is
+ * no such requirement and all updates are committed immedietly to avoid having to do
+ * serialized commits.
  *
  * @author Pradeep Krishnan
  */
@@ -58,23 +62,6 @@ public interface Cache {
    */
   public Item get(Object key);
 
-  /**
-   * Gets an object from the cache.
-   *
-   * @param key the key
-   *
-   * @return Item or DELETED or null
-   */
-  public CachedItem rawGet(Object key);
-
-  /**
-   * Puts an object directly to the cache.
-   *
-   * @param key the key
-   * @param the Item or DELETED. Putting null is a no-op while putting 
-   *            a DELETED will remove this entry.
-   */
-  public void rawPut(Object key, CachedItem val);
 
   /**
    * Read-thru cache that looks up from cache first and falls back to the supplied look-up.
@@ -98,9 +85,9 @@ public interface Cache {
    * Puts an object into the cache.
    *
    * @param key the key
-   * @param val the value (including null)
+   * @param val the value
    */
-  public void put(Object key, Object val);
+  public void put(Object key, Item val);
 
   /**
    * Removes an object at the specified key.
@@ -142,17 +129,41 @@ public interface Cache {
   }
 
   /**
-   * An object to indicate a delete-pending state for a key.
+   * A holder for values that are to be cached. Mainly so that 'null'
+   * can be stored for a cache key.
    */
   public static class Item implements CachedItem {
+    /** A version compatible with older (ambra 0.9.2 or before) */
+    private static final long serialVersionUID = -3696178832412763814L;
     private final Object value;
+    private final transient int ttl; // in seconds
 
+    /**
+     * Cached item with an infinite time to live.
+     *
+     * @param value the value to store (could be null)
+     */
     public Item(Object value) {
+      this(value, -1);
+    }
+
+    /**
+     * Cached item.
+     *
+     * @param value the value to store (could be null)
+     * @param ttl the time to live in seconds
+     */
+    public Item(Object value, int ttl) {
       this.value = value;
+      this.ttl = ttl;
     }
 
     public Object getValue() {
       return value;
+    }
+
+    public int getTtl() {
+      return ttl;
     }
 
     public String toString() {

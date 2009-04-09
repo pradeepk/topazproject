@@ -112,7 +112,7 @@ public class RatingsService {
     removeRating(articleRatingSummary, Rating.SINGLE_RATING_TYPE, single);
 
     articleAnnotationCache.put(AVG_RATINGS_KEY + articleURI,
-                               new AverageRatings(articleRatingSummary));
+                               new Cache.Item(new AverageRatings(articleRatingSummary)));
     session.delete(articleRating);
   }
 

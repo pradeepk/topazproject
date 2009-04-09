@@ -306,7 +306,6 @@
   <!-- cache manager configs -->
   <bean id="txCacheManager" class="org.topazproject.ambra.cache.CacheManager">
     <constructor-arg index="0" ref="jtaTransactionManager"/>
-    <constructor-arg index="1" value="20"/> <!-- seconds to wait for the write lock -->
   </bean>
   <bean id="objectCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0" ref="txCacheManager"/>

@@ -57,14 +57,6 @@ public class MockCache implements Cache {
     return (Item) map.get(key);
   }
 
-  public CachedItem rawGet(Object key) {
-    return map.get(key);
-  }
-
-  public void rawPut(Object key, CachedItem val) {
-    map.put(key, val);
-  }
-
   public <T, E extends Exception> T get(Object key, int refresh, Lookup<T, E> lookup) throws E {
 
     Item val = get(key);
@@ -77,8 +69,8 @@ public class MockCache implements Cache {
     return (T)val.getValue();
   }
 
-  public void put(Object key, Object val) {
-    map.put(key, new Item(val));
+  public void put(Object key, Item val) {
+    map.put(key, val);
   }
 
   public void remove(Object key) {

@@ -26,9 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
@@ -52,8 +49,6 @@ public class CacheManager implements CacheListener, ObjectListener {
   private static final Log log = LogFactory.getLog(CacheManager.class);
 
   private final TransactionManager           jtaTransactionManager;
-  private final long                         lockWaitSeconds;
-  private final Lock                         updateLock      = new ReentrantLock();
   private final List<Listener>               listeners       = new ArrayList<Listener>();
   private final Map<Transaction, TxnContext> contexts        =
     new HashMap<Transaction, TxnContext>();
@@ -62,11 +57,9 @@ public class CacheManager implements CacheListener, ObjectListener {
    * Creates a new CacheManager object.
    *
    * @param jtaTransactionManager JTA transaction manager
-   * @param lockWaitSeconds seconds to wait on the lock before aborting
    */
-  CacheManager(TransactionManager jtaTransactionManager, long lockWaitSeconds) {
+  CacheManager(TransactionManager jtaTransactionManager) {
     this.jtaTransactionManager = jtaTransactionManager;
-    this.lockWaitSeconds   = lockWaitSeconds;
   }
 
   /**
@@ -201,7 +194,6 @@ public class CacheManager implements CacheListener, ObjectListener {
                                        = new HashMap<String, Map<Object, Cache.CachedItem>>();
     private final Map<String, Boolean> removedAll      = new HashMap<String, Boolean>();
     private final Set<String>          changedJournals = new HashSet<String>();
-    private boolean                    locked          = false;
 
     public TxnContext(Transaction txn) {
       this.txn = txn;
@@ -211,52 +203,13 @@ public class CacheManager implements CacheListener, ObjectListener {
     }
 
     public void beforeCompletion() {
-      try {
-        locked = updateLock.tryLock(lockWaitSeconds, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {
-        throw new RuntimeException("Interrupted while waiting to acquire a lock", e);
-      }
-
-      /*
-       * Locking is best-effort (eg. cache-peers don't participate in locking)
-       * So continue on even when lock cannot be acquired. The expectation
-       * here is that stores are MVCC implementations so that the commit operation
-       * is really fast. For slow commit operations, (like the fedora-blob-store)
-       * that prevent us from acquiring a lock, the txn aspect of the cache is
-       * compromised. If this becomes a problem, then this CacheManager should
-       * also register itself as an XA resource and participate in the two phase
-       * commit process.
-       */
-
-      if (!locked)
-        log.warn("Failed to acquire update-lock after waiting for " + lockWaitSeconds +
-                 " seconds. Continuing anyway ... ");
-      else if (log.isDebugEnabled())
-        log.debug("beforeCompletion: acquired update-lock for " + txn);
     }
 
     public void afterCompletion(int status) {
-      if (log.isDebugEnabled())
-        log.debug("afterCompletion: processing event-queue with " + queue.size() + " entries for " +
-                  txn);
-
-      boolean committed = (status == Status.STATUS_COMMITTED);
-      if (!locked && committed)
-        log.warn("afterCompletion: called without acquiring the update-lock");
-
       CacheEvent ev;
 
       while ((ev = queue.poll()) != null)
-        ev.execute(this, committed);
-
-      if (locked) {
-        updateLock.unlock();
-
-        if (log.isDebugEnabled())
-          log.debug("afterCompletion: released update-lock for " + txn);
-
-        locked = false;
-      }
+        ev.execute(this, status == Status.STATUS_COMMITTED);
 
       synchronized (contexts) {
         if (contexts.remove(txn) != null) {
@@ -309,6 +262,14 @@ public class CacheManager implements CacheListener, ObjectListener {
 
     public Set<String> getChangedJournals() {
       return changedJournals;
+    }
+
+    public boolean isRollbackOnly() {
+      try {
+        return (txn.getStatus() == Status.STATUS_MARKED_ROLLBACK);
+      } catch (Exception e) {
+        throw new RuntimeException("Error getting rollback-only status", e);
+      }
     }
   }
 }

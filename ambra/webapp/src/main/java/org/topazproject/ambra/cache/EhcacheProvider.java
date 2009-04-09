@@ -77,10 +77,7 @@ public class EhcacheProvider implements Cache {
     return DELETED.equals(val) ? null : (Item) val;
   }
 
-  /*
-   * inherited javadoc
-   */
-  public CachedItem rawGet(Object key) {
+  private CachedItem rawGet(Object key) {
     TxnContext ctx = cacheManager.getTxnContext();
     CachedItem val = ctx.getLocal(getName()).get(key);
 
@@ -90,8 +87,14 @@ public class EhcacheProvider implements Cache {
     if (val == null) {
       Element e = cache.get(key);
 
+      /*
+       * v0.9.2 and prior versions of Ambra used to store 'Item.class' in the underlying EhCache.
+       * This is now changed to only store Item#getValue. The additional check below is to work
+       * with those old entries during an upgrade since those entries could be coming from a disk
+       * persisted cache or from an older peer.
+       */
       if (e != null)
-        val = (Item) e.getValue();
+        val = (e.getValue() instanceof Item) ? (Item) val : new Item(e.getValue());
     }
 
     if (log.isTraceEnabled())
@@ -120,19 +123,7 @@ public class EhcacheProvider implements Cache {
                 Item val = get(key);
 
                 if (val == null)
-                  val = new Item(lookup.lookup());
-
-                Element e = new Element(key, val);
-
-                if (refresh > 0)
-                  e.setTimeToLive(refresh);
-
-                cache.put(e);
-
-                if (log.isDebugEnabled() && (val.getValue() == null))
-                  log.debug(getName() + ".populate-null(" + key + ")");
-                else if (log.isDebugEnabled())
-                  log.debug(getName() + ".populate(" + key + ")");
+                  put(key, val = new Item(lookup.lookup(), refresh));
 
                 return val;
               }
@@ -150,15 +141,8 @@ public class EhcacheProvider implements Cache {
   /*
    * inherited javadoc
    */
-  public void put(final Object key, final Object val) {
-    TxnContext ctx = cacheManager.getTxnContext();
-    ctx.getLocal(getName()).put(key, new Item(val));
-    ctx.enqueue(new CacheEvent() {
-        public void execute(TxnContext ctx, boolean commit) {
-          if (commit)
-            EhcacheProvider.this.commit(ctx, key);
-        }
-      });
+  public void put(final Object key, final Item val) {
+    schedulePut(key, val);
     cacheManager.cacheEntryChanged(this, key, val);
   }
 
@@ -166,15 +150,23 @@ public class EhcacheProvider implements Cache {
    * inherited javadoc
    */
   public void remove(final Object key) {
-    TxnContext ctx = cacheManager.getTxnContext();
-    ctx.getLocal(getName()).put(key, DELETED);
-    ctx.enqueue(new CacheEvent() {
-        public void execute(TxnContext ctx, boolean commit) {
-          if (commit)
-            EhcacheProvider.this.commit(ctx, key);
-        }
-      });
+    schedulePut(key, DELETED);
     cacheManager.cacheEntryRemoved(this, key);
+  }
+
+  private void schedulePut(final Object key, CachedItem item) {
+    TxnContext ctx = cacheManager.getTxnContext();
+    if (ctx.isRollbackOnly())
+      rawPut(key, item);
+    else {
+      ctx.getLocal(getName()).put(key, item);
+      ctx.enqueue(new CacheEvent() {
+          public void execute(TxnContext ctx, boolean commit) {
+            if (commit)
+              EhcacheProvider.this.commit(ctx, key);
+          }
+        });
+    }
   }
 
   /*
@@ -182,15 +174,19 @@ public class EhcacheProvider implements Cache {
    */
   public void removeAll() {
     TxnContext ctx = cacheManager.getTxnContext();
-    ctx.getLocal(getName()).clear();
-    ctx.setRemovedAll(getName(), true);
-    ctx.enqueueHead(new CacheEvent() {
-        public void execute(TxnContext ctx, boolean commit) {
-          if (commit)
-            EhcacheProvider.this.commitRemoveAll(ctx);
-        }
-      });
-    cacheManager.cacheCleared(this);
+    if (ctx.isRollbackOnly())
+      commitRemoveAll(ctx);
+    else {
+      ctx.getLocal(getName()).clear();
+      ctx.setRemovedAll(getName(), true);
+      ctx.enqueueHead(new CacheEvent() {
+          public void execute(TxnContext ctx, boolean commit) {
+            if (commit)
+              EhcacheProvider.this.commitRemoveAll(ctx);
+          }
+        });
+      cacheManager.cacheCleared(this);
+    }
   }
 
   /*
@@ -228,20 +224,21 @@ public class EhcacheProvider implements Cache {
     local.remove(key);
   }
 
-  /*
-   * inherited javadoc
-   */
-  public void rawPut(Object key, CachedItem val) {
+  private void rawPut(Object key, CachedItem val) {
     if (DELETED.equals(val)) {
       cache.remove(key);
 
       if (log.isDebugEnabled())
         log.debug(getName() + ".remove(" + key + ")");
     } else if (val instanceof Item) {
-      cache.put(new Element(key, val));
+      Item item = (Item) val;
+      Element e = new Element(key, item.getValue());
+      if (item.getTtl() > 0)
+        e.setTimeToLive(item.getTtl());
 
+      cache.put(e);
 
-      if (log.isDebugEnabled() && (((Item)val).getValue() == null))
+      if (log.isDebugEnabled() && (item.getValue() == null))
         log.debug(getName() + ".put-null(" + key + ")");
       else if (log.isDebugEnabled())
         log.debug(getName() + ".put(" + key + ")");
