@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+  <#import "/global/global_variables.ftl" as global>
   <#assign cisStartDateMillis = freemarker_config.cisStartDateMillis>
 
   <div id="content">
@@ -102,7 +103,7 @@
                   </li>
                 </#if>
               <#else>
-              	  <li><label for="singleRating">&nbsp;</label>
+                  <li><label for="singleRating">&nbsp;</label>
                     <ul class="star-rating rating" title="singleRating">
                       <#assign singleRatingPct = (20 * articleRatingSummary.singleRating)?string("##0")>
                       <li class="current-rating average pct${singleRatingPct}">Currently ${articleRatingSummary.singleRating?string("0.#")}/5 Stars.</li>
@@ -140,7 +141,7 @@
                 <#if Session[freemarker_config.userAttributeKey]?exists>
                   <a href="#" onclick="ambra.responsePanel.show(this, _dcf, 'toolbar', '${articleRatingSummary.ratingId}', null, null, 2); return false;" class="flag tooltip" title="Report a Concern">Report a Concern</a>
                 <#else>
-                  <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="flag tooltip" title="Report a Concern">Report a Concern</a>
+                  <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${global.thisPage}" class="flag tooltip" title="Report a Concern">Report a Concern</a>
                 </#if>
               </li>
             </ul>

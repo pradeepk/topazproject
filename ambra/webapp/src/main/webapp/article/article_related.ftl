@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<#include "article_variables.ftl">
+<#import "article_variables.ftl" as article>
 <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
 <div id="content" class="article" style="visibility:visible;">
   <#include "article_rhc.ftl">
@@ -30,7 +30,7 @@
     <div id="researchArticle" class="content related">
       <a id="top" name="top" toc="top" title="Top"></a>
       <#include "article_blurb.ftl">
-      <h1 xpathLocation="noSelect"><@articleFormat>${docTitle}</@articleFormat></h1>
+      <h1 xpathLocation="noSelect"><@articleFormat>${article.docTitle}</@articleFormat></h1>
       <#assign tab="related" />
       <#include "article_tabs.ftl">
 
@@ -39,13 +39,13 @@
       <h3>Related Articles on the Web <img id="relatedArticlesSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
       <div id="pubMedRelatedErr" style="display:none;"></div>
       <ul>
-        <li><a href="http://scholar.google.com/scholar?hl=en&lr=&q=related:${docURL?url}&btnG=Search">Google Scholar</a></li>
+        <li><a href="http://scholar.google.com/scholar?hl=en&lr=&q=related:${article.docURL?url}&btnG=Search">Google Scholar</a></li>
         <li id="pubMedRelatedLI" style="display:none;"><a id="pubMedRelatedURL">PubMed</a></li>
       </ul>
 
       <h3>Cited in <img id="relatedCitesSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
       <div id="relatedCites"></div>
-      <div>Search for citations on <a href="http://scholar.google.com/scholar?hl=en&lr=&cites=${docURL?url}">Google Scholar</a>.</div>
+      <div>Search for citations on <a href="http://scholar.google.com/scholar?hl=en&lr=&cites=${article.docURL?url}">Google Scholar</a>.</div>
 
       <h3>Bookmarked in <img id="relatedBookmarksSpinner" src="../../images/loading_small.gif" class="loading" /></h3>
       <div id="relatedBookmarks"></div>
@@ -53,7 +53,7 @@
       <h2>Related Blog Posts <a href="/static/help.action#relatedBlogPosts" class="replaced" id="info" title="More information"><span>info</span></a> <img id="relatedBlogSpinner" src="../../images/loading_small.gif" class="loading" /></h2>
       <div id="relatedBlogPosts"></div>
 
-      Search for related blog posts on <a href="http://blogsearch.google.com/blogsearch?hl=en&ie=UTF-8&q=${shortDOI?url}&btnG=Search+Blogs">Google Blogs</a>
+      Search for related blog posts on <a href="http://blogsearch.google.com/blogsearch?hl=en&ie=UTF-8&q=${article.shortDOI?url}&btnG=Search+Blogs">Google Blogs</a>
 
       <h3>Trackbacks</h3>
       <div>To trackback this article use the following trackback URL:<br/>

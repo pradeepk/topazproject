@@ -17,6 +17,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+            <#import "/global/global_variables.ftl" as global>
+
             <#if (averageRatings.numUsersThatRated != 1)>
               <#assign char = "s">
             <#else>
@@ -67,7 +69,7 @@
                   <a href="javascript:void(0);" onclick="return ambra.rating.show();" class="rating">Rate This Article</a>
                 </#if>
               <#else>
-                <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="rating">Rate This Article</a>
+                <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${global.thisPage}" class="rating">Rate This Article</a>
               </#if>
               </li>
             </ol>

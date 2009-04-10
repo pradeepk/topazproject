@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
   
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
   
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,11 +17,12 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+<#import "/global/global_variables.ftl" as global>
 <#assign cisStartDateMillis = freemarker_config.cisStartDateMillis>
 <#if Session[freemarker_config.userAttributeKey]?exists>
   <#assign loginURL = "#">
 <#else>
-  <#assign loginURL = "${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}">
+  <#assign loginURL = "${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${global.thisPage}">
 </#if>
   <#macro writeReplyDetails reply replyToAuthorId replyToAuthorName>
     <@s.url namespace="/user" includeParams="none" id="showUserURL" action="showUser" userId="${reply.creator}"/>
@@ -152,8 +153,8 @@
     <!-- end : response -->
   </div>
 
-          <@s.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${baseAnnotation.annotates}"/>
-        <p><a href="${commentsURL}" class="commentary icon">See all ongoing discussions</a> on this article</p>
+  <@s.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${baseAnnotation.annotates}"/>
+  <p><a href="${commentsURL}" class="commentary icon">See all ongoing discussions</a> on this article</p>
 
   <!-- end : main contents -->
 

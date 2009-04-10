@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<#include "/article/article_variables.ftl">
+<#import "/article/article_variables.ftl" as article>
 <div id="content" class="article" style="visibility:visible;">
 <#include "/article/article_rhc.ftl">
 <form name="articleInfo" id="articleInfo" method="" action="">

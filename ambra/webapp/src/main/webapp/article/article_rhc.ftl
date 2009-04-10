@@ -17,6 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+<#import "article_variables.ftl" as article>
 <!-- begin : right hand column -->
 <@s.url id="articleArticleRepXML"  namespace="/article" action="fetchObjectAttachment" includeParams="none" uri="${articleURI}">
   <@s.param name="representation" value="%{'XML'}"/>
@@ -76,10 +77,10 @@
       <li class="bookmarklets">Bookmark:
 
           <#-- StumbleUpon -->
-          <a href="http://www.stumbleupon.com/submit?url=${jDocURL}" target="_new"> <img border=0 src="http://cdn.stumble-upon.com/images/16x16_su_solid.gif" alt="StumbleUpon" title="Add to StumbleUpon"></a>
+          <a href="http://www.stumbleupon.com/submit?url=${article.jDocURL}" target="_new"> <img border=0 src="http://cdn.stumble-upon.com/images/16x16_su_solid.gif" alt="StumbleUpon" title="Add to StumbleUpon"></a>
           <#-- for more info, see http://www.stumbleupon.com/buttons.php -->
           <#-- Facebook -->
-          <script>function fbs_click() {u='${docURL}';t='${docTitle?url}';window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t),'sharer','toolbar=0,status=0,width=626,height=436');return false;}</script><a href="http://www.facebook.com/share.php?u=${docURL?url}" onclick="return fbs_click()"><img src="http://static.ak.fbcdn.net/images/share/facebook_share_icon.gif" alt="Facebook" title="Add to Facebook" /></a>       <!-- for mor info, see http://www.facebook.com/share_partners.php -->
+          <script>function fbs_click() {u='${article.docURL}';t='${article.docTitle?url}';window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t),'sharer','toolbar=0,status=0,width=626,height=436');return false;}</script><a href="http://www.facebook.com/share.php?u=${article.docURL?url}" onclick="return fbs_click()"><img src="http://static.ak.fbcdn.net/images/share/facebook_share_icon.gif" alt="Facebook" title="Add to Facebook" /></a>       <!-- for mor info, see http://www.facebook.com/share_partners.php -->
           <#-- Connotea -->
           <script type="text/javascript">
             function bookmark_in_connotea(u) {
@@ -89,18 +90,18 @@
                 void(x.setTimeout('w.focus()',200));
             }
           </script>
-          <a style='cursor: pointer;' onclick='javascript:bookmark_in_connotea("${docURL}");'><img src='${freemarker_config.getContext()}/images/icon_connotea_16x16.gif' alt="Connotea" title="Add to Connotea"/></a>
+          <a style='cursor: pointer;' onclick='javascript:bookmark_in_connotea("${article.docURL}");'><img src='${freemarker_config.getContext()}/images/icon_connotea_16x16.gif' alt="Connotea" title="Add to Connotea"/></a>
           <#-- See: http://www.connotea.org/wiki/AddToConnoteaButton -->
           <#-- Citeulike -->
-          <a href="http://www.citeulike.org/posturl?url=${docURL?url}&title=${docTitle?url}" target="_new"><img src='${freemarker_config.getContext()}/images/icon_citeulike_16x16.gif' alt="CiteULike" title="Add to CiteULike" /></a>
+          <a href="http://www.citeulike.org/posturl?url=${article.docURL?url}&title=${article.docTitle?url}" target="_new"><img src='${freemarker_config.getContext()}/images/icon_citeulike_16x16.gif' alt="CiteULike" title="Add to CiteULike" /></a>
           <#-- For more info see http://www.citeulike.org/faq/all.adp -->
           <#-- Digg
             TODO:Eventually we should be passing the abstract as the bodytext to digg and sending a topic as well
             -->
           <script type="text/javascript">
-          digg_url = '${docURL}';
+          digg_url = '${article.docURL}';
           digg_skin = 'icon';
-          digg_title = '<@articleFormat><@simpleText>${docTitle?replace("'","\\'")}</@simpleText></@articleFormat>';
+          digg_title = '<@articleFormat><@simpleText>${article.docTitle?replace("'","\\'")}</@simpleText></@articleFormat>';
           digg_bodytext = '';
           digg_topic = '';
           digg_media = 'news';

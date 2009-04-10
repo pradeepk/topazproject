@@ -2,7 +2,7 @@
   $HeadURL::                                                                            $
   $Id$
 
-  Copyright (c) 2007-2008 by Topaz, Inc.
+  Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<#include "article_variables.ftl">
+<#import "article_variables.ftl" as article>
 <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
 <@s.url namespace="/article" includeParams="none" id="articleURL" action="fetchArticle" articleURI="${articleInfo.id}"/>
 <@s.url namespace="/annotation/secure" includeParams="none" id="startDiscussionUrl" action="startDiscussion" target="${articleInfo.id}"/>
@@ -35,7 +35,7 @@
    </#if>
       <a id="top" name="top" toc="top" title="Top"></a>
       <#include "article_blurb.ftl">
-      <h1 xpathLocation="noSelect"><@articleFormat>${docTitle}</@articleFormat></h1>
+      <h1 xpathLocation="noSelect"><@articleFormat>${article.docTitle}</@articleFormat></h1>
       <#assign tab="comments" />
       <#include "article_tabs.ftl">
       <!--<div class="rss"><a href="#">Comments RSS</a></div>-->

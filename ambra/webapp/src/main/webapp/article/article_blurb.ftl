@@ -1,9 +1,24 @@
-<#if !journalContext??>
-  <#--In the fetchBody action a more "bare bones" copy of the article is rendered and not all of the
-   templates are included.  We need some of these variables defined here.  This runs the variables
-   definition template if it's not defined. -->
-  <#include "article_variables.ftl">
-</#if>
+<#--
+  $HeadURL::                                                                            $
+  $Id$
+
+  Copyright (c) 2007-2009 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<#import "article_variables.ftl" as article>
 <div id="contentHeader"><p>Open Access</p><p id="articleType">${articleType.heading}
 <#if articleType.code??>
   <#if articleType.code != "research_article">
@@ -12,6 +27,6 @@
 <#else>
   --!!ARTICLE TYPE CODE UNDEFINED!!--
 </#if></p></div>
-<#if (publisher?length > 0)>
-  <div id="publisher"><p>${publisher}</p></div>
+<#if (article.publisher?length > 0)>
+  <div id="publisher"><p>${article.publisher}</p></div>
 </#if>

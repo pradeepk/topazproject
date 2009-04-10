@@ -18,19 +18,15 @@
   limitations under the License.
 -->
 
-<#if articleInfoX??>
-  <#assign docTitle = articleInfoX.title />
-<#else>
-  <#assign docTitle = "" />
-</#if>
-
+<#import "article_variables.ftl" as article>
+<#import "/global/global_variables.ftl" as global>
 <@s.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
 <div id="researchArticle" class="content">
   <a id="top" name="top"></a>
   <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
-  <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
+  <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${global.thisPageURL?url}"/>
   <#include "article_blurb.ftl">
-  <h1 xpathLocation="noSelect"><@articleFormat>${docTitle}</@articleFormat></h1>
+  <h1 xpathLocation="noSelect"><@articleFormat>${article.docTitle}</@articleFormat></h1>
   <#assign tab="article" />
   <#include "article_tabs.ftl">
   <div id="retractionHtmlId" class="retractionHtmlId" style="display:none;" xpathLocation="noSelect">
@@ -48,7 +44,7 @@
           <#if Session[freemarker_config.userAttributeKey]?exists>
             <a href="${createDiscussionURL}">Make a general comment</a>
           <#else>
-            <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}">Make a general comment</a>
+            <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${global.thisPage}">Make a general comment</a>
           </#if>
         </li>
       </ul>

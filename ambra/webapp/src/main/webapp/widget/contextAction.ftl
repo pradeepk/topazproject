@@ -17,6 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+<#import "/global/global_variables.ftl" as global>
 <#--
   TODO: Moves events defined here into the ambra library and wire up the events onload
 -->
@@ -46,7 +47,7 @@
     <div class="contextActionContent">
       <h5><img src="../images/tooltip_addannotation.gif" /> Add a note to this text.</h5>
       You must be logged in to add a note to an article.
-      You may log in by <a onmousedown="ambra.displayAnnotationContext.disconnect(event);" href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}">clicking here</a> or <a href="#" onclick="return false;" onmouseup="ambra.displayAnnotationContext.cancelContext(event);">cancel this note</a>.
+      You may log in by <a onmousedown="ambra.displayAnnotationContext.disconnect(event);" href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${global.thisPage}">clicking here</a> or <a href="#" onclick="return false;" onmouseup="ambra.displayAnnotationContext.cancelContext(event);">cancel this note</a>.
     </div>
     <div class="tip" id="canlTip"></div>
   </div>
