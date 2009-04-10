@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -113,7 +113,13 @@ public class DebuggingFilter implements Filter {
       final Enumeration params = request.getParameterNames();
       while (params.hasMoreElements()) {
         final String paramName = (String) params.nextElement();
-        log(paramName + ":" + request.getParameterValues(paramName).toString());
+        StringBuilder paramValues = new StringBuilder();
+        for (String value : request.getParameterValues(paramName)) {
+          if (paramValues.length() > 0)
+            paramValues.append(", ");
+          paramValues.append(value);
+        }
+        log(paramName + ":" + paramValues.toString());
       }
     }
   }

@@ -1,7 +1,7 @@
 /* $$HeadURL::                                                                            $$
  * $$Id$$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
@@ -39,7 +38,7 @@ public class CrossRefPosterService {
     this.doiXrefUrl = doiXrefUrl;
   }
 
-  public int post(File file) throws HttpException, IOException {
+  public int post(File file) throws IOException {
     PostMethod poster = new PostMethod(doiXrefUrl);
     HttpClient client = new HttpClient();
 

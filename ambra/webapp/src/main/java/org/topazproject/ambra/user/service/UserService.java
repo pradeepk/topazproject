@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -577,7 +577,13 @@ public class UserService {
         final String[] publicGrants = permissionsService.listGrants(topazId, ALL_PRINCIPALS[0]);
         if (log.isDebugEnabled()) {
           log.debug("TopazId:" + topazId);
-          log.debug("Cancelling grants:" + publicGrants);
+          StringBuilder gr = new StringBuilder();
+          for (String publicGrant : publicGrants) {
+            if (gr.length() > 0)
+              gr.append(", ");
+            gr.append(publicGrant);
+          }
+          log.debug("Cancelling grants:" + publicGrants.toString());
           log.debug("Adding grants:" + ArrayUtils.toString(grants));
         }
         //Cancel all previous grants first

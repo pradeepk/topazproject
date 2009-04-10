@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -148,6 +148,7 @@ public class DummySSOFilter implements Filter {
     receipt.setPgtIou("foo" + System.currentTimeMillis());
 
     session.setAttribute(Constants.SINGLE_SIGNON_USER_KEY,  authId);
+    // FIXME: storing non-serializable CASReceipt into HttpSession
     session.setAttribute(Constants.SINGLE_SIGNON_RECEIPT,   receipt);
     session.setAttribute(Constants.SINGLE_SIGNON_EMAIL_KEY, email);
 

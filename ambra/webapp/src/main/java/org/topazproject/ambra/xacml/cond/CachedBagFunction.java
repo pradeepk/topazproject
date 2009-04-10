@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -280,15 +280,16 @@ public class CachedBagFunction implements Function {
     }
 
     public String toString() {
-      String ret = "[";
+      StringBuilder ret = new StringBuilder("[");
 
       if (results.length > 0)
-        ret += results[0];
+        ret.append(results[0]);
 
       for (int i = 1; i < results.length; i++)
-        ret += ", " + results[i];
+        ret.append(", ").append(results[i]);
 
-      return ret + "]";
+      ret.append(']');
+      return ret.toString();
     }
   }
 }

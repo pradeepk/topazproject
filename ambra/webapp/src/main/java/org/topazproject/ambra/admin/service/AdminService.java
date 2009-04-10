@@ -359,16 +359,16 @@ public class AdminService {
    *                      by the journal does not exist.
    */
   public String getVolumesCSV() throws OtmException {
-    String volCSV = "";
+    StringBuilder volCSV = new StringBuilder();
     List<URI> volumes = getJrnlVolURIs();
 
     Iterator iter = volumes.listIterator();
     while (iter.hasNext()) {
-      volCSV = volCSV + iter.next().toString();
+      volCSV.append(iter.next().toString());
       if (iter.hasNext())
-        volCSV = volCSV + ",";
+        volCSV.append(',');
     }
-    return volCSV;
+    return volCSV.toString();
   }
 
   /**

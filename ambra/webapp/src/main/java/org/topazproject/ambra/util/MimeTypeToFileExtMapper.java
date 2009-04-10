@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,18 +40,24 @@ public class MimeTypeToFileExtMapper {
    * Get a map of mime-type's to file-extensions.
    *
    * @return the map, with mime-type's as keys and file-extensions as values
+   * @throws IOException File read failed
    */
   public Map<String, String> getFileExtListByMimeType() throws IOException {
     BufferedReader bufferedReader =
         new BufferedReader(new InputStreamReader(mappingLocation.getInputStream(), "UTF-8"));
 
-    final Map<String, String> mimeMap = new HashMap<String, String>();
+    final Map<String, String> mimeMap;
+    mimeMap = new HashMap<String, String>();
     String line;
-    while ((line = bufferedReader.readLine()) != null) {
-      if (!line.startsWith("#") && !StringUtils.isBlank(line)) {
-        final String[] parts = line.split("\\s+");
-        mimeMap.put(parts[0], parts[1].trim());
+    try {
+      while ((line = bufferedReader.readLine()) != null) {
+        if (!line.startsWith("#") && !StringUtils.isBlank(line)) {
+          final String[] parts = line.split("\\s+");
+          mimeMap.put(parts[0], parts[1].trim());
+        }
       }
+    } finally {
+      bufferedReader.close();
     }
 
     mimeMap.put("text/xml", "xml");

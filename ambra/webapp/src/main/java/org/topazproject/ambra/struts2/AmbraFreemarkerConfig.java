@@ -134,10 +134,9 @@ public class AmbraFreemarkerConfig {
           log.trace("JS FILES: " + printArray(entry.getValue()));
         }
 
-        Map<String, String> m = j.getTitles();
-        for (String name : m.keySet()) {
-          log.trace("PageName: " + name);
-          log.trace("Title: " + m.get(name));
+        for (Entry<String, String> entry : j.getTitles().entrySet()) {
+          log.trace("PageName: " + entry.getKey());
+          log.trace("Title: " + entry.getValue());
         }
       }
       log.trace("Dir Prefix: " + dirPrefix);

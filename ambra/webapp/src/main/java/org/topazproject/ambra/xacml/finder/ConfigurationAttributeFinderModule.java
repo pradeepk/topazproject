@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ import com.sun.xacml.finder.AttributeFinderModule;
  */
 public class ConfigurationAttributeFinderModule extends AttributeFinderModule {
   private static final Set supportedDesignatorTypes =
-    Collections.singleton(new Integer(AttributeDesignator.ENVIRONMENT_TARGET));
+    Collections.singleton(AttributeDesignator.ENVIRONMENT_TARGET);
 
   /**
    * Supports attribute designators.

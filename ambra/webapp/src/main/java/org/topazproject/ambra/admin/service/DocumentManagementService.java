@@ -1,7 +1,7 @@
 /* $$HeadURL::                                                                            $$
  * $$Id$$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.activation.FileTypeMap;
 import javax.xml.transform.Transformer;

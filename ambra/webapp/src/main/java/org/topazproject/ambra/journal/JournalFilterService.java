@@ -72,6 +72,9 @@ class JournalFilterService {
   private final Cache                    filterCache;          // key    -> Journal
   private final String                   keyPrefix;            // in cache for filters
   private final JournalKeyService        journalKeyService;
+  private static final String TYPE_QRY = "select id, (select o.<rdf:type> from Object x) " +
+      "from Object o, Aggregation a "+
+      "where id := cast(o, Article).id and a.id = :a and o = a.simpleCollection;";
 
   /**
    * Create a new journal-filter-service instance. One and only one of these should be created for evey
@@ -126,7 +129,7 @@ class JournalFilterService {
   }
 
   /* Must be invoked with journalCache monitor held and active tx on session */
-  private void removeJournalFilters(String jName, Session s) {
+  private void removeJournalFilters(String jName) {
     Set<String> oldDefs = journalFilters.remove(jName);
     if ((oldDefs != null) && !oldDefs.isEmpty()) {
       log.warn("Removing old filter-defs " + oldDefs + " for journal '" + jName + "'");
@@ -310,10 +313,8 @@ class JournalFilterService {
      * Get all the rdf:type's for each object.
      * Note to the unwary: this may look Article specific, but it isn't.
      */
-    String typeQry = "select id, (select o.<rdf:type> from Object x) from Object o, Aggregation a "+
-                     "  where id := cast(o, Article).id and a.id = :a and o = a.simpleCollection;";
 
-    Results r = s.createQuery(typeQry.toString()).setParameter("a", a.getId()).execute();
+    Results r = s.createQuery(TYPE_QRY).setParameter("a", a.getId()).execute();
 
     // build a map of uri's keyed by class
     Map<Class, Set<String>> idsByClass = new HashMap<Class, Set<String>>();
@@ -406,7 +407,7 @@ class JournalFilterService {
       if (j != null)
         return loadJournalFilters(j, s);
       if (local != null)
-        removeJournalFilters(jName, s);
+        removeJournalFilters(jName);
       return null;
     }
   }

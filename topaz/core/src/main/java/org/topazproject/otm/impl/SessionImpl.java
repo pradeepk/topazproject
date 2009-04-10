@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -536,7 +536,7 @@ public class SessionImpl extends AbstractSession {
         else if (nFields == 0)
           log.debug("Update skipped for " + id + ". No changes to the object state.");
         else {
-          Collection<RdfMapper> skips = new ArrayList(cm.getRdfMappers());
+          Collection<RdfMapper> skips = new ArrayList<RdfMapper>(cm.getRdfMappers());
           skips.removeAll(fields);
           StringBuilder buf = new StringBuilder(100);
           char sep = ' ';

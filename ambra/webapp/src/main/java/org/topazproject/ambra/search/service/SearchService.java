@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,8 +46,6 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 
-import org.apache.struts2.ServletActionContext;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,7 +55,6 @@ import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.search.SearchResultPage;
 import org.topazproject.ambra.user.AmbraUser;
-import org.topazproject.ambra.web.VirtualJournalContext;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.RdfUtil;
@@ -424,13 +421,12 @@ public class SearchService {
       multiMapPut(fieldMap, getField(c.getQuery()), c);
 
     q.clauses().clear();
-    for (String field : fieldMap.keySet()) {
-      List<BooleanClause> clauses = fieldMap.get(field);
-      if (field == null || clauses.size() == 1) {
-        q.clauses().addAll(clauses);
+    for (Map.Entry<String, List<BooleanClause>> entry : fieldMap.entrySet()) {
+      if (entry.getKey() == null || entry.getValue().size() == 1) {
+        q.clauses().addAll(entry.getValue());
       } else {
         List<BooleanClause> shoulds = new ArrayList<BooleanClause>();
-        for (BooleanClause c : clauses) {
+        for (BooleanClause c : entry.getValue()) {
           if (c.getOccur() == Occur.SHOULD)
             shoulds.add(c);
           else
@@ -438,7 +434,7 @@ public class SearchService {
         }
 
         if (shoulds.size() > 0)
-          q.add(new SameFieldQuery(field, shoulds), Occur.SHOULD);
+          q.add(new SameFieldQuery(entry.getKey(), shoulds), Occur.SHOULD);
       }
     }
   }
@@ -617,6 +613,7 @@ public class SearchService {
     whr.append(") ");
   }
 
+  // FIXME: method is not used anywhere
   private boolean isSearchable(String fexpr) {
     // FIXME: this doesn't handle subclasses correctly
 

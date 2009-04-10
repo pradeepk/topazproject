@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,7 +65,7 @@ public class ServletActionContextAttributeFinderModule extends AttributeFinderMo
 
   // The set of attr designators supported by this finder
   private static final Set supportedDesignatorTypes =
-    Collections.singleton(new Integer(AttributeDesignator.SUBJECT_TARGET));
+    Collections.singleton(AttributeDesignator.SUBJECT_TARGET);
 
   /**
    * Supports attribute designators.
@@ -100,10 +100,10 @@ public class ServletActionContextAttributeFinderModule extends AttributeFinderMo
 
     AttributeValue value = null;
 
-    for (int i = 0; i < resolvers.length; i++) {
+    for (Resolver resolver : resolvers) {
       try {
         // Now resolve a value for the id.
-        value = resolvers[i].resolve(type, id);
+        value = resolver.resolve(type, id);
       } catch (Exception e) {
         /*
          * Abort the policy evaluation. For a deny-biased PEP, this will result in an

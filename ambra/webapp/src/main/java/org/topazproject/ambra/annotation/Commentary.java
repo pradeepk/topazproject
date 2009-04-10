@@ -21,6 +21,7 @@ package org.topazproject.ambra.annotation;
 
 import java.util.Comparator;
 import java.util.Date;
+import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -124,7 +125,7 @@ public class Commentary {
     this.numReplies = numReplies;
   }
 
-  public static class Sorter implements Comparator<Commentary> {
+  public static class Sorter implements Comparator<Commentary>, Serializable {
     /**
      * This comparator does a reverse sort based on the last reply to the annotation.  If not replies
      * are present, the annotation time is used.
