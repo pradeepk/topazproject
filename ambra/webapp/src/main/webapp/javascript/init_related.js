@@ -166,12 +166,10 @@ function setRelatedBlogs(response, args)
     html = html + "</ul>"
   } else
 
-  if (numBlogsRendered == 0) {
-    html = "<ul><li>No related blog entries found</li></ul>";
+  if (numBlogsRendered != 0) {
+    dojo.byId('relatedBlogPosts').innerHTML = html;
+    dojo.fx.wipeIn({ node:'relatedBlogPosts', duration: 1000 }).play();
   }
-
-  dojo.byId('relatedBlogPosts').innerHTML = html;
-  dojo.fx.wipeIn({ node:'relatedBlogPosts', duration: 1000 }).play();
 }
 
 function setError(textID)
