@@ -142,7 +142,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
         articleIds = articleFeedService.getArticleIds(cacheKey);
         break;
       case Issue :
-        articleIds = articleFeedService.getIssueArticleIds(cacheKey);
+        articleIds = articleFeedService.getIssueArticleIds(cacheKey, getCurrentJournal());
         break;
     }
 

@@ -149,13 +149,13 @@ public class ArticleFeedService {
    * @return List&lt;String&gt; if article Ids.
    * @throws ApplicationException ApplicationException
    */
-  public List<String> getIssueArticleIds(final FeedCacheKey cacheKey) throws
+  public List<String> getIssueArticleIds(final FeedCacheKey cacheKey, String journal) throws
       URISyntaxException, ApplicationException {
     List<String> articleList  = new ArrayList<String>();
     URI issurURI = (cacheKey.getIssueURI() != null) ? URI.create(cacheKey.getIssueURI()) : null;
 
     if (issurURI == null) {
-      Journal curJrnl = journalService.getCurrentJournal();
+      Journal curJrnl = journalService.getJournal(journal);
       issurURI = curJrnl.getCurrentIssue();
     }
 
@@ -240,6 +240,7 @@ public class ArticleFeedService {
    *         specified article
    * @throws ApplicationException   Converts all exceptions to ApplicationException
    */
+  // FIXME: Dead code - Method is not used anywhere
   public List<WebAnnotation> getAnnotations(final FeedCacheKey cacheKey, List<String> annotType)
       throws ApplicationException {
     AnnotationConverter converter = new AnnotationConverter();
