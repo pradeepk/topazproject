@@ -33,7 +33,25 @@
     applications development project">Topaz</a>. This site is updated regularly as new features 
     become available. This page summarizes features and known bugs in each updated version.
   </p>
-  
+
+  <h2>RC 0.9.3 1 beta</h2>
+  <p>Released </p>
+  <h3>Features Implemented in RC 0.9.3 1 beta</h3>
+  <ul>
+    <li>Topaz and Ambra now have separate subversion repositories, and it is possible to build Ambra against a known stable version of Topaz.</li>
+    <li>Obsolete migrators removed</li>
+    <li>Performance Improvements</li>
+    <li>Add replies to annotation feed</li>
+  </ul>
+  <h3>Bugs Fixed in RC 0.9.3
+  <ul>
+    <li>Return correct article type to extended article feed</li>
+    <li>Set eternal to false, and add reasonable TTL for all caches</li>
+    <li>Search bugs involving italics in search results, and searches for authors with multiple given names</li>
+    <li>Truncate long section names in article jump nav</li>
+  </ul>
+  <p>For more detail on RC 0.9.3 1, see the <a href="http://www.topazproject.org/trac/query?status=new&status=assigned&status=reopened&status=closed&milestone=0.9.3_rc1&order=priority" title="Topaz 0.9.3 1 Tickets">Topaz Wiki</a></p>
+    
 	<h2>RC 0.9.2 beta</h2>
 	<p>Released March 25, 2009</p>
 	<h3>Features Implemented in RC 0.9.2 beta</h3>
@@ -55,7 +73,7 @@
 	</ul>
 	<p>For more detail on RC 0.9.2, see the <a href="http://www.topazproject.org/trac/query?status=new&status=assigned&status=reopened&status=closed&milestone=0.9.2&order=priority" title="Topaz 0.9.2 Tickets">Topaz Wiki</a></p>
 
-  	<h2>RC 0.9.1 beta</h2>
+  <h2>RC 0.9.1 beta</h2>
 	<p>Released January 29, 2009</p>
 	<h3>Features Implemented in RC 0.9.1 beta</h3>
 	<ul>
