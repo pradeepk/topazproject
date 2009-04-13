@@ -41,47 +41,6 @@ public class Issue extends Aggregation {
   private URI       image;
 
   /**
-   *
-   * @param article article URI
-   */
-  public void addArticle(URI article) {
-    /*
-     * Since we are doing an on-the-fly data migration (unwisely)
-     * we need to update articleList if it has not been done yet.
-     */
-    if (articleList.isEmpty() && !super.getSimpleCollection().isEmpty())
-      articleList =  new ArrayList<URI>(super.getSimpleCollection());
-    
-    //Only add if not there
-    if (!articleList.contains(article))
-      articleList.add(article);
-
-    //Shadow this addition in the simple collection
-    if (!super.getSimpleCollection().contains(article))
-      super.getSimpleCollection().add(article);
-  }
-
-  /**
-   *
-   * @param article article URI
-   */
-  public void removeArticle(URI article) {
-    /*
-     * Since we are doing an on-the-fly data migration (unwisely)
-     * we need to update articleList if it has not been done yet.
-     */
-    if (articleList.isEmpty() && !super.getSimpleCollection().isEmpty())
-      articleList =  new ArrayList<URI>(super.getSimpleCollection());
-
-    if (articleList.contains(article))
-      articleList.remove(article);
-
-    //Shadow this removal in the simple collection
-    if (super.getSimpleCollection().contains(article))
-      super.getSimpleCollection().remove(article);
-  }
-
-  /**
    * Get the image for this Issue.
    *
    * @return URI for the image, may be null.

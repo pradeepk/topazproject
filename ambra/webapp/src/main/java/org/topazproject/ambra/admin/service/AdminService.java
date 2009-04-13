@@ -197,7 +197,8 @@ public class AdminService {
   }
 
   /**
-   * 
+   *
+   * @param article article URI
    */
   public void addXPubArticle(URI article) {
     List<URI> collection =  getJournal().getSimpleCollection();
@@ -209,6 +210,7 @@ public class AdminService {
 
   /**
    *
+   * @param article article URI
    */
   public void removeXPubArticle(URI article) {
     List<URI> collection =  getJournal().getSimpleCollection();
@@ -272,8 +274,9 @@ public class AdminService {
    *
    * @throws OtmException  if the sesion encounters an error during
    *                       the update.
+   * @param o Object to update
    */
-  public void updateStore(Object o) throws OtmException {
+  private void updateStore(Object o) throws OtmException {
     session.saveOrUpdate(o);
   }
 
@@ -283,7 +286,7 @@ public class AdminService {
    * @throws OtmException  if the sesion encounters an error during
    *                       the update.
    */
-  public void flushStore() throws OtmException {
+  private void flushStore() throws OtmException {
     session.flush();
   }
 
@@ -484,7 +487,8 @@ public class AdminService {
    *
    * @throws OtmException throws and OtmException if the session is unable to
    *                      update the volume persistanct store.
-   *
+   * @throws URISyntaxException if a DOI cannot be converted to a vaild URI
+   *                            a syntax exception is thrown.
    */
   public Volume updateVolume(Volume volume, String dsplyName, List<URI> issueList)
                   throws OtmException, URISyntaxException {
@@ -508,7 +512,8 @@ public class AdminService {
    *
    * @throws OtmException throws and OtmException if the session is unable to
    *                      update the volume persistanct store.
-   *
+   * @throws URISyntaxException if a DOI cannot be converted to a vaild URI
+   *                            a syntax exception is thrown.
    */
   public Volume updateVolume(URI volURI, String dsplyName, List<URI> issueList)
                   throws OtmException, URISyntaxException {
@@ -661,6 +666,7 @@ public class AdminService {
    * delimited by SEPARATOR. The new issue is attached to the lastest volume
    * for the journal context.
    *
+   * @param vol         Volume
    * @param issueURI    the issue to update.
    * @param imgURI      a URI for the article/image associated with this volume.
    * @param dsplyName   the display name for the volume.
@@ -702,7 +708,7 @@ public class AdminService {
     if (articleList != null && articleList.length() != 0) {
       for (final String articleToAdd : articleList.split(SEPARATORS)) {
         if (articleToAdd.length() > 0)
-          newIssue.addArticle(URI.create(articleToAdd.trim()));
+          addArticleToList(newIssue, URI.create(articleToAdd.trim()));
       }
     }
     // Default respect order to false.
@@ -730,7 +736,9 @@ public class AdminService {
    *
    * @return            the updated issue or null if the issue does not exist.
    *
-   * @throws  OtmException throws OtmException if session cannot update the issue.
+   * @throws OtmException throws OtmException if session cannot update the issue.
+   * @throws URISyntaxException if a DOI cannot be converted to a vaild URI
+   *                            a syntax exception is thrown.
    *
    */
   @SuppressWarnings("unchecked")
@@ -765,10 +773,25 @@ public class AdminService {
   *
   */
   public Issue removeArticle(Issue issue, URI articleURI) throws OtmException {
-    issue.removeArticle(articleURI);
+
+    removeArticleFromList(issue, articleURI);
     updateStore(issue);
 
     return issue;
+  }
+
+  private void removeArticleFromList(Issue issue, URI articleURI) {
+    List<URI> articleList = issue.getArticleList();
+
+    if (articleList.isEmpty() && !issue.getSimpleCollection().isEmpty())
+      articleList =  new ArrayList<URI>(issue.getSimpleCollection());
+
+    if (articleList.contains(articleURI))
+      articleList.remove(articleURI);
+
+    //Shadow this removal in the simple collection
+    if (issue.getSimpleCollection().contains(articleURI))
+      issue.getSimpleCollection().remove(articleURI);
   }
 
   /*
@@ -776,10 +799,30 @@ public class AdminService {
    */
   @SuppressWarnings("unchecked")
   public Issue addArticle(Issue issue, URI articleURI) throws OtmException {
-    issue.addArticle(articleURI);
+    addArticleToList(issue, articleURI);
     updateStore(issue);
 
     return issue;
+  }
+
+  private void addArticleToList(Issue issue, URI articleURI)
+  {
+    /*
+     * Since we are doing an on-the-fly data migration (unwisely)
+     * we need to update articleList if it has not been done yet.
+     */
+    List<URI> articleList = issue.getArticleList();
+
+    if (articleList.isEmpty() && !issue.getSimpleCollection().isEmpty())
+      articleList =  new ArrayList<URI>(issue.getSimpleCollection());
+
+    //Only add if not there
+    if (!articleList.contains(articleURI))
+      articleList.add(articleURI);
+
+    //Shadow this addition in the simple collection
+    if (!issue.getSimpleCollection().contains(articleURI))
+      issue.getSimpleCollection().add(articleURI);
   }
 
   /**************************************************
