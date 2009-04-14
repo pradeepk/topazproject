@@ -286,7 +286,7 @@ public class AdminService {
    * @throws OtmException  if the sesion encounters an error during
    *                       the update.
    */
-  private void flushStore() throws OtmException {
+  public void flushStore() throws OtmException {
     session.flush();
   }
 
