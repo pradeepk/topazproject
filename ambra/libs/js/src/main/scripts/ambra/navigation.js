@@ -52,13 +52,22 @@ ambra.navigation = {
           var anchor = document.createElement('a');
 
           anchor.href = "#" + tocEl[i].getAttributeNode('toc').nodeValue;
+          anchor.title = tocEl[i].getAttributeNode('title').nodeValue;
 
           if (i == tocEl.length -1) {
             anchor.className = 'last';
           }
 
-          var tocText = document.createTextNode(tocEl[i].getAttributeNode('title').nodeValue);
-          anchor.appendChild(tocText);
+          var tocText = tocEl[i].getAttributeNode('title').nodeValue;
+
+          if(tocText.length > 30) {
+            tocText = tocText.trimOnWord(30) + '...';
+          }
+
+          var tocTextNode = document.createTextNode(tocText);
+
+          anchor.appendChild(tocTextNode);
+
           li.appendChild(anchor);
           ul.appendChild(li);
         }

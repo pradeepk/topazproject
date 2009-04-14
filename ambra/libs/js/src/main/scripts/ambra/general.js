@@ -110,6 +110,30 @@ String.prototype.isEmpty = function() {
   return (this == null || this == "");
 }
 
+String.prototype.trimOnWord = function(newLength) {
+  var splitString = this.split(" ");
+  var newString = "";
+
+  if (this.length <= newLength)
+    return this;
+
+  for (var i = 0; i < splitString.length; i++)
+  {
+    if ((newString + " " + splitString[i]).length < newLength)
+    {
+      if (newString.length > 0)
+        newString = newString + " ";
+
+      newString = newString + splitString[i];
+
+    } else {
+      return newString;
+    }
+  }
+
+  return newString;
+}
+
 String.prototype.replaceStringArray = function(delimiter, strMatch, newStr) {
   if (!strMatch || !newStr) {
     return "Missing required value";
