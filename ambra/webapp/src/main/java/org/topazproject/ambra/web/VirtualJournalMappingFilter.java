@@ -19,7 +19,6 @@
 package org.topazproject.ambra.web;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import java.net.MalformedURLException;
 
@@ -36,11 +35,6 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import net.sf.ehcache.CacheException;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
-
 /**
  * A Filter that maps incoming URI Requests to an appropriate virtual journal resources. If a
  * virtual journal context is set, a lookup is done to see if an override for the requested
@@ -51,7 +45,6 @@ import net.sf.ehcache.Element;
 public class VirtualJournalMappingFilter implements Filter {
   private static final Log log            = LogFactory.getLog(VirtualJournalMappingFilter.class);
   private ServletContext   servletContext = null;
-  private Ehcache          cache          = null;
 
   /*
    * @see javax.servlet.Filter#init
@@ -59,25 +52,13 @@ public class VirtualJournalMappingFilter implements Filter {
   public void init(final FilterConfig filterConfig) throws ServletException {
     // need ServletContext to get "real" path/file names
     servletContext = filterConfig.getServletContext();
-
-    try {
-      CacheManager cacheManager = CacheManager.getInstance();
-      cache = cacheManager.getEhcache("VirtualJournalMappingFilter");
-    } catch (CacheException ce) {
-      throw new ServletException("Error getting cache-manager", ce);
-    } catch (IllegalStateException ise) {
-      throw new ServletException("Error getting cache", ise);
-    }
-
-    if (cache == null)
-      throw new ServletException("No cache configuration found for VirtualJournalMappingFilter");
   }
 
   /*
    * @see javax.servlet.Filter#destroy
    */
   public void destroy() {
-    CacheManager.getInstance().shutdown();
+
   }
 
   /*
@@ -131,27 +112,18 @@ public class VirtualJournalMappingFilter implements Filter {
     if ((mappingPrefix == null) || (mappingPrefix.length() == 0))
       return request;
 
-    String   key     = journal + "-" + request.getRequestURI();
-    Element  element = cache.get(key);
     String[] mapped;
+    String cp      = request.getContextPath();
+    String sp      = request.getServletPath();
+    String pi      = request.getPathInfo();
 
-    if (element != null)
-      mapped = ((CachedValue) element.getObjectValue()).getMapped();
-    else {
-      String cp      = request.getContextPath();
-      String sp      = request.getServletPath();
-      String pi      = request.getPathInfo();
+    mapped         = getMappedPaths(context.virtualizeUri(cp, sp, pi));
 
-      mapped         = getMappedPaths(context.virtualizeUri(cp, sp, pi));
+    if (mapped == null)
+      mapped = getMappedPaths(context.defaultUri(cp, sp, pi));
 
-      if (mapped == null)
-        mapped = getMappedPaths(context.defaultUri(cp, sp, pi));
-
-      if ((mapped != null) && mapped[3].equals(request.getRequestURI()))
-        mapped = null;
-
-      cache.put(new Element(key, new CachedValue(mapped)));
-    }
+    if ((mapped != null) && mapped[3].equals(request.getRequestURI()))
+      mapped = null;
 
     return (mapped == null) ? request : wrapRequest(request, mapped);
   }
@@ -176,22 +148,6 @@ public class VirtualJournalMappingFilter implements Filter {
       return servletContext.getResource(resource) != null;
     } catch (MalformedURLException mre) {
       throw new ServletException("Invalid resource path: " + resource, mre);
-    }
-  }
-
-  private static class CachedValue implements Serializable {
-    private String[] mapped;
-
-    public CachedValue(String[] mapped) {
-      this.mapped = mapped;
-    }
-
-    public String[] getMapped() {
-      return mapped;
-    }
-
-    public String toString() {
-      return (mapped != null) ? mapped[3] : "Not Mapped";
     }
   }
 
