@@ -410,7 +410,7 @@ public class AmbraFeedResult extends Feed implements Result {
 
     //Add the article type to the extended feed element.
     for(URI uri : article.getArticleType()) {
-      ArticleType ar = ArticleType.getArticleTypeForURI(uri, false);
+      ArticleType ar = ArticleType.getKnownArticleTypeForURI(uri);
       if (ar != null) {
         Element articleType = new Element("article-type", FEED_EXTENDED_PREFIX(), FEED_EXTENDED_NS());
 
