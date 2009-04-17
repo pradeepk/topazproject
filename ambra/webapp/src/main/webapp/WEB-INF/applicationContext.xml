@@ -93,7 +93,7 @@
     <property name="largeImageRep" value="PNG_L"/>
    </bean>
 
-  <bean id="articleFeedService" class="org.topazproject.ambra.article.service.ArticleFeedService">
+  <bean id="feedService" class="org.topazproject.ambra.feed.service.FeedService">
     <property name="articleOtmService" ref="articleOtmService"/>
     <property name="annotationService" ref="annotationService"/>
     <property name="journalService" ref="journalService"/>

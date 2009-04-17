@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2007 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,20 +17,21 @@
  * limitations under the License.
  */
 
-package org.topazproject.ambra.article.action;
+package org.topazproject.ambra.feed.action;
 
 import java.util.List;
-import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.ambra.action.BaseActionSupport;
-import org.topazproject.ambra.article.service.ArticleFeedService;
-import org.topazproject.ambra.article.service.FeedCacheKey;
-import org.topazproject.ambra.article.service.ArticleFeedService.FEED_TYPES;
+import org.topazproject.ambra.feed.service.FeedService;
+import org.topazproject.ambra.feed.service.ArticleFeedCacheKey;
+import org.topazproject.ambra.feed.service.FeedService.FEED_TYPES;
+import org.topazproject.ambra.feed.service.AnnotationFeedCacheKey;
 
 import com.opensymphony.xwork2.ModelDriven;
 
@@ -90,26 +91,24 @@ import com.opensymphony.xwork2.ModelDriven;
  * IssueURI    String           Yes        none        Issue URI (Required for type=Issue only)
  * maxResults  Integer          No         30          The maximun number of result to return.
  * type        String           No         Article     Article,Annotation,FormalCorrectionAnnot
- *                                                     MinorCorrectionAnnot,CommentAnnot,Issue
+ *                                                     MinorCorrectionAnnot,RetractionAnnot,
+ *                                                     CommentAnnot,Issue
  * </pre>
  *
- * @see       org.topazproject.ambra.article.service.FeedCacheKey
+ * @see       org.topazproject.ambra.feed.service.ArticleFeedCacheKey
  * @see       org.topazproject.ambra.struts2.AmbraFeedResult
  *
  * @author Jeff Suttor
  * @author Eric Brown
  */
  @SuppressWarnings("UnusedDeclaration")
-public class ArticleFeed extends BaseActionSupport implements ModelDriven {
-  private static final Log log = LogFactory.getLog(ArticleFeed.class);
+public class FeedAction extends BaseActionSupport implements ModelDriven {
+  private static final Log log = LogFactory.getLog(FeedAction.class);
 
-  //TODO: move these to BaseAction support and standardize on result dispatching.
-  private static final String ATOM_RESULT = "ATOM1_0";
-  private static final String JSON_RESULT = "json";
-
-  private        ArticleFeedService  articleFeedService; // Feed Service Spring injected.
-  private        FeedCacheKey        cacheKey;           // The cache key and action data model
-  private        List<String>        articleIds;         // List of Article IDs; result of search
+  private FeedService         feedService; // Feed Service Spring injected.
+  private ArticleFeedCacheKey cacheKey;    // The cache key and action data model
+  private List<String>        articleIds;  // List of Article or Annotation IDs; result of search
+  private List<String>        replyIds;    // List of Reply IDs; result of search
 
   /**
    * Try and find the query in the feed cache or query the Article OTM Service if nothing
@@ -119,30 +118,24 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    */
   @Transactional(readOnly = true)
   public String execute() throws Exception {
-    List<String> annotTypes = new ArrayList<String>();
     FEED_TYPES t = cacheKey.feedType();
 
     switch (t) {
       case Annotation :
-        articleIds = articleFeedService.getAnnotationIds(cacheKey, null);
-        break;
       case FormalCorrectionAnnot :
-        annotTypes.add(t.rdfType()) ;
-        articleIds = articleFeedService.getAnnotationIds(cacheKey,annotTypes);
-        break;
       case MinorCorrectionAnnot :
-        annotTypes.add(t.rdfType()) ;
-        articleIds = articleFeedService.getAnnotationIds(cacheKey,annotTypes);
-        break;
-     case CommentAnnot :
-        annotTypes.add(t.rdfType()) ;
-        articleIds = articleFeedService.getAnnotationIds(cacheKey,annotTypes);
+      case RetractionAnnot:
+      case CommentAnnot :
+        articleIds = feedService.getAnnotationIds(
+            new AnnotationFeedCacheKey(AnnotationFeedCacheKey.Type.ANNOTATIONS, cacheKey));
+        replyIds = feedService.getReplyIds(
+            new AnnotationFeedCacheKey(AnnotationFeedCacheKey.Type.REPLIES, cacheKey));
         break;
       case Article :
-        articleIds = articleFeedService.getArticleIds(cacheKey);
+        articleIds = feedService.getArticleIds(cacheKey);
         break;
       case Issue :
-        articleIds = articleFeedService.getIssueArticleIds(cacheKey, getCurrentJournal());
+        articleIds = feedService.getIssueArticleIds(cacheKey, getCurrentJournal());
         break;
     }
 
@@ -163,24 +156,41 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      */
     cacheKey.setJournal(getCurrentJournal());
     cacheKey.validate(this);
+    if (log.isErrorEnabled()) {
+
+      for (Object key : getFieldErrors().keySet()) {
+        log.error("Validate error: " + getFieldErrors().get(key) + " on " + key +
+            " for cache key: " + cacheKey);
+      }
+    }
   }
 
   /**
-   * Set <code>articleFeedService</code> field to the article Feed service singleton.
+   * Set <code>feedService</code> field to the article Feed service singleton.
    *
-   * @param  articleFeedService  the object transaction model reference
+   * @param  feedService  the object transaction model reference
    */
-  public void setArticleFeedService(final ArticleFeedService articleFeedService) {
-    this.articleFeedService = articleFeedService;
+  @Required
+  public void setFeedService(final FeedService feedService) {
+    this.feedService = feedService;
   }
 
   /**
-   * This is the results of the query which consist of a list of article ID's.
+   * This is the results of the query which consist of a list of article or annotation ID's.
    *
-   * @return the list of article ID's returned from the query.
+   * @return the list of article/annotation ID's returned from the query.
    */
   public List<String> getIds() {
     return articleIds;
+  }
+
+  /**
+   * This is the results of the query which consist of a list of reply ID's.
+   *
+   * @return the list of reply ID's returned from the query.
+   */
+  public List<String> getReplyIds() {
+    return replyIds;
   }
 
   /**
@@ -188,7 +198,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    *
    * @return  Key to the cache which is also the data model of the action
    */
-  public FeedCacheKey getCacheKey() {
+  public ArticleFeedCacheKey getCacheKey() {
     return this.cacheKey;
   }
 
@@ -202,7 +212,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * getModel is invoked several times by different interceptors
      * Make sure caheKey is not created twice.
      */
-    return (cacheKey == null) ? cacheKey = articleFeedService.newCacheKey() : cacheKey;
+    return (cacheKey == null) ? cacheKey = feedService.newCacheKey() : cacheKey;
   }
 
 }

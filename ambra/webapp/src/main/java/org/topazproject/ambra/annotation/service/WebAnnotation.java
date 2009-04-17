@@ -74,6 +74,7 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
   * Escaped text of title.
   * @return title as String.
   */
+  @Override
   public String getCommentTitle() {
     String title;
     if (isMinorCorrection()) {
@@ -123,6 +124,7 @@ public class WebAnnotation extends BaseAnnotation<ArticleAnnotation> {
   * Escaped text of CIStatement.
   * @return CIStatement as String.
   */
+  @Override
   public String getCIStatement() {
     AnnotationBlob b = annotea.getBody();
 

@@ -28,18 +28,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.ambra.annotation.Commentary;
 import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.ArticleAnnotation;
-import org.topazproject.ambra.models.UnmanagedBlob;
+import org.topazproject.ambra.models.ByteArrayBlob;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.user.service.UserService;
 
 import org.topazproject.otm.OtmException;
 
 /**
- * A kind of utility class to convert types between topaz and ambra types for
+ * A utility class to convert types between topaz and ambra types for
  * Annotations and Replies
  */
 public class AnnotationConverter {
@@ -65,7 +66,7 @@ public class AnnotationConverter {
   }
 
   /**
-   * Converts and <code>ArticleAnnotation</code> to <code>List&lt;Webannotation&gt;</code>
+   * Converts and <code>ArticleAnnotation</code> to <code>List&lt;WebAnnotation&gt;</code>
    *
    * @param annotations an list of annotations
    * @param needCreatorName indicates if a display-name of the creator needs to be fetched
@@ -83,6 +84,28 @@ public class AnnotationConverter {
     }
 
     return wa;
+  }
+
+  /**
+   * Converts and <code>Reply</code> to <code>List&lt;WebReply&gt;</code>
+   *
+   * @param replies an list of replies
+   * @param needCreatorName indicates if a display-name of the creator needs to be fetched
+   * @param needBody indicates if the annotation body is required
+   * @return an array of Annotation objects as required by the web layer
+   */
+  @Transactional(readOnly = true)
+  public List<WebReply> convertReplies(final List<Reply> replies,
+                                boolean needCreatorName,
+                                boolean needBody) {
+    final List<WebReply> wr  = new ArrayList<WebReply>();
+
+    for (Reply reply : replies) {
+      if (reply != null)
+        wr.add(convert(reply, needCreatorName, needBody));
+    }
+
+    return wr;
   }
 
   /**
@@ -116,6 +139,7 @@ public class AnnotationConverter {
 
     return new WebAnnotation(annotation, creator, body);
   }
+
   /**
    * Creates a hierarchical array of replies based on the flat array passed in.
    *
@@ -207,23 +231,17 @@ public class AnnotationConverter {
   }
 
   /**
-   * @return Returns the userService.
-   */
-  protected UserService getUserService() {
-    return userService;
-  }
-
-  /**
    * @param userService The userService to set.
    */
+  @Required
   public void setUserService(UserService userService) {
     this.userService = userService;
   }
 
-  private String loadBody(final Annotea<? extends UnmanagedBlob> annotea)
+  private String loadBody(final Annotea<? extends ByteArrayBlob> annotea)
       throws OtmException, Error {
 
-    UnmanagedBlob blob = annotea.getBody();
+    ByteArrayBlob blob = annotea.getBody();
     try {
       return  (blob == null || blob.getBody() == null) ? "" : new String(blob.getBody(), "UTF-8");
     } catch (UnsupportedEncodingException e) {

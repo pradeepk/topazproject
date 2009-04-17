@@ -139,6 +139,7 @@ public class AnnotationService extends BaseAnnotationService {
     String userId = user.getUserId();
     AnnotationBlob blob = new AnnotationBlob(contentType);
     blob.setCIStatement(ciStatement);
+    blob.setBody(body.getBytes(getEncodingCharset()));
 
     final ArticleAnnotation annotation = annotationClass.newInstance();
 
@@ -152,7 +153,6 @@ public class AnnotationService extends BaseAnnotationService {
 
     String newId = session.saveOrUpdate(annotation);
     // now that the blob is created by OTM, write to it
-    blob.setBody(body.getBytes(getEncodingCharset()));
 
     if (log.isDebugEnabled())
       log.debug("created annotaion " + newId + " for " + target + " with body in blob " +
@@ -315,45 +315,12 @@ public class AnnotationService extends BaseAnnotationService {
   }
 
   /**
-   * Get all annotations satisfying the criteria.
-   *
-   * @param articleId  limits the list to annotations from a particular article.
-   * @param startDate  is the date to start searching from. If null, start from begining of time.
-   *                   Can be iso8601 formatted or string representation of Date object.
-   * @param endDate    is the date to search until. If null, search until present date
-   * @param mediator   the mediator of the annotation.
-   * @param annotType  a filter list of rdf types for the annotations.
-   * @param states     array of states to filter on
-   * @param ascending  controls the sort order (by date).
-   * @param maxResults the maximum number of results to return, or 0 for no limit
-   *
-   * @return the (possibly empty) list of articles.
-   *
-   * @throws ParseException if any of the dates or query could not be parsed
-   * @throws URISyntaxException if an element of annotType cannot be parsed as a URI
-   */
-  @Transactional(readOnly = true)
-  public List<ArticleAnnotation> getAnnotations(String articleId, Date startDate, Date endDate,
-                                                String mediator, List<String> annotType,
-                                                int[] states, boolean ascending, int maxResults)
-  throws ParseException, URISyntaxException {
-    List<String> annotationIds = getAnnotationIds(articleId, startDate, endDate, mediator,
-                                                  annotType, states, ascending, maxResults);
-
-    return getAnnotations(annotationIds);
-  }
-
-  /**
    * Get a list of all annotation Ids satifying the given criteria. All caching is done
    * at the object level by the session.
    *
-   * @param targetId  limits annotations to a particlualr target id.
    * @param startDate  search for annotation after start date.
    * @param endDate    is the date to search until. If null, search until present date
-   * @param mediator   annotation mediator
-   * @param annotType  a filter list of rdf types for the annotations.
-   * @param states     the list of annotation states to search for (all states if null or empty)
-   * @param ascending  controls the sort order (by date).
+   * @param annotTypes List of annotation types
    * @param maxResults the maximum number of results to return, or 0 for no limit
    *
    * @return the (possibly empty) list of article ids.
@@ -362,86 +329,162 @@ public class AnnotationService extends BaseAnnotationService {
    * @throws URISyntaxException  if an element of annotType cannot be parsed as a URI
    */
   @Transactional(readOnly = true)
-  public List<String> getAnnotationIds(String targetId, Date startDate, Date endDate,
-                                       String mediator, List<String> annotType, int[] states,
-                                       boolean ascending, int maxResults)
+  public List<String> getAnnotationIds(Date startDate, Date endDate, Set<String> annotTypes,
+                                       int maxResults)
   throws ParseException, URISyntaxException {
-    StringBuilder qry = new StringBuilder();
 
-    if (targetId != null) {
-      qry.append("select a.id id, cr from Annotation a ");
-      qry.append("where cr := a.created and ");
-      qry.append("a.annotates = :targ ");
-    } else {
-      qry.append("select a.id id, cr from ArticleAnnotation a, Article ar ");
-      qry.append("where a.annotates = ar and cr := a.created ");
+    // create the query, applying parameters
+    Query annotationQuery = getAnnotationQuery(startDate, endDate, annotTypes, maxResults);
+
+    Results annotationResults = annotationQuery.execute();
+    List<String> res = new ArrayList<String>();
+
+    while (annotationResults.next()) {
+      URI id = annotationResults.getURI(0);
+      try {
+        // apply access-controls
+        pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, id);
+        res.add(id.toString());
+      } catch (SecurityException se) {
+        if (log.isDebugEnabled())
+          log.debug("Filtering URI " + id + " from Annotation list due to PEP SecurityException", se);
+      }
     }
 
-    if (mediator != null)
-      qry.append("and a.mediator = :med ");
+    return res;
+  }
 
+
+  /**
+   * Get a list of all reply Ids satifying the given criteria. All caching is done
+   * at the object level by the session.
+   *
+   * @param startDate  search for replies after start date.
+   * @param endDate    is the date to search until. If null, search until present date
+   * @param annotTypes List of annotation types
+   * @param maxResults the maximum number of results to return, or 0 for no limit
+   *
+   * @return the (possibly empty) list of article ids.
+   *
+   * @throws ParseException   if any of the dates or query could not be parsed
+   * @throws URISyntaxException  if an element of annotType cannot be parsed as a URI
+   */
+  @Transactional(readOnly = true)
+  public List<String> getReplyIds(Date startDate, Date endDate, Set<String> annotTypes, int maxResults)
+  throws ParseException, URISyntaxException {
+
+    // create the query, applying parameters
+    Query query = getReplyQuery(startDate, endDate, annotTypes, maxResults);
+
+    Results results = query.execute();
+    List<String> res = new ArrayList<String>();
+
+    while (results.next()) {
+      URI id = results.getURI(0);
+      URI annotationId = results.getURI(2);
+      try {
+        // apply access-controls
+        pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, annotationId);
+        res.add(id.toString());
+      } catch (SecurityException se) {
+        if (log.isDebugEnabled())
+          log.debug("Filtering reply " + id + " from Annotation list due to PEP SecurityException", se);
+      }
+    }
+
+    return res;
+  }
+
+  private Query getReplyQuery(Date startDate, Date endDate, Set<String> annotTypes,
+                              int maxResults)
+      throws URISyntaxException {
+
+    String queryString = createReplyQueryString(startDate, endDate, annotTypes, maxResults);
+    Query query = session.createQuery(queryString);
+
+    bindCommonParams(startDate, endDate, annotTypes, query);
+    return query;
+  }
+
+  private Query getAnnotationQuery(Date startDate, Date endDate, Set<String> annotTypes,
+                                   int maxResults)
+      throws URISyntaxException {
+    String queryString = createAnnotationQueryString(startDate, endDate, annotTypes, maxResults);
+    Query query = session.createQuery(queryString);
+
+    bindCommonParams(startDate, endDate, annotTypes, query);
+    return query;
+  }
+
+  private void bindCommonParams(Date startDate, Date endDate, Set<String> annotTypes, Query query)
+      throws URISyntaxException {
+
+    if (startDate != null)
+      query.setParameter("sd",  startDate);
+    if (endDate != null)
+      query.setParameter("ed",  endDate);
+
+    if (annotTypes != null) {
+      int i = 0;
+      for (String type : annotTypes) {
+        query.setUri("type" + i++, URI.create(type));
+      }
+    }
+  }
+
+  private String createAnnotationQueryString(Date startDate, Date endDate, Set<String> annotTypes,
+                                             int maxResults) {
+
+    StringBuilder qry = new StringBuilder();
+
+    qry.append("select a.id id, cr from ArticleAnnotation a, Article ar ");
+    qry.append("where a.annotates = ar and cr := a.created ");
+
+    appendCommonCriteria(startDate, endDate, annotTypes, maxResults, qry);
+
+    qry.append(';');
+
+    return qry.toString();
+  }
+
+  // For now only fetches all Replys
+  private String createReplyQueryString(Date startDate, Date endDate, Set<String> annotTypes,
+                                        int maxResults) {
+
+    StringBuilder qry = new StringBuilder();
+
+    qry.append("select r.id id, cr, a.id annid from Reply r, ArticleAnnotation a, Article ar ")
+       .append("where cr := r.created and r.root = a and a.annotates = ar ");
+
+    appendCommonCriteria(startDate, endDate, annotTypes, maxResults, qry);
+
+    qry.append(';');
+
+    return qry.toString();
+  }
+
+  private void appendCommonCriteria(Date startDate, Date endDate, Set<String> annotTypes,
+                                    int maxResults, StringBuilder qry) {
     // apply date constraints
     if (startDate != null)
       qry.append("and ge(cr, :sd) ");
     if (endDate != null)
       qry.append("and le(cr, :ed) ");
 
-    // match all states
-    if (states != null && states.length > 0) {
-      qry.append("and (");
-      for (int idx = 0; idx < states.length; idx++)
-        qry.append("art.state = :st").append(idx).append(" or ");
-      qry.setLength(qry.length() - 4);
-      qry.append(") ");
-    }
 
     // match all types
-    if (annotType != null && annotType.size() > 0) {
+    if (annotTypes != null && annotTypes.size() > 0) {
       qry.append("and (");
-      for (int idx = 0; idx < annotType.size(); idx++)
-        qry.append("a.<rdf:type> = :type").append(idx).append(" or ");
+      for (int i = 0; i < annotTypes.size(); i++)
+        qry.append("a.<rdf:type> = :type").append(i).append(" or ");
       qry.setLength(qry.length() - 4);
       qry.append(") ");
     }
-
     // add ordering and limit
-    qry.append("order by cr ").append(ascending ? "asc" : "desc").append(", id asc");
+    qry.append("order by cr asc, id asc");
 
     if (maxResults > 0)
       qry.append(" limit ").append(maxResults);
-
-    qry.append(";");
-
-    // create the query, applying parameters
-    Query q = session.createQuery(qry.toString());
-
-    if (targetId != null)
-      q.setParameter("targ", targetId);
-    if (mediator != null)
-      q.setParameter("med", mediator);
-    if (startDate != null)
-      q.setParameter("sd",  startDate);
-    if (endDate != null)
-      q.setParameter("ed",  endDate);
-    for (int idx = 0; states != null && idx < states.length; idx++)
-      q.setParameter("st" + idx, states[idx]);
-    for (int idx = 0; annotType != null && idx < annotType.size(); idx++)
-      q.setUri("type" + idx, new URI(annotType.get(idx)));
-
-    Results r = q.execute();
-    // apply access-controls
-    List<String> res = new ArrayList<String>();
-    while (r.next()) {
-      URI id = r.getURI(0);
-      try {
-        pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, id);
-        res.add(id.toString());
-      } catch (SecurityException se) {
-        if (log.isDebugEnabled())
-          log.debug("Filtering URI " + id + " from Article list due to PEP SecurityException", se);
-      }
-    }
-    return res;
   }
 
   /**
@@ -514,7 +557,7 @@ public class AnnotationService extends BaseAnnotationService {
     // comes from object-cache.
     ArticleAnnotation   a = session.get(ArticleAnnotation.class, annotationId);
     if (a == null)
-      throw new IllegalArgumentException("invalid annoation id: " + annotationId);
+      throw new IllegalArgumentException("invalid annotation id: " + annotationId);
 
     return a;
   }
@@ -643,7 +686,7 @@ public class AnnotationService extends BaseAnnotationService {
    * @param title title
    * @param mimeType mimeType
    * @param body body
-   * @parem ciStatement competing interesting statement
+   * @param ciStatement competing interesting statement
    * @param isPublic isPublic
    * @param user logged in user
    * @throws Exception on an error

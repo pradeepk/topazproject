@@ -53,6 +53,8 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
@@ -146,16 +148,16 @@ public class AnnotationServiceTest {
     ctl.verify();
   }
 
-  
+
   @Test
-  public void getAnnotations() throws ParseException, URISyntaxException {
+  public void getAnnotationIds() throws ParseException, URISyntaxException {
 
     IMocksControl ctl = createControl();
 
     PDP pdp = ctl.createMock(PDP.class);
     Session session = ctl.createMock(Session.class);
-    Query query = ctl.createMock(Query.class);
-    Results results = ctl.createMock(Results.class);
+    Query annQuery = ctl.createMock(Query.class);
+    Results annResults = ctl.createMock(Results.class);
     CacheManager cacheManager = ctl.createMock(CacheManager.class);
     MockCache cache = new MockCache();
 
@@ -163,33 +165,28 @@ public class AnnotationServiceTest {
 
     Date startDate = dateFormat.parse("02/01/2009");
     Date endDate = dateFormat.parse("03/10/2009");
-    int[] states = {0, 1};
-    List<String> annotType = new ArrayList<String>();
+    Set<String> annotType = new HashSet<String>();
     annotType.add("FormalCorrection");
     annotType.add("MinorCorrection");
 
-    String articleId = "info:doi/10.1371/journal.pone.0002250";
-    String queryString = "select a.id id, cr from Annotation a " +
-        "where cr := a.created and a.annotates = :targ and a.mediator = :med and ge(cr, :sd) " +
-        "and le(cr, :ed) and (art.state = :st0 or art.state = :st1) " +
+    String queryString = "select a.id id, cr from ArticleAnnotation a, Article ar " +
+        "where a.annotates = ar " +
+        "and cr := a.created " +
+        "and ge(cr, :sd) " +
+        "and le(cr, :ed) " +
         "and (a.<rdf:type> = :type0 or a.<rdf:type> = :type1) " +
-        "order by cr asc, id asc limit 20;";
+        "order by cr asc, id asc limit 3;";
+
     String applicationId = "test-app";
+
     URI annotation1id = URI.create("info:doi/10.1371/annotation1");
     URI annotation2id = URI.create("info:doi/10.1371/annotation2");
     URI annotation3id = URI.create("info:doi/10.1371/annotation3");
 
-    Comment comment = new Comment();
-    comment.setId(annotation1id);
-    FormalCorrection formalCorrection = new FormalCorrection();
-    formalCorrection.setId(annotation2id);
-    MinorCorrection minorCorrection = new MinorCorrection();
-    minorCorrection.setId(annotation3id);
-
-    List<ArticleAnnotation> expected = new ArrayList<ArticleAnnotation>();
-    expected.add(comment);
-    expected.add(formalCorrection);
-    expected.add(minorCorrection);
+    List<String> expected = new ArrayList<String>();
+    expected.add(annotation1id.toString());
+    expected.add(annotation2id.toString());
+    expected.add(annotation3id.toString());
 
     cacheManager.registerListener(isA(AbstractObjectListener.class));
     expectLastCall().times(0,1);
@@ -198,45 +195,31 @@ public class AnnotationServiceTest {
         .andReturn(new ResponseCtx(new Result(Result.DECISION_PERMIT)))
         .anyTimes();
 
+    // Run Annotation Query
     expect(session.createQuery(queryString))
-        .andReturn(query);
-    expect(query.setParameter("targ", articleId))
-        .andReturn(query);
-    expect(query.setParameter("med", applicationId))
-        .andReturn(query);
-    expect(query.setParameter("sd", startDate))
-        .andReturn(query);
-    expect(query.setParameter("ed", endDate))
-        .andReturn(query);
+        .andReturn(annQuery);
+    expect(annQuery.setParameter("sd", startDate))
+        .andReturn(annQuery);
+    expect(annQuery.setParameter("ed", endDate))
+        .andReturn(annQuery);
 
-    for (int i = 0; i < states.length; i++) {
-      expect(query.setParameter("st"+i, states[i]))
-          .andReturn(query);
+    int i = 0;
+    for (String type : annotType) {
+      expect(annQuery.setUri("type"+i++, URI.create(type)))
+          .andReturn(annQuery);
     }
 
-    for (int i = 0; i < annotType.size(); i++) {
-      expect(query.setUri("type"+i, URI.create(annotType.get(i))))
-          .andReturn(query);
-    }
+    expect(annQuery.execute())
+        .andReturn(annResults);
 
-    expect(query.execute())
-        .andReturn(results);
-
-    expect(results.next())
+    expect(annResults.next())
         .andReturn(true).times(3)
         .andReturn(false);
-    expect(results.getURI(0))
+    expect(annResults.getURI(0))
         .andReturn(annotation1id)
         .andReturn(annotation2id)
         .andReturn(annotation3id);
-    
-    expect(session.get(ArticleAnnotation.class, annotation1id.toString()))
-        .andReturn(comment);
-    expect(session.get(ArticleAnnotation.class, annotation2id.toString()))
-        .andReturn(formalCorrection);
-    expect(session.get(ArticleAnnotation.class, annotation3id.toString()))
-        .andReturn(minorCorrection);
-    
+
     ctl.replay();
 
     cache.setCacheManager(cacheManager);
@@ -250,10 +233,10 @@ public class AnnotationServiceTest {
 
 
 
-    List<ArticleAnnotation> annotations = annotationService.getAnnotations(
-        articleId, startDate, endDate, applicationId, annotType, states, true, 20);
+    List<String> annotationIds = annotationService.getAnnotationIds(startDate, endDate,
+        new HashSet<String>(annotType), 3);
 
-    assertEquals(annotations, expected);
+    assertEquals(annotationIds, expected);
 
     ctl.verify();
   }

@@ -1,7 +1,8 @@
-/* $HeadURL::                                                                            $
+/*
+ * $HeadURL$
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.topazproject.ambra.models;
 
 import java.io.Serializable;
@@ -23,20 +25,21 @@ import java.io.Serializable;
 import org.topazproject.otm.annotations.Entity;
 
 /**
- * Base class for blobs loaded from the BlobStore.
+ * Base class for 'unmanaged' blobs loaded from the BlobStore. Full content of the blob will be
+ * stored in the byte array.
  *
- * @author Pradeep Krishnan
+ * @author Dragisa Krsmanovic
  */
 @Entity()
-public abstract class Blob implements Serializable {
+public abstract class ByteArrayBlob implements Serializable {
   private static final long serialVersionUID = -783693796375733488L;
 
-  private org.topazproject.otm.Blob body;
+  private byte[] body;
 
   /**
    * Creates a new Blob object.
    */
-  public Blob() {
+  public ByteArrayBlob() {
   }
 
   /**
@@ -44,7 +47,7 @@ public abstract class Blob implements Serializable {
    *
    * @param contentType the content type
    */
-  public Blob(String contentType) {
+  public ByteArrayBlob(String contentType) {
     // FIXME: contentType
   }
 
@@ -53,7 +56,7 @@ public abstract class Blob implements Serializable {
    *
    * @return body as a Blob
    */
-  public org.topazproject.otm.Blob getBody() {
+  public byte[] getBody() {
     return body;
   }
 
@@ -63,7 +66,7 @@ public abstract class Blob implements Serializable {
    * @param body the value to set.
    */
   @org.topazproject.otm.annotations.Blob
-  public void setBody(org.topazproject.otm.Blob body) {
+  public void setBody(byte[] body) {
     this.body = body;
   }
 

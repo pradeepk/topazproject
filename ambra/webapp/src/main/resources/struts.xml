@@ -426,9 +426,10 @@
 
     <default-action-ref name="pageNotFound" />
 
-    <action name="getFeed" class="org.topazproject.ambra.article.action.ArticleFeed">
-      <result name="success" type="feed">
-        <param name="feedName">wireFeed</param>
+    <action name="getFeed" class="org.topazproject.ambra.feed.action.FeedAction">
+      <result name="success" type="feed"/>
+      <result name="input" type="httpheader">
+        <param name="status">400</param><!-- Http status: Bad Request-->
       </result>
     </action>
   </package>

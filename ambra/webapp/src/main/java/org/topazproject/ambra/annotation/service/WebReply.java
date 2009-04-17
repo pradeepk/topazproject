@@ -66,6 +66,7 @@ public class WebReply extends BaseAnnotation<Reply> {
    *
    * @return title as String.
    */
+  @Override
   public String getCommentTitle() {
     return escapeText(annotea.getTitle());
   }
@@ -89,6 +90,7 @@ public class WebReply extends BaseAnnotation<Reply> {
   * Return Escaped text of the CIStatement.
   * @return CIStatement as String.
   */
+  @Override
   public String getCIStatement() {
     ReplyBlob r = annotea.getBody();
 

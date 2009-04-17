@@ -1,16 +1,16 @@
 <#--
   $HeadURL::                                                                            $
   $Id$
-  
+
   Copyright (c) 2007-2009 by Topaz, Inc.
   http://topazproject.org
-  
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@
       <div class="response">
         <div class="hd">
           <!-- begin response title -->
-          <h3>${reply.commentTitle}</h3>
+          <h3><a name="${reply.id}">${reply.commentTitle}</a></h3>
           <!-- end : response title -->
           <!-- begin : response poster details -->
           <div class="detail">
@@ -96,7 +96,7 @@
     <div class="response original">
       <div class="hd">
         <!-- begin response title -->
-        <h3>${baseAnnotation.commentTitle}</h3>
+        <h3><a name="${baseAnnotation.id}">${baseAnnotation.commentTitle}</a></h3>
         <!-- end : response title -->
         <!-- begin : response poster detail -->
         <@s.url namespace="/user" includeParams="none" id="baseAuthorURL" action="showUser" userId="${baseAnnotation.creator}"/>

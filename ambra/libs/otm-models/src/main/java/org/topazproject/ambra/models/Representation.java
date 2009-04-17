@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,8 @@ import org.topazproject.otm.mapping.Mapper;
  * @author Pradeep Krishnan
  */
 @Entity(graph = "ri", types = {"topaz:Representation"})
-public class Representation extends Blob implements PostLoadEventListener, PreInsertEventListener {
+public class Representation extends StreamedBlob
+    implements PostLoadEventListener, PreInsertEventListener {
   private static final long serialVersionUID = 8927830952382002736L;
 
   private String     id;

@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import java.io.Writer;
 import java.io.IOException;
@@ -49,17 +51,19 @@ import org.topazproject.ambra.models.Citation;
 import org.topazproject.ambra.models.DublinCore;
 import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.models.UserProfile;
-import org.topazproject.ambra.article.action.ArticleFeed;
-import org.topazproject.ambra.article.service.ArticleFeedService;
-import org.topazproject.ambra.article.service.FeedCacheKey;
-import org.topazproject.ambra.article.service.ArticleFeedService.FEED_TYPES;
+import org.topazproject.ambra.feed.service.FeedService;
+import org.topazproject.ambra.feed.service.ArticleFeedCacheKey;
+import org.topazproject.ambra.feed.service.FeedService.FEED_TYPES;
 import org.topazproject.ambra.web.VirtualJournalContext;
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.util.ArticleXMLUtils;
 import org.jdom.Element;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ambra.models.UserAccount;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
+import org.topazproject.ambra.annotation.service.WebReply;
+import org.topazproject.ambra.annotation.service.BaseAnnotation;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.model.article.ArticleType;
 
@@ -86,15 +90,13 @@ import org.topazproject.ambra.model.article.ArticleType;
  *
  * </pre>
  *
- * @see       org.topazproject.ambra.article.service.FeedCacheKey
- * @see       ArticleFeed
+ * @see       org.topazproject.ambra.feed.service.ArticleFeedCacheKey
+ * @see       org.topazproject.ambra.feed.action.FeedAction
  *
  * @author jsuttor
  */
 public class AmbraFeedResult extends Feed implements Result {
-  private List<Article>       articles;
-  private List<WebAnnotation> annotations;
-  private ArticleFeedService  articleFeedService;
+  private FeedService feedService;
   private ArticleXMLUtils     articleXmlUtils;
 
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
@@ -178,6 +180,7 @@ public class AmbraFeedResult extends Feed implements Result {
   @Transactional(readOnly = true)
   @SuppressWarnings("unchecked")
   public void execute(ActionInvocation ai) throws Exception {
+
     HttpServletRequest request = ServletActionContext.getRequest();
     String pathInfo = request.getPathInfo();
 
@@ -188,24 +191,7 @@ public class AmbraFeedResult extends Feed implements Result {
     setXmlBase(JRNL_URI());
 
     // Get the article IDs that were cached by the feed.
-    FeedCacheKey cacheKey = (FeedCacheKey)ai.getStack().findValue("cacheKey");
-    List<String> articleIds = (List<String>) ai.getStack().findValue("Ids");
-    FEED_TYPES t =  cacheKey.feedType();
-
-    switch (t) {
-      case Annotation:
-      case FormalCorrectionAnnot:
-      case MinorCorrectionAnnot:
-      case CommentAnnot:
-        annotations = articleFeedService.getAnnotations(articleIds);
-        break;
-      case Article :
-      case Issue :
-        articles = articleFeedService.getArticles(articleIds);
-        break;
-    }
-
-    String xmlBase = (cacheKey.getRelativeLinks() ? "" : JOURNAL_URI);
+    ArticleFeedCacheKey cacheKey = (ArticleFeedCacheKey)ai.getStack().findValue("cacheKey");
 
     List<Link> otherLinks = new ArrayList<Link>();
 
@@ -216,9 +202,9 @@ public class AmbraFeedResult extends Feed implements Result {
     setTitle(newFeedTitle(cacheKey));
 
     Content tagline = new Content();
-
     tagline.setValue(FEED_TAGLINE());
     setTagline(tagline);
+
     setUpdated(new Date());
     setIcon(FEED_ICON());
     setLogo(FEED_ICON());
@@ -229,19 +215,31 @@ public class AmbraFeedResult extends Feed implements Result {
     feedAuthors.add(plosPerson());
     setAuthors(feedAuthors);
 
-    // Add each Article as a Feed Entry
+    String xmlBase = (cacheKey.getRelativeLinks() ? "" : JOURNAL_URI);
+
+
+    FEED_TYPES t =  cacheKey.feedType();
+
+    List<String> articleIds = (List<String>) ai.getStack().findValue("Ids");
+
+    // Add each Article or Annotations as a Feed Entry
     List<Entry> entries = null;
 
     switch (t) {
       case Annotation:
       case FormalCorrectionAnnot:
       case MinorCorrectionAnnot:
+      case RetractionAnnot:
       case CommentAnnot:
-        entries = buildAnnotationFeed(xmlBase);
+        List<WebAnnotation> annotations = feedService.getAnnotations(articleIds);
+        List<String> replyIds = (List<String>) ai.getStack().findValue("ReplyIds");
+        List<WebReply> replies = feedService.getReplies(replyIds);
+        entries = buildAnnotationFeed(xmlBase, annotations, replies, cacheKey.getMaxResults());
         break;
       case Article :
       case Issue :
-        entries = buildArticleFeed(cacheKey, xmlBase);
+        List<Article> articles = feedService.getArticles(articleIds);
+        entries = buildArticleFeed(cacheKey, xmlBase, articles);
         break;
     }
 
@@ -254,24 +252,58 @@ public class AmbraFeedResult extends Feed implements Result {
    * by the query action.
    *
    * @param xmlBase   xml base url
+   * @param annotations list of web annotations
+   * @param replies list of web replies
+   * @param maxResults maximum number of results to display
    * @return List of entries for the feed
    * @throws Exception   Exception
    */
-  private List<Entry> buildAnnotationFeed(String xmlBase) throws Exception {
+  private List<Entry> buildAnnotationFeed(String xmlBase,
+                                          List<WebAnnotation> annotations,
+                                          List<WebReply> replies,
+                                          int maxResults)
+      throws Exception {
+
+    // Combine annotations and replies sorted by date
+    SortedMap<Date, BaseAnnotation> map = new TreeMap<Date, BaseAnnotation>();
+
+    for (WebAnnotation annotation : annotations) {
+      map.put(annotation.getCreatedAsDate(), annotation);
+    }
+
+    for (WebReply reply : replies) {
+      map.put(reply.getCreatedAsDate(), reply);
+    }
+
     // Add each Article as a Feed Entry
     List<Entry> entries = new ArrayList<Entry>();
 
-    for (WebAnnotation annot : annotations) {
-      Entry entry = newEntry(annot);
-      List<String> ids = new ArrayList<String>();
-      List<Article> art;
-      List<Link> altLinks = new ArrayList<Link>();
+    int i = 0;
+    for (BaseAnnotation annot : map.values()) {
 
-      ids.add(annot.getAnnotates());
-      art = articleFeedService.getArticles(ids);
+      Entry entry = newEntry(annot);
+
+      String displayName;
+      List<String> articleIds = new ArrayList<String>();
+      if (annot instanceof WebReply) {
+        WebReply webReply = (WebReply) annot;
+        List<String> rootAnnotationIds = new ArrayList<String>();
+        rootAnnotationIds.add(webReply.getRoot());
+        List<WebAnnotation> rootAnnotations = feedService.getAnnotations(rootAnnotationIds);
+        articleIds.add(rootAnnotations.get(0).getAnnotates());
+        displayName = "Reply";
+      } else {
+        WebAnnotation webAnnotation = (WebAnnotation) annot;
+        articleIds.add(webAnnotation.getAnnotates());
+        displayName = webAnnotation.getDisplayName();
+      }
+
+      List<Article> art = feedService.getArticles(articleIds);
 
       // Link to annotation via xmlbase
       Link selfLink = newSelfLink(annot, xmlBase);
+
+      List<Link> altLinks = new ArrayList<Link>();
       altLinks.add(selfLink);
 
       // Link to article via xmlbase
@@ -286,7 +318,7 @@ public class AmbraFeedResult extends Feed implements Result {
       List<Person> authors = new ArrayList<Person>();
       Person person = new Person();
 
-      UserAccount ua = articleFeedService.getUserAcctFrmID(annot.getCreator());
+      UserAccount ua = feedService.getUserAcctFrmID(annot.getCreator());
       if (ua != null)
         person.setName(ua.getProfile().getDisplayName());
       else
@@ -295,14 +327,18 @@ public class AmbraFeedResult extends Feed implements Result {
       authors.add(person);
       entry.setAuthors(authors);
 
-      List <Content> contents = newAnnotationsList(annot, selfLink);
+      List <Content> contents = newAnnotationsList(selfLink, displayName, annot.getComment());
       entry.setContents(contents);
 
-      List<com.sun.syndication.feed.atom.Category> categories = newCategoryList(annot);
+      List<com.sun.syndication.feed.atom.Category> categories = newCategoryList(displayName);
       entry.setCategories(categories);
 
       // Add completed Entry to List
       entries.add(entry);
+
+      // i starts with 1, if maxResults=0 this will not interrupt the loop
+      if (++i == maxResults)
+        break;
     }
     return entries;
   }
@@ -311,11 +347,12 @@ public class AmbraFeedResult extends Feed implements Result {
    * Build a <code>List&lt;Entry&gt;</code> from the Article Ids found
    * by the query action.
    *
-   * @param cacheKey   cache/data model
+   * @param cacheKey    cache/data model
    * @param xmlBase     xml base url
+   * @param articles    list of articles
    * @return List of entries for feed.
    */
-  private List<Entry> buildArticleFeed(FeedCacheKey cacheKey, String xmlBase) {
+  private List<Entry> buildArticleFeed(ArticleFeedCacheKey cacheKey, String xmlBase, List<Article> articles) {
     // Add each Article as a Feed Entry
     List<Entry> entries = new ArrayList<Entry>();
 
@@ -455,7 +492,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param numAuthors  author count
    * @return List<Content> consisting of HTML descriptions of the article and author
    */
-  private List<Content>newContentsList(FeedCacheKey cacheKey, Article article, String authorNames,
+  private List<Content>newContentsList(ArticleFeedCacheKey cacheKey, Article article, String authorNames,
       int numAuthors) {
     List<Content> contents = new ArrayList<Content>();
     Content description = new Content();
@@ -489,34 +526,35 @@ public class AmbraFeedResult extends Feed implements Result {
    * Creates a description of article contents in HTML format. Currently the description consists of
    * the Author (or Authors if extended format) and the DublinCore description of the article.
    *
-   * @param annotation  annotation to convert into Content element
    * @param link        link to the article
    *
+   * @param entryTypeDisplay text to describe type of entry : FormalCorrection, Reply ...
+   * @param comment Comment
    * @return List<Content> consisting of HTML descriptions of the article and author
    *
    * @throws ApplicationException   ApplicationException
    */
 
-  private List<Content>newAnnotationsList(WebAnnotation annotation, Link link)
-                         throws ApplicationException {
+  private List<Content> newAnnotationsList(Link link, String entryTypeDisplay, String comment)
+      throws ApplicationException {
+
     List<Content> contents = new ArrayList<Content>();
     Content description = new Content();
-    String displayName = annotation.getDisplayName();
     description.setType("html");
 
     StringBuilder text = new StringBuilder();
     text.append("<p>");
-    if (displayName != null) {
-      String d = displayName + " on ";
-      text.append(d);
-    }
+    if (entryTypeDisplay != null)
+      text.append(entryTypeDisplay).append(" on ");
 
-    {
-      String d = " <a href=" + link.getHref() + ">" + link.getTitle() + "</a></p>";
-      text.append(d);
-      d = "<p>" + annotation.getComment() + "</p>";
-      text.append(d);
-    }
+    text.append(" <a href=")
+        .append(link.getHref())
+        .append('>')
+        .append(link.getTitle())
+        .append("</a></p>")
+        .append("<p>")
+        .append(comment)
+        .append("</p>");
     description.setValue(text.toString());
     contents.add(description);
 
@@ -552,7 +590,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param authors   modified and returned <code>List&lt;Person&gt;</code> of article authors.
    * @return String of authors names.
    */
-  private String newAuthorsList(FeedCacheKey cacheKey, Article article, List<Person> authors) {
+  private String newAuthorsList(ArticleFeedCacheKey cacheKey, Article article, List<Person> authors) {
     Citation bc = article.getDublinCore().getBibliographicCitation();
     StringBuilder authorNames = new StringBuilder();
 
@@ -627,13 +665,29 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param xmlBase  xml base of article
    * @return  link to the article
    */
-  private Link newSelfLink(WebAnnotation annot, String xmlBase) {
-    Link link = new Link();
-    String href = xmlBase + "annotation/listThread.action?inReplyTo=";
-    String url = doiToUrl(annot.getId());
+  private Link newSelfLink(BaseAnnotation annot, String xmlBase) {
 
+    String url;
+    if (annot instanceof WebReply) {
+      url = ((WebReply)annot).getRoot();
+    } else {
+      url = doiToUrl(annot.getId());
+    }
+
+    StringBuilder href = new StringBuilder(xmlBase)
+          .append("annotation/listThread.action?inReplyTo=")
+          .append(url)
+          .append("&root=")
+          .append(url);
+
+    // add anchor
+    if (annot instanceof WebReply) {
+      href.append('#').append(annot.getId());
+    }
+
+    Link link = new Link();
     link.setRel("alternate");
-    link.setHref(href + url + "&root=" + url);
+    link.setHref(href.toString());
     link.setTitle(annot.getCommentTitle());
     return link;
   }
@@ -690,7 +744,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param annot an annotation
    * @return Entry  feed entry
    */
-  private Entry newEntry(WebAnnotation annot) {
+  private Entry newEntry(BaseAnnotation annot) {
     Entry entry = new Entry();
 
     entry.setId(annot.getId());
@@ -702,6 +756,7 @@ public class AmbraFeedResult extends Feed implements Result {
 
     return entry;
   }
+
 
   /**
    * Create a default Plos person element.
@@ -727,7 +782,7 @@ public class AmbraFeedResult extends Feed implements Result {
    *
    * @return <code>Link</code> user provide link.
    */
-  private Link newLink(FeedCacheKey cacheKey, String uri) {
+  private Link newLink(ArticleFeedCacheKey cacheKey, String uri) {
     if (cacheKey.getSelfLink() == null || cacheKey.getSelfLink().equals("")) {
       if (uri.startsWith("/")) {
         cacheKey.setSelfLink(JRNL_URI().substring(0, JRNL_URI().length() - 1) + uri);
@@ -747,17 +802,16 @@ public class AmbraFeedResult extends Feed implements Result {
   /**
    * Build an atom feed categroy list for for the WebAnnotation.
    *
-   * @param annotation build category element from annotation
-   *
+   * @param displayName Name of the entry.
    * @return  List of  atom categories
    */
-  public List<com.sun.syndication.feed.atom.Category> newCategoryList(WebAnnotation annotation) {
+  public List<com.sun.syndication.feed.atom.Category> newCategoryList(String displayName) {
     List<com.sun.syndication.feed.atom.Category> categories =
         new ArrayList<com.sun.syndication.feed.atom.Category>();
     com.sun.syndication.feed.atom.Category cat = new com.sun.syndication.feed.atom.Category();
 
-    cat.setTerm(annotation.getDisplayName());
-    cat.setLabel(annotation.getDisplayName());
+    cat.setTerm(displayName);
+    cat.setLabel(displayName);
     categories.add(cat);
 
     return categories;
@@ -770,7 +824,7 @@ public class AmbraFeedResult extends Feed implements Result {
    *
    * @return String identifier generated for this feed
    */
-  private String newFeedID(FeedCacheKey cacheKey) {
+  private String newFeedID(ArticleFeedCacheKey cacheKey) {
     String id = FEED_ID();
     if (cacheKey.getCategory() != null && cacheKey.getCategory().length() > 0)
       id += "?category=" + cacheKey.getCategory();
@@ -786,7 +840,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param cacheKey cache key and input parameters
    * @return String feed title.
    */
-  private String newFeedTitle(FeedCacheKey cacheKey) {
+  private String newFeedTitle(ArticleFeedCacheKey cacheKey) {
     String feedTitle = cacheKey.getTitle();
 
     if (feedTitle == null) {
@@ -869,15 +923,17 @@ public class AmbraFeedResult extends Feed implements Result {
    *
    * @param articleXmlUtils  a set of XML transformation utilities
    */
+  @Required
   public void setArticleXmlUtils(ArticleXMLUtils articleXmlUtils) {
     this.articleXmlUtils = articleXmlUtils;
   }
 
   /**
-   * @param  articleFeedService    Article Feed Service
+   * @param  feedService    Article Feed Service
    */
-  public void setArticleFeedService(ArticleFeedService articleFeedService) {
-    this.articleFeedService = articleFeedService;
+  @Required
+  public void setFeedService(FeedService feedService) {
+    this.feedService = feedService;
   }
 }
 

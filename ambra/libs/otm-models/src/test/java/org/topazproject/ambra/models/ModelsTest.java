@@ -55,7 +55,7 @@ public class ModelsTest {
                   License.class, Reply.class, ReplyThread.class, UserAccount.class, UserPreference.class,
                   UserPreferences.class, UserProfile.class, UserRole.class, Journal.class, Issue.class,
                   Aggregation.class, EditorialBoard.class, Correction.class, FormalCorrection.class,
-                  Retraction.class, Blob.class, ReplyBlob.class, AnnotationBlob.class
+                  Retraction.class, StreamedBlob.class, ReplyBlob.class, AnnotationBlob.class
     };
 
   /**

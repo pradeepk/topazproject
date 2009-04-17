@@ -19,9 +19,12 @@
 package org.topazproject.ambra.annotation.service;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.text.ParseException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,6 +51,7 @@ import com.sun.xacml.PDP;
 public class ReplyService extends BaseAnnotationService {
   private static final Log log = LogFactory.getLog(ReplyService.class);
 
+  private AnnotationService  annotationService;   // Annotation service Spring injected.
   private RepliesPEP pep;
   private String     defaultType;
 
@@ -61,6 +65,11 @@ public class ReplyService extends BaseAnnotationService {
   @Required
   public void setRepliesPdp(PDP pdp) {
     this.pep = new RepliesPEP(pdp);
+  }
+
+  @Required
+  public void setAnnotationService(AnnotationService annotationService) {
+    this.annotationService = annotationService;
   }
 
   /**
@@ -90,6 +99,7 @@ public class ReplyService extends BaseAnnotationService {
     String userId = user.getUserId();
     ReplyBlob blob = new ReplyBlob(contentType);
     blob.setCIStatement(ciStatement);
+    blob.setBody(body.getBytes(getEncodingCharset()));
 
     final Reply r = new ReplyThread();
     r.setMediator(getApplicationId());
@@ -102,7 +112,6 @@ public class ReplyService extends BaseAnnotationService {
     r.setCreated(new Date());
 
     String  newId = session.saveOrUpdate(r);
-    blob.setBody(body.getBytes(getEncodingCharset()));
 
     permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
     setPublicPermissions(newId);
@@ -174,6 +183,55 @@ public class ReplyService extends BaseAnnotationService {
     for (ReplyThread t : r.getReplies())
       remove(all, t);
   }
+
+  /**
+   * Get all replies specified by the list of reply ids.
+   *
+   * @param replyIds a list of annotations Ids to retrieve.
+   *
+   * @return the (possibly empty) list of replies.
+   *
+   */
+  @Transactional(readOnly = true)
+  public List<Reply> getReplies(List<String> replyIds) {
+    List<Reply> replies = new ArrayList<Reply>();
+
+    for (String id : replyIds)  {
+      try {
+        replies.add(getReply(id));
+      } catch (IllegalArgumentException iae) {
+        if (log.isDebugEnabled())
+          log.debug("Ignored illegal reply id:" + id);
+      } catch (SecurityException se) {
+        if (log.isDebugEnabled())
+          log.debug("Filtering URI " + id + " from Reply list due to PEP SecurityException", se);
+      }
+    }
+    return replies;
+  }
+
+  /**
+   * Get all replies satisfying the criteria.
+   *
+   * @param startDate  is the date to start searching from. If null, start from begining of time.
+   *                   Can be iso8601 formatted or string representation of Date object.
+   * @param endDate    is the date to search until. If null, search until present date
+   * @param annotType  a filter list of rdf types for the annotations.
+   * @param maxResults the maximum number of results to return, or 0 for no limit
+   *
+   * @return the (possibly empty) list of replies.
+   *
+   * @throws java.text.ParseException if any of the dates or query could not be parsed
+   * @throws java.net.URISyntaxException if an element of annotType cannot be parsed as a URI
+   */
+  @Transactional(readOnly = true)
+  public List<Reply> getReplies(Date startDate, Date endDate, Set<String> annotType, int maxResults)
+  throws ParseException, URISyntaxException {
+    List<String> replyIds = annotationService.getReplyIds(startDate, endDate, annotType, maxResults);
+    return getReplies(replyIds);
+  }
+
+
 
   /**
    * Gets the reply given its id.

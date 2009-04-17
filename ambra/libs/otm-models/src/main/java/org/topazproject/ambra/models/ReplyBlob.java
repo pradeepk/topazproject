@@ -29,7 +29,7 @@ import org.topazproject.otm.annotations.Searchable;
  * @author Pradeep Krishnan
  */
 @Entity()
-public class ReplyBlob extends UnmanagedBlob implements CompetingInterest {
+public class ReplyBlob extends ByteArrayBlob implements CompetingInterest {
   private static final long serialVersionUID = -1561876836328885263L;
   private String id;
   private String ciStatement;

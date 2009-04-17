@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.topazproject.ambra.article.service;
+package org.topazproject.ambra.feed.service;
 
 import org.topazproject.ambra.action.BaseActionSupport;
 
@@ -26,7 +26,6 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.net.URI;
-import org.topazproject.ambra.article.service.ArticleFeedService.FEED_TYPES;
 
 /**
  * The <code>class FeedCacheKey</code> serves three function:
@@ -41,12 +40,12 @@ import org.topazproject.ambra.article.service.ArticleFeedService.FEED_TYPES;
  * key is also made available to the AmbraFeedResult because it also contains parameters that
  * affect the output.
  *
- * @see       org.topazproject.ambra.article.service.ArticleFeedService
- * @see       org.topazproject.ambra.article.service.ArticleFeedService.Invalidator
- * @see       org.topazproject.ambra.article.service.ArticleFeedService.FEED_TYPES
+ * @see       FeedService
+ * @see       FeedService.Invalidator
+ * @see       FeedService.FEED_TYPES
  * @see       org.topazproject.ambra.struts2.AmbraFeedResult
  */
-public class FeedCacheKey implements Serializable, Comparable {
+public class ArticleFeedCacheKey implements Serializable, Comparable {
   private static final long serialVersionUID = 1L;
   private String journal;
   private Date sDate;
@@ -63,7 +62,7 @@ public class FeedCacheKey implements Serializable, Comparable {
   private String selfLink;
   private int maxResults;
   private URI issueURI;
-  private String type = FEED_TYPES.Article.toString();
+  private String type;
 
   final SimpleDateFormat dateFrmt = new SimpleDateFormat("yyyy-MM-dd");
   private int hashCode;
@@ -71,7 +70,8 @@ public class FeedCacheKey implements Serializable, Comparable {
   /**
    * Key Constructor - currently does nothing.
    */
-  public FeedCacheKey() {
+  public ArticleFeedCacheKey() {
+    type = FeedService.FEED_TYPES.Article.toString();
   }
 
   /**
@@ -119,9 +119,13 @@ public class FeedCacheKey implements Serializable, Comparable {
    */
   @Override
   public boolean equals(Object o) {
-    if (o == null || !(o instanceof FeedCacheKey))
+    if (o == null || !(o instanceof ArticleFeedCacheKey))
       return false;
-    FeedCacheKey key = (FeedCacheKey) o;
+
+    if (o == this)
+      return true;
+
+    ArticleFeedCacheKey key = (ArticleFeedCacheKey) o;
     return (
         key.hashCode == this.hashCode
             &&
@@ -159,26 +163,27 @@ public class FeedCacheKey implements Serializable, Comparable {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-
-    builder.append("journal=").append(journal);
-    builder.append("; type=").append(type);
+    builder.append("ArticleFeedCacheKey{")
+           .append("journal=").append(journal)
+           .append(", type=").append(type);
 
     if (sDate != null)
-      builder.append("; startDate=").append(sDate);
+      builder.append(", startDate=").append(sDate);
 
     if (eDate != null)
-      builder.append("; endDate=").append(eDate);
+      builder.append(", endDate=").append(eDate);
 
     if (category != null)
-      builder.append("; category=").append(category);
+      builder.append(", category=").append(category);
 
     if (author != null)
-      builder.append("; author=").append(author);
+      builder.append(", author=").append(author);
 
     if (issueURI != null)
-      builder.append("; issueURIr=").append(issueURI);
+      builder.append(", issueURIr=").append(issueURI);
 
-    builder.append("; maxResults=").append(maxResults);
+    builder.append(", maxResults=").append(maxResults)
+           .append('}');
 
     return builder.toString();
   }
@@ -209,7 +214,7 @@ public class FeedCacheKey implements Serializable, Comparable {
    *
    * @param action - the BaseSupportAction allows reporting of field errors. Pass in a reference
    *               incase we want to report them.
-   * @see ArticleFeedService
+   * @see FeedService
    */
   @SuppressWarnings("UnusedDeclaration")
   public void validate(BaseActionSupport action) {
@@ -231,8 +236,8 @@ public class FeedCacheKey implements Serializable, Comparable {
       sDate = eDate;
 
     // If there is garbage in the type default to Article
-    if (feedType() == FEED_TYPES.Invalid)
-      type = FEED_TYPES.Article.toString();
+    if (feedType() == FeedService.FEED_TYPES.Invalid)
+      type = FeedService.FEED_TYPES.Article.toString();
 
     // Need a positive non-zero number of results
     if (maxResults <= 0)
@@ -252,13 +257,13 @@ public class FeedCacheKey implements Serializable, Comparable {
    *         type field contains a string that does not match
    *         any of the types)
    */
-  public FEED_TYPES feedType() {
-    FEED_TYPES t;
+  public FeedService.FEED_TYPES feedType() {
+    FeedService.FEED_TYPES t;
     try {
-      t = FEED_TYPES.valueOf(type);
+      t = FeedService.FEED_TYPES.valueOf(type);
     } catch (Exception e) {
       // It's ok just return invalid.
-      t = FEED_TYPES.Invalid;
+      t = FeedService.FEED_TYPES.Invalid;
     }
     return t;
   }

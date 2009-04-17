@@ -1,8 +1,7 @@
-/*
- * $HeadURL$
+/* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2009 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.ambra.models;
 
 import java.io.Serializable;
@@ -25,21 +23,21 @@ import java.io.Serializable;
 import org.topazproject.otm.annotations.Entity;
 
 /**
- * Base class for 'unmanaged' blobs loaded from the BlobStore. Full content of the blob will be
- * stored in the byte array.
+ * Base class for blobs loaded from the BlobStore. Blob content is not loaded but accessed through
+ * input and output streams.
  *
- * @author Dragisa Krsmanovic
+ * @author Pradeep Krishnan
  */
 @Entity()
-public abstract class UnmanagedBlob implements Serializable {
+public abstract class StreamedBlob implements Serializable {
   private static final long serialVersionUID = -783693796375733488L;
 
-  private byte[] body;
+  private org.topazproject.otm.Blob body;
 
   /**
    * Creates a new Blob object.
    */
-  public UnmanagedBlob() {
+  public StreamedBlob() {
   }
 
   /**
@@ -47,7 +45,7 @@ public abstract class UnmanagedBlob implements Serializable {
    *
    * @param contentType the content type
    */
-  public UnmanagedBlob(String contentType) {
+  public StreamedBlob(String contentType) {
     // FIXME: contentType
   }
 
@@ -56,7 +54,7 @@ public abstract class UnmanagedBlob implements Serializable {
    *
    * @return body as a Blob
    */
-  public byte[] getBody() {
+  public org.topazproject.otm.Blob getBody() {
     return body;
   }
 
@@ -66,7 +64,7 @@ public abstract class UnmanagedBlob implements Serializable {
    * @param body the value to set.
    */
   @org.topazproject.otm.annotations.Blob
-  public void setBody(byte[] body) {
+  public void setBody(org.topazproject.otm.Blob body) {
     this.body = body;
   }
 
