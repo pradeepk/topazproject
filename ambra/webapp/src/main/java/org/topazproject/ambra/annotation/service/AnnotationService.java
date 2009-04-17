@@ -152,7 +152,7 @@ public class AnnotationService extends BaseAnnotationService {
 
     String newId = session.saveOrUpdate(annotation);
     // now that the blob is created by OTM, write to it
-    blob.getBody().writeAll(body.getBytes(getEncodingCharset()));
+    blob.setBody(body.getBytes(getEncodingCharset()));
 
     if (log.isDebugEnabled())
       log.debug("created annotaion " + newId + " for " + target + " with body in blob " +

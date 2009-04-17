@@ -21,7 +21,6 @@
 package org.topazproject.ambra.annotation.service;
 
 import org.testng.annotations.Test;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeTest;
 import static org.testng.Assert.assertTrue;
 import org.w3c.dom.Document;
@@ -29,7 +28,6 @@ import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.AnnotationBlob;
 import org.topazproject.ambra.models.Retraction;
-import org.topazproject.ambra.model.MockBlob;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.xml.sax.SAXException;
@@ -65,7 +63,7 @@ public class AnnotatorTest {
     fc.setAnnotates(URI.create(articleId));
     AnnotationBlob blob1 = new AnnotationBlob();
     blob1.setId("AnnotationBlob:1");
-    blob1.setBody(new MockBlob("Blob:1", "Annotation One"));
+    blob1.setBody("Annotation One".getBytes("UTF-8"));
     fc.setBody(blob1);
     // #xpointer(string-range(/article[1]/body[1]/sec[1]/p[1], '', 17, 3)[1])
     fc.setContext(articleId +
@@ -82,7 +80,7 @@ public class AnnotatorTest {
     r.setAnnotates(URI.create(articleId));
     AnnotationBlob blob2 = new AnnotationBlob();
     blob2.setId("AnnotationBlob:2");
-    blob2.setBody(new MockBlob("Blob:2", "Annotation Two"));
+    blob2.setBody("Annotation Two".getBytes("UTF-8"));
     r.setBody(blob2);
     // #xpointer(string-range(/article[1]/front[1]/article-meta[1]/abstract[1]/p[1], '', 10, 4)[1])
     r.setContext(articleId +

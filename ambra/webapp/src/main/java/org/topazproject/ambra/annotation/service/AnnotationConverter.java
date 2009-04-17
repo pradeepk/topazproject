@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.annotation.Commentary;
 import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.ArticleAnnotation;
-import org.topazproject.ambra.models.Blob;
+import org.topazproject.ambra.models.UnmanagedBlob;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.user.service.UserService;
 
@@ -220,18 +220,15 @@ public class AnnotationConverter {
     this.userService = userService;
   }
 
-  private String loadBody(final Annotea<? extends Blob> annotea) throws OtmException, Error {
-    String body;
-    Blob blob = annotea.getBody();
-    byte[] b = ((blob == null) || !blob.getBody().exists()) ? null : blob.getBody().readAll();
+  private String loadBody(final Annotea<? extends UnmanagedBlob> annotea)
+      throws OtmException, Error {
 
+    UnmanagedBlob blob = annotea.getBody();
     try {
-      body = (b == null) ? "" : new String(b, "UTF-8");
+      return  (blob == null || blob.getBody() == null) ? "" : new String(blob.getBody(), "UTF-8");
     } catch (UnsupportedEncodingException e) {
       throw new Error("UTF-8 missing", e);
     }
-
-    return body;
   }
 
   private String lookupCreatorName(final Annotea<?> annotea) {

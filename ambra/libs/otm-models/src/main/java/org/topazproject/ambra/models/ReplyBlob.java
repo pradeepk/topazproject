@@ -29,7 +29,7 @@ import org.topazproject.otm.annotations.Searchable;
  * @author Pradeep Krishnan
  */
 @Entity()
-public class ReplyBlob extends Blob implements CompetingInterest {
+public class ReplyBlob extends UnmanagedBlob implements CompetingInterest {
   private static final long serialVersionUID = -1561876836328885263L;
   private String id;
   private String ciStatement;
@@ -73,7 +73,7 @@ public class ReplyBlob extends Blob implements CompetingInterest {
   @Override
   @Searchable(index = "lucene", uri = "topaz:body")
   @org.topazproject.otm.annotations.Blob  // FIXME: remove
-  public void setBody(org.topazproject.otm.Blob body) {
+  public void setBody(byte[] body) {
     super.setBody(body);
   }
 

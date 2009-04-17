@@ -21,7 +21,7 @@ package org.topazproject.ambra.annotation.service;
 import java.util.Date;
 
 import org.topazproject.ambra.models.Annotea;
-import org.topazproject.ambra.models.Blob;
+import org.topazproject.ambra.models.UnmanagedBlob;
 import org.topazproject.ambra.util.TextUtils;
 
 import com.googlecode.jsonplugin.annotations.JSON;
@@ -35,7 +35,7 @@ import com.googlecode.jsonplugin.annotations.JSON;
  *
  * @param <T> the Annotea sub-class being delegated to.
  */
-public abstract class BaseAnnotation<T extends Annotea<? extends Blob>> {
+public abstract class BaseAnnotation<T extends Annotea<? extends UnmanagedBlob>> {
   /** An integer constant to indicate a unique value for the  */
   private static final int TRUNCATED_COMMENT_LENGTH = 256;
 

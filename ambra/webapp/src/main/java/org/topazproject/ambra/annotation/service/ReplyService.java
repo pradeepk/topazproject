@@ -102,8 +102,7 @@ public class ReplyService extends BaseAnnotationService {
     r.setCreated(new Date());
 
     String  newId = session.saveOrUpdate(r);
-    // now that the blob is created by OTM, write to it
-    blob.getBody().writeAll(body.getBytes(getEncodingCharset()));
+    blob.setBody(body.getBytes(getEncodingCharset()));
 
     permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
     setPublicPermissions(newId);
