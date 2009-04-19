@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Arrays;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -577,14 +578,8 @@ public class UserService {
         final String[] publicGrants = permissionsService.listGrants(topazId, ALL_PRINCIPALS[0]);
         if (log.isDebugEnabled()) {
           log.debug("TopazId:" + topazId);
-          StringBuilder gr = new StringBuilder();
-          for (String publicGrant : publicGrants) {
-            if (gr.length() > 0)
-              gr.append(", ");
-            gr.append(publicGrant);
-          }
-          log.debug("Cancelling grants:" + publicGrants.toString());
-          log.debug("Adding grants:" + ArrayUtils.toString(grants));
+          log.debug("Cancelling grants: " + Arrays.toString(publicGrants));
+          log.debug("Adding grants:" + Arrays.toString(grants));
         }
         //Cancel all previous grants first
         permissionsService.cancelGrants(topazId, publicGrants, ALL_PRINCIPALS);

@@ -280,16 +280,7 @@ public class CachedBagFunction implements Function {
     }
 
     public String toString() {
-      StringBuilder ret = new StringBuilder("[");
-
-      if (results.length > 0)
-        ret.append(results[0]);
-
-      for (int i = 1; i < results.length; i++)
-        ret.append(", ").append(results[i]);
-
-      ret.append(']');
-      return ret.toString();
+      return Arrays.toString(results);
     }
   }
 }

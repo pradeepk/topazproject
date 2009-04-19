@@ -46,8 +46,7 @@ public class MimeTypeToFileExtMapper {
     BufferedReader bufferedReader =
         new BufferedReader(new InputStreamReader(mappingLocation.getInputStream(), "UTF-8"));
 
-    final Map<String, String> mimeMap;
-    mimeMap = new HashMap<String, String>();
+    final Map<String, String> mimeMap = new HashMap<String, String>();
     String line;
     try {
       while ((line = bufferedReader.readLine()) != null) {

@@ -32,6 +32,7 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.Arrays;
 
 /**
  * Filter to be used for debugging when required.
@@ -113,13 +114,7 @@ public class DebuggingFilter implements Filter {
       final Enumeration params = request.getParameterNames();
       while (params.hasMoreElements()) {
         final String paramName = (String) params.nextElement();
-        StringBuilder paramValues = new StringBuilder();
-        for (String value : request.getParameterValues(paramName)) {
-          if (paramValues.length() > 0)
-            paramValues.append(", ");
-          paramValues.append(value);
-        }
-        log(paramName + ":" + paramValues.toString());
+        log(paramName + ":" + Arrays.toString(request.getParameterValues(paramName)));
       }
     }
   }
