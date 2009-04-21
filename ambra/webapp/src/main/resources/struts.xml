@@ -44,6 +44,9 @@
       <result-type name="ambraFreemarker" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
         <param name="location">/templates/main_template.ftl</param>
       </result-type>
+      <result-type name="ambraStaticFreemarker" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
+        <param name="location">/templates/main_static_template.ftl</param>
+      </result-type>
       <result-type name="headless" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
         <param name="location">/templates/headless_template.ftl</param>
       </result-type>
@@ -240,7 +243,7 @@
 
   <package name="static" extends="default" namespace="/static">
     <action name="*" class="org.topazproject.ambra.action.NoOpAction">
-      <result name="success" type="ambraFreemarker">
+      <result name="success" type="ambraStaticFreemarker">
         <param name="templateFile">/static/{1}.ftl</param>
       </result>
     </action>
