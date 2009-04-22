@@ -62,7 +62,7 @@ public class EhcacheProvider implements Cache {
    * @param cache the ehcache object
    */
   public EhcacheProvider(CacheManager cacheManager, Ehcache cache, Boolean allowNulls) {
-     this.cache        = cache;
+    this.cache        = cache;
     this.cacheManager = cacheManager;
     this.name         = cache.getName();
     this.allowNulls   = allowNulls;
