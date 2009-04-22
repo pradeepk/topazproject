@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.admin.service.AdminService;
 import org.topazproject.ambra.admin.service.AdminService.JournalInfo;
 import org.topazproject.ambra.models.Volume;
+import org.topazproject.otm.RdfUtil;
 
 /**
  * Volumes are associated with some journals and hubs. A volume is an aggregation of
@@ -93,66 +94,80 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   public String execute() throws Exception  {
 
     switch( MVJ_COMMANDS.toCommand(command)) {
-      case UPDATE_ISSUE: {
-        try {
-          if (curIssueURI != null) {
-            // TODO:: Check to see if it actually exit
-            adminService.setJrnlIssueURI(curIssueURI);
-            addActionMessage("Current Issue (URI) set to: " + curIssueURI);
-          } else {
-            addActionMessage("Invalid Current Issue (URI) ");
-          }
-        } catch (Exception e) {
-          addActionMessage("Current Issue not updated due to the following error.");
-          addActionMessage(e.getMessage());
-        }
+      case UPDATE_ISSUE:
+        update_Issue();
         break;
-      }
-      case CREATE_VOLUME: {
-        try {
-          if (volumeURI != null) {
-            // Create and add to journal
-            Volume v = adminService.createVolume(volumeURI, displayName, "" );
-            if (v != null) {
-              addActionMessage("Created Volume: " + v.getId());
-            } else {
-              addActionMessage("Duplicate Volume URI: " + volumeURI);
-            }
-          } else {
-            //Somebody failed to be valid report it.
-            if (volumeURI == null) {
-              addActionMessage("Invalid Volume URI" );
-            }
-          }
-        } catch (Exception e) {
-          addActionMessage("Volume not created due to the following error.");
-          addActionMessage(e.getMessage());
-        }
+
+      case CREATE_VOLUME:
+        create_Volume();
         break;
-      }
-      case REMOVE_VOLUMES: {
-        try {
-          if (volsToDelete.length > 0) {
-              // volsToDelete was supplied by the system so they should be correct
-              addActionMessage("Remvoing the Following Volume URIs:");
-              for(String vol : volsToDelete) {
-                adminService.deleteVolume(URI.create(vol));
-                addActionMessage("Volume: " + vol );
-              }
-          }
-        } catch (Exception e){
-          addActionMessage("Volume remove failed due to the following error.");
-          addActionMessage(e.getMessage());
-        }
+
+      case REMOVE_VOLUMES:
+        remove_Volumes();
         break;
-       }
+
        case INVALID:
+         repopulate();
          break;
     }
+    return SUCCESS;
+  }
 
+  private void update_Issue() {
+    if (curIssueURI != null) {
+      try {
+        adminService.setJrnlIssueURI(curIssueURI);
+        addActionMessage("Current Issue (URI) set to: " + curIssueURI);
+       } catch (Exception e) {
+        addActionMessage("Current Issue not updated due to the following error.");
+        addActionMessage(e.getMessage());
+      }
+    } else {
+      addActionMessage("Invalid Current Issue (URI) ");
+    }
+    repopulate();
+  }
+
+  private void create_Volume() {
+    if (volumeURI != null) {
+      try {
+        // Create and add to journal
+        Volume v = adminService.createVolume(volumeURI, displayName, "" );
+        if (v != null) {
+          addActionMessage("Created Volume: " + v.getId());
+        } else {
+          addActionMessage("Duplicate Volume URI: " + volumeURI);
+        }
+      } catch (Exception e) {
+        addActionMessage("Volume not created due to the following error.");
+        addActionMessage(e.getMessage());
+      }
+    } else {
+      addActionMessage("Invalid Volume URI" );
+    }
+    repopulate();
+  }
+
+  private void remove_Volumes() {
+    try {
+      if (volsToDelete.length > 0) {
+          // volsToDelete was supplied by the system so they should be correct
+          addActionMessage("Remvoing the Following Volume URIs:");
+          for(String vol : volsToDelete) {
+            adminService.deleteVolume(URI.create(vol));
+            addActionMessage("Volume: " + vol );
+          }
+      }
+    } catch (Exception e){
+      addActionMessage("Volume remove failed due to the following error.");
+      addActionMessage(e.getMessage());
+    }
+    repopulate();
+  }
+
+  private void repopulate() {
     volumes = adminService.getVolumes();
     journalInfo = adminService.createJournalInfo();
-    return SUCCESS;
   }
 
   /**
@@ -189,9 +204,11 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    */
   public void setVolumeURI(String vol) {
     try {
-      this.volumeURI =  URI.create(vol.trim());
+      this.volumeURI = RdfUtil.validateUri(vol.trim(), "Volume Uri");
     } catch (Exception e) {
       this.volumeURI = null;
+      if (log.isDebugEnabled())
+        log.debug("setVolume URI conversion failed.");
     }
   }
 
@@ -211,9 +228,11 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    */
   public void setCurrentIssueURI(String currentIssueURI) {
     try {
-      this.curIssueURI = URI.create(currentIssueURI.trim());
+      this.curIssueURI = RdfUtil.validateUri(currentIssueURI.trim(), "Issue Uri");
     } catch (Exception e) {
       this.curIssueURI = null;
+      if (log.isDebugEnabled())
+        log.debug("setIssue URI conversion failed.");
     }
   }
 

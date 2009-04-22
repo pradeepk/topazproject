@@ -22,6 +22,7 @@ package org.topazproject.ambra.admin.service;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Query;
+import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.ambra.journal.JournalService;
@@ -142,7 +143,7 @@ public class AdminService {
       String[] elements = csvStr.split(SEPARATORS);
 
       for(String element : elements) {
-        URI uri = new URI(element.trim());
+        URI uri = RdfUtil.validateUri(element.trim(), "CSV Uri list");
         listURIs.add(uri);
       }
     }
@@ -695,7 +696,7 @@ public class AdminService {
     newIssue.setDublinCore(newDublinCore);
     newIssue.setDisplayName(dsplyName);
    
-    if (imgURI.toString().equals(""))
+    if ((imgURI == null) || imgURI.toString().equals(""))
       newIssue.setImage(null);
     else
       newIssue.setImage(imgURI);
@@ -758,7 +759,7 @@ public class AdminService {
     issue.setArticleList(articleList);
     issue.setRespectOrder(respectOrder);
 
-    if (imgURI.toString().equals(""))
+    if ((imgURI == null) || (imgURI.toString().equals("")))
       issue.setImage(null);
     else
       issue.setImage(imgURI);

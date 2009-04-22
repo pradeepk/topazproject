@@ -1,4 +1,4 @@
-/* $$HeadURL:: $
+/* $HeadURL:$
  * $$Id$
  *
  * Copyright (c) 2006-2009 by Topaz, Inc.
@@ -25,6 +25,7 @@ import org.topazproject.ambra.article.action.TOCArticleGroup;
 import org.topazproject.ambra.admin.service.AdminService;
 import org.topazproject.ambra.admin.service.AdminService.JournalInfo;
 import org.topazproject.ambra.model.article.ArticleInfo;
+import org.topazproject.otm.RdfUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,63 +100,91 @@ public class IssueManagementAction extends BaseAdminActionSupport {
   public String execute() throws Exception  {
 
     switch(IM_COMMANDS.toCommand(command)) {
-
-      case ADD_ARTICLE: {
-        try {
-          issue = adminService.getIssue(issueURI);
-          List<URI> articleURIs = adminService.parseCSV(articleCSVURIs);
-
-          for(URI articleURI : articleURIs) {
-            issue = adminService.addArticle(issue, articleURI);
-            addActionMessage("Added Article: " + articleURI);
-          }
-          adminService.flushStore();
-        } catch (Exception e) {
-          addActionMessage("Article not added due to the following error.");
-          addActionMessage(e.toString());
-          log.error("Add Article to Issue Failed.", e);
-        }
+      case ADD_ARTICLE:
+        add_Article();
         break;
-      }
 
-      case REMOVE_ARTICLES: {
-        try {
-          issue = adminService.getIssue(issueURI);
-          for(URI uri : articlesToRemove) {
-            issue = adminService.removeArticle(issue, uri);
-            addActionMessage("Removed Article: " + uri);
-          }
-          adminService.flushStore();
-        } catch (Exception e) {
-          addActionMessage("Article not removed due to the following error.");
-          addActionMessage(e.toString());
-          log.error("Remove Articels from Issue Failed.", e);
-        }
+      case REMOVE_ARTICLES:
+        remove_Articles();
         break;
-      }
 
-      case UPDATE_ISSUE: {
-        try {
-          issue = adminService.getIssue(issueURI);
-          List<URI> issueURIs = adminService.parseCSV(articleListCSV);
-          /*
-           * Make sure the only changes to the articleListCSV
-           * are ordering.
-           */
-          if (validateCSV(issueURIs, browseService.getArticleList(issue)))
-            issue = adminService.updateIssue(issueURI,imageURI,displayName,issueURIs,respectOrder);
-
-        } catch (Exception e) {
-          addActionMessage("Issue not updated due to the following error.");
-          addActionMessage(e.toString());
-          log.error("Update Issue Failed.", e);
-        }
+      case UPDATE_ISSUE:
+        update_Issue();
         break;
-      }
 
       case INVALID:
+        repopulate();
         break;
+    }   
+    return SUCCESS;
+  }
+
+  private void add_Article() {
+    if (issueURI != null) {
+      try {
+        issue = adminService.getIssue(issueURI);
+        List<URI> articleURIs = adminService.parseCSV(articleCSVURIs);
+
+        for(URI articleURI : articleURIs) {
+          issue = adminService.addArticle(issue, articleURI);
+          addActionMessage("Added Article: " + articleURI);
+        }
+        adminService.flushStore();
+      } catch (Exception e) {
+        addActionMessage("Article not added due to the following error.");
+        addActionMessage(e.toString());
+        log.error("Add Article to Issue Failed.", e);
+      }
+    } else {
+      addActionMessage("Invalid Issue URI");
     }
+    repopulate();
+  }
+
+  private void remove_Articles() {
+    if (issueURI != null) {
+      try {
+        issue = adminService.getIssue(issueURI);
+        for(URI uri : articlesToRemove) {
+          issue = adminService.removeArticle(issue, uri);
+          addActionMessage("Removed Article: " + uri);
+        }
+        adminService.flushStore();
+      } catch (Exception e) {
+        addActionMessage("Article not removed due to the following error.");
+        addActionMessage(e.toString());
+        log.error("Remove Articels from Issue Failed.", e);
+      }
+    } else {
+      addActionMessage("Invalid Issue URI");
+    }
+    repopulate();
+  }
+
+  private void update_Issue(){
+    if (issueURI != null) {
+      try {
+        issue = adminService.getIssue(issueURI);
+        List<URI> issueURIs = adminService.parseCSV(articleListCSV);
+        /*
+         * Make sure the only changes to the articleListCSV
+         * are ordering.
+         */
+        if (validateCSV(issueURIs, browseService.getArticleList(issue)))
+          issue = adminService.updateIssue(issueURI,imageURI,displayName,issueURIs,respectOrder);
+
+      } catch (Exception e) {
+        addActionMessage("Issue not updated due to the following error.");
+        addActionMessage(e.toString());
+        log.error("Update Issue Failed.", e);
+      }
+    } else {
+      addActionMessage("Invalid Issue URI");
+    }
+    repopulate();
+  }
+
+  private void repopulate() {
     // Repopulate template values
     issue = adminService.getIssue(issueURI);
     articleGroups = browseService.getArticleGrpList(issue);
@@ -169,8 +198,6 @@ public class IssueManagementAction extends BaseAdminActionSupport {
     String orphanCSV = convertURIsToCSV(orphans);
     articleOrderCSV = (orphanCSV.length() > 0) ? articleOrderCSV +","+ orphanCSV : articleOrderCSV;
     journalInfo = adminService.createJournalInfo();
-    
-    return SUCCESS;
   }
 
   /**
@@ -310,7 +337,7 @@ public class IssueManagementAction extends BaseAdminActionSupport {
    */
   public void setImageURI(String uri) {
     try {
-      this.imageURI = new URI(uri.trim());
+      this.imageURI = RdfUtil.validateUri(uri.trim(), "Image Uri");
     } catch (Exception e) {
       this.imageURI = null;
       if (log.isDebugEnabled())
@@ -324,7 +351,7 @@ public class IssueManagementAction extends BaseAdminActionSupport {
    */
   public void setVolumeURI(String uri) {
     try {
-      this.volumeURI = new URI(uri.trim());
+      this.volumeURI = RdfUtil.validateUri(uri.trim(), "Volume Uri");
     } catch (Exception e) {
       this.volumeURI = null;
       if (log.isDebugEnabled())
@@ -365,7 +392,13 @@ public class IssueManagementAction extends BaseAdminActionSupport {
    *
    */
   public void setIssueURI(String issueURI) {
-    this.issueURI = URI.create(issueURI.trim());
+    try {
+      this.issueURI = RdfUtil.validateUri(issueURI.trim(), "Issue Uri");
+    } catch (Exception e) {
+      this.volumeURI = null;
+      if (log.isDebugEnabled())
+        log.debug("setIssue URI conversion failed.");
+    }
   }
 
   /**

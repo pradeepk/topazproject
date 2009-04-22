@@ -25,6 +25,7 @@ import org.topazproject.ambra.admin.service.AdminService;
 import org.topazproject.ambra.admin.service.AdminService.JournalInfo;
 import org.topazproject.ambra.models.Volume;
 import org.topazproject.ambra.models.Issue;
+import org.topazproject.otm.RdfUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -93,64 +94,83 @@ public class VolumeManagementAction extends BaseAdminActionSupport {
   public String execute() throws Exception  {
     // Dispatch on hidden field command
     switch(VM_COMMANDS.toCommand(command)) {
-      case CREATE_ISSUE: {
-        try {
-          Volume volume = adminService.getVolume(volumeURI);
-          Issue i = adminService.createIssue(volume, issueURI, imageURI, displayName, null);
-          if (i != null) {
-            addActionMessage("Created Issue: " + i.getId());
-          } else {
-            addActionMessage("Duplicate Issue URI, " + issueURI);
-            return ERROR;
-          }
-        } catch (Exception e) {
-          addActionMessage("Issue not created due to the following error.");
-          addActionMessage(e.getMessage());
-          log.error("Create ISsue Failed.", e);
-        }
+      case CREATE_ISSUE:
+        create_Issue();
         break;
-      }
-      case UPDATE_VOLUME: {
-        try {
-          Volume volume = adminService.getVolume(volumeURI);
-          List<URI> issueURIs = adminService.parseCSV(issuesToOrder);
-          /*
-           * Make sure the only changes to the articleListCSV
-           * are ordering.
-           */
-          if (validateCSV(volume, issueURIs))
-            volume = adminService.updateVolume(volume, displayName, issueURIs);
 
-         } catch (Exception e) {
-           addActionMessage("Volume was not updated due to the following error.");
-           addActionMessage(e.getMessage());
-           log.error("Update Volume Failed.", e);
-        }
+      case UPDATE_VOLUME:
+        update_Volume();
         break;
-      }
 
-      case REMOVE_ISSUES: {
-        try {
-          for(String issurURI : issuesToDelete)
-            adminService.deleteIssue(URI.create(issurURI));
-        } catch (Exception e) {
-          addActionMessage("Issue not removed due to the following error.");
-          addActionMessage(e.getMessage());
-          log.error("Remove Issue Failed.", e);
-        }
+      case REMOVE_ISSUES:
+        remove_Issues();
         break;
-      }
 
       case INVALID:
+        repopulate();
         break;
     }
+    return SUCCESS;
+  }
 
+  private void create_Issue() {
+    if (issueURI != null) {
+      try {
+        Volume volume = adminService.getVolume(volumeURI);
+        Issue i = adminService.createIssue(volume, issueURI, imageURI, displayName, null);
+        if (i != null) {
+          addActionMessage("Created Issue: " + i.getId());
+        } else {
+          addActionMessage("Duplicate Issue URI, " + issueURI);
+        }
+      } catch (Exception e) {
+        addActionMessage("Issue not created due to the following error.");
+        addActionMessage(e.getMessage());
+        log.error("Create ISsue Failed.", e);
+      }
+    } else {
+      addActionMessage("Invalid Issue URI");
+    }
+    repopulate();
+  }
+
+  private void update_Volume() {
+    try {
+      Volume volume = adminService.getVolume(volumeURI);
+      List<URI> issueURIs = adminService.parseCSV(issuesToOrder);
+      /*
+       * Make sure the only changes to the articleListCSV
+       * are ordering.
+       */
+      if (validateCSV(volume, issueURIs))
+        volume = adminService.updateVolume(volume, displayName, issueURIs);
+
+     } catch (Exception e) {
+       addActionMessage("Volume was not updated due to the following error.");
+       addActionMessage(e.getMessage());
+       log.error("Update Volume Failed.", e);
+    }
+    repopulate();
+  }
+
+  private void remove_Issues() {
+    try {
+      for(String issurURI : issuesToDelete)
+        adminService.deleteIssue(URI.create(issurURI));
+    } catch (Exception e) {
+      addActionMessage("Issue not removed due to the following error.");
+      addActionMessage(e.getMessage());
+      log.error("Remove Issue Failed.", e);
+    }
+    repopulate();
+  }
+
+  private void repopulate() {
     // Re-populate fields for template
     volume = adminService.getVolume(volumeURI);
     issuesCSV = adminService.getIssuesCSV(volumeURI);
     issues = adminService.getIssues(volumeURI);
     journalInfo = adminService.createJournalInfo();
-    return SUCCESS;
   }
 
   /**
@@ -225,7 +245,7 @@ public class VolumeManagementAction extends BaseAdminActionSupport {
   @Required
   public void setVolumeURI(String theVolume) {
     try {
-      this.volumeURI = new URI(theVolume.trim());
+      this.volumeURI = RdfUtil.validateUri(theVolume.trim(), "Volume Uri");
     } catch (Exception e) {
       this.volumeURI = null;
       if (log.isDebugEnabled())
@@ -241,7 +261,7 @@ public class VolumeManagementAction extends BaseAdminActionSupport {
   @Required
   public void setIssueURI(String issueURI) {
     try {
-      this.issueURI = new URI(issueURI.trim());
+      this.issueURI = RdfUtil.validateUri(issueURI.trim(), "Issue Uri");
     } catch (Exception e) {
       this.issueURI = null;
       if (log.isDebugEnabled())
@@ -264,7 +284,7 @@ public class VolumeManagementAction extends BaseAdminActionSupport {
    */
   public void setImageURI(String image) {
     try {
-      this.imageURI = new URI(image.trim());
+      this.imageURI = RdfUtil.validateUri(image.trim(), "Image Uri");
     } catch (Exception e) {
       this.imageURI = null;
       if (log.isDebugEnabled())
