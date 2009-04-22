@@ -42,6 +42,7 @@ public class EhcacheProvider implements Cache {
   private final CacheManager cacheManager;
   private final Ehcache      cache;
   private final String       name;
+  private final Boolean      allowNulls;
 
   /**
    * Creates a new EhcacheProvider object.
@@ -52,6 +53,19 @@ public class EhcacheProvider implements Cache {
     this.cache        = cache;
     this.cacheManager = cacheManager;
     this.name         = cache.getName();
+    this.allowNulls   = true;
+  }
+
+  /**
+   * Creates a new EhcacheProvider object.
+   *
+   * @param cache the ehcache object
+   */
+  public EhcacheProvider(CacheManager cacheManager, Ehcache cache, Boolean allowNulls) {
+     this.cache        = cache;
+    this.cacheManager = cacheManager;
+    this.name         = cache.getName();
+    this.allowNulls   = allowNulls;
   }
 
   /*
@@ -122,9 +136,12 @@ public class EhcacheProvider implements Cache {
 
                 Item val = get(key);
 
-                if (val == null)
-                  put(key, val = new Item(lookup.lookup(), refresh));
-
+                if (val == null) {
+                  Object o = lookup.lookup();
+                  val = new Item(o, refresh);
+                  if (allowNulls || (o != null))
+                    put(key, val);
+                }
                 return val;
               }
             });
