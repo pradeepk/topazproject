@@ -32,6 +32,9 @@ import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.util.ProfanityCheckingService;
 
+import org.topazproject.ambra.models.Annotation;
+import org.topazproject.ambra.models.AnnotationBlob;
+
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
@@ -94,10 +97,39 @@ public class CreateReplyAction extends BaseSessionAwareActionSupport {
     **/
     boolean invalid = false;
 
-    if (this.isCompetingInterest) {
+    if (StringUtils.isEmpty(commentTitle)) {
+      addFieldError("commentTitle", "A title is required.");
+      invalid = true;
+    } else {
+      if (commentTitle.length() > Annotation.MAX_TITLE_LENGTH) {
+        addFieldError("commentTitle", "Your title is " + commentTitle.length() +
+            " characters long, it can not be longer than " + Annotation.MAX_TITLE_LENGTH + ".");
+        invalid = true;
+      }
+    }
+
+    if (StringUtils.isEmpty(comment)) {
+      addFieldError("comment", "You must say something in your comment");
+      invalid = true;
+    } else {
+      if (comment.length() > AnnotationBlob.MAX_BODY_LENGTH) {
+        addFieldError("comment", "Your comment is " + comment.length() +
+            " characters long, it can not be longer than " + AnnotationBlob.MAX_BODY_LENGTH + ".");
+        invalid = true;
+      }
+    }
+
+    if(this.isCompetingInterest) {
       if (StringUtils.isEmpty(ciStatement)) {
         addFieldError("statement", "You must say something in your competing interest statement");
         invalid = true;
+      } else {
+        if (ciStatement.length() > AnnotationBlob.MAX_CISTATEMENT_LENGTH) {
+          addFieldError("statement", "Your competing interest statement is " +
+              ciStatement.length() + " characters long, it can not be longer than " + 
+              AnnotationBlob.MAX_CISTATEMENT_LENGTH + ".");
+          invalid = true;
+        }
       }
     }
 

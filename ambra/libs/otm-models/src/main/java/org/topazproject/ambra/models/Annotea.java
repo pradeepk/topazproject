@@ -47,6 +47,11 @@ public abstract class Annotea<T extends Serializable> implements Serializable {
   private static final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   /**
+   * Max length of the Annotea title
+   */
+  public static final int MAX_TITLE_LENGTH = 500;
+
+  /**
    * Annotea Namespace URI
    */
   public static final String W3C_NS = "http://www.w3.org/2000/10/annotation-ns#";

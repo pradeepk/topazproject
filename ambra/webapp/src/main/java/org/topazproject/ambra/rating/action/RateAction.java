@@ -137,15 +137,39 @@ public class RateAction extends AbstractRatingAction {
         if (StringUtils.isEmpty(ciStatement)) {
           addFieldError("statement", "You must say something in your competing interest statement");
           return INPUT;
+        } else {
+          if(ciStatement.length() > RatingContent.MAX_CISTATEMENT_LENGTH) {
+            addFieldError("statement", "Your competing interest statement is " +
+                ciStatement.length() + " characters long, it can not be longer than " +
+                RatingContent.MAX_CISTATEMENT_LENGTH + ".");
+            return INPUT;
+          }
         }
       }
     }
+
+    if (!StringUtils.isEmpty(comment)) {
+      if(comment.length() > RatingContent.MAX_COMMENT_LENGTH) {
+        addFieldError("comment", "Your comment is " + comment.length() +
+            " characters long, it can not be longer than " + RatingContent.MAX_COMMENT_LENGTH + ".");
+        return INPUT;
+      }
+    }
+
+    if (!StringUtils.isEmpty(commentTitle)) {
+      if(commentTitle.length() > RatingContent.MAX_TITLE_LENGTH) {
+        addFieldError("commentTitle", "Your title is " + commentTitle.length() +
+            " characters long, it can not be longer than " + RatingContent.MAX_TITLE_LENGTH + ".");
+        return INPUT;
+      }
+    }    
 
      // reject profanity in content
     final List<String> profaneWordsInCommentTitle = profanityCheckingService.validate(commentTitle);
     final List<String> profaneWordsInComment      = profanityCheckingService.validate(comment);
     final List<String> profaneWordsInCIStatement  = profanityCheckingService.validate(ciStatement);
-    if (profaneWordsInCommentTitle.size() != 0 || profaneWordsInComment.size() != 0 || profaneWordsInCIStatement.size() != 0) {
+    if (profaneWordsInCommentTitle.size() != 0 || profaneWordsInComment.size() != 0 ||
+        profaneWordsInCIStatement.size() != 0) {
       addProfaneMessages(profaneWordsInCommentTitle, "commentTitle", "title");
       addProfaneMessages(profaneWordsInComment, "comment", "comment");
       addProfaneMessages(profaneWordsInComment, "ciStatementArea", "statement");

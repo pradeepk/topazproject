@@ -55,6 +55,22 @@ public class RatingContent implements Serializable, CompetingInterest {
    * Weight to use for single-rating calculation.
    */
   public static final int STYLE_WEIGHT = 4;
+
+  /**
+   * Max length of the body content
+   */  
+  public static final int MAX_TITLE_LENGTH = 500;
+
+  /**
+   * Max length of the competing interest statement
+   */
+  public static final int MAX_COMMENT_LENGTH = 5000;
+
+  /**
+   * Max length of the competing interest statement
+   */
+  public static final int MAX_CISTATEMENT_LENGTH = 5000;  
+
   private String           id;
   private int              insightValue;
   private int              reliabilityValue;

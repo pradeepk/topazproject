@@ -35,6 +35,16 @@ public class AnnotationBlob extends ByteArrayBlob implements CompetingInterest {
   private String ciStatement;
 
   /**
+   * Max length of the body content
+   */
+  public static final int MAX_BODY_LENGTH = 64000;
+
+  /**
+   * Max length of the competing interest statement
+   */
+  public static final int MAX_CISTATEMENT_LENGTH = 5000;
+
+  /**
    * Creates a new AnnotationBlob object.
    */
   public AnnotationBlob() {
