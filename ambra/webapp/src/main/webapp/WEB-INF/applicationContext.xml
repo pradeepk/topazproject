@@ -189,39 +189,40 @@
 
   <bean id="journalService" class="org.topazproject.ambra.journal.JournalService" 
       depends-on="journalCreator" init-method="init"/>
-  
+
   <bean id="bootstrapMigrator" class="org.topazproject.ambra.migration.BootstrapMigrator"
       init-method="migrate"/>
-  
+  <!--
   <bean id="citationMigrator" class="org.topazproject.ambra.migration.CitationMigrator"
       init-method="init">
-    <!-- background: set to true to allow web-traffic during migrations -->
+    background: set to true to allow web-traffic during migrations
     <property name="background" value="true"/> 
-    <!-- txnTimeout: the txn timeout in seconds -->
+    txnTimeout: the txn timeout in seconds
     <property name="txnTimeout" value="600"/> 
-    <!-- blobThrottle: number of articles to migrate per transaction -->
+    blobThrottle: number of articles to migrate per transaction 
     <property name="blobThrottle" value="20"/> 
   </bean>
-  
+  -->
+  <!--
   <bean id="searchMigrator" class="org.topazproject.ambra.migration.SearchMigrator"
       init-method="init">
-    <!-- reIndex: set to true to re-build search-index. Will re-build all indexes even if
-         all search-migrations were completed and 'finalized'. -->
+    reIndex: set to true to re-build search-index. Will re-build all indexes even if
+    all search-migrations were completed and 'finalized'.
     <property name="reIndex" value="false"/>      
-    <!-- finalize: set to 'true' to write a marker on success to denote completion of all migrations.
+    finalize: set to 'true' to write a marker on success to denote completion of all migrations.
          Setting to 'false' is really for running a migration elsewhere and copy the data to a 
          real instance. For everywhere else the recommendation is to set this to 'true'.
-    -->
     <property name="finalize" value="true"/> 
-    <!-- background: set to true to allow web-traffic during migrations -->
+    background: set to true to allow web-traffic during migrations
     <property name="background" value="true"/> 
-    <!-- txnTimeout: the txn timeout in seconds -->
+    txnTimeout: the txn timeout in seconds
     <property name="txnTimeout" value="1800"/> 
-    <!-- blobThrottle: number of blobs to index per transaction -->
+    blobThrottle: number of blobs to index per transaction
     <property name="blobThrottle" value="20"/> 
-    <!-- rdfThrottle: number of mulgara only entity instances (eg. Citation) to index per transaction -->
+    rdfThrottle: number of mulgara only entity instances (eg. Citation) to index per transaction
     <property name="rdfThrottle" value="3000"/> 
   </bean>
+  -->
   
   <!-- OTM setups -->
   <bean name="fedoraBlobStore" class="org.topazproject.fedora.otm.FedoraBlobStore" lazy-init="true">
@@ -323,6 +324,7 @@
   <bean id="browseCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0" ref="txCacheManager"/>
     <constructor-arg index="1" ref="browseEhcache"/>
+    <constructor-arg index="2" value="false"/>
   </bean>
   <bean id="userCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0" ref="txCacheManager"/>
