@@ -90,9 +90,8 @@ import com.opensymphony.xwork2.ModelDriven;
  *                                                     data.
  * IssueURI    String           Yes        none        Issue URI (Required for type=Issue only)
  * maxResults  Integer          No         30          The maximun number of result to return.
- * type        String           No         Article     Article,Annotation,FormalCorrectionAnnot
- *                                                     MinorCorrectionAnnot,RetractionAnnot,
- *                                                     CommentAnnot,Issue
+ * type        String           No         Article     Article,Annotation,FormalCorrection
+ *                                                     MinorCorrection,Retraction,Comment,Issue
  * </pre>
  *
  * @see       org.topazproject.ambra.feed.service.ArticleFeedCacheKey
