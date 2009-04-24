@@ -122,10 +122,10 @@ public class FeedAction extends BaseActionSupport implements ModelDriven {
 
     switch (t) {
       case Annotation :
-      case FormalCorrectionAnnot :
-      case MinorCorrectionAnnot :
-      case RetractionAnnot:
-      case CommentAnnot :
+      case FormalCorrection:
+      case MinorCorrection:
+      case Retraction:
+      case Comment:
         articleIds = feedService.getAnnotationIds(
             new AnnotationFeedCacheKey(AnnotationFeedCacheKey.Type.ANNOTATIONS, cacheKey));
         replyIds = feedService.getReplyIds(

@@ -88,29 +88,43 @@ public class FeedService {
    * feed types.
    */
   public enum FEED_TYPES {
-    Article                { public String rdfType() { return null;                       }
-                             public Class  isClass() { return Article.class;              } },
-    Annotation             { public String rdfType() { return ArticleAnnotation.RDF_TYPE; }
-                             public Class  isClass() { return ArticleAnnotation.class;    } },
-    CommentAnnot           { public String rdfType() { return Comment.RDF_TYPE;           }
-                             public Class  isClass() { return Comment.class;              } },
-    FormalCorrectionAnnot  { public String rdfType() { return FormalCorrection.RDF_TYPE;  }
-                             public Class  isClass() { return FormalCorrection.class;     } },
-    MinorCorrectionAnnot   { public String rdfType() { return MinorCorrection.RDF_TYPE;   }
-                             public Class  isClass() { return MinorCorrection.class;      } },
-    RetractionAnnot        { public String rdfType() { return Retraction.RDF_TYPE;        }
-                             public Class  isClass() { return Retraction.class;           } },
-    RatingAnnot            { public String rdfType() { return Rating.RDF_TYPE;            }
-                             public Class  isClass() { return Rating.class;               } },
-    RatingSummaryAnnot     { public String rdfType() { return RatingSummary.RDF_TYPE;     }
-                             public Class  isClass() { return RatingSummary.class;        } },
-    ReplyAnnot             { public String rdfType() { return Reply.RDF_TYPE;             }
-                             public Class  isClass() { return Reply.class;                } },
-    Issue                  { public String rdfType() { return null;                       }
-                             public Class  isClass() { return null;                       } },
+    Article               { public String rdfType() { return null;                       }
+                            public Class  isClass() { return Article.class;              } },
+    Annotation            { public String rdfType() { return ArticleAnnotation.RDF_TYPE; }
+                            public Class  isClass() { return ArticleAnnotation.class;    } },
+    Comment               { public String rdfType() {
+                            return org.topazproject.ambra.models.Comment.RDF_TYPE;
+                          }
+                            public Class  isClass() { return Comment.class;              } },
+    FormalCorrection      { public String rdfType() { 
+                            return org.topazproject.ambra.models.FormalCorrection.RDF_TYPE;
+                          }
+                            public Class  isClass() { return FormalCorrection.class;     } },
+    MinorCorrection       { public String rdfType() {
+                            return org.topazproject.ambra.models.MinorCorrection.RDF_TYPE;
+                          }
+                            public Class  isClass() { return MinorCorrection.class;      } },
+    Retraction            { public String rdfType() {
+                            return org.topazproject.ambra.models.Retraction.RDF_TYPE;
+                          }
+                            public Class  isClass() { return Retraction.class;           } },
+    Rating                { public String rdfType() {
+                            return org.topazproject.ambra.models.Rating.RDF_TYPE;
+                          }
+                            public Class  isClass() { return Rating.class;               } },
+    RatingSummary         { public String rdfType() {
+                            return org.topazproject.ambra.models.RatingSummary.RDF_TYPE;
+                          }
+                            public Class  isClass() { return RatingSummary.class;        } },
+    Reply                 { public String rdfType() {
+                            return org.topazproject.ambra.models.Reply.RDF_TYPE;
+                          }
+                            public Class  isClass() { return Reply.class;                } },
+    Issue                 { public String rdfType() { return null;                       }
+                            public Class  isClass() { return null;                       } },
     // Invalid must remain last.
-    Invalid                { public String rdfType() { return null;                       }
-                             public Class  isClass() { return null;                       } };
+    Invalid               { public String rdfType() { return null;                       }
+                            public Class  isClass() { return null;                       } };
 
     public abstract String rdfType();
     public abstract Class  isClass();
@@ -746,13 +760,13 @@ public class FeedService {
              key.getAnnotationTypes().size() == 0 ||
              key.getAnnotationTypes().contains(FEED_TYPES.Annotation.rdfType()) ||
              annotation instanceof FormalCorrection &&
-                key.getAnnotationTypes().contains(FEED_TYPES.FormalCorrectionAnnot.rdfType()) ||
+                key.getAnnotationTypes().contains(FEED_TYPES.FormalCorrection.rdfType()) ||
              annotation instanceof MinorCorrection &&
-                key.getAnnotationTypes().contains(FEED_TYPES.MinorCorrectionAnnot.rdfType()) ||
+                key.getAnnotationTypes().contains(FEED_TYPES.MinorCorrection.rdfType()) ||
              annotation instanceof Comment &&
-                key.getAnnotationTypes().contains(FEED_TYPES.CommentAnnot.rdfType()) ||
+                key.getAnnotationTypes().contains(FEED_TYPES.Comment.rdfType()) ||
              annotation instanceof Retraction &&
-                key.getAnnotationTypes().contains(FEED_TYPES.RetractionAnnot.rdfType());
+                key.getAnnotationTypes().contains(FEED_TYPES.Retraction.rdfType());
 
     }
 

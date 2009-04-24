@@ -227,10 +227,10 @@ public class AmbraFeedResult extends Feed implements Result {
 
     switch (t) {
       case Annotation:
-      case FormalCorrectionAnnot:
-      case MinorCorrectionAnnot:
-      case RetractionAnnot:
-      case CommentAnnot:
+      case FormalCorrection:
+      case MinorCorrection:
+      case Retraction:
+      case Comment:
         List<WebAnnotation> annotations = feedService.getAnnotations(articleIds);
         List<String> replyIds = (List<String>) ai.getStack().findValue("ReplyIds");
         List<WebReply> replies = feedService.getReplies(replyIds);
