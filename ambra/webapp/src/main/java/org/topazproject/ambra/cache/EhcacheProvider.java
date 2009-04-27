@@ -141,6 +141,10 @@ public class EhcacheProvider implements Cache {
                   val = new Item(o, refresh);
                   if (allowNulls || (o != null))
                     put(key, val);
+                  else
+                    if (log.isWarnEnabled())
+                      log.warn("Cache request to save null when allowNulls = false.", 
+                          new Exception());
                 }
                 return val;
               }
