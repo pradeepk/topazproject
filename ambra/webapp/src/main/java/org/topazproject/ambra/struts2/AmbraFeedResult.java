@@ -348,11 +348,11 @@ public class AmbraFeedResult extends Feed implements Result {
   private String getUserName(UserAccount ua) {
     StringBuilder name = new StringBuilder();
 
-    if (ua.getProfile().getGivenNames() != null && !ua.getProfile().getGivenNames().isEmpty()) {
+    if (ua.getProfile().getGivenNames() != null && !ua.getProfile().getGivenNames().equals("")) {
       name.append(ua.getProfile().getGivenNames());
     }
 
-    if (ua.getProfile().getSurnames() != null && !ua.getProfile().getSurnames().isEmpty()) {
+    if (ua.getProfile().getSurnames() != null && !ua.getProfile().getSurnames().equals("")) {
       if (name.length() > 0)
         name.append(' ');
       name.append(ua.getProfile().getSurnames());
