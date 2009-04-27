@@ -99,6 +99,7 @@ public class AmbraFeedResult extends Feed implements Result {
   private FeedService feedService;
   private ArticleXMLUtils     articleXmlUtils;
 
+  private static final int    MAX_ANNOTATION_BODY_LENGTH = 512;
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
   private static final Log           log = LogFactory.getLog(AmbraFeedResult.class);
   private static final String        ATOM_NS = "http://www.w3.org/2005/Atom";
@@ -319,10 +320,11 @@ public class AmbraFeedResult extends Feed implements Result {
       Person person = new Person();
 
       UserAccount ua = feedService.getUserAcctFrmID(annot.getCreator());
-      if (ua != null)
-        person.setName(ua.getProfile().getDisplayName());
-      else
+      if (ua != null) {
+        person.setName(getUserName(ua));
+      } else {
         person.setName("Unknown");
+      }
 
       authors.add(person);
       entry.setAuthors(authors);
@@ -341,6 +343,25 @@ public class AmbraFeedResult extends Feed implements Result {
         break;
     }
     return entries;
+  }
+
+  private String getUserName(UserAccount ua) {
+    StringBuilder name = new StringBuilder();
+
+    if (ua.getProfile().getGivenNames() != null && !ua.getProfile().getGivenNames().isEmpty()) {
+      name.append(ua.getProfile().getGivenNames());
+    }
+
+    if (ua.getProfile().getSurnames() != null && !ua.getProfile().getSurnames().isEmpty()) {
+      if (name.length() > 0)
+        name.append(' ');
+      name.append(ua.getProfile().getSurnames());
+    }
+
+    if (name.length() == 0)
+      name.append(ua.getProfile().getDisplayName());
+
+    return name.toString();
   }
 
   /**
@@ -547,13 +568,16 @@ public class AmbraFeedResult extends Feed implements Result {
     if (entryTypeDisplay != null)
       text.append(entryTypeDisplay).append(" on ");
 
+    String body = comment.length() > MAX_ANNOTATION_BODY_LENGTH ?
+        comment.substring(0, MAX_ANNOTATION_BODY_LENGTH) + " ...": comment;
+
     text.append(" <a href=")
         .append(link.getHref())
         .append('>')
         .append(link.getTitle())
         .append("</a></p>")
         .append("<p>")
-        .append(comment)
+        .append(body)
         .append("</p>");
     description.setValue(text.toString());
     contents.add(description);
