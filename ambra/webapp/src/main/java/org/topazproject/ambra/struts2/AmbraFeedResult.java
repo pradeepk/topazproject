@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Collections;
 
 import java.io.Writer;
 import java.io.IOException;
@@ -266,7 +267,7 @@ public class AmbraFeedResult extends Feed implements Result {
       throws Exception {
 
     // Combine annotations and replies sorted by date
-    SortedMap<Date, BaseAnnotation> map = new TreeMap<Date, BaseAnnotation>();
+    SortedMap<Date, BaseAnnotation> map = new TreeMap<Date, BaseAnnotation>(Collections.reverseOrder());
 
     for (WebAnnotation annotation : annotations) {
       map.put(annotation.getCreatedAsDate(), annotation);

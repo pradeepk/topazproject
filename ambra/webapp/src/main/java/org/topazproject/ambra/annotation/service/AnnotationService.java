@@ -481,7 +481,7 @@ public class AnnotationService extends BaseAnnotationService {
       qry.append(") ");
     }
     // add ordering and limit
-    qry.append("order by cr asc, id asc");
+    qry.append("order by cr desc, id asc");
 
     if (maxResults > 0)
       qry.append(" limit ").append(maxResults);
