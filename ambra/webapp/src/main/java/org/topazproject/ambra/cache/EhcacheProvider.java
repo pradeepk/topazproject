@@ -143,7 +143,8 @@ public class EhcacheProvider implements Cache {
                     put(key, val);
                   else
                     if (log.isWarnEnabled())
-                      log.warn("Cache request to save null when allowNulls = false.", 
+                      log.warn("Cache request to save null when allowNulls = false. '" +
+                          key + "' in cache '" + EhcacheProvider.this.getName() + "'",
                           new Exception());
                 }
                 return val;
