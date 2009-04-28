@@ -23,24 +23,26 @@
   <em>${freemarker_config.getDisplayName(journalContext)}.</em></p>
   
   <div id="browse-results" class="tundra">
-    
-    <h2>Current Issue</h2>
-    <div id="issueImage">
-      <div id="thumbnail">
-        <@s.url id="currentIssueURL" action="browseIssue" namespace="/article"
-                issue="${currentIssue.id}" includeParams="none"/>
-<#if currentIssue.imageArticle?exists>
-        <@s.url id="currentIssueImgURL" action="fetchObject" namespace="/article" 
-                uri="${currentIssue.imageArticle}.g001" representation="PNG_S" includeParams="none"/>
-        <a href="${currentIssueURL}"><img alt="Issue Image" src="${currentIssueImgURL}" width="120" height="120" /></a>
-</#if>
-        <a href="${currentIssueURL}">${currentIssue.displayName}</a>
-        <p>${currentVolume.displayName}</p>
+    <#if currentIssue??>
+      <h2>Current Issue</h2>
+      <div id="issueImage">
+        <div id="thumbnail">
+
+          <@s.url id="currentIssueURL" action="browseIssue" namespace="/article"
+                  issue="${currentIssue.id}" includeParams="none"/>
+  <#if currentIssue.imageArticle?exists>
+          <@s.url id="currentIssueImgURL" action="fetchObject" namespace="/article"
+                  uri="${currentIssue.imageArticle}.g001" representation="PNG_S" includeParams="none"/>
+          <a href="${currentIssueURL}"><img alt="Issue Image" src="${currentIssueImgURL}" width="120" height="120" /></a>
+  </#if>
+          <a href="${currentIssueURL}">${currentIssue.displayName}</a>
+          <p>${currentVolume.displayName}</p>
+        </div>
+        <h3>About This Image</h3>
+        ${currentIssueDescription}
+        <div class="clearer">&nbsp;</div>
       </div>
-      <h3>About This Image</h3>
-      ${currentIssueDescription}
-      <div class="clearer">&nbsp;</div>
-    </div>
+    </#if>
     
 <#if volumeInfos?exists>
     <h2>All Issues</h2>
