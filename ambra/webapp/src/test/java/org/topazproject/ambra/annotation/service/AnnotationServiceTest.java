@@ -175,7 +175,7 @@ public class AnnotationServiceTest {
         "and ge(cr, :sd) " +
         "and le(cr, :ed) " +
         "and (a.<rdf:type> = :type0 or a.<rdf:type> = :type1) " +
-        "order by cr asc, id asc limit 3;";
+        "order by cr desc, id asc limit 3;";
 
     String applicationId = "test-app";
 
