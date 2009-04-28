@@ -108,7 +108,7 @@ public class EhcacheProvider implements Cache {
        * persisted cache or from an older peer.
        */
       if (e != null)
-        val = (e.getValue() instanceof Item) ? (Item) val : new Item(e.getValue());
+        val = (e.getObjectValue() instanceof Item) ? (Item) val : new Item(e.getObjectValue());
     }
 
     if (log.isTraceEnabled())
