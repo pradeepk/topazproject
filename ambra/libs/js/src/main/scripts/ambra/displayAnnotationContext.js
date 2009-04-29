@@ -304,7 +304,20 @@ ambra.displayAnnotationContext = {
     //console.log('validateSelection.endParent:' + textRange.endParent);
 
     var startRes = this.recurseParentForXpath(textRange.startParent);
+
+    //If either the end or the begining of the selection falls into an "ignored" area
+    //Of the document, ignore and exit, (don't report error)
+    if (startRes == false && this.selectionError == annotationContextConstants.badDocumentArea) {
+      return false;
+    }
+
     var endRes = this.recurseParentForXpath(textRange.endParent);
+
+    //If either the end or the begining of the selection falls into an "ignored" area
+    //Of the document, ignore and exit, (don't report error)
+    if (endRes == false && this.selectionError == annotationContextConstants.badDocumentArea) {
+      return false;
+    }
 
     //console.log('validateSelection.startRes.id:' + startRes.id);
     //console.log('validateSelection.endRes.id:' + endRes.id);
