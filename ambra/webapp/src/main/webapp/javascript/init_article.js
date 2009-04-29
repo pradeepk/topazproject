@@ -187,6 +187,10 @@ function startValidateNewComment() {
 
   _annotationForm.noteType.value = _annotationForm.cNoteType.value;
 
+  if (_annotationForm.competingInterest[0].checked == true) {
+    _annotationForm.ciStatement.value = "";
+  }
+
   dojo.xhrPost({
      url: _namespace + "/annotation/secure/createAnnotationSubmit.action",
      handleAs:'json-comment-filtered',
@@ -228,6 +232,13 @@ function startValidateNewComment() {
          submitMsg.appendChild(fieldErrors);
          dojo.fx.wipeIn({ node:submitMsg.id, duration: 500 }).play();
          ambra.formUtil.enableFormFields(_annotationForm);
+
+         if (_annotationForm.competingInterest[0].checked == true) {
+           _annotationForm.ciStatementArea.disabled = true;
+         } else {
+           _annotationForm.ciStatementArea.disabled = false;
+         }         
+
          _annotationDlg.placeModalDialog();
        }
        else {
@@ -322,6 +333,8 @@ function createAnnotationOnMouseDown() {
 
   _annotationForm.competingInterest[0].checked = true;
   _annotationForm.competingInterest[1].checked = false;
+
+  _annotationForm.ciStatementArea.disabled = true;
 
   // create it
   ambra.annotation.createNewAnnotation();
