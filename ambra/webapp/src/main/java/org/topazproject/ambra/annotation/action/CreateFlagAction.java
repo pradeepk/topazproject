@@ -20,6 +20,7 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import org.topazproject.ambra.action.BaseSessionAwareActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationService;
+import org.topazproject.ambra.models.Annotation;
+import org.topazproject.ambra.models.AnnotationBlob;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -47,6 +50,9 @@ public class CreateFlagAction extends BaseSessionAwareActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   @Override
   public String execute() throws Exception {
+    if (isInvalid())
+      return INPUT;
+
     try {
       annotationId = annotationService.createFlag(target, reasonCode, comment, mimeType,
                                                   getCurrentUser());
@@ -56,8 +62,27 @@ public class CreateFlagAction extends BaseSessionAwareActionSupport {
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;
     }
+
     addActionMessage("Flag created with id:" + annotationId);
+    
     return SUCCESS;
+  }
+
+  private boolean isInvalid() {
+    boolean invalid = false;
+
+    if (StringUtils.isEmpty(comment)) {
+      addFieldError("comment", "You must say something in your flag comment");
+      invalid = true;
+    } else {
+      if (comment.length() > AnnotationBlob.MAX_BODY_LENGTH) {
+        addFieldError("comment", "Your flag comment is " + comment.length() +
+            " characters long, it can not be longer than " + AnnotationBlob.MAX_BODY_LENGTH + ".");
+        invalid = true;
+      }
+    }
+
+    return invalid;
   }
 
   /**
@@ -79,7 +104,6 @@ public class CreateFlagAction extends BaseSessionAwareActionSupport {
   /**
    * @return the annotation content
    */
-  @RequiredStringValidator(message="You must say something in your flag comment")
   public String getComment() {
     return comment;
   }
