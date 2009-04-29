@@ -812,10 +812,7 @@
     </strong></p>
     <xsl:apply-templates select="caption/node()[not(self::title)]"/>
     <xsl:if test="object-id[@pub-id-type='doi']">
-      <span><xsl:call-template name="makeXpathLocationParam" >
-        <xsl:with-param name="node" select="object-id[@pub-id-type='doi']"/>
-      </xsl:call-template>
-      <xsl:apply-templates select="object-id[@pub-id-type='doi']"/></span>
+      <span xpathLocation="noSelect"><xsl:apply-templates select="object-id[@pub-id-type='doi']"/></span>
     </xsl:if>
     <div class="clearer" />
   </div>
