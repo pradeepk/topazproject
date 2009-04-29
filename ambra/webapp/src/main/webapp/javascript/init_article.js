@@ -330,6 +330,7 @@ function createAnnotationOnMouseDown() {
   _annotationForm.commentTitle.value = "";
   _annotationForm.comment.value = "";
   _annotationForm.ciStatement.value = "";
+  _annotationForm.isCompetingInterest.value = "false";
 
   _annotationForm.competingInterest[0].checked = true;
   _annotationForm.competingInterest[1].checked = false;
