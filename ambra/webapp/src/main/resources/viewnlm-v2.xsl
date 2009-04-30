@@ -1461,8 +1461,8 @@
 
 <xsl:template name="author-contrib">
   <xsl:if test="../front/article-meta/author-notes/fn[@fn-type='con']">
-    <div class="contributions">
-      <h3 xpathLocation="noSelect">Author Contributions</h3>
+    <div class="contributions"><a id="authcontrib" name="authcontrib" toc="authcontrib"
+      title="Author Contributions"/><h3 xpathLocation="noSelect">Author Contributions<xsl:call-template name="topAnchor"/></h3>
       <p>
         <xsl:call-template name="makeXpathLocation" />
         <xsl:apply-templates select="../front/article-meta/author-notes/fn[@fn-type='con']"/>
