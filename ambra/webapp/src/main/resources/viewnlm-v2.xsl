@@ -1464,6 +1464,7 @@
     <div class="contributions">
       <h3 xpathLocation="noSelect">Author Contributions</h3>
       <p>
+        <xsl:call-template name="makeXpathLocation" />
         <xsl:apply-templates select="../front/article-meta/author-notes/fn[@fn-type='con']"/>
       </p>
     </div>
