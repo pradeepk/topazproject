@@ -60,8 +60,8 @@ ambra.navigation = {
 
           var tocText = tocEl[i].getAttributeNode('title').nodeValue;
 
-          if(tocText.length > 29) {
-            tocText = tocText.trimOnWord(29) + '...';
+          if(tocText.length > 25) {
+            tocText = tocText.trimOnWord(25) + '...';
           }
 
           var tocTextNode = document.createTextNode(tocText);
