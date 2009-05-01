@@ -50,11 +50,16 @@ ambra.responsePanel = {
   },
   
   show: function(curNode, targetObj, targetElClassName, baseId, replyId, threadTitle, actionIndex) {
+    //Only display one responsePanel at a time
+    this.hide();
+
     this.setPanel(targetObj.widget);
     this.setForm(targetObj.form);
+
     targetObj.baseId = (baseId) ? baseId : "";
-    targetObj.replyId = (replyId)? replyId : "";
+    targetObj.replyId = (replyId) ? replyId : "";
     targetObj.actionIndex = (actionIndex) ? actionIndex : 0;
+
     this.upperContainer = ambra.domUtil.getFirstAncestorByClass(curNode, targetElClassName);
     this.upperContainer.style.display = "none";
     this.togglePanel.newPanel = this.newPanel;
@@ -64,7 +69,7 @@ ambra.responsePanel = {
 
     if (this.previousUpperContainer) this.previousUpperContainer.style.display = "block";
 
-    if (targetObj.requestType == "flag"){
+    if (targetObj.requestType == "flag") {
       this.resetFlaggingForm(targetObj);
     }
     
@@ -81,6 +86,7 @@ ambra.responsePanel = {
   hide: function() {
     if (this.togglePanel.newPanel) this.togglePanel.newPanel.style.display = "none";
     if (this.togglePanel.upperContainer) this.togglePanel.upperContainer.style.display = "block";
+    if (this.previousUpperContainer) this.previousUpperContainer = null;
   },
   
   submit: function(targetObj) {
