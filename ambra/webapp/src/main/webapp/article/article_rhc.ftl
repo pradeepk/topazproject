@@ -110,7 +110,7 @@
           </script>
           <script src="http://digg.com/tools/diggthis.js" type="text/javascript"></script>
           <#-- for more info see http://digg.com/tools/integrate -->
-
+          <a href="http://www.mendeley.com/import/?url=${article.docURL?url}" target="_new"><img src="${freemarker_config.getContext()}/images/icon_mendeley_16x16.gif" title="Add to Mendeley"></a>
       </li>
       <li class="email icon"><a href="${emailArticleURL}">Email this article</a></li>
     </ul>
