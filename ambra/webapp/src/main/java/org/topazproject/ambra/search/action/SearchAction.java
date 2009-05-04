@@ -138,8 +138,18 @@ public class SearchAction extends BaseSessionAwareActionSupport {
 
         int totPages = (totalNoOfResults + pageSize - 1) / pageSize;
         startPage = Math.max(0, Math.min(startPage, totPages - 1));
+      } catch (org.apache.lucene.queryParser.ParseException pe) {
+        addActionError("Search Query Bad");
+
+        query = "";
+        textSearchAll = "";
+
+        log.warn("Search failed with error with query string: " + queryString, pe);
+
+        //Implemented this as a stop gap.  Search functionality needs to be refactored
+        return "badquery";
       } catch (Exception e) {
-        addActionError("Search failed ");
+        addActionError("Search failed");
         log.error("Search failed with error with query string: " + queryString, e);
         return ERROR;
       }
