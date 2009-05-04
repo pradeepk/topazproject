@@ -220,10 +220,17 @@ public class Results {
       }
     }
 
-    if (fieldMaxLength > 0 && fval.length() > fieldMaxLength)
-      return stripTrailingEntity(stripTags(fval.substring(0, fieldMaxLength))) + " ... ";
-    else
+    if (fieldMaxLength > 0 && fval.length() > fieldMaxLength) {
+      String res = stripTrailingEntity(stripTags(fval.substring(0, fieldMaxLength)));
+
+      if(res.trim().length() > 0) {
+        return res + " ... ";
+      } else {
+        return "";
+      }
+    } else {
       return fval;
+    }
   }
 
   private static String stripTrailingEntity(String src) {
