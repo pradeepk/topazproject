@@ -43,11 +43,9 @@ import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.RatingSummary;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.models.Retraction;
+import org.topazproject.ambra.models.Annotation;
+import org.topazproject.ambra.models.Trackback;
 import org.topazproject.ambra.annotation.service.AnnotationService;
-import org.topazproject.ambra.annotation.service.AnnotationConverter;
-import org.topazproject.ambra.annotation.service.WebAnnotation;
-import org.topazproject.ambra.annotation.service.ReplyService;
-import org.topazproject.ambra.annotation.service.WebReply;
 import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.journal.JournalService;
@@ -72,11 +70,9 @@ public class FeedService {
   private static final Log log = LogFactory.getLog(FeedService.class);
 
   private AnnotationService   annotationService;    // Annotation service Spring injected.
-  private ReplyService        replyService;         // Reply service Spring injected.
   private ArticleOtmService   articleOtmService;    // Article Otm service Spring injected
   private BrowseService       browseService;        // Browse Article Servcie Spring Injected
   private JournalService      journalService;       // Journal service Spring injected.
-  private AnnotationConverter annotationConverter; // Annotation converter
   private Cache               feedCache;            // Feed Cache Spring injected
   private Invalidator         invalidator;          // Cache invalidator
   private Session             session;
@@ -90,8 +86,9 @@ public class FeedService {
   public enum FEED_TYPES {
     Article               { public String rdfType() { return null;                       }
                             public Class  isClass() { return Article.class;              } },
-    Annotation            { public String rdfType() { return ArticleAnnotation.RDF_TYPE; }
-                            public Class  isClass() { return ArticleAnnotation.class;    } },
+    Annotation            { public String rdfType() {
+                            return org.topazproject.ambra.models.Annotation.RDF_TYPE; }
+                            public Class  isClass() { return Annotation.class;    } },
     Comment               { public String rdfType() {
                             return org.topazproject.ambra.models.Comment.RDF_TYPE;
                           }
@@ -108,6 +105,10 @@ public class FeedService {
                             return org.topazproject.ambra.models.Retraction.RDF_TYPE;
                           }
                             public Class  isClass() { return Retraction.class;           } },
+    Trackback             { public String rdfType() {
+                            return org.topazproject.ambra.models.Trackback.RDF_TYPE;
+                          }
+                            public Class  isClass() { return Trackback.class;           } },
     Rating                { public String rdfType() {
                             return org.topazproject.ambra.models.Rating.RDF_TYPE;
                           }
@@ -255,7 +256,7 @@ public class FeedService {
     
     List<String> annotIds;
     try {
-      annotIds = annotationService.getAnnotationIds(
+      annotIds = annotationService.getFeedAnnotationIds(
                  cacheKey.getStartDate(), cacheKey.getEndDate(), cacheKey.getAnnotationTypes(),
                  cacheKey.getMaxResults());
 
@@ -280,52 +281,7 @@ public class FeedService {
     return  replyIds;
   }
 
-  /**
-   * Returns a list of annotations associated with a particular list
-   * annotation Ids.
-   *
-   * @param annotIds a list of annotations Ids to retrieve.
-   * @return <code>List&lt;WebAnnotation&gt;</code> a list of webannotations
-   *         with the specified Ids.
-   * @throws ApplicationException   Converts all exceptions to ApplicationException
-   */
-  public List<WebAnnotation> getAnnotations(final List<String> annotIds)
-      throws ApplicationException {
-    List<WebAnnotation> webAnnot;
-
-    try {
-      List<ArticleAnnotation> annotations = annotationService.getAnnotations(annotIds);
-      webAnnot = annotationConverter.convert(annotations,true,true);
-    } catch (Exception ex) {
-      throw new ApplicationException(ex);
-    }
-    return webAnnot;
-  }
-
-  /**
-   * Returns a list of replies associated with a particular list
-   * annotation Ids.
-   *
-   * @param replyIds a list of reply Ids to retrieve.
-   * @return <code>List&lt;WebReply&gt;</code> a list of webareplies
-   *         with the specified Ids.
-   * @throws ApplicationException   Converts all exceptions to ApplicationException
-   */
-  public List<WebReply> getReplies(final List<String> replyIds)
-      throws ApplicationException {
-
-    List<WebReply> webReplies;
-
-    try {
-      List<Reply> replies = replyService.getReplies(replyIds);
-      webReplies = annotationConverter.convertReplies(replies,true,true);
-    } catch (Exception ex) {
-      throw new ApplicationException(ex);
-    }
-    return webReplies;
-  }
-
-  /**
+   /**
    * Use the OTM Service to build a list of article ID's that match the query.  Build the category
    * and author list needed by the article ID query then make the query
    *
@@ -391,13 +347,6 @@ public class FeedService {
     this.annotationService = annotationService;
   }
 
-  /**
-   * @param replyService Reply Service
-   */
-  @Required
-  public void setReplyService(ReplyService replyService) {
-    this.replyService = replyService;
-  }
 
   /**
    * @param browseService   Browse Service
@@ -407,15 +356,6 @@ public class FeedService {
   public void setBrowseService(BrowseService browseService) {
     this.browseService = browseService;
   }
-
-  /**
-   * @param annotationConverter  Annotation converter
-   */
-  @Required
-  public void setAnnotationConverter(AnnotationConverter annotationConverter) {
-    this.annotationConverter = annotationConverter;
-  }
-
 
 
   /**
@@ -491,6 +431,10 @@ public class FeedService {
         invalidateFeedCacheForJournal((Journal)object, updates);
       } else if (object instanceof ArticleAnnotation) {
         invalidateFeedCacheForAnnotation((ArticleAnnotation)object);
+      } else if (object instanceof Rating) {
+        invalidateFeedCacheForAnnotation((Rating)object);
+      } else if (object instanceof Trackback) {
+        invalidateFeedCacheForAnnotation((Trackback)object);
       } else if (object instanceof Reply) {
         invalidateFeedCacheForReply((Reply)object);
       }
@@ -514,6 +458,10 @@ public class FeedService {
         invalidateFeedCacheForArticle((Article) object);
       } else if (object instanceof ArticleAnnotation) {
         invalidateFeedCacheForAnnotation((ArticleAnnotation) object);
+      } else if (object instanceof Rating) {
+        invalidateFeedCacheForAnnotation((Rating)object);
+      } else if (object instanceof Trackback) {
+        invalidateFeedCacheForAnnotation((Trackback)object);
       } else if (object instanceof Reply) {
         invalidateFeedCacheForReply((Reply) object);
       }
@@ -577,11 +525,11 @@ public class FeedService {
     }
 
     /**
-     * Invalidate the cache entries based on a article annotation.
+     * Invalidate the cache entries based on a annotation.
      *
      * @param annotation The annotation.
      */
-    private void invalidateFeedCacheForAnnotation(ArticleAnnotation annotation) {
+    private void invalidateFeedCacheForAnnotation(Annotation annotation) {
       for (Object key : feedCache.getKeys()) {
         if (key instanceof AnnotationFeedCacheKey) {
           if (matchesAnnotation((AnnotationFeedCacheKey)key, annotation))
@@ -653,7 +601,7 @@ public class FeedService {
 
     }
 
-    private boolean matchesAnnotation(AnnotationFeedCacheKey key, ArticleAnnotation annotation) {
+    private boolean matchesAnnotation(AnnotationFeedCacheKey key, Annotation annotation) {
       try {
         Article article = articleOtmService.getArticle(annotation.getAnnotates());
         if (!matchesJournal(article, key.getJournal()))
@@ -676,11 +624,11 @@ public class FeedService {
       if (key.getType() != AnnotationFeedCacheKey.Type.REPLIES)
         return false;
 
-      ArticleAnnotation annotation = annotationService.getAnnotation(reply.getRoot());
+      Annotation annotation = annotationService.getArticleAnnotation(reply.getRoot());
       if (annotation != null) {
         try {
           Article article = articleOtmService.getArticle(annotation.getAnnotates());
-          if (!matchesJournal(article, key.getJournal()))
+          if (article == null || !matchesJournal(article, key.getJournal()))
             return false;
         } catch (NoSuchArticleIdException e) {
           log.error("Failed trying to invalidate FeedCache for reply " + reply.getId() +
@@ -754,7 +702,7 @@ public class FeedService {
       return matches;
     }
 
-    private boolean matchesAnnotationType(AnnotationFeedCacheKey key, ArticleAnnotation annotation) {
+    private boolean matchesAnnotationType(AnnotationFeedCacheKey key, Annotation annotation) {
 
       return key.getAnnotationTypes() == null ||
              key.getAnnotationTypes().size() == 0 ||

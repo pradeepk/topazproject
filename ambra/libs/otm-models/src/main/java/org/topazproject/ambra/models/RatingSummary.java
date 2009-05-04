@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,9 +26,11 @@ import org.topazproject.otm.annotations.Entity;
  *
  * @author Stephen Cheng
  */
-@Entity(types = {"topaz:RatingSummaryAnnotation"})
+@Entity(types = {RatingSummary.RDF_TYPE})
 public class RatingSummary extends Annotation<RatingSummaryContent> {
   private static final long serialVersionUID = 185069387294534599L;
+
+  public static final String RDF_TYPE = Rdf.topaz + "RatingSummaryAnnotation";
 
   @Override
   public String getType() {

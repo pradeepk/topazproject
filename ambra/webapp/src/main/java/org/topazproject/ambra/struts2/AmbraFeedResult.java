@@ -62,9 +62,19 @@ import org.jdom.Element;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ambra.models.UserAccount;
-import org.topazproject.ambra.annotation.service.WebAnnotation;
-import org.topazproject.ambra.annotation.service.WebReply;
-import org.topazproject.ambra.annotation.service.BaseAnnotation;
+import org.topazproject.ambra.models.Annotation;
+import org.topazproject.ambra.models.Reply;
+import org.topazproject.ambra.models.Annotea;
+import org.topazproject.ambra.models.ArticleAnnotation;
+import org.topazproject.ambra.models.Rating;
+import org.topazproject.ambra.models.Trackback;
+import org.topazproject.ambra.models.Comment;
+import org.topazproject.ambra.models.FormalCorrection;
+import org.topazproject.ambra.models.MinorCorrection;
+import org.topazproject.ambra.models.Retraction;
+import org.topazproject.ambra.models.RatingContent;
+import org.topazproject.ambra.annotation.service.AnnotationService;
+import org.topazproject.ambra.annotation.service.ReplyService;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.model.article.ArticleType;
 
@@ -98,6 +108,8 @@ import org.topazproject.ambra.model.article.ArticleType;
  */
 public class AmbraFeedResult extends Feed implements Result {
   private FeedService feedService;
+  private AnnotationService annotationService;
+  private ReplyService replyService;
   private ArticleXMLUtils     articleXmlUtils;
 
   private static final int    MAX_ANNOTATION_BODY_LENGTH = 512;
@@ -232,10 +244,12 @@ public class AmbraFeedResult extends Feed implements Result {
       case FormalCorrection:
       case MinorCorrection:
       case Retraction:
+      case Rating:
+      case Trackback:
       case Comment:
-        List<WebAnnotation> annotations = feedService.getAnnotations(articleIds);
+        List<Annotation> annotations = annotationService.getAnnotations(articleIds);
         List<String> replyIds = (List<String>) ai.getStack().findValue("ReplyIds");
-        List<WebReply> replies = feedService.getReplies(replyIds);
+        List<Reply> replies = replyService.getReplies(replyIds);
         entries = buildAnnotationFeed(xmlBase, annotations, replies, cacheKey.getMaxResults());
         break;
       case Article :
@@ -261,43 +275,38 @@ public class AmbraFeedResult extends Feed implements Result {
    * @throws Exception   Exception
    */
   private List<Entry> buildAnnotationFeed(String xmlBase,
-                                          List<WebAnnotation> annotations,
-                                          List<WebReply> replies,
+                                          List<Annotation> annotations,
+                                          List<Reply> replies,
                                           int maxResults)
       throws Exception {
 
     // Combine annotations and replies sorted by date
-    SortedMap<Date, BaseAnnotation> map = new TreeMap<Date, BaseAnnotation>(Collections.reverseOrder());
+    SortedMap<Date, Annotea> map = new TreeMap<Date, Annotea>(Collections.reverseOrder());
 
-    for (WebAnnotation annotation : annotations) {
-      map.put(annotation.getCreatedAsDate(), annotation);
+    for (Annotation annotation : annotations) {
+      map.put(annotation.getCreated(), annotation);
     }
 
-    for (WebReply reply : replies) {
-      map.put(reply.getCreatedAsDate(), reply);
+    for (Reply reply : replies) {
+      map.put(reply.getCreated(), reply);
     }
 
     // Add each Article as a Feed Entry
     List<Entry> entries = new ArrayList<Entry>();
 
     int i = 0;
-    for (BaseAnnotation annot : map.values()) {
+    for (Annotea annot : map.values()) {
 
       Entry entry = newEntry(annot);
 
-      String displayName;
       List<String> articleIds = new ArrayList<String>();
-      if (annot instanceof WebReply) {
-        WebReply webReply = (WebReply) annot;
-        List<String> rootAnnotationIds = new ArrayList<String>();
-        rootAnnotationIds.add(webReply.getRoot());
-        List<WebAnnotation> rootAnnotations = feedService.getAnnotations(rootAnnotationIds);
-        articleIds.add(rootAnnotations.get(0).getAnnotates());
-        displayName = "Reply";
+      if (annot instanceof Reply) {
+        Reply reply = (Reply) annot;
+        Annotation rootAnnotation = annotationService.getArticleAnnotation(reply.getRoot());
+        articleIds.add(rootAnnotation.getAnnotates().toString());
       } else {
-        WebAnnotation webAnnotation = (WebAnnotation) annot;
-        articleIds.add(webAnnotation.getAnnotates());
-        displayName = webAnnotation.getDisplayName();
+        Annotation annotation = (Annotation) annot;
+        articleIds.add(annotation.getAnnotates().toString());
       }
 
       List<Article> art = feedService.getArticles(articleIds);
@@ -318,22 +327,33 @@ public class AmbraFeedResult extends Feed implements Result {
 
       // List will be created by newAuthorsList
       List<Person> authors = new ArrayList<Person>();
-      Person person = new Person();
 
-      UserAccount ua = feedService.getUserAcctFrmID(annot.getCreator());
-      if (ua != null) {
-        person.setName(getUserName(ua));
+      if (annot instanceof Trackback) {
+        Trackback trackback = (Trackback) annot;
+        if (trackback.getBlog_name() != null) {
+          Person person = new Person();
+          person.setName(trackback.getBlog_name());
+          authors.add(person);
+        }
       } else {
-        person.setName("Unknown");
+        Person person = new Person();
+        UserAccount ua = feedService.getUserAcctFrmID(annot.getCreator());
+        if (ua != null) {
+          person.setName(getUserName(ua));
+        } else {
+          person.setName("Unknown");
+        }
+        authors.add(person);
       }
 
-      authors.add(person);
       entry.setAuthors(authors);
 
-      List <Content> contents = newAnnotationsList(selfLink, displayName, annot.getComment());
+      String annotationType = getType(annot);
+
+      List <Content> contents = newAnnotationsList(selfLink, annotationType, getBody(annot));
       entry.setContents(contents);
 
-      List<com.sun.syndication.feed.atom.Category> categories = newCategoryList(displayName);
+      List<com.sun.syndication.feed.atom.Category> categories = newCategoryList(annotationType);
       entry.setCategories(categories);
 
       // Add completed Entry to List
@@ -344,6 +364,57 @@ public class AmbraFeedResult extends Feed implements Result {
         break;
     }
     return entries;
+  }
+
+  private String getType(Annotea annot) {
+    if (annot instanceof Comment)
+      return "Comment";
+    if (annot instanceof Rating)
+      return "Rating";
+    if (annot instanceof Reply)
+      return "Reply";
+    if (annot instanceof MinorCorrection)
+      return "MinorCorrection";
+    if (annot instanceof FormalCorrection)
+      return "FormalCorrection";
+    if (annot instanceof Retraction)
+      return "Retraction";
+    if (annot instanceof Trackback)
+      return "Trackback";
+    return null;
+  }
+
+  private String getBody(Annotea annot) throws UnsupportedEncodingException {
+    String body = null;
+    if (annot instanceof ArticleAnnotation)
+      body = new String(((ArticleAnnotation)annot).getBody().getBody(), annotationService.getEncodingCharset());
+    else if (annot instanceof Reply)
+      body = new String(((Reply)annot).getBody().getBody(), annotationService.getEncodingCharset());
+    else if (annot instanceof Rating) {
+      RatingContent content = ((Rating) annot).getBody();
+      StringBuilder ratingBody = new StringBuilder();
+      ratingBody.append("<div><ul>");
+      if (content.getSingleRatingValue() > 0) {
+        ratingBody.append("<li>Rating: ")
+                  .append(Integer.toString(content.getSingleRatingValue()))
+                  .append("</li>");
+      } else {
+        ratingBody.append("<li>Insight: ")
+                  .append(Integer.toString(content.getInsightValue()))
+                  .append("</li>")
+                  .append("<li>Reliability: ")
+                  .append(Integer.toString(content.getReliabilityValue()))
+                  .append("</li>")
+                  .append("<li>Style: ")
+                  .append(Integer.toString(content.getStyleValue()))
+                  .append("</li>");
+      }
+      ratingBody.append("</ul></div>")
+                .append(content.getCommentValue());
+      body = ratingBody.toString();
+    } else if (annot instanceof Trackback)
+      body = ((Trackback)annot).getBody().getExcerpt();
+    return body;
   }
 
   private String getUserName(UserAccount ua) {
@@ -545,8 +616,9 @@ public class AmbraFeedResult extends Feed implements Result {
   }
 
   /**
-   * Creates a description of article contents in HTML format. Currently the description consists of
-   * the Author (or Authors if extended format) and the DublinCore description of the article.
+   * Creates a description of annotation contents in HTML format. Currently the description
+   * consists of the Author (or Authors if extended format) and the DublinCore description
+   * of the article.
    *
    * @param link        link to the article
    *
@@ -569,8 +641,10 @@ public class AmbraFeedResult extends Feed implements Result {
     if (entryTypeDisplay != null)
       text.append(entryTypeDisplay).append(" on ");
 
-    String body = comment.length() > MAX_ANNOTATION_BODY_LENGTH ?
-        comment.substring(0, MAX_ANNOTATION_BODY_LENGTH) + " ...": comment;
+    String body = null;
+    if (comment != null)
+      body = comment.length() > MAX_ANNOTATION_BODY_LENGTH ?
+          comment.substring(0, MAX_ANNOTATION_BODY_LENGTH) + " ..." : comment;
 
     text.append(" <a href=")
         .append(link.getHref())
@@ -690,30 +764,40 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param xmlBase  xml base of article
    * @return  link to the article
    */
-  private Link newSelfLink(BaseAnnotation annot, String xmlBase) {
-
-    String url;
-    if (annot instanceof WebReply) {
-      url = ((WebReply)annot).getRoot();
+  private Link newSelfLink(Annotea annot, String xmlBase) {
+    StringBuilder href = new StringBuilder();
+    if (annot instanceof Trackback) {
+      Trackback trackback = (Trackback) annot;
+      href.append(trackback.getUrl().toString());
     } else {
-      url = doiToUrl(annot.getId());
-    }
 
-    StringBuilder href = new StringBuilder(xmlBase)
-          .append("annotation/listThread.action?inReplyTo=")
-          .append(url)
-          .append("&root=")
-          .append(url);
+      href.append(xmlBase);
+      if (annot instanceof Rating) {
+        href.append("rate/getArticleRatings.action?articleURI=")
+            .append(((Rating) annot).getAnnotates().toString());
+      } else {
+        String url;
+        if (annot instanceof Reply) {
+          url = ((Reply) annot).getRoot();
+        } else {
+          url = doiToUrl(annot.getId().toString());
+        }
+        href.append("annotation/listThread.action?inReplyTo=")
+            .append(url)
+            .append("&root=")
+            .append(url);
+      }
 
-    // add anchor
-    if (annot instanceof WebReply) {
-      href.append('#').append(annot.getId());
+      // add anchor
+      if (annot instanceof Reply || annot instanceof Rating) {
+        href.append('#').append(annot.getId().toString());
+      }
     }
 
     Link link = new Link();
     link.setRel("alternate");
     link.setHref(href.toString());
-    link.setTitle(annot.getCommentTitle());
+    link.setTitle(getTitle(annot));
     return link;
   }
 
@@ -769,17 +853,35 @@ public class AmbraFeedResult extends Feed implements Result {
    * @param annot an annotation
    * @return Entry  feed entry
    */
-  private Entry newEntry(BaseAnnotation annot) {
+  private Entry newEntry(Annotea annot) {
     Entry entry = new Entry();
 
-    entry.setId(annot.getId());
+    entry.setId(annot.getId().toString());
     entry.setRights(JOURNAL_COPYRIGHT());
 
-    entry.setTitle(annot.getCommentTitle());
-    entry.setPublished(annot.getCreatedAsDate());
-    entry.setUpdated(annot.getCreatedAsDate());
+    entry.setTitle(getTitle(annot));
+
+    entry.setPublished(annot.getCreated());
+    entry.setUpdated(annot.getCreated());
 
     return entry;
+  }
+
+  private String getTitle(Annotea annot) {
+    String title = null;
+    if (annot instanceof ArticleAnnotation || annot instanceof Reply) {
+      title = annot.getTitle();
+    } else if (annot instanceof Rating) {
+      title = ((Rating) annot).getBody().getCommentTitle();
+      if (title == null || title.trim().equals(""))
+        title = "Rating";
+    } else if (annot instanceof Trackback) {
+      title = ((Trackback) annot).getBody().getTitle();
+      if (title == null || title.trim().equals(""))
+        title = "Trackback";
+    }
+
+    return title;
   }
 
 
@@ -959,6 +1061,16 @@ public class AmbraFeedResult extends Feed implements Result {
   @Required
   public void setFeedService(FeedService feedService) {
     this.feedService = feedService;
+  }
+
+  @Required
+  public void setAnnotationService(AnnotationService annotationService) {
+    this.annotationService = annotationService;
+  }
+
+  @Required
+  public void setReplyService(ReplyService replyService) {
+    this.replyService = replyService;
   }
 }
 

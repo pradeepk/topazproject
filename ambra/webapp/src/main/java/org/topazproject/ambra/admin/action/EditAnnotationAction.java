@@ -54,7 +54,7 @@ public class EditAnnotationAction extends BaseActionSupport {
   @Transactional(readOnly = true)
   public String loadAnnotation() throws Exception {
 
-    ArticleAnnotation a = annotationService.getAnnotation(loadAnnotationId);
+    ArticleAnnotation a = annotationService.getArticleAnnotation(loadAnnotationId);
     annotation = annotationConverter.convert(a, true, true);
     // tell Struts to continue
     return SUCCESS;

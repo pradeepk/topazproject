@@ -1,7 +1,7 @@
 /* $HeadURL::$
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,8 +26,9 @@ import org.topazproject.otm.annotations.Entity;
  *
  * @author Alex Worden
  */
-@Entity(types = {Annotea.W3C_TYPE_NS + "Change"})
+@Entity(types = {Correction.RDF_TYPE})
 public abstract class Correction extends ArticleAnnotation {
+  public static final String RDF_TYPE = Annotea.W3C_TYPE_NS + "Change";
   private static final long serialVersionUID = -7581290891099274371L;
 }
 

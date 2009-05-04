@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,10 +32,12 @@ import org.topazproject.otm.annotations.Entity;
 @Entity(types = {"topaz:TrackbackAnnotation"})
 public class Trackback extends Annotation<TrackbackContent> {
   private static final long serialVersionUID = -7569629877623116742L;
+  
+  public static final String RDF_TYPE = Rdf.topaz + "TrackbackAnnotation";
 
   @Override
   public String getType() {
-    return Rdf.topaz + "TrackbackAnnotation";
+    return RDF_TYPE;
   }
 
   /**

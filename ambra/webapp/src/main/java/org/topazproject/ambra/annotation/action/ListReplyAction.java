@@ -89,7 +89,7 @@ public class ListReplyAction extends BaseActionSupport {
       if (log.isDebugEnabled()) {
         log.debug("listing all Replies for root: " + root);
       }
-      baseAnnotation = converter.convert(annotationService.getAnnotation(root), true, true);
+      baseAnnotation = converter.convert(annotationService.getArticleAnnotation(root), true, true);
       replies = converter.convert(replyService.listAllReplies(root, inReplyTo), true, true);
       final String articleId = baseAnnotation.getAnnotates();
       article = articleOtmService.getArticle(URI.create(articleId));

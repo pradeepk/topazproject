@@ -47,6 +47,7 @@ import org.topazproject.ambra.models.AnnotationBlob;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Comment;
+import org.topazproject.ambra.models.RatingSummary;
 import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.xacml.AbstractSimplePEP;
 
@@ -244,7 +245,7 @@ public class AnnotationService extends BaseAnnotationService {
     return filteredAnnotations;
   }
 
-  // TODO: merge with getAnnotationIds method
+  // TODO: merge with getFeedAnnotationIds method
   @SuppressWarnings("unchecked")
   private List<String> loadAnnotations(final String target, final String mediator,
       final int state, final Set<Class<?extends ArticleAnnotation>> classTypes)
@@ -329,12 +330,12 @@ public class AnnotationService extends BaseAnnotationService {
    * @throws URISyntaxException  if an element of annotType cannot be parsed as a URI
    */
   @Transactional(readOnly = true)
-  public List<String> getAnnotationIds(Date startDate, Date endDate, Set<String> annotTypes,
+  public List<String> getFeedAnnotationIds(Date startDate, Date endDate, Set<String> annotTypes,
                                        int maxResults)
   throws ParseException, URISyntaxException {
 
     // create the query, applying parameters
-    Query annotationQuery = getAnnotationQuery(startDate, endDate, annotTypes, maxResults);
+    Query annotationQuery = getFeedAnnotationQuery(startDate, endDate, annotTypes, maxResults);
 
     Results annotationResults = annotationQuery.execute();
     List<String> res = new ArrayList<String>();
@@ -406,10 +407,10 @@ public class AnnotationService extends BaseAnnotationService {
     return query;
   }
 
-  private Query getAnnotationQuery(Date startDate, Date endDate, Set<String> annotTypes,
+  private Query getFeedAnnotationQuery(Date startDate, Date endDate, Set<String> annotTypes,
                                    int maxResults)
       throws URISyntaxException {
-    String queryString = createAnnotationQueryString(startDate, endDate, annotTypes, maxResults);
+    String queryString = createFeedAnnotationQueryString(startDate, endDate, annotTypes, maxResults);
     Query query = session.createQuery(queryString);
 
     bindCommonParams(startDate, endDate, annotTypes, query);
@@ -432,13 +433,16 @@ public class AnnotationService extends BaseAnnotationService {
     }
   }
 
-  private String createAnnotationQueryString(Date startDate, Date endDate, Set<String> annotTypes,
+  private String createFeedAnnotationQueryString(Date startDate, Date endDate, Set<String> annotTypes,
                                              int maxResults) {
 
     StringBuilder qry = new StringBuilder();
 
-    qry.append("select a.id id, cr from ArticleAnnotation a, Article ar ");
-    qry.append("where a.annotates = ar and cr := a.created ");
+    qry.append("select a.id id, cr from Annotation a, Article ar ")
+       .append("where a.annotates = ar and cr := a.created ")
+       .append("and (a.<rdf:type> = <").append(Annotation.RDF_TYPE).append("> ")
+       .append("minus (a.<rdf:type> = <").append(Annotation.RDF_TYPE).append("> ")
+       .append("and a.<rdf:type> = <").append(RatingSummary.RDF_TYPE).append(">)) ") ;
 
     appendCommonCriteria(startDate, endDate, annotTypes, maxResults, qry);
 
@@ -488,6 +492,33 @@ public class AnnotationService extends BaseAnnotationService {
   }
 
   /**
+   * Get all article annotations specified by the list of annotation ids.
+   *
+   * @param annotIds a list of annotations Ids to retrieve.
+   *
+   * @return the (possibly empty) list of annotations.
+   *
+   */
+  // TODO: this method can be declared private
+  @Transactional(readOnly = true)
+  public List<ArticleAnnotation> getArticleAnnotations(List<String> annotIds) {
+    List<ArticleAnnotation> annotations = new ArrayList<ArticleAnnotation>();
+
+    for (String id : annotIds)  {
+      try {
+        annotations.add(getArticleAnnotation(id));
+      } catch (IllegalArgumentException iae) {
+        if (log.isDebugEnabled())
+          log.debug("Ignored illegale annotation id:" + id);
+      } catch (SecurityException se) {
+        if (log.isDebugEnabled())
+          log.debug("Filtering URI " + id + " from Article list due to PEP SecurityException", se);
+      }
+    }
+    return annotations;
+  }
+
+  /**
    * Get all annotations specified by the list of annotation ids.
    *
    * @param annotIds a list of annotations Ids to retrieve.
@@ -496,8 +527,8 @@ public class AnnotationService extends BaseAnnotationService {
    *
    */
   @Transactional(readOnly = true)
-  public List<ArticleAnnotation> getAnnotations(List<String> annotIds) {
-    List<ArticleAnnotation> annotations = new ArrayList<ArticleAnnotation>();
+  public List<Annotation> getAnnotations(List<String> annotIds) {
+    List<Annotation> annotations = new ArrayList<Annotation>();
 
     for (String id : annotIds)  {
       try {
@@ -533,7 +564,7 @@ public class AnnotationService extends BaseAnnotationService {
     throws OtmException, SecurityException {
     pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
 
-    List<ArticleAnnotation> allAnnotations = getAnnotations(lookupAnnotations(target));
+    List<ArticleAnnotation> allAnnotations = getArticleAnnotations(lookupAnnotations(target));
     List<ArticleAnnotation> filtered = filterAnnotations(allAnnotations, annotationClassTypes);
 
     return filtered.toArray(new ArticleAnnotation[filtered.size()]);
@@ -551,7 +582,7 @@ public class AnnotationService extends BaseAnnotationService {
    * @throws IllegalArgumentException if an annotation with this id does not exist
    */
   @Transactional(readOnly = true)
-  public ArticleAnnotation getAnnotation(final String annotationId)
+  public ArticleAnnotation getArticleAnnotation(final String annotationId)
     throws OtmException, SecurityException, IllegalArgumentException {
     pep.checkAccess(AnnotationsPEP.GET_ANNOTATION_INFO, URI.create(annotationId));
     // comes from object-cache.
@@ -561,6 +592,30 @@ public class AnnotationService extends BaseAnnotationService {
 
     return a;
   }
+
+  /**
+   * Loads the annotation with the given id.
+   *
+   * @param annotationId annotationId
+   *
+   * @return an annotation
+   *
+   * @throws OtmException on an error
+   * @throws SecurityException if a security policy prevented this operation
+   * @throws IllegalArgumentException if an annotation with this id does not exist
+   */
+  @Transactional(readOnly = true)
+  public Annotation getAnnotation(final String annotationId)
+    throws OtmException, SecurityException, IllegalArgumentException {
+    pep.checkAccess(AnnotationsPEP.GET_ANNOTATION_INFO, URI.create(annotationId));
+    // comes from object-cache.
+    Annotation a = session.get(Annotation.class, annotationId);
+    if (a == null)
+      throw new IllegalArgumentException("invalid annotation id: " + annotationId);
+
+    return a;
+  }
+
 
   /**
    * Set the annotation context.
@@ -602,7 +657,7 @@ public class AnnotationService extends BaseAnnotationService {
   public ArticleAnnotation[] listAnnotations(final String mediator, final int state)
   throws OtmException, SecurityException {
     pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS_IN_STATE, AbstractSimplePEP.ANY_RESOURCE);
-    List<ArticleAnnotation> annotations = getAnnotations(
+    List<ArticleAnnotation> annotations = getArticleAnnotations(
         loadAnnotations(null, mediator, state, ALL_ANNOTATION_CLASSES));
     return annotations.toArray(new ArticleAnnotation[annotations.size()]);
   }

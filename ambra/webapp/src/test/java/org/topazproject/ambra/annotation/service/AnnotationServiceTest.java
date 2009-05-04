@@ -26,6 +26,8 @@ import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Comment;
 import org.topazproject.ambra.models.FormalCorrection;
 import org.topazproject.ambra.models.MinorCorrection;
+import org.topazproject.ambra.models.RatingSummary;
+import org.topazproject.ambra.models.Annotation;
 import org.topazproject.ambra.cache.MockCache;
 import org.topazproject.ambra.cache.CacheManager;
 import org.topazproject.ambra.cache.AbstractObjectListener;
@@ -169,9 +171,12 @@ public class AnnotationServiceTest {
     annotType.add("FormalCorrection");
     annotType.add("MinorCorrection");
 
-    String queryString = "select a.id id, cr from ArticleAnnotation a, Article ar " +
+    String queryString = "select a.id id, cr from Annotation a, Article ar " +
         "where a.annotates = ar " +
         "and cr := a.created " +
+        "and (a.<rdf:type> = <" + Annotation.RDF_TYPE + "> " +
+        "minus (a.<rdf:type> = <" + Annotation.RDF_TYPE + "> " +
+        "and a.<rdf:type> = <" + RatingSummary.RDF_TYPE + ">)) " +
         "and ge(cr, :sd) " +
         "and le(cr, :ed) " +
         "and (a.<rdf:type> = :type0 or a.<rdf:type> = :type1) " +
@@ -233,7 +238,7 @@ public class AnnotationServiceTest {
 
 
 
-    List<String> annotationIds = annotationService.getAnnotationIds(startDate, endDate,
+    List<String> annotationIds = annotationService.getFeedAnnotationIds(startDate, endDate,
         new HashSet<String>(annotType), 3);
 
     assertEquals(annotationIds, expected);

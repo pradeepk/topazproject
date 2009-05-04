@@ -51,7 +51,7 @@ public abstract class BaseGetAnnotationAction extends BaseActionSupport {
   @Override
   public String execute() throws Exception {
     try {
-      annotation = converter.convert(annotationService.getAnnotation(annotationId), true, true);
+      annotation = converter.convert(annotationService.getArticleAnnotation(annotationId), true, true);
     } catch (Exception e) {
       log.error("Could not retreive annotation with id: " + annotationId, e);
       addActionError("Annotation fetching failed with error message: " + e.getMessage());

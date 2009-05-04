@@ -81,7 +81,7 @@ public class FlagManagementService {
       String id = r.getString(0);
       Flag flag = null;
       try {
-        ArticleAnnotation ann = annotationService.getAnnotation(id);
+        ArticleAnnotation ann = annotationService.getArticleAnnotation(id);
         if (ann != null)
           flag = new Flag(converter.convert(ann, true, true));
       } catch (SecurityException e) {

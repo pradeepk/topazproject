@@ -401,7 +401,7 @@ public class AnnotationActionsTest extends BaseAmbraTestCase {
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
     final WebAnnotation savedAnnotation = getAnnotationConverter()
-               .convert(getAnnotationService().getAnnotation(annotationId1), true, true);
+               .convert(getAnnotationService().getArticleAnnotation(annotationId1), true, true);
     assertEquals(declawedBody, savedAnnotation.getComment());
 
   }
