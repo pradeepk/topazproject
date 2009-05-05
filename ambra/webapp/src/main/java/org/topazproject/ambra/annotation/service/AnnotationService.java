@@ -342,14 +342,7 @@ public class AnnotationService extends BaseAnnotationService {
 
     while (annotationResults.next()) {
       URI id = annotationResults.getURI(0);
-      try {
-        // apply access-controls
-        pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, id);
-        res.add(id.toString());
-      } catch (SecurityException se) {
-        if (log.isDebugEnabled())
-          log.debug("Filtering URI " + id + " from Annotation list due to PEP SecurityException", se);
-      }
+      res.add(id.toString());
     }
 
     return res;
