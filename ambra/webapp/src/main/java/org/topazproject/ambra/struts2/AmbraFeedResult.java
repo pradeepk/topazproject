@@ -385,35 +385,45 @@ public class AmbraFeedResult extends Feed implements Result {
   }
 
   private String getBody(Annotea annot) throws UnsupportedEncodingException {
-    String body = null;
-    if (annot instanceof ArticleAnnotation)
-      body = new String(((ArticleAnnotation)annot).getBody().getBody(), annotationService.getEncodingCharset());
-    else if (annot instanceof Reply)
-      body = new String(((Reply)annot).getBody().getBody(), annotationService.getEncodingCharset());
-    else if (annot instanceof Rating) {
+    String body = "";
+    if (annot instanceof ArticleAnnotation) {
+      ArticleAnnotation annotation = (ArticleAnnotation) annot;
+      if (annotation.getBody() != null)
+        body = new String(annotation.getBody().getBody(), annotationService.getEncodingCharset());
+    } else if (annot instanceof Reply) {
+      Reply reply = (Reply) annot;
+      if (reply.getBody() != null)
+        body = new String(reply.getBody().getBody(), annotationService.getEncodingCharset());
+    } else if (annot instanceof Rating) {
       RatingContent content = ((Rating) annot).getBody();
-      StringBuilder ratingBody = new StringBuilder();
-      ratingBody.append("<div><ul>");
-      if (content.getSingleRatingValue() > 0) {
-        ratingBody.append("<li>Rating: ")
-                  .append(Integer.toString(content.getSingleRatingValue()))
-                  .append("</li>");
-      } else {
-        ratingBody.append("<li>Insight: ")
-                  .append(Integer.toString(content.getInsightValue()))
-                  .append("</li>")
-                  .append("<li>Reliability: ")
-                  .append(Integer.toString(content.getReliabilityValue()))
-                  .append("</li>")
-                  .append("<li>Style: ")
-                  .append(Integer.toString(content.getStyleValue()))
-                  .append("</li>");
-      }
-      ratingBody.append("</ul></div>")
+      if (content != null) {
+        StringBuilder ratingBody = new StringBuilder();
+        ratingBody.append("<div><ul>");
+        if (content.getSingleRatingValue() > 0) {
+          ratingBody.append("<li>Rating: ")
+                    .append(Integer.toString(content.getSingleRatingValue()))
+                    .append("</li>");
+        } else {
+          ratingBody.append("<li>Insight: ")
+                    .append(Integer.toString(content.getInsightValue()))
+                    .append("</li>")
+                    .append("<li>Reliability: ")
+                    .append(Integer.toString(content.getReliabilityValue()))
+                    .append("</li>")
+                    .append("<li>Style: ")
+                    .append(Integer.toString(content.getStyleValue()))
+                    .append("</li>");
+        }
+        ratingBody.append("</ul></div>")
                 .append(content.getCommentValue());
-      body = ratingBody.toString();
-    } else if (annot instanceof Trackback)
-      body = ((Trackback)annot).getBody().getExcerpt();
+        body = ratingBody.toString();
+      }
+    } else if (annot instanceof Trackback) {
+      Trackback trackback = (Trackback) annot;
+      if (trackback.getBody() != null) {
+        body = trackback.getBody().getExcerpt();
+      }
+    }
     return body;
   }
 
@@ -872,13 +882,23 @@ public class AmbraFeedResult extends Feed implements Result {
     if (annot instanceof ArticleAnnotation || annot instanceof Reply) {
       title = annot.getTitle();
     } else if (annot instanceof Rating) {
-      title = ((Rating) annot).getBody().getCommentTitle();
-      if (title == null || title.trim().equals(""))
+      Rating rating = (Rating) annot;
+      if (rating.getBody() != null) {
+        title = rating.getBody().getCommentTitle();
+        if (title == null || title.trim().equals(""))
+          title = "Rating";
+      } else {
         title = "Rating";
+      }
     } else if (annot instanceof Trackback) {
-      title = ((Trackback) annot).getBody().getTitle();
-      if (title == null || title.trim().equals(""))
+      Trackback trackback = (Trackback) annot;
+      if (trackback.getBody() != null) {
+        title = trackback.getBody().getTitle();
+        if (title == null || title.trim().equals(""))
+          title = "Trackback";
+      } else {
         title = "Trackback";
+      }
     }
 
     return title;
