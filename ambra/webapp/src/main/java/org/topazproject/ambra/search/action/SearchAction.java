@@ -100,7 +100,7 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   public String executeAdvancedSearch() {
     if(doSearch()) {
       query = buildAdvancedQuery();
-      return executeSearch(QueryParser.escape(query));
+      return executeSearch(query);
     }
 
     categoryInfos = browseService.getArticlesByCategory();
