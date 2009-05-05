@@ -27,8 +27,13 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class CrossRefPosterService {
+
+  private static final Log log = LogFactory.getLog(CrossRefPosterService.class);
+
   private String doiXrefUrl;
 
   public void init() {
@@ -46,6 +51,11 @@ public class CrossRefPosterService {
 
     poster.setRequestEntity(new MultipartRequestEntity(parts, poster.getParams()));
     client.getHttpConnectionManager().getParams().setConnectionTimeout(25000);
-    return client.executeMethod(poster);
+    long time = System.currentTimeMillis();
+    int responseCode = client.executeMethod(poster);
+    if (log.isInfoEnabled())
+      log.info("CrossRef call to " + doiXrefUrl + " finished with response "+ responseCode + " in " + 
+          (System.currentTimeMillis() - time) + " ms");
+    return responseCode;
   }
 }
