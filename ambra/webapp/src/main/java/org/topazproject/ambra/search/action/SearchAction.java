@@ -34,6 +34,7 @@ import java.net.URI;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.queryParser.QueryParser;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,7 +90,7 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   public String executeSimpleSearch() {
     // the simple search text field correlates to advanced search's "for all the words" field
     this.textSearchAll = query;
-    return executeSearch(query);
+    return executeSearch(escape(query));
   }
 
   /**
@@ -99,7 +100,7 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   public String executeAdvancedSearch() {
     if(doSearch()) {
       query = buildAdvancedQuery();
-      return executeSearch(query);
+      return executeSearch(QueryParser.escape(query));
     }
 
     categoryInfos = browseService.getArticlesByCategory();
@@ -329,16 +330,8 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   /**
    * Static helper method to escape special characters in a Lucene search string with a \
    */
-  protected static final String escapeChars = "+-&|!(){}[]^\"~*?:\\";
   protected static String escape(String in) {
-    StringBuilder buf = new StringBuilder();
-    for (int i=0; i < in.length(); i++) {
-      if (escapeChars.indexOf(in.charAt(i)) != -1) {
-        buf.append("\\");
-      }
-      buf.append(in.charAt(i));
-    }
-    return buf.toString();
+    return QueryParser.escape(in);
   }
 
   protected static boolean isDigit(String str) {
