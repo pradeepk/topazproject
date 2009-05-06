@@ -240,7 +240,7 @@ public class SearchService {
    * @param lq  the parsed lucene query
    * @return the resulting oql query
    */
-  private String buildOql(Query lq) {
+  private String buildOql(Query lq) throws ParseException {
     StringBuilder sel = new StringBuilder("select art.id ");
     StringBuilder whr = new StringBuilder(500);
 
@@ -254,7 +254,8 @@ public class SearchService {
     return sel.append(';').toString();
   }
 
-  private void buildOql(Query lq, StringBuilder sel, StringBuilder whr, int[] scnt) {
+  private void buildOql(Query lq, StringBuilder sel, StringBuilder whr, int[] scnt)
+        throws ParseException {
     // FIXME: add in boost
 
     if (lq instanceof BooleanQuery)
@@ -292,7 +293,8 @@ public class SearchService {
    * constraint).
    */
   @SuppressWarnings("unchecked")
-  private void buildOql(BooleanQuery lq, StringBuilder sel, StringBuilder whr, int[] scnt) {
+  private void buildOql(BooleanQuery lq, StringBuilder sel, StringBuilder whr, int[] scnt)
+        throws ParseException {
     if (lq.clauses().size() == 0)
       return;
 
@@ -377,7 +379,7 @@ public class SearchService {
    *       results because no single value has both terms.</li>
    * </ul>
    *
-   * @param bq the boolean-query to simplify
+   * @param q the boolean-query to simplify
    */
   @SuppressWarnings("unchecked")
   private static void simplify(BooleanQuery q) {
@@ -538,10 +540,10 @@ public class SearchService {
    * @param scnt the current score-variable counter, or null if no scores should be generated
    */
   private void buildOql(ConstantScoreRangeQuery lq, StringBuilder sel, StringBuilder whr,
-                        int[] scnt) {
+                        int[] scnt) throws ParseException {
     if (!FIELD_MAP.containsKey(lq.getField()))
-      throw new RuntimeException("Unknown field '" + lq.getField() + "'");
-
+      throw new ParseException("Unknown field '" + lq.getField() + "'");
+ 
     //if (isSearchable(fexpr)) {
     if (SRCHB_MAP.get(lq.getField())) {
       buildOql(lq.toString(), sel, whr, scnt);
@@ -581,13 +583,14 @@ public class SearchService {
    * @param whr  the oql where clause
    * @param scnt the current score-variable counter, or null if no scores should be generated
    */
-  private void buildOql(String qs, StringBuilder sel, StringBuilder whr, int[] scnt) {
+  private void buildOql(String qs, StringBuilder sel, StringBuilder whr, int[] scnt)
+        throws ParseException {
     int colon = qs.indexOf(':');
     String field = qs.substring(0, colon);
     String text  = qs.substring(colon + 1);
 
     if (!FIELD_MAP.containsKey(field))
-      throw new RuntimeException("Unknown field '" + field + "'");
+      throw new ParseException("Unknown field '" + field + "'");
 
     whr.append("(");
 

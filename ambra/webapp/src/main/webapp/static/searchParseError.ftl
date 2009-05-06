@@ -20,6 +20,7 @@
 <div id="content" class="pageerror">
   <@s.url action="searchHelp.action" namespace="/static" includeParams="none" id="searchHelp"/>
   <h1>Search Error</h1>
-  <p>Sorry, the query you entered could not be parsed.  Please check your syntax.  If you need
-  additional help, please visit our <a href="${searchHelp}#badCharacters">search help</a> page.</p>
+  <p>Sorry, the query you entered could not be parsed.  Please press the back button and
+    check your syntax.  If you need additional help, please visit our
+    <a href="${searchHelp}#badCharacters">search help</a> page.</p>
 </div>
