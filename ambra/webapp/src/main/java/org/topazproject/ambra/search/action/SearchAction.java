@@ -90,7 +90,7 @@ public class SearchAction extends BaseSessionAwareActionSupport {
   public String executeSimpleSearch() {
     // the simple search text field correlates to advanced search's "for all the words" field
     this.textSearchAll = query;
-    return executeSearch(escape(query));
+    return executeSearch(query);
   }
 
   /**
