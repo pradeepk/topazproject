@@ -388,11 +388,11 @@ public class AmbraFeedResult extends Feed implements Result {
     String body = "";
     if (annot instanceof ArticleAnnotation) {
       ArticleAnnotation annotation = (ArticleAnnotation) annot;
-      if (annotation.getBody() != null)
+      if (annotation.getBody() != null && annotation.getBody().getBody() != null)
         body = new String(annotation.getBody().getBody(), annotationService.getEncodingCharset());
     } else if (annot instanceof Reply) {
       Reply reply = (Reply) annot;
-      if (reply.getBody() != null)
+      if (reply.getBody() != null && reply.getBody().getBody() != null)
         body = new String(reply.getBody().getBody(), annotationService.getEncodingCharset());
     } else if (annot instanceof Rating) {
       RatingContent content = ((Rating) annot).getBody();
@@ -420,7 +420,7 @@ public class AmbraFeedResult extends Feed implements Result {
       }
     } else if (annot instanceof Trackback) {
       Trackback trackback = (Trackback) annot;
-      if (trackback.getBody() != null) {
+      if (trackback.getBody() != null && trackback.getBody().getExcerpt() != null) {
         body = trackback.getBody().getExcerpt();
       }
     }
