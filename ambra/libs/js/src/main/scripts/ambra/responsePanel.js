@@ -79,6 +79,12 @@ ambra.responsePanel = {
       this.targetForm.responseTitle.value = 'RE: ' + threadTitle;
       this.targetForm.commentTitle.value = 'RE: ' + threadTitle;
     }
+
+    if (this.targetForm.competingInterest) {
+      if (this.targetForm.competingInterest[0].checked == true) {
+        this.targetForm.ciStatementArea.disabled = true;
+      }
+    }
         
     this.previousUpperContainer = this.upperContainer;
   },
@@ -90,6 +96,13 @@ ambra.responsePanel = {
   },
   
   submit: function(targetObj) {
+
+    if (this.targetForm.competingInterest) {
+      if (this.targetForm.competingInterest[0].checked == true) {
+        this.targetForm.ciStatementArea.value = "";
+      }
+    }
+
     submitResponseInfo(targetObj);
   },
   
@@ -99,7 +112,7 @@ ambra.responsePanel = {
     this.targetForm.comment.value = "";
     this.targetForm.responseArea.value = targetObj.responseCue;
 
-    //This method gets used on more then one form.  Sometime CI will not be there
+    //This method gets used on more then one form.  Sometimes CI will not be there
     if(this.targetForm.competingInterest) {
       this.targetForm.competingInterest[0].checked = false;
       this.targetForm.competingInterest[1].checked = true;
