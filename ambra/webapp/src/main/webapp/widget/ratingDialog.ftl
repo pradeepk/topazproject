@@ -99,7 +99,7 @@
                       <li><label><input id="isCompetingInterestNo" type="radio" name="competingInterest" value="false"  /> No, I don't have any competing interests to declare.</label></li>
                       <li><label><input id="isCompetingInterestYes" type="radio" name="competingInterest" value="true"  /> Yes, I have competing interests to declare (enter below):</label></li>
                     </ul>
-                    <textarea name="ciStatementArea" id="ciStatementArea" disabled value="Enter your competing interests..." alt="Enter your competing interests...">Enter your competing interests...</textarea>
+                    <textarea name="ciStatementArea" id="ciStatementArea" disabled value="Enter your competing interests..." title="Enter your competing interests...">Enter your competing interests...</textarea>
                   </fieldset>
                 </td>
               </tr>

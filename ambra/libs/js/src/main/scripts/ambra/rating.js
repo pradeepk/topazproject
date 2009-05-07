@@ -123,7 +123,7 @@ ambra.rating = {
         _ratingsForm.ciStatementArea.disabled = false;
       } else {
         _ratingsForm.ciStatement.value = '';
-        _ratingsForm.ciStatementArea.value = '';
+        _ratingsForm.ciStatementArea.value = _ratingsForm.ciStatementArea.title;
         _ratingsForm.isCompetingInterest.value = "false";
         _ratingsForm.competingInterest[0].checked = true; //Select the no CIS radio button
         _ratingsForm.competingInterest[1].checked = false;

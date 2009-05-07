@@ -97,12 +97,26 @@ ambra.responsePanel = {
   
   submit: function(targetObj) {
 
-    if (this.targetForm.competingInterest) {
-      if (this.targetForm.competingInterest[0].checked == true) {
-        this.targetForm.ciStatementArea.value = "";
-      }
+    //Pending where this is called from (namely the start discussion page)
+    //this.targetForm may not be set.
+    if(!this.targetForm) {
+      this.targetForm = targetObj.form;
+    }
+    //Make sure the values we submit, match what we see
+    if (this.targetForm.responseArea.value == this.targetForm.responseArea.title) {
+      this.targetForm.comment.value = "";
     }
 
+    if (this.targetForm.competingInterest) {
+      if (this.targetForm.competingInterest[0].checked == true) {
+        this.targetForm.ciStatement.value = "";
+      } else {
+        if (this.targetForm.ciStatementArea.value != this.targetForm.ciStatementArea.title) {
+          this.targetForm.ciStatement.value = this.targetForm.ciStatementArea.value;
+        }
+      }
+    }
+    
     submitResponseInfo(targetObj);
   },
   
@@ -114,9 +128,11 @@ ambra.responsePanel = {
 
     //This method gets used on more then one form.  Sometimes CI will not be there
     if(this.targetForm.competingInterest) {
+      this.targetForm.isCompetingInterest.value = "false";
       this.targetForm.competingInterest[0].checked = false;
       this.targetForm.competingInterest[1].checked = true;
       this.targetForm.ciStatementArea.value = "";
+      this.targetForm.ciStatement.value = "";
     }
     
     var submitMsg = targetObj.error;
@@ -211,6 +227,13 @@ function sendResponseInfo(targetObj) {
        submitMsg.appendChild(fieldErrors);
        dojo.fx.wipeIn({ node:submitMsg, duration: 500 }).play();
        ambra.formUtil.enableFormFields(targetForm);
+
+       if (targetForm.competingInterest) {
+         if (targetForm.competingInterest[0].checked == true) {
+           targetForm.ciStatementArea.disabled = true;
+         }
+       }
+
        _ldc.hide();
      }
      else {
