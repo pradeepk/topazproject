@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>ambra-registration-webapp</artifactId>
-  <version>0.9.3</version>
+  <version>0.9.3.1-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>Ambra Registration Web Application</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra-registration</artifactId>
-    <version>0.9.3</version>
+    <version>0.9.3.1-SNAPSHOT</version>
   </parent>
 
   <dependencies>

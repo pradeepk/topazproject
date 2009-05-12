@@ -22,7 +22,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>mulgara</artifactId>
-  <version>0.9.3</version>
+  <version>0.9.3.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Topaz Mulgara Components</name>
   <description>Mulgara as a triple store for Topaz</description>
@@ -30,7 +30,7 @@
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
-    <version>0.9.3</version>
+    <version>0.9.3.1-SNAPSHOT</version>
   </parent>
 
   <modules>
