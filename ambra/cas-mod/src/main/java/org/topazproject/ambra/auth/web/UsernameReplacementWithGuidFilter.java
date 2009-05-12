@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006-2008 by Topaz, Inc.
+ * Copyright (c) 2006-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,6 +41,7 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.Arrays;
 
 /**
  * Replaces the Username with the user's GUID so that the username is the GUID for any responses to
@@ -87,8 +88,7 @@ public class UsernameReplacementWithGuidFilter implements Filter {
       final String usernameParameter = request.getParameter(USERNAME_PARAMETER);
 
       if (!((null == usernameParameter) || (usernameParameter.length() == 0))) {
-        final String username = usernameParameter.toString();
-        httpRequest = new UsernameRequestWrapper(httpRequest, username);
+        httpRequest = new UsernameRequestWrapper(httpRequest, usernameParameter);
       }
 
       filterChain.doFilter(httpRequest, response);
@@ -155,7 +155,7 @@ public class UsernameReplacementWithGuidFilter implements Filter {
     final Enumeration params = request.getParameterNames();
     while (params.hasMoreElements()) {
       final String paramName = (String) params.nextElement();
-      log.debug(paramName + ":" + request.getParameterValues(paramName).toString());
+      log.debug(paramName + ":" + Arrays.toString(request.getParameterValues(paramName)));
     }
   }
 
