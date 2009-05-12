@@ -20,7 +20,6 @@
 package org.topazproject.ambra.journal;
 
 import java.net.URI;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,6 +49,8 @@ import org.topazproject.otm.mapping.java.ClassBinder;
  *
  * <p>There should be exactly one instance of this class per {@link
  * org.topazproject.otm.SessionFactory SessionFactory} instance.
+ *
+ * @see org.topazproject.ambra.journal.JournalService
  *
  * @author Ronald Tschalär
  */
@@ -125,71 +126,49 @@ class JournalCarrierService {
           Collections.EMPTY_SET, Collections.EMPTY_SET));
   }
 
-  private static <K, T> void put(Map<K, Set<T>> map, K key, T value) {
-    Set<T> values = map.get(key);
-    if (values == null)
-      map.put(key, values = new HashSet<T>());
-    values.add(value);
-  }
-
-  private static Set<String> getKeys(Set<Journal> jList) {
-    Set<String> keys = new HashSet<String>();
-    for (Journal j: jList)
-      keys.add(j.getKey());
-    return keys;
-  }
-
-  /* must be invoked with journalCache monitor held and active tx on session and in local context */
-  private Map<URI, Set<Journal>> buildCarrierMap(URI oid, Session s) {
-    Map<URI, Set<Journal>> carriers = new HashMap<URI, Set<Journal>>();
-
-    for (Journal j : journalKeyService.getAllJournals(s)) {
-      Set<URI> obj = getObjects(j.getKey(), oid, s);
-      for (URI o : obj)
-        put(carriers, o, j);
-    }
-
-    return carriers;
-  }
-
-  private Set<URI> getObjects(String jName, URI obj, Session s) {
-    Set<String> oldFilters = s.listFilters();
-    for (String fn : oldFilters)
-      s.disableFilter(fn);
-
-    for (String fn : journalFilterService.getFilters(jName, s))
-      s.enableFilter(fn);
-
-    Set<URI> res = new HashSet<URI>();
-
-    // XXX: should be "... from Object ..." but filters don't get applied then
-    String q = "select id from Article o where id := cast(o, Article).id" +
-                (obj != null ? " and id = <" + obj + ">;" : ";");
-    try {
-      Results r = s.createQuery(q).execute();
-      while (r.next())
-        res.add(r.getURI(0));
-    } finally {
-      for (String fn : s.listFilters())
-        s.disableFilter(fn);
-
-      for (String fn : oldFilters)
-        s.enableFilter(fn);
-    }
-
-    return res;
-  }
-
-  public Set<String> getJournalKeysForObject(final URI oid, final Session s) {
+  public Set<String> getJournalKeysForObject(final URI oid, final Session session) {
     return objectCarriers.get(oid, -1,
         new Cache.SynchronizedLookup<Set<String>, RuntimeException>(oid.toString().intern()) {
           public Set<String> lookup() {
-             Collection<Set<Journal>> jnlSets = buildCarrierMap(oid, s).values();
-             Set<Journal> jnlList = (jnlSets.size() > 0) 
-                              ? jnlSets.iterator().next() : Collections.EMPTY_SET;
-             return getKeys(jnlList);
+            return loadJournals(oid, session);
           }
         });
+  }
+
+  private Set<String> loadJournals(URI oid, Session session) {
+
+    Set<String> journals = new HashSet<String>();
+
+    Set<String> oldFilters = session.listFilters();
+    for (String fn : oldFilters)
+      session.disableFilter(fn);
+
+    try {
+      for (String journalKey : journalKeyService.getAllJournalKeys(session)) {
+
+        for (String fn : journalFilterService.getFilters(journalKey, session))
+          session.enableFilter(fn);
+
+        try {
+          // Query has to be created here because filters are applied at the time of creation
+          Results r = session.createQuery("select o.id from Article o where o.id = :articleId;")
+              .setUri("articleId", oid)
+              .execute();
+          // check if Article exists in the journal context
+          if (r.next())
+            journals.add(journalKey);
+          r.close();
+        } finally {
+          for (String fn : session.listFilters())
+            session.disableFilter(fn);
+        }
+      }
+    } finally {
+      for (String fn : oldFilters)
+        session.enableFilter(fn);
+    }
+
+    return journals;
   }
 
   public Set<Journal> getJournalsForObject(final URI oid, final Session s) {
