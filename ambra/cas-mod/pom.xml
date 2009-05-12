@@ -4,13 +4,13 @@
   <groupId>${pom.parent.groupId}</groupId>
   <artifactId>ambra-cas-mod</artifactId>
   <packaging>jar</packaging>
-  <version>0.9.3-SNAPSHOT</version>
+  <version>0.9.3</version>
   <name>Ambra module for ESUP CAS Quick Start</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra</artifactId>
-    <version>0.9.3-SNAPSHOT</version>
+    <version>0.9.3</version>
   </parent>
 
   <dependencies>
