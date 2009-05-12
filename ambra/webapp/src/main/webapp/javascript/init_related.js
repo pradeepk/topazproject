@@ -164,7 +164,7 @@ function setRelatedBlogs(response, args)
     }
 
     html = html + "</ul>"
-  } else
+  }
 
   if (numBlogsRendered != 0) {
     dojo.byId('relatedBlogPosts').innerHTML = html;
