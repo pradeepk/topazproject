@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,6 +57,7 @@ class QueryImpl extends Query {
    * @param sess    the session this is attached to
    * @param query   the oql query string
    * @param filters the filters that should be applied to this query
+   * @throws OtmException OTM exception
    */
   QueryImpl(Session sess, String query, Collection<Filter> filters) throws OtmException {
     this.sess    = sess;
@@ -83,7 +84,7 @@ class QueryImpl extends Query {
     TripleStore store = sess.getSessionFactory().getTripleStore();
 
     query.applyParameterValues(paramValues, sess.getSessionFactory());
-    return store.doQuery(query, filters, ((SessionImpl) sess).getTripleStoreCon());
+    return store.doQuery(query, filters, sess.getTripleStoreCon());
   }
 
   public Set<String> getParameterNames() {
