@@ -42,6 +42,8 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.mapping.java.ClassBinder;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.util.TransactionHelper;
 
 
 /**
@@ -80,35 +82,21 @@ class JournalCarrierService {
     this.journalFilterService = journalFilterService;
 
     addObjectClassToSf();
+    prePopulateCache();
 
     objectCarriers.getCacheManager().registerListener(new AbstractObjectListener() {
-      public void objectChanged(Session s, ClassMetadata cm, String id, Object o, Updates updates) {
-        /*
-         * Note: if a smart-collection rule was updated as opposed to
-         * new rules added or deleted, we wouldn't be able to detect it.
-         * In that case we need to be explicitly told. But currently
-         * journal definitions are not updated on the fly. So even
-         * this attempt to detect a change is not likely to be hit.
-         */
-        if ((o instanceof Journal) && ((updates == null) ||
-            updates.isChanged("smartCollectionRules") ||
-            updates.isChanged("simpleCollection"))) {
-          if (log.isDebugEnabled())
-            log.debug("Dumping the carrier-cache because the journal rules/collection changed");
-          objectCarriers.removeAll();
-        }
 
+      @Override
+      public void objectChanged(Session s, ClassMetadata cm, String id, Object o, Updates updates) {
         if (o instanceof Article) {
           if (log.isDebugEnabled())
             log.debug("Invalidating the cache entry for the article that was changed");
           objectCarriers.remove(((Article) o).getId());
         }
       }
+
       @Override
       public void objectRemoved(Session s, ClassMetadata cm, String id, Object o) {
-        if (o instanceof Journal)
-          objectCarriers.removeAll();
-
         if (o instanceof Article) {
           if (log.isDebugEnabled())
             log.debug("Invalidating the cache entry for the article that was deleted");
@@ -130,12 +118,12 @@ class JournalCarrierService {
     return objectCarriers.get(oid, -1,
         new Cache.SynchronizedLookup<Set<String>, RuntimeException>(oid.toString().intern()) {
           public Set<String> lookup() {
-            return loadJournals(oid, session);
+            return loadJournalsForArticle(oid, session);
           }
         });
   }
 
-  private Set<String> loadJournals(URI oid, Session session) {
+  private Set<String> loadJournalsForArticle(URI articleId, Session session) {
 
     Set<String> journals = new HashSet<String>();
 
@@ -152,7 +140,7 @@ class JournalCarrierService {
         try {
           // Query has to be created here because filters are applied at the time of creation
           Results r = session.createQuery("select o.id from Article o where o.id = :articleId;")
-              .setUri("articleId", oid)
+              .setUri("articleId", articleId)
               .execute();
           // check if Article exists in the journal context
           if (r.next())
@@ -170,6 +158,71 @@ class JournalCarrierService {
 
     return journals;
   }
+
+  /**
+   * Pre-populate carrier cache with all articles from the system
+   */
+  private void prePopulateCache() {
+    // Session is not available at this point because it needs a servlet request context
+    Session s = sf.openSession();
+    try {
+      TransactionHelper.doInTx(s, new TransactionHelper.Action<Void>() {
+        public Void run(Transaction tx) {
+          Map<String, Set<String>> map = getArticleJournalMap(tx.getSession());
+          for (Map.Entry<String, Set<String>> entry : map.entrySet()) {
+            objectCarriers.put(entry.getKey(), new Cache.Item(entry.getValue()));
+          }
+          return null;
+        }
+      });
+    } finally {
+      s.close();
+    }
+  }
+
+  /**
+   * Get map of journals for all articles in the system
+   * @param session OTM session
+   * @return Map of journal keys for each article id.
+   */
+  private Map<String, Set<String>> getArticleJournalMap(Session session) {
+
+    Map<String, Set<String>> map = new HashMap<String, Set<String>>();
+
+    Set<String> oldFilters = session.listFilters();
+    for (String fn : oldFilters)
+      session.disableFilter(fn);
+
+    try {
+      for (String journalKey : journalKeyService.getAllJournalKeys(session)) {
+
+        for (String fn : journalFilterService.getFilters(journalKey, session))
+          session.enableFilter(fn);
+
+        try {
+          Results r = session.createQuery("select a.id from Article a;").execute();
+          while (r.next()) {
+            String articleId = r.getURI(0).toString();
+            Set<String> journals = map.get(articleId);
+            if (journals == null) {
+              journals = new HashSet<String>();
+              map.put(articleId, journals);
+            }
+            journals.add(journalKey);
+          }
+        } finally {
+          for (String fn : session.listFilters())
+            session.disableFilter(fn);
+        }
+      }
+    } finally {
+      for (String fn : oldFilters)
+        session.enableFilter(fn);
+    }
+
+    return map;
+  }
+
 
   public Set<Journal> getJournalsForObject(final URI oid, final Session s) {
     Set<Journal> jnlList = new HashSet<Journal>();
