@@ -46,6 +46,7 @@
       <port>
         <http>${ambra.network.ports.default}</http>
         <https>${ambra.network.ports.ambra-ssl}</https>
+        <doi>${ambra.network.ports.default}</doi>
       </port>
       <appContext>/ambra-webapp</appContext><!-- web application context; leave empty if deployed in root directory  -->
       <resourceSubDir></resourceSubDir><!-- used only if web resources like images/css are deployed in a separate directory; rarely used  -->
@@ -168,7 +169,7 @@
       <!-- crossref information - set parameters and sendToXref to true to turn on -->
       <crossref>
         <plos>
-          <doiurl>http://${ambra.network.hosts.default}:${ambra.network.ports.default}/ambra-doi-resolver/</doiurl><!-- URL where your URIs can be found -->
+          <doiurl>http://${ambra.network.hosts.default}:${ambra.network.ports.doi}/ambra-doi-resolver/</doiurl><!-- URL where your URIs can be found -->
           <email>webmaster@example.org</email><!-- email address to send info to -->
         </plos>
         <login>crossref-username</login><!-- crossref login -->

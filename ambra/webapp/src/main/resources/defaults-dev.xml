@@ -32,6 +32,9 @@
         This must be in the dd/mm/yyyy format
       -->
       <cisStartDate>3/20/2009</cisStartDate>
+      <port>
+        <doi>11080</doi>
+      </port>
     </platform>
 
     <!-- 
@@ -71,6 +74,13 @@
       </default>
       <journals>AmbraJournal,PLoSClinicalTrials,PLoSCompBiol,PLoSGenetics,PLoSNTD,PLoSONE,PLoSPathogens</journals>
     </virtualJournals>
+
+    <services>
+      <!--The host to use for the Article Level Metrics server if implemented -->
+      <alm>
+        <url>http://alm.example.org</url>
+      </alm>
+    </services>
 
     <articleTypeList>
       <articleType>
@@ -350,7 +360,7 @@
         <imageSetConfigName>issueImage</imageSetConfigName>
       </articleType>
     </articleTypeList>
-
+    
     <userAlerts>
       <categories>
         <category key="biology">PLoS Biology</category>
@@ -365,13 +375,6 @@
       <monthly>biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds</monthly>
       <weekly>biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds, plosone</weekly>
     </userAlerts>
-
-    <services>
-      <!--The host to use for the Article Level Metrics server if implemented -->
-      <alm>
-        <url>http://alm.example.org</url>
-      </alm>
-    </services>
   </ambra>
 
   <!-- See the AmbraStruts2Filter dispatcher on how struts constants are configured -->
