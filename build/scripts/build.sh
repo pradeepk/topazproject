@@ -65,7 +65,7 @@ set -e
 "$JDK" 1.6 env MAVEN_OPTS=-XX:MaxPermSize=128m ${MVN} ${MVNARGS} clean install --batch-mode
 N6=$?
 
-${MVN} ${MVNARGS} clean install --batch-mode -Ppackages,rpm,distribution
+${MVN} ${MVNARGS} clean install --batch-mode
 N5=$?
 
 [[ $N5 != 0 || $N6 != 0 ]] && N=1 || N=0
