@@ -283,14 +283,14 @@ public class OqlTest extends AbstractTest {
             select art, count(art.publicAnnotations) from Article art order by art;
             """).execute()
       checker.verify(r) {
-        row { object (class:Article.class, uri:id4); string ("2.0") }
+        row { object (class:Article.class, uri:id4); string ("2") }
       }
 
       r = s.createQuery("""
             select art, count(art.publicAnnotations) c from Article art order by art;
             """).execute()
       checker.verify(r) {
-        row { object (class:Article.class, uri:id4); string ("2.0") }
+        row { object (class:Article.class, uri:id4); string ("2") }
       }
 
       // multiple orders, one or more by a constant
