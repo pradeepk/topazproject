@@ -27,13 +27,11 @@
   <name>Build Helpers</name>
   <description>Scripts, plugins, etc for building Topaz.</description>
   
-  <!--
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topaz-project</artifactId>
     <version>0.9.3.1-SNAPSHOT</version>
   </parent>
-  -->
 
   <properties>
     <topazproject.install.dir>${user.home}/topazproject-install</topazproject.install.dir>

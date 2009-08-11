@@ -127,6 +127,7 @@
   </scm>
 
   <modules>
+    <module>build</module>
     <module>mulgara</module>
     <module>topaz</module>
   </modules>
