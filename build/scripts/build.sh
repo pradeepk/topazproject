@@ -71,11 +71,12 @@ N5=$?
 [[ $N5 != 0 || $N6 != 0 ]] && N=1 || N=0
 
 # Build site info
-if [ ${N} -eq 0 ]; then
-  echo "Build site"
-  ${MVN} ${MVNARGS} -Preports site-deploy
-  N=$?
-fi
+# FIXME: The projects in the reactor contain a cyclic reference: Edge between 'Vertex{label='org.topazproject:topaz-project'}' and 'Vertex{label='org.topazproject.plugins:reports-plugin'}' introduces to cycle in the graph org.topazproject.plugins:reports-plugin --> org.topazproject:topaz-build-helpers --> org.topazproject:topaz-project --> org.topazproject.plugins:reports-plugin
+# if [ ${N} -eq 0 ]; then
+#  echo "Build site"
+#  ${MVN} ${MVNARGS} -Preports site-deploy
+#  N=$?
+# fi
 
 # Update last build #
 echo ${SVNVERSION} > ${MVN_LAST_BUILD}
