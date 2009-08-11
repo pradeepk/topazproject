@@ -12,6 +12,10 @@
     <version>0.9.3.1-SNAPSHOT</version>
   </parent>
   
+  <properties>
+    <spring.version>2.5.6.SEC01</spring.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.antlr</groupId>
@@ -39,12 +43,8 @@
 
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-dao</artifactId>
+      <artifactId>spring-orm</artifactId>
+      <version>${spring.version}</version>
     </dependency>
 
     <dependency>

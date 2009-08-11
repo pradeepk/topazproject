@@ -137,7 +137,6 @@
     <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
     <!-- aggregate some documentation - javadocs & jxr -->
     <aggregate>true</aggregate>
-    <spring.version>2.0.6</spring.version>
     <mulgara.version>2.1.2</mulgara.version>
     <!-- This is where the site-deploy phase will put the documentation -->
     <topazproject.site.url>file://${topazproject.install.dir}/topazdocs</topazproject.site.url>
@@ -243,18 +242,6 @@
         <groupId>org.mulgara</groupId>
         <artifactId>driver</artifactId>
         <version>${mulgara.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-beans</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-dao</artifactId>
-        <version>${spring.version}</version>
       </dependency>
 
       <dependency>
