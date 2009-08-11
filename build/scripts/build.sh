@@ -71,12 +71,11 @@ N5=$?
 [[ $N5 != 0 || $N6 != 0 ]] && N=1 || N=0
 
 # Build site info
-# Fixme: this needs topazproject.org reporting plugin
-# if [ ${N} -eq 0 ]; then
-#  echo "Build site"
-#  ${MVN} ${MVNARGS} -Preports site-deploy
-#  N=$?
-# fi
+if [ ${N} -eq 0 ]; then
+  echo "Build site"
+  ${MVN} ${MVNARGS} -Preports site-deploy
+  N=$?
+fi
 
 # Update last build #
 echo ${SVNVERSION} > ${MVN_LAST_BUILD}

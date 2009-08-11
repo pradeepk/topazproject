@@ -109,6 +109,7 @@
   <modules>
     <module>integration-tests-plugin</module>
     <module>mulgara-build-plugin</module>
+    <module>reports-plugin</module>
     <module>topaz-skin</module>
   </modules>
 </project>

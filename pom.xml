@@ -468,6 +468,17 @@
       <id>reports</id>
       <build>
         <plugins>
+          <!-- Set up the extra sources and resources, and run everything in it's own directory -->
+          <plugin>
+            <groupId>org.topazproject.plugins</groupId>
+            <artifactId>reports-plugin</artifactId>
+            <version>${pom.version}</version>
+            <executions>
+              <execution>
+                <goals><goal>configure-directories</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
 
           <!-- config cobertura plugin -->
           <plugin>
