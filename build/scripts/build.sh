@@ -84,7 +84,7 @@ echo ${SVNVERSION} > ${MVN_LAST_BUILD}
 # Deploy the OTM jars
 if [ ${N} -eq 0 ]; then
   echo "Deploying artifacts"
-  ${MVN} ${MVNARGS} -Dmaven.test.skip=true deploy
+  ${MVN} ${MVNARGS} -Dmaven.test.skip=true deploy --batch-mode
 fi
 
 # Update the last success
