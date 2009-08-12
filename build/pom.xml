@@ -44,14 +44,9 @@
 
   <distributionManagement>
     <repository>
-      <id>ambra</id>
-      <url>scp://www.ambraproject.org/home/maven2/repository/release</url>
+      <id>topaz</id>
+      <url>http://www.topazproject.org/maven2/</url>
     </repository>
-    <snapshotRepository>
-      <id>ambra.snapshot</id>
-      <url>scp://www.ambraproject.org/home/maven2/repository/snapshot</url>
-      <uniqueVersion>false</uniqueVersion>
-    </snapshotRepository>
     <site>
       <id>topaz-docs</id>
       <url>${topazproject.site.url}/${pom.artifactId}</url>
