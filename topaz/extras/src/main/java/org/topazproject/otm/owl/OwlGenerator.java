@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -118,9 +117,6 @@ public class OwlGenerator {
     EntityDefinition entity = (EntityDefinition)cb.getClassDefinition();
     Set<String> types = entity.getTypes();
     if (types.isEmpty()) {
-      // No types and no properties is kind of useless
-      if (cb.getProperties().isEmpty())
-        return null;
       types = new HashSet<String>();
       types.add(CLASS_NS + entity.getName());
     }
@@ -146,8 +142,8 @@ public class OwlGenerator {
 
     // Add useful OWL class annotations
     log.debug("Adding OWL annotations to class axiom for " + cb.getName());
-    OWLConstant cnst = null;
-    OWLEntityAnnotationAxiom entityAxiom = null;
+    OWLConstant cnst;
+    OWLEntityAnnotationAxiom entityAxiom;
     if (entity.getGraph() != null) {
       cnst = factory.getOWLTypedConstant(topazFactory.getGraph(entity.getGraph()).getUri().toString());
       entityAxiom = factory.getOWLEntityAnnotationAxiom(owlClass, URI.create(MULGARA_NS + "graph"), cnst);
@@ -374,21 +370,21 @@ public class OwlGenerator {
 
         // Define the range restriction
         OWLPropertyRange range = getRange(prop, defn);
-        OWLDescription rangeRestriction = null;
+        OWLDescription rangeRestriction;
         if (prop instanceof OWLDataProperty) {
           rangeRestriction = factory.getOWLDataAllRestriction((OWLDataPropertyExpression)prop,
                                                               (OWLDataRange)range);
         } else {
           if (!defn.hasInverseUri()) {
             rangeRestriction = factory.getOWLObjectAllRestriction((OWLObjectPropertyExpression)prop,
-                                                                  (OWLDescription)range);
+                                                                  (OWLDescription) range);
           } else {
             rangeRestriction = factory.getOWLObjectAllRestriction((OWLObjectPropertyExpression)prop,
-                                                                  (OWLDescription)domain);
+                                                                  domain);
           }
         }
-        ontologyManager.applyChange(new AddAxiom(ontology,
-                                                 factory.getOWLSubClassAxiom(domain, rangeRestriction)));
+        ontologyManager.applyChange(
+            new AddAxiom(ontology, factory.getOWLSubClassAxiom(domain, rangeRestriction)));
       }
     }
   }
