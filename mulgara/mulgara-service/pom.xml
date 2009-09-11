@@ -2,7 +2,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>mulgara-service</artifactId>
-  <version>0.9.4</version>
+  <version>0.9.5-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Topaz Mulgara Server</name>
   <description>A re-packaging of the mulgara jar to include our resolvers and config.</description>
@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>mulgara</artifactId>
-    <version>0.9.4</version>
+    <version>0.9.5-SNAPSHOT</version>
   </parent>
 
   <dependencies>
