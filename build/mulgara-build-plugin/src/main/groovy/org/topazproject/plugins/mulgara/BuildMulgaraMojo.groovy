@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2009 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.topazproject.plugins.dependencies;
+package org.topazproject.plugins.mulgara;
 
 import org.apache.maven.project.MavenProject;
 import org.codehaus.groovy.maven.mojo.GroovyMojo;
