@@ -81,11 +81,11 @@ N5=$?
 # Update last build #
 echo ${SVNVERSION} > ${MVN_LAST_BUILD}
 
-# Deploy the OTM jars
-if [ ${N} -eq 0 ]; then
-  echo "Deploying artifacts"
-  ${MVN} ${MVNARGS} -Dmaven.test.skip=true deploy --batch-mode
-fi
+# Deploy the OTM jars. Automatic deployment is done from http://www.ambraproject.org/teamcity
+# if [ ${N} -eq 0 ]; then
+#  echo "Deploying artifacts"
+#  ${MVN} ${MVNARGS} -Dmaven.test.skip=true deploy --batch-mode
+# fi
 
 # Update the last success
 if [ ${N} -eq 0 ]; then
