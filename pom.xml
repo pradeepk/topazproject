@@ -148,7 +148,6 @@
     <repository>
       <id>topaz</id>
       <url>http://maven.topazproject.org/maven2/</url>
-      <uniqueVersion>false</uniqueVersion>
     </repository>
     <site>
       <id>topaz-docs</id>
