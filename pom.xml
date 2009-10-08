@@ -67,7 +67,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- aggregate some documentation - javadocs & jxr -->
     <aggregate>true</aggregate>
-    <mulgara.version>2.1.4-SNAPSHOT</mulgara.version>
+    <mulgara.version>2.1.4</mulgara.version>
     <!-- This is where the site-deploy phase will put the documentation -->
     <topazproject.site.url>file://${topazproject.install.dir}/topazdocs</topazproject.site.url>
   </properties>
