@@ -51,3 +51,10 @@ grant
 {
   permission java.net.SocketPermission "230.0.0.1", "connect,accept,resolve";
 };
+
+// Grant privileges for java.util.logging to be able to control Ehcache logging
+grant
+{
+  permission java.util.logging.LoggingPermission "control", "";
+};
+

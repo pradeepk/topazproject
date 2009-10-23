@@ -223,6 +223,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
     this.rules   = parseRules(rules, aliases);
 
     // set up the Ehcache
+    disableJULInfoMessages();
     String ehcConfigLoc = config.getString("ehcacheConfig", null);
     boolean useSingleton = config.getBoolean("useSharedCacheManager", false);
     if (ehcConfigLoc != null) {
@@ -247,6 +248,24 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
 
     // we're ready
     worker.start();
+  }
+
+  /**
+   * Disable anoying messages like this:
+   * INFO: Unexpected throwable in run thread. Continuing...null
+   *   java.lang.NullPointerException
+   *   at net.sf.ehcache.distribution.MulticastKeepaliveHeartbeatSender$MulticastServerThread.createCachePeersPayload(MulticastKeepaliveHeartbeatSender.java:178)
+   *   at net.sf.ehcache.distribution.MulticastKeepaliveHeartbeatSender$MulticastServerThread.run(MulticastKeepaliveHeartbeatSender.java:135)
+   *
+   * See: mulgara-rmi.policy for permissions
+   *
+   * TODO: use logging.properties file to set this or implement a jul-to-log4j bridge (might hurt performance)
+   */
+  private void disableJULInfoMessages() {
+    logger.info("Disabling info messages from net.sf.ehcache.distribution.MulticastKeepaliveHeartbeatSender");
+    java.util.logging.Logger
+        .getLogger("net.sf.ehcache.distribution.MulticastKeepaliveHeartbeatSender")
+        .setLevel(java.util.logging.Level.WARNING);
   }
 
   private static final long getInvIval(Configuration config) {
