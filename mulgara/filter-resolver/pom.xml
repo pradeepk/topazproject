@@ -34,7 +34,7 @@
     <!-- the following is only needed for the cache-invalidator filter-handler -->
     <dependency>
       <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache</artifactId>
+      <artifactId>ehcache-core</artifactId>
       <optional>true</optional>
     </dependency>
 
