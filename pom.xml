@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>topaz-project</artifactId>
-  <version>0.9.6-SNAPSHOT</version>
+  <version>0.9.6</version>
   <packaging>pom</packaging>
   <name>Topaz Project</name>
   <!-- description is encouraged to take HTML embeded in CDATA -->
@@ -140,9 +140,9 @@
   </pluginRepositories>
 
   <scm>
-    <developerConnection>scm:svn:http://svn.topazproject.org/svn/head/</developerConnection>
-    <connection>scm:svn:http://svn.topazproject.org/svn/head/</connection>
-    <url>http://www.topazproject.org/trac/browser/head</url>
+    <developerConnection>scm:svn:http://svn.topazproject.org/svn/tags/topaz-project-0.9.6</developerConnection>
+    <connection>scm:svn:http://svn.topazproject.org/svn/tags/topaz-project-0.9.6</connection>
+    <url>http://www.topazproject.org/trac/browser/tags/topaz-project-0.9.6</url>
   </scm>
 
   <distributionManagement>
