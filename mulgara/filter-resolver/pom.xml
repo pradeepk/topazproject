@@ -37,6 +37,12 @@
       <artifactId>ehcache-core</artifactId>
       <optional>true</optional>
     </dependency>
+    <!-- Ehcache uses slf4j -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <optional>true</optional>
+    </dependency>
 
     <dependency>
       <groupId>org.codehaus.groovy</groupId>

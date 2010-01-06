@@ -69,6 +69,7 @@
     <aggregate>true</aggregate>
     <mulgara.version>2.1.4</mulgara.version>
     <ehcache.version>1.7.2</ehcache.version>
+    <slf4j.version>1.5.8</slf4j.version>
     <!-- This is where the site-deploy phase will put the documentation -->
     <topazproject.site.url>file://${topazproject.install.dir}/topazdocs</topazproject.site.url>
   </properties>
@@ -237,6 +238,18 @@
         <artifactId>ehcache-core</artifactId>
         <version>${ehcache.version}</version>
       </dependency>
+      <!-- Ehcache uses slf4j -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.mulgara</groupId>
         <artifactId>mulgara</artifactId>
