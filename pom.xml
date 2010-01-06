@@ -68,7 +68,7 @@
     <!-- aggregate some documentation - javadocs & jxr -->
     <aggregate>true</aggregate>
     <mulgara.version>2.1.4</mulgara.version>
-    <ehcache.version>1.7.0</ehcache.version>
+    <ehcache.version>1.7.2</ehcache.version>
     <!-- This is where the site-deploy phase will put the documentation -->
     <topazproject.site.url>file://${topazproject.install.dir}/topazdocs</topazproject.site.url>
   </properties>
