@@ -69,7 +69,7 @@
     <aggregate>true</aggregate>
     <mulgara.version>2.1.4</mulgara.version>
     <ehcache.version>1.7.2</ehcache.version>
-    <slf4j.version>1.5.8</slf4j.version>
+    <slf4j.version>1.5.10</slf4j.version>
     <!-- This is where the site-deploy phase will put the documentation -->
     <topazproject.site.url>file://${topazproject.install.dir}/topazdocs</topazproject.site.url>
   </properties>
