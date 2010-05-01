@@ -264,10 +264,8 @@ are "on" and "off".  The default is "autodetect".
     If not specified it defaults to 120000ms.
 
   -->
-  <!--
   <cacheManagerPeerListenerFactory
           class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"/>
-  -->
 
   <!--
   TerracottaConfig
