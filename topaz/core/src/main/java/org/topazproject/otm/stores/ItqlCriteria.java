@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2009 by Topaz, Inc.
+ * Copyright (c) 2007-2010 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,7 +86,7 @@ public class ItqlCriteria {
     if (hasOrderBy) {
       qry.append("order by ");
 
-      List<String> orders = new ArrayList();
+      List<String> orders = new ArrayList<String>();
       buildOrderBy(criteria, orders, "$s");
 
       for (String o : orders)
@@ -94,10 +94,10 @@ public class ItqlCriteria {
     }
 
     if (criteria.getMaxResults() > 0)
-      qry.append(" limit " + criteria.getMaxResults());
+      qry.append(" limit ").append(criteria.getMaxResults());
 
     if (criteria.getFirstResult() >= 0)
-      qry.append(" offset " + criteria.getFirstResult());
+      qry.append(" offset ").append(criteria.getFirstResult());
 
     qry.append(";");
 
@@ -113,9 +113,9 @@ public class ItqlCriteria {
     boolean hasOrder = !criteria.getOrderList().isEmpty();
     for (Order o : criteria.getOrderList()) {
       if (!id.equals(o.getName()))
-        qry.append(prefix + i++);
+        qry.append(prefix).append(Integer.toString(i++));
       else if (!isTop)
-        qry.append(" " + subject);
+        qry.append(" ").append(subject);
     }
 
     i = 0;
@@ -186,6 +186,7 @@ public class ItqlCriteria {
    * @param constr  an extra constraint on subject to be added in various places
    * @param pfx     the prefix to use for variables
    * @param session the current session
+   * @throws OtmException
    */
   static void buildFilter(AbstractFilterImpl f, boolean isSuper, StringBuilder qry, String subject,
                           String constr, String pfx, Session session)
@@ -236,6 +237,7 @@ public class ItqlCriteria {
    * @param qry     the query to which to attach the fragment
    * @param subject the query variable being filtered
    * @param pfx     the prefix to use for variables
+   * @throws OtmException
    */
   private static void buildFilter(AbstractFilterImpl f, StringBuilder qry, String subject,
                                   String pfx)
@@ -336,6 +338,7 @@ public class ItqlCriteria {
    *
    * @throws OtmException on an error
    */
+  @SuppressWarnings("unchecked")
   List createResults(List<Answer> ans) throws OtmException {
     List          results = new ArrayList();
     ClassMetadata cm      = criteria.getClassMetadata();
