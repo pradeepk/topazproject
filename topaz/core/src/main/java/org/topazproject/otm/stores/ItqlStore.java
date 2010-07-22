@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2010 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -212,17 +212,17 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     Map<String, List<M>> mappersByGraph = groupMappersByGraph(cm, fields);
 
     // for every graph create an insert statement
-    for (String g : mappersByGraph.keySet()) {
-      StringBuilder insert = isc.getInserts().get(g);
+    for (Map.Entry<String, List<M>> stringListEntry : mappersByGraph.entrySet()) {
+      StringBuilder insert = isc.getInserts().get(stringListEntry.getKey());
       if (insert == null)
-        isc.getInserts().put(g, insert = new StringBuilder(500));
+        isc.getInserts().put(stringListEntry.getKey(), insert = new StringBuilder(500));
 
-      if (g.equals(cm.getGraph())) {
+      if (stringListEntry.getKey().equals(cm.getGraph())) {
         for (String type : cm.getAllTypes())
           addStmt(insert, id, Rdf.rdf + "type", type, null, true);
       }
 
-      buildInsert(insert, mappersByGraph.get(g), id, o, isc.getSession());
+      buildInsert(insert, stringListEntry.getValue(), id, o, isc.getSession());
     }
   }
 
@@ -316,9 +316,9 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
 
       if (rd.isPredicateMap()) {
         Map<String, List<String>> pMap = (Map<String, List<String>>) b.getRawValue(o, true);
-        for (String k : pMap.keySet())
-          for (String v : pMap.get(k))
-            addStmt(buf, id, k, v, null, false); // xxx: uri or literal?
+        for (Map.Entry<String, List<String>> stringListEntry : pMap.entrySet())
+          for (String v : stringListEntry.getValue())
+            addStmt(buf, id, stringListEntry.getKey(), v, null, false); // xxx: uri or literal?
       } else if (!rd.isAssociation())
         addStmts(buf, id, rd.getUri(), (List<String>) b.get(o) , rd.getDataType(),
                  rd.typeIsUri(), rd.getColType(), "$s" + bnCtr++ + "i", rd.hasInverseUri());
@@ -404,13 +404,15 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     StringBuilder delete = new StringBuilder(500);
 
     // for every graph create a delete statement
-    for (String g : mappersByGraph.keySet()) {
+    for (Map.Entry<String, List<RdfMapper>> stringListEntry : mappersByGraph.entrySet()) {
       int len = delete.length();
       delete.append("delete ");
 
-      if (buildDeleteSelect(delete, getGraphUri(g, isc), mappersByGraph.get(g),
-                      !partialDelete && g.equals(cm.getGraph()) && cm.getAllTypes().size() > 0, id))
-        delete.append("from <").append(getGraphUri(g, isc)).append(">;");
+      if (buildDeleteSelect(delete,
+            getGraphUri(stringListEntry.getKey(), isc), stringListEntry.getValue(),
+            !partialDelete && stringListEntry.getKey().equals(cm.getGraph())
+                && cm.getAllTypes().size() > 0, id))
+        delete.append("from <").append(getGraphUri(stringListEntry.getKey(), isc)).append(">;");
       else
         delete.setLength(len);
     }
@@ -426,16 +428,17 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
     StringBuilder delete = new StringBuilder(500);
 
     // for every index and graph create a delete statement
-    for (String index : defsByGraph.keySet()) {
+    for (Map.Entry<String, List<SearchableDefinition>> stringListEntry : defsByGraph.entrySet()) {
       Map<String, List<RdfMapper>> rdfMappersByGraph =
-          groupMappersByGraph(cm, findRdfMappersForSearch(cm, defsByGraph.get(index)));
+          groupMappersByGraph(cm, findRdfMappersForSearch(cm, stringListEntry.getValue()));
 
-      for (String g : rdfMappersByGraph.keySet()) {
+      for (Map.Entry<String, List<RdfMapper>> stringListEntry1 : rdfMappersByGraph.entrySet()) {
         int len = delete.length();
         delete.append("delete ");
 
-        if (buildDeleteSelect(delete, getGraphUri(g, isc), rdfMappersByGraph.get(g), false, id))
-          delete.append("from <").append(getGraphUri(index, isc)).append(">;");
+        if (buildDeleteSelect(delete, getGraphUri(stringListEntry1.getKey(), isc),
+                              stringListEntry1.getValue(), false, id))
+          delete.append("from <").append(getGraphUri(stringListEntry.getKey(), isc)).append(">;");
         else
           delete.setLength(len);
       }
@@ -853,7 +856,7 @@ public class ItqlStore extends AbstractTripleStore implements SearchStore {
       throw new QueryException("error performing query '" + query + "'", ae);
     }
 
-    return new ItqlOQLResults(ans.get(0), qi, iq.getWarnings().toArray(new String[0]),
+    return new ItqlOQLResults(ans.get(0), qi, iq.getWarnings().toArray(new String[iq.getWarnings().size()]),
                               isc.getSession());
   }
 
