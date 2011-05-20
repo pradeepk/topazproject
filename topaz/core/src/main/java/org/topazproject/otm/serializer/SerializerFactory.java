@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2007-2008 by Topaz, Inc.
+ * Copyright (c) 2007-2011 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -232,7 +232,7 @@ public class SerializerFactory {
       return s;
 
     for (Class c : supers)
-      if (c.isAssignableFrom(clazz))
+      if (!c.equals(clazz) && c.isAssignableFrom(clazz))
         return getSerializer(c, dataType);
 
     return null;
